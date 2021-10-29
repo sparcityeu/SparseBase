@@ -13,6 +13,7 @@ namespace sparsebase{
       virtual int get_rank() = 0;
   };
 
+  //abstract class
 
   class CSF : public Tensor{
     public:
@@ -26,15 +27,18 @@ namespace sparsebase{
   class COO : public Tensor{
     public:
       COO(): Tensor() {cout<<"COO created."<< endl;}
+      void go_crazy() {cout << "fuck cracy" << endl; } 
     private:
       virtual ~COO(){}; 
       virtual int get_rank(){return 0;}
   };
 
+
+  //change this to an abstract class
   class TensorCreator{ //could be improved
     int t;
     public:
-      TensorCreator(int t){
+      TensorCreator(int t){ //can be enum
         this->t = t;
       };
       ~TensorCreator(){};
