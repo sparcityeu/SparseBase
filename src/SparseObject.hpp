@@ -10,6 +10,7 @@ namespace sparsebase{
       virtual ~SparseObject(){};
   };
 
+  template<typename v_t, typename e_t>
   class Graph : public SparseObject{
     Tensor * con;
     public:
@@ -19,6 +20,8 @@ namespace sparsebase{
         con = c.create();
       }
     private:
+      v_t n;
+      e_t m;
       virtual ~Graph(){}; 
   };
 
