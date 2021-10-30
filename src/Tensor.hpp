@@ -7,6 +7,8 @@ using namespace std;
 
 namespace sparsebase{
 
+  // TENSORS
+
   class Tensor{
     public:
       virtual ~Tensor(){};
@@ -14,41 +16,67 @@ namespace sparsebase{
   };
 
   //abstract class
-
-  class CSF : public Tensor{
+  class AbstractTensor : public Tensor{
     public:
-      CSF(): Tensor() {cout<<"CSF created."<< endl;}
+      unsigned int order;
+      //initialize order in the constructor
+      virtual ~AbstractTensor(){};
+      virtual int get_rank() = 0;
+  };
+
+  class CSF : public AbstractTensor{
+    public:
+      CSF(): AbstractTensor() {cout<<"CSF created."<< endl;}
     private:
       virtual ~CSF(){}; 
       virtual int get_rank(){return 0;}
   };
 
-  //template<typename i_t, typename c_t>
-  class COO : public Tensor{
+  class CSR : public AbstractTensor{
     public:
-      COO(): Tensor() {cout<<"COO created."<< endl;}
+      CSR(): AbstractTensor() {cout<<"CSR created."<< endl;}
+    private:
+      virtual ~CSR(){}; 
+      virtual int get_rank(){return 0;}
+  };
+
+  //template<typename i_t, typename c_t>
+  class COO : public AbstractTensor{
+    public:
+      COO(): AbstractTensor() {cout<<"COO created."<< endl;}
       void go_crazy() {cout << "fuck cracy" << endl; } 
     private:
       virtual ~COO(){}; 
       virtual int get_rank(){return 0;}
   };
 
+  // TENSOR CREATORS
 
-  //change this to an abstract class
   class TensorCreator{ //could be improved
-    int t;
     public:
-      TensorCreator(int t){ //can be enum
-        this->t = t;
-      };
-      ~TensorCreator(){};
+      virtual ~TensorCreator(){};
+      virtual Tensor * create() = 0;
+  };
 
+  class CSFCreator : public TensorCreator{
+    public:
+      CSFCreator(){}
+      ~CSFCreator(){}
       Tensor * create(){
-        if(t == 0) return new CSF();
-        else if(t == 1) return new COO();
-        else return new COO();
+        return new CSF();
       }
   };
+
+  class CSRCreator : public TensorCreator{
+    public:
+      CSRCreator(){}
+      ~CSRCreator(){}
+      Tensor * create(){
+        return new CSR();
+      }
+  };
+
+  // TENSOR READERS
 
   class TensorReader{
     public:
