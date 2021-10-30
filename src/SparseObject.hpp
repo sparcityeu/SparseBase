@@ -16,8 +16,8 @@ namespace sparsebase{
     public:
       Graph(): SparseObject() {
         //machine learning etc. to choose the most optimal format
-        TensorCreator c(0);
-        con = c.create();
+        TensorCreator * c = new CSRCreator();
+        con = c->create();
       }
     private:
       v_t n;
