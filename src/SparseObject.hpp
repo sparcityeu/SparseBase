@@ -16,8 +16,13 @@ namespace sparsebase{
     public:
       Graph(): SparseObject() {
         //machine learning etc. to choose the most optimal format
-        TensorCreator * c = new CSRCreator();
+        TensorCreator * c = new CSRCreator<v_t, e_t>();
         con = c->create();
+      }
+      Graph(string filename): SparseObject() {
+        //machine learning etc. to choose the most optimal format
+        CSRCreator<v_t, e_t> * c = new CSRCreator<v_t, e_t>();
+        con = c->create(filename);
       }
     private:
       v_t n;
