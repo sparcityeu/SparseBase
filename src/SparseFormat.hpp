@@ -98,7 +98,6 @@ namespace sparsebase{
           this->nnz = xadj[this->dimension[0]];
         }
       virtual ~CSR(){}; 
-    private:
       ID_t * adj;
       NNZ_t * xadj;
       VAL_t * vals;
