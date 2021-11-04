@@ -2,6 +2,7 @@
 #define _SPARSEOBJECT_HPP
 
 #include "SparseFormat.hpp"
+#include "SparseReader.hpp"
 
 namespace sparsebase{
 
@@ -25,6 +26,16 @@ namespace sparsebase{
       Graph(SparseFormat<v_t, e_t> * _connectivity){
         this->connectivity = _connectivity;
         this->verify_structure();
+        initialize_info_from_connection();
+      }
+      Graph(SparseReader<v_t, e_t> &r){
+        this->connectivity = r->read()[0];
+        delete r;
+        this->verify_structure();
+        initialize_info_from_connection();
+        cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
+      }
+      void initialize_info_from_connection(){
         auto dimensions = this->connectivity->get_dimensions();
         n = dimensions[0];
         m = this->connectivity->get_num_nnz();
