@@ -33,3 +33,5 @@
 
 # Vim
 *.swp 
+
+.vscode

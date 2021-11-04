@@ -9,33 +9,74 @@
 using namespace std;
 
 namespace sparsebase{
-
+  enum class Format{
+    CSR_f,
+    COO_f
+  };
   // TENSORS
 
-  class Tensor{
+  template<typename ID_t, typename NNZ_t>
+  class SparseFormat{
     public:
-      virtual ~Tensor(){};
-      virtual int get_rank() = 0;
+      virtual ~SparseFormat(){};
+      virtual unsigned int get_order() = 0;
+      virtual Format get_format() = 0;
+      virtual std::vector<ID_t> get_dimensions() = 0;
+      virtual NNZ_t get_num_nnz() = 0;
   };
 
   //abstract class
-  class AbstractTensor : public Tensor{
+  template<typename ID_t, typename NNZ_t>
+  class AbstractSparseFormat : public SparseFormat<ID_t, NNZ_t>{
     public:
-      unsigned int order;
       //initialize order in the constructor
-      AbstractTensor(unsigned int order): order(order) {}
-      virtual ~AbstractTensor(){};
-      virtual int get_rank() = 0;
+      AbstractSparseFormat() {}
+      virtual ~AbstractSparseFormat(){};
+      unsigned int get_order(){
+        return order;
+      }
+      Format get_format(){
+        return format;
+      }
+      std::vector<ID_t>get_dimensions(){
+        return dimension;
+      }
+      unsigned int order;
+      std::vector<ID_t> dimension;
+      Format format;
   };
 
-  class CSF : public AbstractTensor{
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+  class CSR : public AbstractSparseFormat<ID_t, NNZ_t>{
     public:
-      CSF(unsigned int order): AbstractTensor(order) {cout<<"CSF created."<< endl;}
+      CSR() {
+        this->order = 2;
+        this->format = Format::CSR_f;
+        this->dimension = std::vector<ID_t>(2,0);
+        adj = nullptr;
+        xadj = nullptr;
+        vals = nullptr;
+        cout<<"CSR created."<< endl;
+        }
+        CSR(ID_t _n, ID_t _m, NNZ_t * _xadj, ID_t * _adj, VAL_t* _vals){
+          xadj = _xadj;
+          adj = _adj;
+          vals = _vals;
+          this->format = Format::CSR_f;
+          this->order = 2;
+          this->dimension = {_n, _m};
+        }
+        NNZ_t get_num_nnz(){
+          if (!xadj || !adj) return 0;
+          else return xadj[this->dimension[0]];
+        }
+      virtual ~CSR(){}; 
     private:
-      virtual ~CSF(){}; 
-      virtual int get_rank(){return 0;}
+      ID_t * adj;
+      NNZ_t * xadj;
+      VAL_t * vals;
   };
-
+/*
   template<typename i_t, typename nnz_t> 
   class CSR : public AbstractTensor{
     public:
@@ -174,6 +215,6 @@ namespace sparsebase{
           return reader->read();
         }
     };
+*/
 }
-
 #endif
