@@ -9,7 +9,7 @@
 using namespace std;
 
 namespace sparsebase{
-  enum class Format{
+  enum Format{
     CSR_f,
     COO_f
   };
@@ -41,11 +41,41 @@ namespace sparsebase{
       std::vector<ID_t>get_dimensions(){
         return dimension;
       }
+      NNZ_t get_num_nnz(){
+        return nnz;
+      }
       unsigned int order;
       std::vector<ID_t> dimension;
       Format format;
+      NNZ_t nnz;
   };
 
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+  class COO : public AbstractSparseFormat<ID_t, NNZ_t>{
+    public:
+      COO() {
+        this->order = 2;
+        this->format = Format::COO_f;
+        this->dimension = std::vector<ID_t>(2,0);
+        this->nnz = 0;
+        adj = nullptr;
+        vals = nullptr;
+        }
+        COO(ID_t _n, ID_t _m, NNZ_t _nnz, ID_t * _adj, ID_t* _is, VAL_t* _vals){
+          adj = _adj;
+          is = _is;
+          vals = _vals;
+          this->nnz = _nnz;
+          this->format = Format::CSR_f;
+          this->order = 2;
+          this->dimension = {_n, _m};
+        }
+      virtual ~COO(){}; 
+    private:
+      ID_t * adj;
+      ID_t * is;
+      VAL_t * vals;
+  };
   template<typename ID_t, typename NNZ_t, typename VAL_t>
   class CSR : public AbstractSparseFormat<ID_t, NNZ_t>{
     public:
@@ -53,10 +83,10 @@ namespace sparsebase{
         this->order = 2;
         this->format = Format::CSR_f;
         this->dimension = std::vector<ID_t>(2,0);
+        this->nnz = 0;
         adj = nullptr;
         xadj = nullptr;
         vals = nullptr;
-        cout<<"CSR created."<< endl;
         }
         CSR(ID_t _n, ID_t _m, NNZ_t * _xadj, ID_t * _adj, VAL_t* _vals){
           xadj = _xadj;
@@ -65,10 +95,7 @@ namespace sparsebase{
           this->format = Format::CSR_f;
           this->order = 2;
           this->dimension = {_n, _m};
-        }
-        NNZ_t get_num_nnz(){
-          if (!xadj || !adj) return 0;
-          else return xadj[this->dimension[0]];
+          this->nnz = xadj[this->dimension[0]];
         }
       virtual ~CSR(){}; 
     private:
