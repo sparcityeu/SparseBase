@@ -1,2 +1,2 @@
 dev:
-	g++ --std=c++14 -o bin/test.out src/main.cpp
+	g++ -g --std=c++14 -o bin/test.out src/main.cpp

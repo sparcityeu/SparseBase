@@ -15,9 +15,12 @@ namespace sparsebase{
   template <typename ID_t, typename NNZ_t>
   class AbstractSparseObject : public SparseObject{
     protected:
-    SparseFormat<ID_t, NNZ_t> *connectivity;
+      SparseFormat<ID_t, NNZ_t> *connectivity;
     public:
-    virtual ~AbstractSparseObject(){};
+      virtual ~AbstractSparseObject(){};
+      SparseFormat<ID_t, NNZ_t> * get_connectivity(){
+        return connectivity;
+      }
   };
 
   template<typename v_t, typename e_t>
@@ -28,7 +31,7 @@ namespace sparsebase{
         this->verify_structure();
         initialize_info_from_connection();
       }
-      Graph(SparseReader<v_t, e_t> &r){
+      Graph(SparseReader<v_t, e_t> * r){
         this->connectivity = r->read()[0];
         delete r;
         this->verify_structure();
@@ -50,6 +53,26 @@ namespace sparsebase{
       v_t n;
       e_t m;
   };
+
+  //template<typename v_t, typename e_t, typename t_t>
+  //class TemporalGraph : public AbstractSparseObject<v_t, e_t>{
+  //  public:
+  //    TemporalGraph(SparseFormat<v_t, e_t, t_t> * _connectivity){
+  //      // init temporal graph
+  //    }
+  //    TemporalGraph(SparseReader<v_t, e_t, t_t> * r){
+  //      // init temporal graph from file
+  //    }
+  //    virtual ~TemporalGraph(){};
+  //    void verify_structure(){
+  //      // check order
+  //      if (this->connectivity->get_order() != 2) //throw error
+  //      // check dimensions
+  //    }
+  //    v_t n;
+  //    e_t m;
+  //    // ...
+  //};
 
 }
 
