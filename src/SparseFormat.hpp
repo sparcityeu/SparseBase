@@ -102,6 +102,18 @@ namespace sparsebase{
       NNZ_t * xadj;
       VAL_t * vals;
   };
+
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+  class CSF : public AbstractSparseFormat<ID_t, NNZ_t>{
+    public:
+      CSF(unsigned int order) {
+        //init CSF
+      }
+      virtual ~CSF(){}; 
+      NNZ_t ** ind;
+      VAL_t * vals;
+  };
+
 /*
   template<typename i_t, typename nnz_t> 
   class CSR : public AbstractTensor{

@@ -35,3 +35,7 @@
 *.swp 
 
 .vscode
+
+#data
+graphs
+bin
