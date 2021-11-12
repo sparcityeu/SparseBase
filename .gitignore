@@ -34,8 +34,9 @@
 # Vim
 *.swp 
 
-.vscode
-
 #data
 graphs
-bin
+build
+
+# local environment
+.vscode
