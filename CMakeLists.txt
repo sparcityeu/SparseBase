@@ -20,3 +20,8 @@ endif()
 
 add_subdirectory(sparsebase)
 add_subdirectory(examples)
+add_subdirectory(tests)
+
+enable_testing()
+
+add_test(NAME basic_format COMMAND tests/run_test)

@@ -26,3 +26,11 @@ cmake --install . --prefix "/custom/location"
 ## Usage
 
 When compiling a project that uses SparseBase, simply link the project with the library using the flag `-lsparsebase`.
+
+## Tests
+
+Users can run unit tests easily after building the project. Once its built, do the following:
+```
+cd build 
+ctest -V
+```
