@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "SparseFormat.hpp"
-#include "SparseObject.hpp"
-#include "SparseReader.hpp"
-#include "SparseProcess.hpp"
+#include "sparsebase/SparseFormat.hpp"
+#include "sparsebase/SparseObject.hpp"
+#include "sparsebase/SparseReader.hpp"
+#include "sparsebase/SparseProcess.hpp"
 
 using namespace std;
 using namespace sparsebase;
