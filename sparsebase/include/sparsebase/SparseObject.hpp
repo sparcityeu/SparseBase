@@ -8,7 +8,7 @@ namespace sparsebase{
 
   class SparseObject{
     public:
-      virtual ~SparseObject(){};
+      virtual ~SparseObject();
       virtual void verify_structure() = 0;
   };
 
@@ -17,38 +17,18 @@ namespace sparsebase{
     protected:
       SparseFormat<ID_t, NNZ_t> *connectivity;
     public:
-      virtual ~AbstractSparseObject(){};
-      SparseFormat<ID_t, NNZ_t> * get_connectivity(){
-        return connectivity;
-      }
+      virtual ~AbstractSparseObject();
+      SparseFormat<ID_t, NNZ_t> * get_connectivity();
   };
 
   template<typename v_t, typename e_t>
   class Graph : public AbstractSparseObject<v_t, e_t>{
     public:
-      Graph(SparseFormat<v_t, e_t> * _connectivity){
-        this->connectivity = _connectivity;
-        this->verify_structure();
-        initialize_info_from_connection();
-      }
-      Graph(SparseReader<v_t, e_t> * r){
-        this->connectivity = r->read()[0];
-        delete r;
-        this->verify_structure();
-        initialize_info_from_connection();
-        cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
-      }
-      void initialize_info_from_connection(){
-        auto dimensions = this->connectivity->get_dimensions();
-        n = dimensions[0];
-        m = this->connectivity->get_num_nnz();
-      }
-      virtual ~Graph(){};
-      void verify_structure(){
-        // check order
-        if (this->connectivity->get_order() != 2) throw -1;
-        // check dimensions
-      }
+      Graph(SparseFormat<v_t, e_t> * _connectivity);
+      Graph(SparseReader<v_t, e_t> * r);
+      void initialize_info_from_connection();
+      virtual ~Graph();
+      void verify_structure();
     private:
       v_t n;
       e_t m;
