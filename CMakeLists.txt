@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.0 )
 
-project( SparseBase VERSION 0.1 )
+project( SparseBase_project VERSION 0.1 )
 
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-std=c++11"   COMPILER_SUPPORTS_CXX11 )
@@ -18,4 +18,5 @@ else()
 endif()
 # Got this from https://github.com/district10/cmake-templates/blob/master/cpp11_vs2010/CMakeLists.txt
 
-add_executable( ${PROJECT_NAME} src/main.cpp )
+add_subdirectory(sparsebase)
+add_subdirectory(examples)
