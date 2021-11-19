@@ -33,6 +33,10 @@ namespace sparsebase
             }
         }
 
+        vector<ID_t> dims{n,m};
+        coo->dimension = dims;
+        coo->nnz = nnz;
+
         return coo;
     }
 
@@ -59,41 +63,37 @@ namespace sparsebase
         csr->xadj = new ID_t[n+1];
         csr->adj = new ID_t[m];
         csr->vals = new NNZ_t[nnz];
-        fill(csr->xadj, csr->xadj + n + 1, 0);
-        fill(csr->adj, csr->adj + m, 0);
 
-        for (ID_t i = 0; i < nnz; i++)
-        {
-            csr->xadj[coo->adj[i]]++;
+        fill(csr->xadj, csr->xadj+n+1, 0);
+        fill(csr->adj, csr->adj+m, 0);
+        fill(csr->vals, csr->vals+nnz, 0);
+
+        ID_t mt = 0;
+        for(NNZ_t i=0; i<nnz; i++){
+            ID_t u = coo->adj[i];
+            ID_t v = coo->is[i];
+            NNZ_t w = coo->vals[i];
+
+            csr->xadj[u]++;
+            csr->adj[mt++] = v;
         }
 
-        //cumsum the nnz per row to get Bp[]
-        for (ID_t i = 0, sum = 0; i < n; i++)
-        {
-            ID_t temp = csr->xadj[i];
-            csr->xadj[i] = sum;
-            sum += temp;
-        }
-        csr->adj[n] = nnz;
-
-        //write Aj,Ax into Bj,Bx
-        for (ID_t i = 0; i < nnz; i++)
-        {
-            ID_t row = coo->adj[i];
-            ID_t dest = csr->adj[row];
-
-            csr->xadj[dest] = coo->is[i];
-            csr->vals[dest] = coo->vals[i];
-
-            coo->adj[row]++;
+        for(ID_t i=0; i<n+1; i++){
+            csr->xadj[i] += csr->xadj[i-1];
         }
 
-        for (ID_t i = 0, last = 0; i <= n; i++)
-        {
-            ID_t temp = csr->xadj[i];
-            csr->xadj[i] = last;
-            last = temp;
+        for(ID_t i=n; i>0; i--){
+            csr->xadj[i] = csr->xadj[i-1];
         }
+        csr->xadj[0] = 0;
+
+        for(NNZ_t i=0; i<nnz; i++){
+            csr->vals[i] = coo->vals[i];
+        }
+
+        vector<ID_t> dims{n,m};
+        csr->dimension = dims;
+        csr->nnz = nnz;
 
         return csr;
     }
