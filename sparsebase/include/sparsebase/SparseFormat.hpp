@@ -10,14 +10,15 @@ using namespace std;
 
 namespace sparsebase{
   enum Format{
-    CSR_f,
-    COO_f
+    CSR_f=0,
+    COO_f=1
   };
   // TENSORS
 
   template<typename ID_t, typename NNZ_t>
   class SparseFormat{
     public:
+      Format format;
       virtual ~SparseFormat(){};
       virtual unsigned int get_order() = 0;
       virtual Format get_format() = 0;

@@ -82,7 +82,7 @@ namespace sparsebase
     }
     else
     {
-      throw invalid_argument("file does not exists!");
+      throw invalid_argument("file does not exists!!");
     }
   }
   template <typename v_t, typename e_t, typename w_t>
