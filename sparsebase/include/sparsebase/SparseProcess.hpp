@@ -50,7 +50,7 @@ namespace sparsebase
   template<typename ID_t, typename NNZ_t, typename V>
   class DegreeOrder : public AbstractOrder<ID_t> {
     public:
-      DegreeOrder(int _hyperparameter):hyperparameter(hyperparameter){
+      DegreeOrder(int _hyperparameter):hyperparameter(_hyperparameter){
         map.emplace(my_to_string({CSR_f}), calculate_order_csr);
       };
     protected:
