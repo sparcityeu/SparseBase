@@ -1,9 +1,20 @@
 #ifndef _ORDERING_HPP
 #define _ORDERING_HPP
+#include "SparseFormat.hpp"
+#include <iostream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace sparsebase
 {
+  std::string my_to_string(std::vector<Format> v){
+    string r = "";
+    for (auto e : v){
+      r+=std::to_string('a');
+    }
+    return r;
+  }
     template <typename ID_t>
     class Order
     {
@@ -18,29 +29,35 @@ namespace sparsebase
       //virtual void test_order(){ };
   };
 
-  template<typename ID_t, typename NNZ_t>
+  typedef std::vector<std::tuple<bool, Format>> conversion_schema;
+  class SparseConverter{
+    public:
+    bool can_convert(Format in, Format out){
+      return true;
+    }  
+    // TODO: what about the other templated variables?
+    //       can we add a "clone" function to handle this?
+    template <typename ID_t, typename NNZ_t>
+    std::vector<SparseFormat<ID_t, NNZ_t>*> apply_conversion_schema(conversion_schema sc, std::vector<SparseFormat<ID_t, NNZ_t>*> ptr){
+      return ptr;
+    }
+  };
+
+
+  template <typename ID_t, typename NNZ_t>
+  using DegreeOrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
+
+  template<typename ID_t, typename NNZ_t, typename V>
   class DegreeOrder : public AbstractOrder<ID_t> {
     public:
-      DegreeOrder(){};
-      //template <typename ID_t, typename NNZ_t, typename VAL_t>
-      template<typename VAL_t>
-      ID_t * get_order(SparseFormat<ID_t, NNZ_t> * sp){
-        if(sp->format == Format::CSR_f){
-          CSR<ID_t, NNZ_t, VAL_t> * csr = dynamic_cast<CSR<ID_t, NNZ_t, VAL_t>*>(sp); 
-          cout << "CSR cast successful!" << endl;
-          ID_t * r = get_order(csr);
-          cout << &r << endl;
-          return r; 
-        }
-        //else if(sp->format == Format::COO_f){
-        //  return get_order(dynamic_cast<COO<ID_t, NNZ_t, VAL_t>*>(sp)); 
-        //}
-        else{
-          throw std::invalid_argument( "Format " + to_string(sp->format) + ", not supported!" );
-        }
-      }
-      template<typename VAL_t>
-      ID_t * get_order(CSR<ID_t, NNZ_t, VAL_t> * csr){
+      DegreeOrder(int _hyperparameter):hyperparameter(hyperparameter){
+        map.emplace(my_to_string({CSR_f}), calculate_order_csr);
+      };
+    protected:
+      std::unordered_map<std::string, DegreeOrderingFunction<ID_t, NNZ_t>> map;
+      int hyperparameter;
+      static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> tings){
+        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(tings[0]);
         ID_t n = csr->get_dimensions()[0];
         ID_t * counts = new ID_t[n]();
         for(ID_t u = 0; u < n; u++){
@@ -61,9 +78,84 @@ namespace sparsebase
         delete [] counts;
         return sorted;
       }
-      //ID_t * get_order(CSF<ID_t, NNZ_t> * csf, ID_t * sorted){
-      //}
-      
+  };
+  template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename ProcessingReturn, typename config_key = std::vector<Format>>
+  class ExecutableProcess : public ProcessingImpl {
+  protected:
+    using ProcessingImpl::ProcessingImpl; 
+    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, std::unordered_map<config_key, ProcessingFunc> map, SparseConverter sc){
+      conversion_schema cs;
+      ProcessingFunc func = nullptr;
+      // Check if the key is in the map (requires == and != functions for config_key)
+      // If it is, 
+        //return the function
+      if (map.find(key) != map.end()){
+        for (auto f : key){
+          cs.push_back(make_tuple(false, (Format)f));
+        }
+        func = map[key];
+      } 
+      // If it isn't,
+      else {
+        // check if it can be done
+          // If it can, carry out the correct conversions and return a function pointer plus the conversions
+          // sort the keys by hamming distance
+          // check the keys one by one
+          // construct the cs
+      }
+      return make_tuple(func, cs);
+    }
+    template <typename F>
+    std::vector<Format> pack_formats(F sf){
+      SparseFormat<ID_t, NNZ_t>* casted = static_cast<SparseFormat<ID_t, NNZ_t>*>(sf);
+      return {casted->get_format()};
+    }
+    template <typename F, typename... SF>
+    std::vector<Format> pack_formats(F sf, SF... sfs){
+      SparseFormat<ID_t, NNZ_t>* casted = static_cast<SparseFormat<ID_t, NNZ_t>*>(sf);
+      std::vector<Format> f = {casted->get_format()};
+      std::vector<Format> remainder = pack_formats(sfs...);
+      for (auto i : remainder){
+        f.push_back(i);
+      }
+      return f;
+    }
+    template <typename F>
+    std::vector<F> pack_sfs(F sf){
+      return {sf};
+    }
+    template <typename F, typename... SF>
+    std::vector<F> pack_sfs(F sf, SF... sfs){
+      std::vector<F> f = {sf};
+      std::vector<F> remainder = pack_formats(sfs...);
+      for (auto i : remainder){
+        f.push_back(i);
+      }
+      return f;
+    }
+    template<typename F, typename... SF>
+    ProcessingReturn execute(F sf, SF... sfs){
+      SparseConverter sc;
+      // pack the SFs into a vector
+      vector<SparseFormat<ID_t, NNZ_t>*> packed_sfs = pack_sfs(sf, sfs...);
+      // pack the SF formats into a vector
+      vector<Format> formats = pack_formats(sf, sfs...);
+      // get conversion schema
+      std::tuple<ProcessingFunc, conversion_schema>  cs = get_function(my_to_string(formats), this->map, sc);
+      // carry out conversion
+      std::vector<SparseFormat<ID_t, NNZ_t>*> converted = sc.apply_conversion_schema(get<1>(cs), packed_sfs);
+      // carry out the correct call using the map
+      return get<0>(cs)(packed_sfs);
+    }
+  };
+
+  template <typename ID_t, typename NNZ_t>
+  class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, DegreeOrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
+    using ExecutableProcess::ExecutableProcess;
+    public:
+    ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
+      return this->execute(csr);
+    }
   };
 
   template<typename ID_t, typename NNZ_t>
