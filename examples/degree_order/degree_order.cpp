@@ -16,7 +16,7 @@ int main(int argc, char * argv[]){
   Graph<unsigned int, unsigned int> g(&csr);
   //Graph<unsigned int, unsigned int> g2(new UedgelistReader<unsigned int, unsigned int, void>("/data/GE/graphs/uedgelist/com-dblp_c.graph"));
   //DegreeOrder<unsigned int, unsigned int> orderer;
-  ExecutableDegreeOrdering<unsigned int, unsigned int> orderer(1);
+  ExecutableOrdering<unsigned int, unsigned int, DegreeOrder<unsigned int, unsigned int, void>> orderer(1);
   //CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g2.get_connectivity());
   CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g.get_connectivity());
   unsigned int* order = orderer.get_order(tmp);

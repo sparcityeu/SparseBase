@@ -43,42 +43,6 @@ namespace sparsebase
     }
   };
 
-
-  template <typename ID_t, typename NNZ_t>
-  using DegreeOrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
-
-  template<typename ID_t, typename NNZ_t, typename V>
-  class DegreeOrder : public AbstractOrder<ID_t> {
-    public:
-      DegreeOrder(int _hyperparameter):hyperparameter(_hyperparameter){
-        map.emplace(my_to_string({CSR_f}), calculate_order_csr);
-      };
-    protected:
-      std::unordered_map<std::string, DegreeOrderingFunction<ID_t, NNZ_t>> map;
-      int hyperparameter;
-      static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> tings){
-        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(tings[0]);
-        ID_t n = csr->get_dimensions()[0];
-        ID_t * counts = new ID_t[n]();
-        for(ID_t u = 0; u < n; u++){
-          counts[csr->xadj[u+1] - csr->xadj[u]+1]++;
-        }
-        for(ID_t u = 1; u < n; u++){
-          counts[u] += counts[u - 1];
-        }
-        ID_t * sorted = new ID_t[n];
-        memset(sorted, -1, sizeof(ID_t) * n);
-        ID_t * mr = new ID_t[n]();
-        for(ID_t u = 0; u < n; u++){
-          ID_t ec = counts[csr->xadj[u+1] - csr->xadj[u]];
-          sorted[ec + mr[ec]] = u;
-          mr[ec]++;
-        }
-        delete [] mr;
-        delete [] counts;
-        return sorted;
-      }
-  };
   template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename ProcessingReturn, typename config_key = std::vector<Format>>
   class ExecutableProcess : public ProcessingImpl {
   protected:
@@ -150,8 +114,44 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t>
-  class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, DegreeOrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
-    typedef ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, DegreeOrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> Base;
+  using OrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
+
+  template<typename ID_t, typename NNZ_t, typename V>
+  class DegreeOrder : public AbstractOrder<ID_t> {
+    public:
+      DegreeOrder(int _hyperparameter):hyperparameter(_hyperparameter){
+        map.emplace(my_to_string({CSR_f}), calculate_order_csr);
+      };
+    protected:
+      std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
+      int hyperparameter;
+      static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> tings){
+        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(tings[0]);
+        ID_t n = csr->get_dimensions()[0];
+        ID_t * counts = new ID_t[n]();
+        for(ID_t u = 0; u < n; u++){
+          counts[csr->xadj[u+1] - csr->xadj[u]+1]++;
+        }
+        for(ID_t u = 1; u < n; u++){
+          counts[u] += counts[u - 1];
+        }
+        ID_t * sorted = new ID_t[n];
+        memset(sorted, -1, sizeof(ID_t) * n);
+        ID_t * mr = new ID_t[n]();
+        for(ID_t u = 0; u < n; u++){
+          ID_t ec = counts[csr->xadj[u+1] - csr->xadj[u]];
+          sorted[ec + mr[ec]] = u;
+          mr[ec]++;
+        }
+        delete [] mr;
+        delete [] counts;
+        return sorted;
+      }
+  };
+
+  template <typename ID_t, typename NNZ_t>
+  class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
+    typedef ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
@@ -160,7 +160,27 @@ namespace sparsebase
   };
 
   template<typename ID_t, typename NNZ_t>
-  class RCMOrder : public AbstractOrder<ID_t> {};
+  class RCMOrder : public AbstractOrder<ID_t> {
+    public:
+      RCMOrder(): {
+        map.emplace(my_to_string({CSR_f}, get_order_csr);
+      }
+    protected:
+      std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
+      static ID_t* get_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> sps){
+        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(tings[0]);
+      }
+  };
+
+  template <typename ID_t, typename NNZ_t, typename ORDER_T>
+  class ExecutableOrdering : ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
+    typedef ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> Base;
+    using Base::Base; // Used to forward constructors from base
+    public:
+    ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
+      return this->execute(csr);
+    }
+  };
 } // namespace sparsebase
 
 

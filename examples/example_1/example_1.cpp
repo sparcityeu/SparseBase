@@ -14,11 +14,13 @@ int main(int argc, char * argv[]){
   unsigned int adj[4] = {1,2,0,0};
   CSR<unsigned int, unsigned int, void> csr(3, 3, xadj, adj, nullptr);
   Graph<unsigned int, unsigned int> g(&csr);
-  //Graph<unsigned int, unsigned int> g2(new UedgelistReader<unsigned int, unsigned int, void>("/data/GE/graphs/uedgelist/com-dblp_c.graph"));
+  string file_name = argv[1];
+  Graph<unsigned int, unsigned int> g2(new UedgelistReader<unsigned int, unsigned int, void>(file_name));
   //DegreeOrder<unsigned int, unsigned int> orderer;
-  ExecutableDegreeOrdering<unsigned int, unsigned int> orderer(1);
-  SparseFormat<unsigned int, unsigned int> * con = g.get_connectivity();
-  //CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g2.get_connectivity());
+  //ExecutableDegreeOrdering<unsigned int, unsigned int> orderer(1);
+  ExecutableOrdering<unsigned int, unsigned int, DegreeOrder<unsigned int, unsigned int, void>> orderer(1);
+  SparseFormat<unsigned int, unsigned int> * con = g2.get_connectivity();
+  CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(con);
   //CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g.get_connectivity());
   unsigned int* order = orderer.get_order(con);
   cout << "Order: " << order << endl;
@@ -29,10 +31,9 @@ int main(int argc, char * argv[]){
   //unsigned int * order2 = orderer.get_order<void>(g2.get_connectivity());
   //auto o = tmp->get_order();
   //cout << "Order: " << o << endl;
-  //int n = tmp->get_dimensions()[0];
-  //cout << "Number of vertices: " << n << endl;
-  //cout << "edges "<< tmp->xadj[order2[n-1]+1] - tmp->xadj[order2[n-1]] << endl;
-  //cout << "edges "<< tmp->xadj[order[n-1]+1] - tmp->xadj[order[n-1]] << endl;
-  //cout << "edges "<< order[n-2];
+  int n = tmp->get_dimensions()[0];
+  cout << "Number of vertices: " << n << endl;
+  cout << "edges "<< tmp->xadj[order[n-1]+1] - tmp->xadj[order[n-1]] << endl;
+  cout << "edges "<< order[n-2] << endl;
   return 0;
 }
