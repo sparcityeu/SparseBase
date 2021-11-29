@@ -151,7 +151,8 @@ namespace sparsebase
 
   template <typename ID_t, typename NNZ_t>
   class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, DegreeOrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
-    using ExecutableProcess::ExecutableProcess;
+    typedef ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, DegreeOrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> Base;
+    using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
       return this->execute(csr);
