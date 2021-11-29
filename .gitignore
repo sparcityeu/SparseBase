@@ -37,6 +37,7 @@
 #data
 graphs
 build
+debug_build
 
 # local environment
 .vscode
