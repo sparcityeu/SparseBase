@@ -125,8 +125,8 @@ namespace sparsebase
     protected:
       std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
       int hyperparameter;
-      static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> tings){
-        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(tings[0]);
+      static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> formats){
+        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
         ID_t n = csr->get_dimensions()[0];
         ID_t * counts = new ID_t[n]();
         for(ID_t u = 0; u < n; u++){
@@ -162,13 +162,13 @@ namespace sparsebase
   template<typename ID_t, typename NNZ_t>
   class RCMOrder : public AbstractOrder<ID_t> {
     public:
-      RCMOrder(): {
-        map.emplace(my_to_string({CSR_f}, get_order_csr);
+      RCMOrder() {
+        map.emplace(my_to_string({CSR_f}, get_order_csr));
       }
     protected:
       std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
-      static ID_t* get_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> sps){
-        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(tings[0]);
+      static ID_t* get_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> formats){
+        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
       }
   };
 
