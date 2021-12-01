@@ -8,43 +8,54 @@ using namespace sparsebase;
 
 int main(){
 
-    int adj[4] = {0, 1, 2, 3};
-    int is[4] = {0, 1, 2, 3};
-    int vals[4] = {1, 1, 1, 1};
+    int adj[6] = {0,0,1,1,2,2};
+    int is[6] = {0,1,1,2,3,3};
+    int vals[6] = {10, 20, 30, 40, 50, 60};
 
-    COO<int,int,int>* coo = new COO<int,int,int>(4,4,4,adj,is,vals);
+    COO<int,int,int>* coo = new COO<int,int,int>(6,6,6,adj,is,vals);
 
     auto converter = new SparseConverter<int,int>();
     auto csr = converter->convert(coo,CSR_f);
     auto csr2 = dynamic_cast<CSR<int,int,int>*>(csr);
 
-    for(int i=0; i<4; i++)
-        cout << csr2->xadj[i] << ",";
+    auto dims = csr2->get_dimensions();
+    int n = dims[0];
+    int m = dims[1];
+    int nnz = csr->get_num_nnz();
+
+    cout << "CSR" << endl;
+
+    for(int i=0; i<nnz; i++)
+        cout << csr2->vals[i] << ",";
     cout << endl;
-    
-    for(int i=0; i<4; i++)
+
+    for(int i=0; i<nnz; i++)
         cout << csr2->adj[i] << ",";
     cout << endl;
     
-    for(int i=0; i<4; i++)
-        cout << csr2->vals[i] << ",";
+    for(int i=0; i<n+1; i++)
+        cout << csr2->xadj[i] << ",";
     cout << endl;
+    
     cout << endl;
 
     auto coo2 = converter->convert(csr,COO_f);
 
     auto coo3 = dynamic_cast<COO<int,int,int>*>(coo2);
-    
-    for(int i=0; i<4; i++)
-        cout << coo3->adj[i] << ",";
+
+    cout << "COO" << endl;
+
+    for(int i=0; i<nnz; i++)
+        cout << coo3->vals[i] << ",";
     cout << endl;
-    
-    for(int i=0; i<4; i++)
+
+    for(int i=0; i<nnz; i++)
         cout << coo3->is[i] << ",";
     cout << endl;
     
-    for(int i=0; i<4; i++)
-        cout << coo3->vals[i] << ",";
+    for(int i=0; i<nnz; i++)
+        cout << coo3->adj[i] << ",";
     cout << endl;
+   
 }
 
