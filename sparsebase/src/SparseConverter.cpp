@@ -14,7 +14,7 @@ namespace sparsebase
         vector<ID_t> dimensions = csr->get_dimensions();
         ID_t n = dimensions[0];
         ID_t m = dimensions[1];
-        NNZ_t nnz = coo->get_num_nnz();
+        NNZ_t nnz = csr->get_num_nnz();
 
         coo->adj = new ID_t[nnz];
         coo->is = new ID_t[nnz];
@@ -26,11 +26,17 @@ namespace sparsebase
             ID_t end = csr->xadj[i+1];
 
             for(ID_t j=start; j<end; j++){
-                coo->is[count] = i;
-                coo->adj[count] = j;
-                coo->vals[count] = csr->vals[csr->adj[j]];
+                coo->adj[count] = i;
                 count++;
             }
+        }
+
+        for(ID_t i=0; i<m; i++){
+            coo->is[i] = csr->adj[i];
+        }
+
+        for(NNZ_t i=0; i<nnz; i++){
+            coo->vals[i] = csr->vals[i];
         }
 
         vector<ID_t> dims{n,m};
@@ -51,50 +57,52 @@ namespace sparsebase
     template <typename ID_t, typename NNZ_t>
     SparseFormat<ID_t, NNZ_t> *coo_to_csr(SparseFormat<ID_t, NNZ_t> *source)
     {
-
         COO<ID_t,NNZ_t,NNZ_t> *coo = dynamic_cast<COO<ID_t,NNZ_t,NNZ_t> *>(source);
-        CSR<ID_t,NNZ_t,NNZ_t> *csr = new CSR<ID_t,NNZ_t,NNZ_t>(); // TODO: Fix this
 
         vector<ID_t> dimensions = coo->get_dimensions();
         ID_t n = dimensions[0];
         ID_t m = dimensions[1];
         NNZ_t nnz = coo->get_num_nnz();
 
-        csr->xadj = new ID_t[n+1];
-        csr->adj = new ID_t[m];
-        csr->vals = new NNZ_t[nnz];
+        ID_t* xadj = new ID_t[n+1];
+        ID_t* adj = new ID_t[m];
+        NNZ_t* vals = new NNZ_t[nnz];
 
-        fill(csr->xadj, csr->xadj+n+1, 0);
-        fill(csr->adj, csr->adj+m, 0);
-        fill(csr->vals, csr->vals+nnz, 0);
+        fill(xadj, xadj + n + 1, 0);
+        fill(adj, adj + m, 0);
+        fill(vals, vals + nnz, 0);
 
-        ID_t mt = 0;
+        // We need to ensure that they are sorted
+        // Maybe add a sort check and then not do this if it is already sorted
+        vector<pair<ID_t,ID_t>> edges;
+        for(ID_t i=0; i<nnz; i++){
+            edges.emplace_back(coo->adj[i], coo->is[i]);
+        }
+        sort(edges.begin(), edges.end(), less<pair<ID_t,ID_t>>());
+
+
+        for(ID_t i=0; i<m; i++){
+            adj[i] = edges[i].second;
+            xadj[edges[i].first]++;
+        }
+
+        for (ID_t i = 1; i <= n; i++)
+        {
+          xadj[i] += xadj[i - 1];
+        }
+
+        for (ID_t i = n; i > 0; i--)
+        {
+          xadj[i] = xadj[i - 1];
+        }
+        xadj[0] = 0;
+
+
         for(NNZ_t i=0; i<nnz; i++){
-            ID_t u = coo->adj[i];
-            ID_t v = coo->is[i];
-            NNZ_t w = coo->vals[i];
-
-            csr->xadj[u]++;
-            csr->adj[mt++] = v;
+            vals[i] = coo->vals[i];
         }
-
-        for(ID_t i=0; i<n+1; i++){
-            csr->xadj[i] += csr->xadj[i-1];
-        }
-
-        for(ID_t i=n; i>0; i--){
-            csr->xadj[i] = csr->xadj[i-1];
-        }
-        csr->xadj[0] = 0;
-
-        for(NNZ_t i=0; i<nnz; i++){
-            csr->vals[i] = coo->vals[i];
-        }
-
-        vector<ID_t> dims{n,m};
-        csr->dimension = dims;
-        csr->nnz = nnz;
-
+        
+        auto csr =  new CSR<ID_t, NNZ_t, NNZ_t>(n, m, xadj, adj, vals);
         return csr;
     }
 
