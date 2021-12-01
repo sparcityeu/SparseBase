@@ -163,7 +163,7 @@ namespace sparsebase
   class RCMOrder : public AbstractOrder<ID_t> {
     public:
       RCMOrder() {
-        map.emplace(my_to_string({CSR_f}, get_order_csr));
+        map.emplace(my_to_string({CSR_f}), get_order_csr);
       }
     protected:
       std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
