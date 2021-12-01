@@ -26,10 +26,11 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
+  ExecutableDegreeOrdering<vertex_type, edge_type> orderer(1);
+  //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type> * con = g.get_connectivity();
   vertex_type * order = orderer.get_order(con);
-  auto tmp = reinterpret_cast<CSR<vertex_type, edge_type, value_type>*>(con);
+  auto tmp = dynamic_cast<CSR<vertex_type, edge_type, value_type>*>(con);
   vertex_type n = tmp->get_dimensions()[0];
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << order[0] << ", Degree: " << tmp->xadj[order[0]] - tmp->xadj[order[0]] << endl;
