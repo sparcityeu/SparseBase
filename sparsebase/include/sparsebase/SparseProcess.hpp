@@ -2,19 +2,25 @@
 #define _ORDERING_HPP
 #include "SparseFormat.hpp"
 #include <iostream>
-#include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace sparsebase
 {
-  std::string my_to_string(std::vector<Format> v){
-    string r = "";
-    for (auto e : v){
-      r+=std::to_string('a');
+  struct  FormatVectorHash {
+    std::size_t operator()(std::vector<Format> vf) const{
+      int hash = 0;
+      for (auto f : vf) hash+=f*19381; 
+      return hash;
     }
-    return r;
-  }
+  };
+  //struct  FormatVectorEqual {
+  //  bool operator==(const std::vector<Format> & lhs, const std::vector<Format> & rhs) const{
+  //    int hash = 0;
+  //    for (auto f : vf) hash+=f*19381; 
+  //    return hash;
+  //  }
+  //};
     template <typename ID_t>
     class Order
     {
@@ -22,8 +28,14 @@ namespace sparsebase
       virtual ~Order(){};
     };
 
-  template<typename ID_t>
+
+  template <typename ID_t, typename NNZ_t>
+  using OrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
+
+  template<typename ID_t, typename NNZ_t>
   class AbstractOrder : public Order<ID_t>{
+    protected:
+      std::unordered_map<std::vector<Format>, OrderingFunction<ID_t, NNZ_t>, FormatVectorHash> map;
     public:
       virtual ~AbstractOrder(){};
       //virtual void test_order(){ };
@@ -33,7 +45,7 @@ namespace sparsebase
   class SparseConverter{
     public:
     bool can_convert(Format in, Format out){
-      return true;
+      return false;
     }  
     // TODO: what about the other templated variables?
     //       can we add a "clone" function to handle this?
@@ -43,29 +55,58 @@ namespace sparsebase
     }
   };
 
-  template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename ProcessingReturn, typename config_key = std::vector<Format>>
+  template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename ProcessingReturn, typename config_key = std::vector<Format>, typename config_key_hash = FormatVectorHash>
   class ExecutableProcess : public ProcessingImpl {
   protected:
     using ProcessingImpl::ProcessingImpl; 
-    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, std::unordered_map<config_key, ProcessingFunc> map, SparseConverter sc){
+    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, std::unordered_map<config_key, ProcessingFunc, config_key_hash> map, SparseConverter sc){
       conversion_schema cs;
       ProcessingFunc func = nullptr;
-      // Check if the key is in the map (requires == and != functions for config_key)
-      // If it is, 
-        //return the function
       if (map.find(key) != map.end()){
         for (auto f : key){
           cs.push_back(make_tuple(false, (Format)f));
         }
         func = map[key];
       } 
-      // If it isn't,
       else {
-        // check if it can be done
-          // If it can, carry out the correct conversions and return a function pointer plus the conversions
-          // sort the keys by hamming distance
-          // check the keys one by one
-          // construct the cs
+        std::vector<config_key> all_keys;
+        for (auto key_func : map){
+          all_keys.push_back(key_func.first);
+        } 
+        std::vector<std::tuple<unsigned int, conversion_schema, config_key>> usable_keys;
+        for (auto potential_key : all_keys){
+          if (potential_key.size() == key.size()){
+            conversion_schema temp_cs;
+            int conversions = 0;
+            bool is_usable = true;
+            for (int i =0; i < potential_key.size(); i++){
+              if (key[i] == potential_key[i]){
+                temp_cs.push_back(make_tuple(false, potential_key[i]));
+              }
+              else if (sc.can_convert(key[i], potential_key[i])){
+                temp_cs.push_back(make_tuple(true, potential_key[i]));
+                conversions++;
+              } else {
+                is_usable = false;
+              }
+            }
+            if (is_usable){
+              usable_keys.push_back(make_tuple(conversions,temp_cs,potential_key));
+            }
+          }
+        }
+        if (usable_keys.size() == 0){
+          throw 1; // TODO: add a custom exception type
+        }
+        std::tuple<ProcessingFunc, conversion_schema> best_conversion;
+        unsigned int num_conversions = (unsigned int)-1;
+        for (auto potential_usable_key : usable_keys){
+          if (num_conversions > get<0>(potential_usable_key)){
+            num_conversions = get<0>(potential_usable_key);
+            cs = get<1>(potential_usable_key);
+            func = map[get<2>(potential_usable_key)];
+          }
+        }
       }
       return make_tuple(func, cs);
     }
@@ -105,25 +146,20 @@ namespace sparsebase
       // pack the SF formats into a vector
       vector<Format> formats = pack_formats(sf, sfs...);
       // get conversion schema
-      std::tuple<ProcessingFunc, conversion_schema>  cs = get_function(my_to_string(formats), this->map, sc);
+      std::tuple<ProcessingFunc, conversion_schema>  cs = get_function(formats, this->map, sc);
       // carry out conversion
       std::vector<SparseFormat<ID_t, NNZ_t>*> converted = sc.apply_conversion_schema(get<1>(cs), packed_sfs);
       // carry out the correct call using the map
       return get<0>(cs)(packed_sfs);
     }
   };
-
-  template <typename ID_t, typename NNZ_t>
-  using OrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
-
   template<typename ID_t, typename NNZ_t, typename V>
-  class DegreeOrder : public AbstractOrder<ID_t> {
+  class DegreeOrder : public AbstractOrder<ID_t, NNZ_t> {
     public:
       DegreeOrder(int _hyperparameter):hyperparameter(_hyperparameter){
-        map.emplace(my_to_string({CSR_f}), calculate_order_csr);
+        this->map[{CSR_f}]= calculate_order_csr;
       };
     protected:
-      std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
       int hyperparameter;
       static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> formats){
         CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
@@ -150,8 +186,8 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t>
-  class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
-    typedef ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> Base;
+  class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*> {
+    typedef ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
@@ -160,21 +196,20 @@ namespace sparsebase
   };
 
   template<typename ID_t, typename NNZ_t>
-  class RCMOrder : public AbstractOrder<ID_t> {
+  class RCMOrder : public AbstractOrder<ID_t, NNZ_t> {
     public:
       RCMOrder() {
-        map.emplace(my_to_string({CSR_f}), get_order_csr);
+        this->map[{CSR_f}]= get_order_csr;
       }
     protected:
-      std::unordered_map<std::string, OrderingFunction<ID_t, NNZ_t>> map;
       static ID_t* get_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> formats){
         CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
       }
   };
 
   template <typename ID_t, typename NNZ_t, typename ORDER_T>
-  class ExecutableOrdering : ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> {
-    typedef ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*, std::string> Base;
+  class ExecutableOrdering : ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*> {
+    typedef ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
