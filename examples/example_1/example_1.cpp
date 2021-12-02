@@ -39,7 +39,7 @@ int main(int argc, char * argv[]){
 
   cout << "Checking the correctness of the ordering..." << endl;
   bool order_is_correct = true;
-  for(vertex_type i; i < n-1 && order_is_correct; i++){
+  for(vertex_type i = 0; i < n-1 && order_is_correct; i++){
     vertex_type v = order[i]; 
     vertex_type u = order[i+1];
     if(tmp->xadj[v+1] - tmp->xadj[v] > tmp->xadj[u+1] - tmp->xadj[u])
