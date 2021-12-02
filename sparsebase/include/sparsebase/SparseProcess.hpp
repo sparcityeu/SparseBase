@@ -14,6 +14,13 @@ namespace sparsebase
       return hash;
     }
   };
+  //struct  FormatVectorEqual {
+  //  bool operator==(const std::vector<Format> & lhs, const std::vector<Format> & rhs) const{
+  //    int hash = 0;
+  //    for (auto f : vf) hash+=f*19381; 
+  //    return hash;
+  //  }
+  //};
     template <typename ID_t>
     class Order
     {
@@ -52,25 +59,54 @@ namespace sparsebase
   class ExecutableProcess : public ProcessingImpl {
   protected:
     using ProcessingImpl::ProcessingImpl; 
-    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, std::unordered_map<config_key, ProcessingFunc, FormatVectorHash> map, SparseConverter sc){
+    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, std::unordered_map<config_key, ProcessingFunc, config_key_hash> map, SparseConverter sc){
       conversion_schema cs;
       ProcessingFunc func = nullptr;
-      // Check if the key is in the map (requires == and != functions for config_key)
-      // If it is, 
-        //return the function
       if (map.find(key) != map.end()){
         for (auto f : key){
           cs.push_back(make_tuple(false, (Format)f));
         }
         func = map[key];
       } 
-      // If it isn't,
       else {
-        // check if it can be done
-          // If it can, carry out the correct conversions and return a function pointer plus the conversions
-          // sort the keys by hamming distance
-          // check the keys one by one
-          // construct the cs
+        std::vector<config_key> all_keys;
+        for (auto key_func : map){
+          all_keys.push_back(key_func.first);
+        } 
+        std::vector<std::tuple<unsigned int, conversion_schema, config_key>> usable_keys;
+        for (auto potential_key : all_keys){
+          if (potential_key.size() == key.size()){
+            conversion_schema temp_cs;
+            int conversions = 0;
+            bool is_usable = true;
+            for (int i =0; i < potential_key.size(); i){
+              if (key[i] == potential_key[i]){
+                temp_cs.push_back(make_tuple(false, potential_key[i]));
+              }
+              else if (sc.can_convert(key[i], potential_key[i])){
+                temp_cs.push_back(make_tuple(true, potential_key[i]));
+                conversions++;
+              } else {
+                is_usable = false;
+              }
+            }
+            if (is_usable){
+              usable_keys.push_back(make_tuple(conversions,temp_cs,potential_key));
+            }
+          }
+        }
+        if (usable_keys.size() == 0){
+          throw 1; // TODO: add a custom exception type
+        }
+        std::tuple<ProcessingFunc, conversion_schema> best_conversion;
+        unsigned int num_conversions = (unsigned int)-1;
+        for (auto potential_usable_key : usable_keys){
+          if (num_conversions < get<0>(potential_usable_key)){
+            num_conversions = get<0>(potential_usable_key);
+            cs = get<1>(potential_usable_key);
+            func = map[get<2>(potential_usable_key)];
+          }
+        }
       }
       return make_tuple(func, cs);
     }
