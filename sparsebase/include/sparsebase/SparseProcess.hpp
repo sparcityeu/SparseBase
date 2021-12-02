@@ -45,7 +45,7 @@ namespace sparsebase
   class SparseConverter{
     public:
     bool can_convert(Format in, Format out){
-      return true;
+      return false;
     }  
     // TODO: what about the other templated variables?
     //       can we add a "clone" function to handle this?
@@ -79,7 +79,7 @@ namespace sparsebase
             conversion_schema temp_cs;
             int conversions = 0;
             bool is_usable = true;
-            for (int i =0; i < potential_key.size(); i){
+            for (int i =0; i < potential_key.size(); i++){
               if (key[i] == potential_key[i]){
                 temp_cs.push_back(make_tuple(false, potential_key[i]));
               }
@@ -101,7 +101,7 @@ namespace sparsebase
         std::tuple<ProcessingFunc, conversion_schema> best_conversion;
         unsigned int num_conversions = (unsigned int)-1;
         for (auto potential_usable_key : usable_keys){
-          if (num_conversions < get<0>(potential_usable_key)){
+          if (num_conversions > get<0>(potential_usable_key)){
             num_conversions = get<0>(potential_usable_key);
             cs = get<1>(potential_usable_key);
             func = map[get<2>(potential_usable_key)];
@@ -157,7 +157,7 @@ namespace sparsebase
   class DegreeOrder : public AbstractOrder<ID_t, NNZ_t> {
     public:
       DegreeOrder(int _hyperparameter):hyperparameter(_hyperparameter){
-        map[{CSR_f}]= calculate_order_csr;
+        this->map[{CSR_f}]= calculate_order_csr;
       };
     protected:
       int hyperparameter;
@@ -199,7 +199,7 @@ namespace sparsebase
   class RCMOrder : public AbstractOrder<ID_t, NNZ_t> {
     public:
       RCMOrder() {
-        map[{CSR_f}]= get_order_csr;
+        this->map[{CSR_f}]= get_order_csr;
       }
     protected:
       static ID_t* get_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> formats){
