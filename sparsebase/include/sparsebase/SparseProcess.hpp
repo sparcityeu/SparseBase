@@ -28,19 +28,6 @@ namespace sparsebase
       virtual ~Order(){};
     };
 
-
-  template <typename ID_t, typename NNZ_t>
-  using OrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
-
-  template<typename ID_t, typename NNZ_t>
-  class AbstractOrder : public Order<ID_t>{
-    protected:
-      std::unordered_map<std::vector<Format>, OrderingFunction<ID_t, NNZ_t>, FormatVectorHash> map;
-    public:
-      virtual ~AbstractOrder(){};
-      //virtual void test_order(){ };
-  };
-
   typedef std::vector<std::tuple<bool, Format>> conversion_schema;
   class SparseConverter{
     public:
@@ -55,11 +42,29 @@ namespace sparsebase
     }
   };
 
+  template <typename ID_t, typename NNZ_t>
+  using OrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
+
+  template<typename ID_t, typename NNZ_t>
+  class AbstractOrder : public Order<ID_t>{
+    protected:
+      std::unordered_map<std::vector<Format>, OrderingFunction<ID_t, NNZ_t>, FormatVectorHash> map;
+      SparseConverter _sc;
+    public:
+      virtual ~AbstractOrder(){};
+      void set_converter(const SparseConverter & new_sc){
+        _sc = new_sc;
+      }
+      //virtual void test_order(){ };
+  };
+
+
   template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename ProcessingReturn, typename config_key = std::vector<Format>, typename config_key_hash = FormatVectorHash>
   class ExecutableProcess : public ProcessingImpl {
+    typedef std::unordered_map<config_key, ProcessingFunc, config_key_hash> conversion_map;
   protected:
     using ProcessingImpl::ProcessingImpl; 
-    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, std::unordered_map<config_key, ProcessingFunc, config_key_hash> map, SparseConverter sc){
+    std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, conversion_map map, SparseConverter sc){
       conversion_schema cs;
       ProcessingFunc func = nullptr;
       if (map.find(key) != map.end()){
@@ -139,14 +144,13 @@ namespace sparsebase
       return f;
     }
     template<typename F, typename... SF>
-    ProcessingReturn execute(F sf, SF... sfs){
-      SparseConverter sc;
+    ProcessingReturn execute(conversion_map map, SparseConverter sc, F sf, SF... sfs){
       // pack the SFs into a vector
       vector<SparseFormat<ID_t, NNZ_t>*> packed_sfs = pack_sfs(sf, sfs...);
       // pack the SF formats into a vector
       vector<Format> formats = pack_formats(sf, sfs...);
       // get conversion schema
-      std::tuple<ProcessingFunc, conversion_schema>  cs = get_function(formats, this->map, sc);
+      std::tuple<ProcessingFunc, conversion_schema>  cs = get_function(formats, map, sc);
       // carry out conversion
       std::vector<SparseFormat<ID_t, NNZ_t>*> converted = sc.apply_conversion_schema(get<1>(cs), packed_sfs);
       // carry out the correct call using the map
@@ -191,7 +195,7 @@ namespace sparsebase
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
-      return this->execute(csr);
+      return this->execute(this->map, this->_sc, csr);
     }
   };
 
@@ -213,7 +217,7 @@ namespace sparsebase
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
-      return this->execute(csr);
+      return this->execute(this->map, this->_sc, csr);
     }
   };
 } // namespace sparsebase
