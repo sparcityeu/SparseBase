@@ -20,7 +20,7 @@ endif()
 
 add_subdirectory(sparsebase)
 add_subdirectory(examples)
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 enable_testing()
 

@@ -8,19 +8,38 @@ using namespace std;
 
 namespace sparsebase{
 
-    template<typename ID_t, typename NNZ_t>
-    using ConversionFunction =  SparseFormat<ID_t, NNZ_t>* (*)(SparseFormat<ID_t, NNZ_t>*);
+    template<typename ID_t, typename NNZ_t, typename VAL_t>
+    class ConversionFunctor {
+        public:
+            virtual SparseFormat<ID_t,NNZ_t>* operator() (SparseFormat<ID_t, NNZ_t>* source){
+                return nullptr;
+            }
+    };
 
-    template<typename ID_t, typename NNZ_t>
+    template<typename ID_t, typename NNZ_t, typename VAL_t>
+    class CsrCooFunctor : public ConversionFunctor<ID_t,NNZ_t, VAL_t> {
+        public:
+            SparseFormat<ID_t,NNZ_t>* operator() (SparseFormat<ID_t, NNZ_t>* source);
+    };
+    
+    template<typename ID_t, typename NNZ_t, typename VAL_t>
+    class CooCsrFunctor : public ConversionFunctor<ID_t,NNZ_t, VAL_t> {
+        public:
+            SparseFormat<ID_t,NNZ_t>* operator() (SparseFormat<ID_t, NNZ_t>* source);
+    };
+
+
+
+    template<typename ID_t, typename NNZ_t, typename VAL_t>
     class SparseConverter
     {
     private:
-        unordered_map<Format,unordered_map<Format, ConversionFunction<ID_t,NNZ_t>>> conversion_map;
+        unordered_map<Format,unordered_map<Format, ConversionFunctor<ID_t,NNZ_t,VAL_t>*>> conversion_map;
     public:
         SparseConverter();
         ~SparseConverter();
-        void register_conversion_function(Format from_format, Format to_format, ConversionFunction<ID_t,NNZ_t> conv_func);
-        ConversionFunction<ID_t,NNZ_t> get_conversion_function(Format from_format, Format to_format);
+        void register_conversion_function(Format from_format, Format to_format, ConversionFunctor<ID_t,NNZ_t,VAL_t>* conv_func);
+        ConversionFunctor<ID_t,NNZ_t,VAL_t>* get_conversion_function(Format from_format, Format to_format);
         SparseFormat<ID_t,NNZ_t>* convert(SparseFormat<ID_t,NNZ_t>* source, Format to_format);
     };
 

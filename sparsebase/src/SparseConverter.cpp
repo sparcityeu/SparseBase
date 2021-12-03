@@ -1,13 +1,14 @@
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseConverter.hpp"
+#include <iostream>
 
 using namespace std;
 
 namespace sparsebase
 {
 
-    template <typename ID_t, typename NNZ_t>
-    SparseFormat<ID_t, NNZ_t> *csr_to_coo(SparseFormat<ID_t, NNZ_t> *source){
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    SparseFormat<ID_t, NNZ_t> * CsrCooFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t> *source){
         CSR<ID_t,NNZ_t,NNZ_t> *csr = dynamic_cast<CSR<ID_t,NNZ_t,NNZ_t> *>(source);
         COO<ID_t, NNZ_t, NNZ_t> *coo = new COO<ID_t,NNZ_t,NNZ_t>();
 
@@ -53,9 +54,9 @@ namespace sparsebase
 
     // Bp -> row -> xadj
     // Bj -> col -> adj
-    // Bx -> nnz -> vals
-    template <typename ID_t, typename NNZ_t>
-    SparseFormat<ID_t, NNZ_t> *coo_to_csr(SparseFormat<ID_t, NNZ_t> *source)
+    // Bx -> nnz -> vals    
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    SparseFormat<ID_t, NNZ_t> * CooCsrFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t> *source)
     {
         COO<ID_t,NNZ_t,NNZ_t> *coo = dynamic_cast<COO<ID_t,NNZ_t,NNZ_t> *>(source);
 
@@ -106,23 +107,23 @@ namespace sparsebase
         return csr;
     }
 
-    template <typename ID_t, typename NNZ_t>
-    SparseConverter<ID_t, NNZ_t>::SparseConverter()
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    SparseConverter<ID_t, NNZ_t, VAL_t>::SparseConverter()
     {
-        this->register_conversion_function(COO_f, CSR_f, coo_to_csr);
-        this->register_conversion_function(CSR_f, COO_f, csr_to_coo);
+        this->register_conversion_function(COO_f, CSR_f, new CooCsrFunctor<ID_t,NNZ_t,VAL_t>());
+        this->register_conversion_function(CSR_f, COO_f, new CsrCooFunctor<ID_t,NNZ_t,VAL_t>());
     }
 
-    template <typename ID_t, typename NNZ_t>
-    SparseConverter<ID_t, NNZ_t>::~SparseConverter()
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    SparseConverter<ID_t, NNZ_t, VAL_t>::~SparseConverter()
     {
     }
 
-    template <typename ID_t, typename NNZ_t>
-    void SparseConverter<ID_t, NNZ_t>::register_conversion_function(Format from_format, Format to_format, ConversionFunction<ID_t, NNZ_t> conv_func)
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    void SparseConverter<ID_t, NNZ_t, VAL_t>::register_conversion_function(Format from_format, Format to_format, ConversionFunctor<ID_t, NNZ_t, VAL_t>* conv_func)
     {
         if(conversion_map.count(from_format) == 0){
-            conversion_map.emplace(from_format,unordered_map<Format,ConversionFunction<ID_t,NNZ_t>>());
+            conversion_map.emplace(from_format,unordered_map<Format,ConversionFunctor<ID_t,NNZ_t,VAL_t>*>());
         }
 
         if(conversion_map[from_format].count(to_format) == 0){
@@ -132,19 +133,19 @@ namespace sparsebase
         }
     }
 
-    template <typename ID_t, typename NNZ_t>
-    SparseFormat<ID_t, NNZ_t> *SparseConverter<ID_t, NNZ_t>::convert(SparseFormat<ID_t, NNZ_t> *source, Format to_format)
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    SparseFormat<ID_t, NNZ_t> *SparseConverter<ID_t, NNZ_t, VAL_t>::convert(SparseFormat<ID_t, NNZ_t> *source, Format to_format)
     {
         try{
-            auto conv_func = get_conversion_function(source->get_format(),to_format);
-            return conv_func(source);
+            ConversionFunctor<ID_t,NNZ_t,VAL_t>* conv_func = get_conversion_function(source->get_format(),to_format);
+            return (*conv_func)(source);
         } catch(...) {
             throw "Unsupported conversion error"; // TODO: Add decent exception mechanism
         }
     }
 
-    template <typename ID_t, typename NNZ_t>
-    ConversionFunction<ID_t, NNZ_t> SparseConverter<ID_t, NNZ_t>::get_conversion_function(Format from_format, Format to_format)
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    ConversionFunctor<ID_t, NNZ_t,VAL_t>* SparseConverter<ID_t, NNZ_t, VAL_t>::get_conversion_function(Format from_format, Format to_format)
     {
         try {
             return conversion_map[from_format][to_format];
@@ -154,6 +155,8 @@ namespace sparsebase
     }
 
 
-    template class SparseConverter<int, int>;
+    template class SparseConverter<int, int, int>;
+    template class CooCsrFunctor<int,int,int>;
+    template class CsrCooFunctor<int,int,int>;
 
 }
