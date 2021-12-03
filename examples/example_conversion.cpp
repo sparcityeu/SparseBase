@@ -14,7 +14,7 @@ int main(){
 
     COO<int,int,int>* coo = new COO<int,int,int>(6,6,6,adj,is,vals);
 
-    auto converter = new SparseConverter<int,int>();
+    auto converter = new SparseConverter<int,int,int>();
     auto csr = converter->convert(coo,CSR_f);
     auto csr2 = dynamic_cast<CSR<int,int,int>*>(csr);
 
