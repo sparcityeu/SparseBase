@@ -26,7 +26,7 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
+  OrderingInterface<vertex_type, edge_type, DegreeReorder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type> * con = g.get_connectivity();
   vertex_type * order = orderer.get_order(con);
   auto tmp = dynamic_cast<CSR<vertex_type, edge_type, value_type>*>(con);

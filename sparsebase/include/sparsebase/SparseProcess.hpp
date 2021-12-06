@@ -7,6 +7,9 @@
 
 namespace sparsebase
 {
+  template <typename ID_t, typename NNZ_t>
+  using SparseFormatCont = std::vector<SparseFormat<ID_t, NNZ_t>*>;
+
   struct  FormatVectorHash {
     std::size_t operator()(std::vector<Format> vf) const{
       int hash = 0;
@@ -14,20 +17,6 @@ namespace sparsebase
       return hash;
     }
   };
-  //struct  FormatVectorEqual {
-  //  bool operator==(const std::vector<Format> & lhs, const std::vector<Format> & rhs) const{
-  //    int hash = 0;
-  //    for (auto f : vf) hash+=f*19381; 
-  //    return hash;
-  //  }
-  //};
-    template <typename ID_t>
-    class Order
-    {
-    public:
-      virtual ~Order(){};
-    };
-
   typedef std::vector<std::tuple<bool, Format>> conversion_schema;
   class SparseConverter{
     public:
@@ -41,27 +30,61 @@ namespace sparsebase
       return ptr;
     }
   };
+  class ProcessType {
+  };
+  template <class Process, typename func, typename key = std::vector<Format>, typename key_hash = FormatVectorHash, typename key_equal = std::equal_to<std::vector<Format>>>
+  class MapToFunctionMixin : public Process {
+    using Process::Process;
+    protected:
+    std::unordered_map<key, func, key_hash, key_equal> _map_to_function;
+    bool register_function_no_override(const key& key_of_function, const func & func_ptr){
+      if (_map_to_function.find(key_of_function) == _map_to_function.end()){
+        return false;  // function already exists for this key
+      } else {
+        _map_to_function[key_of_function] = func_ptr;
+        return true;
+      }
+    }
+    void register_function(const key& key_of_function, const func & func_ptr){
+      _map_to_function[key_of_function] = func_ptr;
+    }
+    bool unregister_function(const key& key_of_function){
+      if (_map_to_function.find(key_of_function) == _map_to_function.end()){
+        return false;  // function already exists for this key
+      } else {
+        _map_to_function.erase(key_of_function);
+        return true;
+      }
+    }
+  }; 
+  template <class Parent>
+  class SparseConverterMixin : public Parent {
+    using Parent::Parent;
+    protected:
+      SparseConverter _sc;
+    public:
+      void set_converter(const SparseConverter & new_sc){
+        _sc = new_sc;
+      }
+      void reset_converter(){
+        SparseConverter new_sc;
+        _sc = new_sc;
+      }
+  };
 
   template <typename ID_t, typename NNZ_t>
   using OrderingFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
 
   template<typename ID_t, typename NNZ_t>
-  class AbstractOrder : public Order<ID_t>{
-    protected:
-      std::unordered_map<std::vector<Format>, OrderingFunction<ID_t, NNZ_t>, FormatVectorHash> map;
-      SparseConverter _sc;
+  class ReorderProcessType : public MapToFunctionMixin<SparseConverterMixin<ProcessType>, OrderingFunction<ID_t, NNZ_t>>{
     public:
-      virtual ~AbstractOrder(){};
-      void set_converter(const SparseConverter & new_sc){
-        _sc = new_sc;
-      }
-      //virtual void test_order(){ };
+      virtual ~ReorderProcessType (){};
   };
 
 
-  template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename ProcessingReturn, typename config_key = std::vector<Format>, typename config_key_hash = FormatVectorHash>
-  class ExecutableProcess : public ProcessingImpl {
-    typedef std::unordered_map<config_key, ProcessingFunc, config_key_hash> conversion_map;
+  template <class ID_t, class NNZ_t, class ProcessingImpl, typename ProcessingFunc, typename config_key = std::vector<Format>, typename config_key_hash = FormatVectorHash, typename config_key_equal_to = std::equal_to<std::vector<Format>>>
+  class FormatMatcherMixin : public ProcessingImpl {
+    typedef std::unordered_map<config_key, ProcessingFunc, config_key_hash, config_key_equal_to> conversion_map;
   protected:
     using ProcessingImpl::ProcessingImpl; 
     std::tuple<ProcessingFunc, conversion_schema> get_function(config_key key, conversion_map map, SparseConverter sc){
@@ -144,27 +167,31 @@ namespace sparsebase
       return f;
     }
     template<typename F, typename... SF>
-    ProcessingReturn execute(conversion_map map, SparseConverter sc, F sf, SF... sfs){
+    std::tuple<ProcessingFunc, std::vector<SparseFormat<ID_t, NNZ_t>*>> execute(conversion_map map, SparseConverter sc, F sf, SF... sfs){
       // pack the SFs into a vector
       vector<SparseFormat<ID_t, NNZ_t>*> packed_sfs = pack_sfs(sf, sfs...);
       // pack the SF formats into a vector
       vector<Format> formats = pack_formats(sf, sfs...);
       // get conversion schema
-      std::tuple<ProcessingFunc, conversion_schema>  cs = get_function(formats, map, sc);
+      std::tuple<ProcessingFunc, conversion_schema> ret = get_function(formats, map, sc);
+      ProcessingFunc func = get<0>(ret);
+      conversion_schema cs = get<1>(ret);
       // carry out conversion
-      std::vector<SparseFormat<ID_t, NNZ_t>*> converted = sc.apply_conversion_schema(get<1>(cs), packed_sfs);
+      std::vector<SparseFormat<ID_t, NNZ_t>*> converted = sc.apply_conversion_schema(cs, packed_sfs);
       // carry out the correct call using the map
-      return get<0>(cs)(packed_sfs);
+      return make_tuple(func, converted);
+      //return get<0>(cs)(packed_sfs);
     }
   };
   template<typename ID_t, typename NNZ_t, typename V>
-  class DegreeOrder : public AbstractOrder<ID_t, NNZ_t> {
+  class DegreeReorder: public ReorderProcessType<ID_t, NNZ_t> {
     public:
-      DegreeOrder(int _hyperparameter):hyperparameter(_hyperparameter){
-        this->map[{CSR_f}]= calculate_order_csr;
+      DegreeReorder(int hyperparameter):_hyperparameter(hyperparameter){
+        //this->map[{CSR_f}]= calculate_order_csr;
+        this->register_function({CSR_f}, calculate_order_csr);
       };
     protected:
-      int hyperparameter;
+      int _hyperparameter;
       static ID_t* calculate_order_csr(std::vector<SparseFormat<ID_t, NNZ_t>*> formats){
         CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
         ID_t n = csr->get_dimensions()[0];
@@ -190,17 +217,21 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t>
-  class ExecutableDegreeOrdering : ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*> {
-    typedef ExecutableProcess<ID_t, NNZ_t, DegreeOrder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>, ID_t*> Base;
+  class DegreeOrderingInterface : FormatMatcherMixin<ID_t, NNZ_t, DegreeReorder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, DegreeReorder<ID_t, NNZ_t, void>, OrderingFunction<ID_t, NNZ_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
-      return this->execute(this->map, this->_sc, csr);
+      //return this->execute(this->map, this->_sc, csr);
+      std::tuple <OrderingFunction<ID_t, NNZ_t>, std::vector<SparseFormat<ID_t, NNZ_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      OrderingFunction<ID_t, NNZ_t> func = get<0>(func_formats);
+      std::vector<SparseFormat<ID_t, NNZ_t>*> sfs = get<1>(func_formats);
+      return func(sfs);
     }
   };
 
   template<typename ID_t, typename NNZ_t>
-  class RCMOrder : public AbstractOrder<ID_t, NNZ_t> {
+  class RCMOrder : public ReorderProcessType<ID_t, NNZ_t> {
     public:
       RCMOrder() {
         this->map[{CSR_f}]= get_order_csr;
@@ -212,12 +243,16 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t, typename ORDER_T>
-  class ExecutableOrdering : ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*> {
-    typedef ExecutableProcess<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>, ID_t*> Base;
+  class OrderingInterface : FormatMatcherMixin<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, ORDER_T, OrderingFunction<ID_t, NNZ_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_order(SparseFormat<ID_t, NNZ_t>* csr){
-      return this->execute(this->map, this->_sc, csr);
+      //return this->execute(this->map, this->_sc, csr);
+      std::tuple <OrderingFunction<ID_t, NNZ_t>, std::vector<SparseFormat<ID_t, NNZ_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      OrderingFunction<ID_t, NNZ_t> func = get<0>(func_formats);
+      std::vector<SparseFormat<ID_t, NNZ_t>*> sfs = get<1>(func_formats);
+      return func(sfs);
     }
   };
 } // namespace sparsebase
