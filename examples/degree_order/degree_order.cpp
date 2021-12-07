@@ -16,10 +16,10 @@ int main(int argc, char * argv[]){
   Graph<unsigned int, unsigned int> g(&csr);
   //Graph<unsigned int, unsigned int> g2(new UedgelistReader<unsigned int, unsigned int, void>("/data/GE/graphs/uedgelist/com-dblp_c.graph"));
   //DegreeOrder<unsigned int, unsigned int> orderer;
-  OrderingInterface<unsigned int, unsigned int, DegreeReorder<unsigned int, unsigned int, void>> orderer(1);
+  ReorderInstance<unsigned int, unsigned int, DegreeReorder<unsigned int, unsigned int, void>> orderer(1);
   //CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g2.get_connectivity());
   CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g.get_connectivity());
-  unsigned int* order = orderer.get_order(tmp);
+  unsigned int* order = orderer.get_reorder(tmp);
   cout << "Order: " << order << endl;
   cout << "Order: " << order[csr.get_dimensions()[0]-1] << endl;
   cout << "Order: " << order[0] << endl;
