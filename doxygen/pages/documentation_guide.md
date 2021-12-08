@@ -41,6 +41,22 @@ firefox docs/html/index.html
 class TestClass {};
 ```
 
+## Documenting Data Members
+
+- Data members inside classes are commented using a brief description and a detailed description.
+- Same pattern as classes
+
+```cpp
+class TestClass {
+  protected:
+    //!  A brief description.
+    /*!
+      More detailed description.
+    */
+    int p;
+};
+```
+
 ## Documenting Enums
 
 - Each value and the whole enum must be given a short description as show below.
@@ -61,6 +77,7 @@ enum TEnum {
 - The line comment is a brief description of the function. For example, these will be used when viewing all the methods of a class. This should not exceed a single line (~80 chars max).
 - First part of the block comment is a more detailed description of the function and can be as long as you wish.
 - "\param" is used to describe parameters a function takes. It should be followed by the name of the parameter and a short description of it.
+- "\tparam" is used to describe templated parameters of a function. It should be followed by the name of the templated parameter and a short description of it.
 - "\return" is used to describe the return value of the function.
 
 ```cpp
@@ -69,7 +86,9 @@ enum TEnum {
 	Detailed Description.
   \param a an integer argument.
   \param s a constant character pointer.
+  \tparam T a templated argument
   \return The test results
 */
+template<typename T>
 int testMe(int a, const char *s){}
 ```
