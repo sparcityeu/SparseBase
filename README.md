@@ -1,4 +1,4 @@
-# sparsebase
+# SparseBase
 
 ## Compiling
 ```
