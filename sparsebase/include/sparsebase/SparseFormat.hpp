@@ -9,9 +9,13 @@
 using namespace std;
 
 namespace sparsebase{
+
+  //! Enum keeping formats  
   enum Format{
-    CSR_f=0,
-    COO_f=1
+    //! CSR Format
+    CSR_f=0, 
+    //! COO Format
+    COO_f=1 
   };
   // TENSORS
 
