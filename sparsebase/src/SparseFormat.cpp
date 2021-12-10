@@ -94,7 +94,19 @@ namespace sparsebase
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     CSF<ID_t, NNZ_t, VAL_t>::~CSF(){};
 
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    Format COO<ID_t,NNZ_t,VAL_t>::get_format(){
+        return COO_f;
+    }
+
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    Format CSR<ID_t,NNZ_t,VAL_t>::get_format(){
+        return CSR_f;
+    }
+
     template class COO<int, int, int>;
     template class COO<unsigned int, unsigned int, unsigned int>;
+    template class CSR<unsigned int, unsigned int, unsigned int>;
     template class CSR<unsigned int, unsigned int, void>;
+    template class CSR<int, int, int>;
 };
