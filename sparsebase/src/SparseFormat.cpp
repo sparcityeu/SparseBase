@@ -106,6 +106,7 @@ namespace sparsebase
 
     template class COO<int, int, int>;
     template class COO<unsigned int, unsigned int, unsigned int>;
+    template class CSR<unsigned int, unsigned int, unsigned int>;
     template class CSR<unsigned int, unsigned int, void>;
     template class CSR<int, int, int>;
 };

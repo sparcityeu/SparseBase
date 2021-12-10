@@ -1,6 +1,7 @@
 #ifndef _Reorder_HPP
 #define _Reorder_HPP
 #include "SparseFormat.hpp"
+#include "SparseConverter.hpp"
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -12,19 +13,6 @@ namespace sparsebase
       int hash = 0;
       for (auto f : vf) hash+=f*19381; 
       return hash;
-    }
-  };
-  typedef std::vector<std::tuple<bool, Format>> conversion_schema;
-  class SparseConverter{
-    public:
-    bool can_convert(Format in, Format out){
-      return false;
-    }  
-    // TODO: what about the other templated variables?
-    //       can we add a "clone" function to handle this?
-    template <typename ID_t, typename NNZ_t>
-    std::vector<SparseFormat<ID_t, NNZ_t>*> apply_conversion_schema(conversion_schema sc, std::vector<SparseFormat<ID_t, NNZ_t>*> ptr){
-      return ptr;
     }
   };
   class PreprocessType {
@@ -54,17 +42,17 @@ namespace sparsebase
       }
     }
   }; 
-  template <class Parent>
+  template <class Parent, typename ID_t, typename NNZ_t, typename VAL_t>
   class SparseConverterMixin : public Parent {
     using Parent::Parent;
     protected:
-      SparseConverter _sc;
+      SparseConverter<ID_t, NNZ_t, VAL_t> _sc;
     public:
-      void set_converter(const SparseConverter & new_sc){
+      void set_converter(const SparseConverter<ID_t, NNZ_t, VAL_t> & new_sc){
         _sc = new_sc;
       }
       void reset_converter(){
-        SparseConverter new_sc;
+        SparseConverter<ID_t, NNZ_t, VAL_t> new_sc;
         _sc = new_sc;
       }
   };
@@ -73,18 +61,18 @@ namespace sparsebase
   using ReorderFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>);
 
   template<typename ID_t, typename NNZ_t>
-  class ReorderPreprocessType : public MapToFunctionMixin<SparseConverterMixin<PreprocessType>, ReorderFunction<ID_t, NNZ_t>>{
+  class ReorderPreprocessType : public MapToFunctionMixin<SparseConverterMixin<PreprocessType, ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t>>{
     public:
       virtual ~ReorderPreprocessType (){};
   };
 
 
-  template <class ID_t, class NNZ_t, class PreprocessingImpl, typename PreprocessFunction, typename config_key = std::vector<Format>, typename config_key_hash = FormatVectorHash, typename config_key_equal_to = std::equal_to<std::vector<Format>>>
+  template <typename ID_t, typename NNZ_t, typename VAL_t, class PreprocessingImpl, typename PreprocessFunction, typename config_key = std::vector<Format>, typename config_key_hash = FormatVectorHash, typename config_key_equal_to = std::equal_to<std::vector<Format>>>
   class FormatMatcherMixin : public PreprocessingImpl {
     typedef std::unordered_map<config_key, PreprocessFunction, config_key_hash, config_key_equal_to> conversion_map;
   protected:
     using PreprocessingImpl::PreprocessingImpl; 
-    std::tuple<PreprocessFunction, conversion_schema> get_function(config_key key, conversion_map map, SparseConverter sc){
+    std::tuple<PreprocessFunction, conversion_schema> get_function(config_key key, conversion_map map, SparseConverter<ID_t, NNZ_t, VAL_t> sc){
       conversion_schema cs;
       PreprocessFunction func = nullptr;
       if (map.find(key) != map.end()){
@@ -164,7 +152,7 @@ namespace sparsebase
       return f;
     }
     template<typename F, typename... SF>
-    std::tuple<PreprocessFunction, std::vector<SparseFormat<ID_t, NNZ_t>*>> execute(conversion_map map, SparseConverter sc, F sf, SF... sfs){
+    std::tuple<PreprocessFunction, std::vector<SparseFormat<ID_t, NNZ_t>*>> execute(conversion_map map, SparseConverter<ID_t, NNZ_t, VAL_t> sc, F sf, SF... sfs){
       // pack the SFs into a vector
       vector<SparseFormat<ID_t, NNZ_t>*> packed_sfs = pack_sfs(sf, sfs...);
       // pack the SF formats into a vector
@@ -214,12 +202,11 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t>
-  class DegreeReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, DegreeReorder<ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t>> {
-    typedef FormatMatcherMixin<ID_t, NNZ_t, DegreeReorder<ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t>> Base;
+  class DegreeReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, void, DegreeReorder<ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, void, DegreeReorder<ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t>* csr){
-      //return this->execute(this->map, this->_sc, csr);
       std::tuple <ReorderFunction<ID_t, NNZ_t>, std::vector<SparseFormat<ID_t, NNZ_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
       ReorderFunction<ID_t, NNZ_t> func = get<0>(func_formats);
       std::vector<SparseFormat<ID_t, NNZ_t>*> sfs = get<1>(func_formats);
@@ -240,12 +227,11 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t, typename Reorder_T>
-  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, Reorder_T, ReorderFunction<ID_t, NNZ_t>> {
-    typedef FormatMatcherMixin<ID_t, NNZ_t, Reorder_T, ReorderFunction<ID_t, NNZ_t>> Base;
+  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, void, Reorder_T, ReorderFunction<ID_t, NNZ_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, void, Reorder_T, ReorderFunction<ID_t, NNZ_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t>* csr){
-      //return this->execute(this->map, this->_sc, csr);
       std::tuple <ReorderFunction<ID_t, NNZ_t>, std::vector<SparseFormat<ID_t, NNZ_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
       ReorderFunction<ID_t, NNZ_t> func = get<0>(func_formats);
       std::vector<SparseFormat<ID_t, NNZ_t>*> sfs = get<1>(func_formats);
