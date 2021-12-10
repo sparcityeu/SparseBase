@@ -41,6 +41,7 @@ debug_build
 
 # local environment
 .vscode
+.DS_Store
 
 CMakeLists.txt.user
 CMakeCache.txt
