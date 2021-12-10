@@ -8,7 +8,7 @@ using namespace std;
 
 namespace sparsebase{
 
-    
+    typedef std::vector<std::tuple<bool, Format> > conversion_schema;
     struct format_hash{
         size_t operator()(Format f) const;
     };
@@ -46,6 +46,9 @@ namespace sparsebase{
         void register_conversion_function(Format from_format, Format to_format, ConversionFunctor<ID_t,NNZ_t,VAL_t>* conv_func);
         ConversionFunctor<ID_t,NNZ_t,VAL_t>* get_conversion_function(Format from_format, Format to_format);
         SparseFormat<ID_t,NNZ_t>* convert(SparseFormat<ID_t,NNZ_t>* source, Format to_format);
+        bool can_convert(Format from_format, Format to_format);
+        std::vector<SparseFormat<ID_t, NNZ_t>*> apply_conversion_schema(conversion_schema cs, std::vector<SparseFormat<ID_t, NNZ_t>*>packed_sfs);
+        
     };
 
 }
