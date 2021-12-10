@@ -29,9 +29,14 @@ When compiling a project that uses SparseBase, simply link the project with the 
 
 ## Tests
 
-Users can run unit tests easily after building the project. Once its built, do the following:
+Users can run unit tests easily after building the project. To do so, they must configure CMake to compile tests:
 ```
-cd build 
+mkdir build # if a build directory doesn't exist
+cd build
+cmake -DRUN_TESTS ..
+```
+Once its built, while in the build directory, do the following:
+``` 
 ctest -V
 ```
 
