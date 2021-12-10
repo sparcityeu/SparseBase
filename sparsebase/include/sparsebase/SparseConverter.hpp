@@ -8,6 +8,11 @@ using namespace std;
 
 namespace sparsebase{
 
+    
+    struct format_hash{
+        size_t operator()(Format f) const;
+    };
+
     template<typename ID_t, typename NNZ_t, typename VAL_t>
     class ConversionFunctor {
         public:
@@ -28,13 +33,13 @@ namespace sparsebase{
             SparseFormat<ID_t,NNZ_t>* operator() (SparseFormat<ID_t, NNZ_t>* source);
     };
 
-
+    
 
     template<typename ID_t, typename NNZ_t, typename VAL_t>
     class SparseConverter
     {
     private:
-        unordered_map<Format,unordered_map<Format, ConversionFunctor<ID_t,NNZ_t,VAL_t>*>> conversion_map;
+        unordered_map<Format,std::unordered_map<Format, ConversionFunctor<ID_t,NNZ_t,VAL_t>*, format_hash>,format_hash>conversion_map;
     public:
         SparseConverter();
         ~SparseConverter();
