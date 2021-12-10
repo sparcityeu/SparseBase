@@ -34,8 +34,9 @@ ASSERT_EQ(x.size(), y.size()) << "Vectors x and y are of unequal length";
 
 Find the full list of assertions [here](https://google.github.io/googletest/reference/assertions.html).
 
-| *_EQ(a, b) | Check a and b are equal |
+| Assertion | Functionality |
 | --- | --- |
+| *_EQ(a, b) | Check a and b are equal |
 
 # Test cases
 
