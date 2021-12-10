@@ -8,30 +8,49 @@
 using namespace std;
 using namespace sparsebase;
 
+using vertex_type = unsigned int;
+using edge_type = unsigned int;
+using value_type = void;
+
 int main(int argc, char * argv[]){
   cout << "F t re  s sp r e!" << endl;
-  unsigned int xadj[4] = {0, 2, 3, 4};
-  unsigned int adj[4] = {1,2,0,0};
-  CSR<unsigned int, unsigned int, void> csr(3, 3, xadj, adj, nullptr);
-  Graph<unsigned int, unsigned int> g(&csr);
-  //Graph<unsigned int, unsigned int> g2(new UedgelistReader<unsigned int, unsigned int, void>("/data/GE/graphs/uedgelist/com-dblp_c.graph"));
-  //DegreeOrder<unsigned int, unsigned int> orderer;
-  ReorderInstance<unsigned int, unsigned int, DegreeReorder<unsigned int, unsigned int, void>> orderer(1);
-  //CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g2.get_connectivity());
-  CSR<unsigned int, unsigned int, void> * tmp = reinterpret_cast<CSR<unsigned int, unsigned int, void>*>(g.get_connectivity());
-  unsigned int* order = orderer.get_reorder(tmp);
-  cout << "Order: " << order << endl;
-  cout << "Order: " << order[csr.get_dimensions()[0]-1] << endl;
-  cout << "Order: " << order[0] << endl;
-  //CSR<unsigned int, unsigned int, void> * tmp = g2.get_connectivity();
-  //unsigned int * order = orderer.get_order<void>(tmp);
-  //unsigned int * order2 = orderer.get_order<void>(g2.get_connectivity());
-  //auto o = tmp->get_order();
-  //cout << "Order: " << o << endl;
-  //int n = tmp->get_dimensions()[0];
-  //cout << "Number of vertices: " << n << endl;
-  //cout << "edges "<< tmp->xadj[order2[n-1]+1] - tmp->xadj[order2[n-1]] << endl;
-  //cout << "edges "<< tmp->xadj[order[n-1]+1] - tmp->xadj[order[n-1]] << endl;
-  //cout << "edges "<< order[n-2];
+  string file_name = argv[1];
+
+  cout << "********************************" << endl;
+
+  cout << "Reading graph from " << file_name << "..." << endl;
+  Graph<vertex_type, edge_type> g(new UedgelistReader<vertex_type, vertex_type, value_type>(file_name));
+  cout << "Number of vertices: " << g.n << endl; 
+  cout << "Number of edges: " << g.m << endl; 
+
+  cout << "********************************" << endl;
+
+  cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
+  ExecutableDegreeOrdering<vertex_type, edge_type> orderer(1);
+  //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
+  SparseFormat<vertex_type, edge_type> * con = g.get_connectivity();
+  vertex_type * order = orderer.get_order(con);
+  auto tmp = dynamic_cast<CSR<vertex_type, edge_type, value_type>*>(con);
+  vertex_type n = tmp->get_dimensions()[0];
+  cout << "According to degree order: " << endl;
+  cout << "First vertex, ID: " << order[0] << ", Degree: " << tmp->xadj[order[0]] - tmp->xadj[order[0]] << endl;
+  cout << "Last vertex, ID: " << order[n-1] << ", Degree: " << tmp->xadj[order[n-1]+1] - tmp->xadj[order[n-1]] << endl;
+
+  cout << "********************************" << endl;
+
+  cout << "Checking the correctness of the ordering..." << endl;
+  bool order_is_correct = true;
+  for(vertex_type i; i < n-1 && order_is_correct; i++){
+    vertex_type v = order[i]; 
+    vertex_type u = order[i+1];
+    if(tmp->xadj[v+1] - tmp->xadj[v] > tmp->xadj[u+1] - tmp->xadj[u])
+    {
+      cout << "Degree Order is incorrect!" << endl;
+      order_is_correct = false;
+    }
+  }
+  if(order_is_correct){
+    cout << "Order is correct!" << endl;
+  }
   return 0;
 }
