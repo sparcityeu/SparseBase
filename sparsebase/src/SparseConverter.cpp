@@ -6,6 +6,10 @@ using namespace std;
 
 namespace sparsebase
 {
+    
+    size_t format_hash::operator()(Format f) const{
+        return f;
+    }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     SparseFormat<ID_t, NNZ_t> * CsrCooFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t> *source){
@@ -19,7 +23,10 @@ namespace sparsebase
 
         coo->adj = new ID_t[nnz];
         coo->is = new ID_t[nnz];
-        coo->vals = new NNZ_t[nnz];
+        if (csr->vals != nullptr)
+            coo->vals = new NNZ_t[nnz];
+        else
+            coo->vals = nullptr;
 
         ID_t count = 0;        
         for(ID_t i=0; i<n; i++){
@@ -36,9 +43,10 @@ namespace sparsebase
             coo->is[i] = csr->adj[i];
         }
 
-        for(NNZ_t i=0; i<nnz; i++){
-            coo->vals[i] = csr->vals[i];
-        }
+        if (csr->vals != nullptr)
+            for(NNZ_t i=0; i<nnz; i++){
+                coo->vals[i] = csr->vals[i];
+            }
 
         vector<ID_t> dims{n,m};
         coo->dimension = dims;
@@ -67,11 +75,16 @@ namespace sparsebase
 
         ID_t* xadj = new ID_t[n+1];
         ID_t* adj = new ID_t[m];
-        NNZ_t* vals = new NNZ_t[nnz];
+        NNZ_t* vals;
+        if (coo->vals != nullptr)
+            vals = new NNZ_t[nnz];
+        else
+            vals = nullptr;
 
         fill(xadj, xadj + n + 1, 0);
         fill(adj, adj + m, 0);
-        fill(vals, vals + nnz, 0);
+        if (coo->vals != nullptr)
+            fill(vals, vals + nnz, 0);
 
         // We need to ensure that they are sorted
         // Maybe add a sort check and then not do this if it is already sorted
@@ -99,9 +112,10 @@ namespace sparsebase
         xadj[0] = 0;
 
 
-        for(NNZ_t i=0; i<nnz; i++){
-            vals[i] = coo->vals[i];
-        }
+        if (coo->vals != nullptr)
+            for(NNZ_t i=0; i<nnz; i++){
+                vals[i] = coo->vals[i];
+            }
         
         auto csr =  new CSR<ID_t, NNZ_t, NNZ_t>(n, m, xadj, adj, vals);
         return csr;
@@ -123,7 +137,7 @@ namespace sparsebase
     void SparseConverter<ID_t, NNZ_t, VAL_t>::register_conversion_function(Format from_format, Format to_format, ConversionFunctor<ID_t, NNZ_t, VAL_t>* conv_func)
     {
         if(conversion_map.count(from_format) == 0){
-            conversion_map.emplace(from_format,unordered_map<Format,ConversionFunctor<ID_t,NNZ_t,VAL_t>*>());
+            conversion_map.emplace(from_format,unordered_map<Format,ConversionFunctor<ID_t,NNZ_t,VAL_t>*, format_hash>());
         }
 
         if(conversion_map[from_format].count(to_format) == 0){
