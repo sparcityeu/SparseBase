@@ -139,7 +139,7 @@ When adding a test for some module, first check to see if that module has a test
 
 When adding a test file, there are three steps you need to follow:
 
-### 1. Create the `.cpp` file.
+### 1. Create the '.cpp' file.
 
 Given that the module you are unit-testing is in the file `sparsebase/src/path/package.cpp`, create the file `tests/suites/path/package_tests.cpp`. 
 
@@ -155,7 +155,7 @@ Given that the module you are unit-testing is in the file `sparsebase/src/path/p
 
 Your tests will follow these headers.
 
-### 2. Add an executable target to the `CMakeLists.txt` file in the `tests` top-level directory.
+### 2. Add an executable target to the 'CMakeLists.txt' file in the 'tests' top-level directory.
 
 To add a target for the file we defined in step 1, add the following lines to the end of the file `tests/CMakeLists.txt`
 
@@ -167,7 +167,7 @@ target_link_libraries(package_tests.test gtest gtest_main)
 
 The name of the target should match the name of the test file, but its extension will be `.test` instead of `.cpp`. In our case, given the test file `tests/suites/path/package_tests.cpp`, the target for it is called `package_tests.test`. We add the file executable target for CMake to compile, and we tell CMake that it needs to be linked with the `SparseBase` library and with Google Test. 
 
-### 3. Add the executable target as a test in the `CMakeLists.txt` file in the root directory
+### 3. Add the executable target as a test in the 'CMakeLists.txt' file in the root directory
 
 To add the executable as a test, add the following to the `CMakeLists.txt` file in the root directory between the the `if( RUN_TESTS ) ... endif()` tags.
 
