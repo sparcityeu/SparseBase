@@ -168,9 +168,39 @@ namespace sparsebase
         }
     }
 
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    bool SparseConverter<ID_t, NNZ_t, VAL_t>::can_convert(Format from_format, Format to_format){
+        if (conversion_map.find(from_format) != conversion_map.end()){
+            if (conversion_map[from_format].find(to_format) != conversion_map[from_format].end()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    template <typename ID_t, typename NNZ_t, typename VAL_t>
+    std::vector<SparseFormat<ID_t, NNZ_t> *> SparseConverter<ID_t, NNZ_t, VAL_t>::apply_conversion_schema(conversion_schema cs, std::vector<SparseFormat<ID_t, NNZ_t> *> packed_sfs){
+        std::vector<SparseFormat<ID_t, NNZ_t> *> ret;
+        for (int i = 0; i < cs.size(); i++){
+            auto conversion = cs[i];
+            if (get<0>(conversion) == true){
+                ret.push_back(this->convert(packed_sfs[i], get<1>(conversion)));
+            } else {
+                ret.push_back(packed_sfs[i]);
+            }
+        }    
+        return ret;
+    }
 
     template class SparseConverter<int, int, int>;
     template class CooCsrFunctor<int,int,int>;
     template class CsrCooFunctor<int,int,int>;
 
+    template class SparseConverter<unsigned int, unsigned int, void>;
+    template class CooCsrFunctor<unsigned int,unsigned int,void>;
+    template class CsrCooFunctor<unsigned int,unsigned int,void>;
+
+    template class SparseConverter<unsigned int, unsigned int, unsigned int>;
+    template class CooCsrFunctor<unsigned int,unsigned int,unsigned int>;
+    template class CsrCooFunctor<unsigned int,unsigned int,unsigned int>;
 }
