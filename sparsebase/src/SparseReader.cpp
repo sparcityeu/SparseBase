@@ -12,6 +12,13 @@ namespace sparsebase
   SparseReader<ID_t, NNZ_t>::~SparseReader(){};
 
   // Add weighted option with contexpr
+  //! Brief description
+  /*!
+    Detailed description
+    \param filename string
+    \param _weighted bool
+    \return vector of formats
+  */
   template <typename v_t, typename e_t, typename w_t>
   UedgelistReader<v_t, e_t, w_t>::UedgelistReader(string filename, bool _weighted) : filename(filename), weighted(_weighted) {}
   template <typename v_t, typename e_t, typename w_t>
@@ -82,7 +89,7 @@ namespace sparsebase
     }
     else
     {
-      throw invalid_argument("file does not exists!");
+      throw invalid_argument("file does not exists!!");
     }
   }
   template <typename v_t, typename e_t, typename w_t>
