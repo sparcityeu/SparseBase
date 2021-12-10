@@ -29,7 +29,6 @@ namespace sparsebase{
       void initialize_info_from_connection();
       virtual ~Graph();
       void verify_structure();
-    private:
       v_t n;
       e_t m;
   };

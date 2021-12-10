@@ -8,6 +8,7 @@
 
 namespace sparsebase
 {
+
     template <typename ID_t, typename NNZ_t>
     AbstractSparseFormat<ID_t, NNZ_t>::~AbstractSparseFormat(){};
     template <typename ID_t, typename NNZ_t>

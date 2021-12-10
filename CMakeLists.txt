@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 3.0 )
 
 project( SparseBase_project VERSION 0.1 )
+option(RUN_TESTS "Enable running tests" OFF)
 
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-std=c++11"   COMPILER_SUPPORTS_CXX11 )
@@ -20,8 +21,11 @@ endif()
 
 add_subdirectory(sparsebase)
 add_subdirectory(examples)
-#add_subdirectory(tests)
 
-enable_testing()
-
-add_test(NAME basic_format COMMAND tests/run_test)
+if ( RUN_TESTS )
+    execute_process(COMMAND git submodule update --recursive --init
+    ${CMAKE_CURRENT_SOURCE_DIR})
+    add_subdirectory(tests)
+    enable_testing()
+    add_test(NAME basic_format COMMAND tests/run_test)
+endif()
