@@ -1,4 +1,4 @@
-add_subdirectory(example_1)
+add_subdirectory(sparse_format)
 add_subdirectory(degree_order)
 add_subdirectory(format_conversion)
 
