@@ -12,9 +12,9 @@ namespace sparsebase
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    SparseFormat<ID_t, NNZ_t> * CsrCooFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t> *source){
-        CSR<ID_t,NNZ_t,NNZ_t> *csr = dynamic_cast<CSR<ID_t,NNZ_t,NNZ_t> *>(source);
-        COO<ID_t, NNZ_t, NNZ_t> *coo = new COO<ID_t,NNZ_t,NNZ_t>();
+    SparseFormat<ID_t, NNZ_t, VAL_t> * CsrCooFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t, VAL_t> *source){
+        CSR<ID_t,NNZ_t,VAL_t> *csr = dynamic_cast<CSR<ID_t,NNZ_t,VAL_t> *>(source);
+        COO<ID_t, NNZ_t, VAL_t> *coo = new COO<ID_t,NNZ_t,VAL_t>();
 
         vector<ID_t> dimensions = csr->get_dimensions();
         ID_t n = dimensions[0];
@@ -43,7 +43,8 @@ namespace sparsebase
             coo->is[i] = csr->adj[i];
         }
 
-        if (csr->vals != nullptr)
+        //if (csr->vals != nullptr)
+        if constexpr (!std::is_same_v<void, VAL_t>)
             for(NNZ_t i=0; i<nnz; i++){
                 coo->vals[i] = csr->vals[i];
             }
@@ -64,7 +65,7 @@ namespace sparsebase
     // Bj -> col -> adj
     // Bx -> nnz -> vals    
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    SparseFormat<ID_t, NNZ_t> * CooCsrFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t> *source)
+    SparseFormat<ID_t, NNZ_t, VAL_t> * CooCsrFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t, VAL_t> *source)
     {
         COO<ID_t,NNZ_t,NNZ_t> *coo = dynamic_cast<COO<ID_t,NNZ_t,NNZ_t> *>(source);
 
@@ -117,7 +118,7 @@ namespace sparsebase
                 vals[i] = coo->vals[i];
             }
         
-        auto csr =  new CSR<ID_t, NNZ_t, NNZ_t>(n, m, xadj, adj, vals);
+        auto csr =  new CSR<ID_t, NNZ_t, VAL_t>(n, m, xadj, adj, vals);
         return csr;
     }
 
@@ -148,7 +149,7 @@ namespace sparsebase
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    SparseFormat<ID_t, NNZ_t> *SparseConverter<ID_t, NNZ_t, VAL_t>::convert(SparseFormat<ID_t, NNZ_t> *source, Format to_format)
+    SparseFormat<ID_t, NNZ_t, VAL_t> *SparseConverter<ID_t, NNZ_t, VAL_t>::convert(SparseFormat<ID_t, NNZ_t, VAL_t> *source, Format to_format)
     {
         try{
             ConversionFunctor<ID_t,NNZ_t,VAL_t>* conv_func = get_conversion_function(source->get_format(),to_format);
@@ -179,8 +180,8 @@ namespace sparsebase
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    std::vector<SparseFormat<ID_t, NNZ_t> *> SparseConverter<ID_t, NNZ_t, VAL_t>::apply_conversion_schema(conversion_schema cs, std::vector<SparseFormat<ID_t, NNZ_t> *> packed_sfs){
-        std::vector<SparseFormat<ID_t, NNZ_t> *> ret;
+    std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> SparseConverter<ID_t, NNZ_t, VAL_t>::apply_conversion_schema(conversion_schema cs, std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> packed_sfs){
+        std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> ret;
         for (int i = 0; i < cs.size(); i++){
             auto conversion = cs[i];
             if (get<0>(conversion) == true){
