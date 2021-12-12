@@ -8,8 +8,8 @@
 
 namespace sparsebase
 {
-  template <typename ID_t, typename NNZ_t>
-  SparseReader<ID_t, NNZ_t>::~SparseReader(){};
+  template <typename ID_t, typename NNZ_t, typename VAL_t>
+  SparseReader<ID_t, NNZ_t, VAL_t>::~SparseReader(){};
 
   // Add weighted option with contexpr
   //! Brief description
@@ -22,7 +22,7 @@ namespace sparsebase
   template <typename v_t, typename e_t, typename w_t>
   UedgelistReader<v_t, e_t, w_t>::UedgelistReader(string filename, bool _weighted) : filename(filename), weighted(_weighted) {}
   template <typename v_t, typename e_t, typename w_t>
-  std::vector<SparseFormat<v_t, e_t> *> UedgelistReader<v_t, e_t, w_t>::read()
+  std::vector<SparseFormat<v_t, e_t, w_t> *> UedgelistReader<v_t, e_t, w_t>::read()
   {
     std::ifstream infile(this->filename);
     if (infile.is_open())

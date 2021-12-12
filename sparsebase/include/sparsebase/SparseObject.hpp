@@ -12,20 +12,20 @@ namespace sparsebase{
       virtual void verify_structure() = 0;
   };
 
-  template <typename ID_t, typename NNZ_t>
+  template <typename ID_t, typename NNZ_t, typename VAL_t>
   class AbstractSparseObject : public SparseObject{
     protected:
-      SparseFormat<ID_t, NNZ_t> *connectivity;
+      SparseFormat<ID_t, NNZ_t, VAL_t> *connectivity;
     public:
       virtual ~AbstractSparseObject();
-      SparseFormat<ID_t, NNZ_t> * get_connectivity();
+      SparseFormat<ID_t, NNZ_t, VAL_t> * get_connectivity();
   };
 
-  template<typename v_t, typename e_t>
-  class Graph : public AbstractSparseObject<v_t, e_t>{
+  template<typename v_t, typename e_t, typename w_t>
+  class Graph : public AbstractSparseObject<v_t, e_t, w_t>{
     public:
-      Graph(SparseFormat<v_t, e_t> * _connectivity);
-      Graph(SparseReader<v_t, e_t> * r);
+      Graph(SparseFormat<v_t, e_t, w_t> * _connectivity);
+      Graph(SparseReader<v_t, e_t, w_t> * r);
       void initialize_info_from_connection();
       virtual ~Graph();
       void verify_structure();
