@@ -32,7 +32,6 @@ int main(int argc, char * argv[]){
   vertex_type * order = orderer.get_reorder(con);
   auto xadj = con->get_xadj();
   auto adj = con->get_adj();
-  auto ind = con->get_ind();
   vertex_type n = con->get_dimensions()[0];
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << order[0] << ", Degree: " << xadj[order[0]] - xadj[order[0]] << endl;

@@ -44,11 +44,12 @@ namespace sparsebase
         }
 
         //if (csr->vals != nullptr)
-        if constexpr (!std::is_same_v<void, VAL_t>)
-            for(NNZ_t i=0; i<nnz; i++){
-                coo->vals[i] = csr->vals[i];
-            }
-
+        if constexpr (!std::is_same_v<void, VAL_t>){
+            if (coo->vals != nullptr)
+                for(NNZ_t i=0; i<nnz; i++){
+                    coo->vals[i] = csr->vals[i];
+                }
+        }
         vector<ID_t> dims{n,m};
         coo->dimension = dims;
         coo->nnz = nnz;
@@ -113,10 +114,12 @@ namespace sparsebase
         xadj[0] = 0;
 
 
-        if (coo->vals != nullptr)
-            for(NNZ_t i=0; i<nnz; i++){
-                vals[i] = coo->vals[i];
-            }
+        if constexpr (!std::is_same_v<void, VAL_t>){
+            if (coo->vals != nullptr)
+                for(NNZ_t i=0; i<nnz; i++){
+                    vals[i] = coo->vals[i];
+                }
+        }
         
         auto csr =  new CSR<ID_t, NNZ_t, VAL_t>(n, m, xadj, adj, vals);
         return csr;

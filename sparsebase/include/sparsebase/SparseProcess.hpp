@@ -178,7 +178,7 @@ namespace sparsebase
     protected:
       int _hyperparameter;
       static ID_t* calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats){
-        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
+        CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
         ID_t n = csr->get_dimensions()[0];
         ID_t * counts = new ID_t[n]();
         for(ID_t u = 0; u < n; u++){
@@ -202,8 +202,8 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t, typename VAL_t>
-  class DegreeReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, void, DegreeReorder<ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
-    typedef FormatMatcherMixin<ID_t, NNZ_t, void, DegreeReorder<ID_t, NNZ_t, void>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
+  class DegreeReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr){
@@ -222,13 +222,13 @@ namespace sparsebase
       }
     protected:
       static ID_t* get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats){
-        CSR<ID_t, NNZ_t, void>* csr = static_cast<CSR<ID_t, NNZ_t, void>*>(formats[0]);
+        CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
       }
   };
 
   template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
-  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, void, Reorder_T, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
-    typedef FormatMatcherMixin<ID_t, NNZ_t, void, Reorder_T, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
+  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr){
