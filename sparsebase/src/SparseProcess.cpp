@@ -184,7 +184,7 @@ namespace sparsebase {
         this->map[{CSR_f}]= get_reorder_csr;
       }
   template<typename ID_t, typename NNZ_t, typename VAL_t>
-      static ID_t* RCMReorder<ID_t, NNZ_t, VAL_t>::get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats){
+      ID_t* RCMReorder<ID_t, NNZ_t, VAL_t>::get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats){
         CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
       }
   template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
