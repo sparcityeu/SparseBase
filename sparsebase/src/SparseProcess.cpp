@@ -306,9 +306,13 @@ namespace sparsebase {
       return func(sfs);
     }
     template class DegreeReorder<unsigned int, unsigned int, void>;
-    template class RCMReorder<unsigned int, unsigned int, void>;
     template class ReorderPreprocessType<unsigned int, unsigned int, void>;
+
     template class DegreeReorderInstance<unsigned int, unsigned int, void>;
     template class DegreeReorderInstance<unsigned int, unsigned int, unsigned int>;
+    template class ReorderInstance<unsigned int, unsigned int, void, DegreeReorder<unsigned int, unsigned int, void>>;
+
+    template class RCMReorder<unsigned int, unsigned int, void>;
+    template class RCMReorderInstance<unsigned int, unsigned int, void>;
     template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder<unsigned int, unsigned int, void>>;
 }
