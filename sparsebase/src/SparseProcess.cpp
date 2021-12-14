@@ -188,7 +188,7 @@ namespace sparsebase {
       template <typename ID_t, typename NNZ_t, typename VAL_t>
       ID_t RCMReorder<ID_t, NNZ_t, VAL_t>::peripheral(NNZ_t *xadj, ID_t *adj, ID_t n, ID_t start, s_ID_t *distance, ID_t *Q)
       {
-        ID_t r = start, r2;
+        ID_t r = start;
         s_ID_t rlevel = -1;
         s_ID_t qlevel = 0;
 
@@ -196,11 +196,6 @@ namespace sparsebase {
         {
           // cout << "Finding peripheral: current dist = " << qlevel << endl;;
           rlevel = qlevel;
-
-#ifdef PARBFS
-          lastvertex(xadj, adj, n, distance, r, r2, qlevel);
-          r = r2;
-#else
 
           for (ID_t i = 0; i < n; i++)
             distance[i] = -1;
@@ -231,7 +226,6 @@ namespace sparsebase {
               r = Q[i];
             }
           }
-#endif
         }
         return r;
       }
