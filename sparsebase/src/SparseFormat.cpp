@@ -1,8 +1,8 @@
 #include <fstream>
-#include <cstring>
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseException.hpp"
