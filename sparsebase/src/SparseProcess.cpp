@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 #include <tuple>
+#include <queue>
+#include <utility>
 
 namespace sparsebase {
     std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const{
@@ -181,11 +183,126 @@ namespace sparsebase {
     }
   template<typename ID_t, typename NNZ_t, typename VAL_t>
       RCMReorder<ID_t, NNZ_t, VAL_t>::RCMReorder() {
-        this->map[{CSR_f}]= get_reorder_csr;
+        this->register_function({CSR_f}, get_reorder_csr);
       }
-  template<typename ID_t, typename NNZ_t, typename VAL_t>
-      ID_t* RCMReorder<ID_t, NNZ_t, VAL_t>::get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats){
+      template <typename ID_t, typename NNZ_t, typename VAL_t>
+      ID_t RCMReorder<ID_t, NNZ_t, VAL_t>::peripheral(NNZ_t *xadj, ID_t *adj, ID_t n, ID_t start, s_ID_t *distance, ID_t *Q)
+      {
+        ID_t r = start, r2;
+        s_ID_t rlevel = -1;
+        s_ID_t qlevel = 0;
+
+        while (rlevel != qlevel)
+        {
+          // cout << "Finding peripheral: current dist = " << qlevel << endl;;
+          rlevel = qlevel;
+
+#ifdef PARBFS
+          lastvertex(xadj, adj, n, distance, r, r2, qlevel);
+          r = r2;
+#else
+
+          for (ID_t i = 0; i < n; i++)
+            distance[i] = -1;
+          ID_t qrp = 0, qwp = 0;
+          distance[r] = 0;
+          Q[qwp++] = r;
+
+          while (qrp < qwp)
+          {
+            ID_t u = Q[qrp++];
+            for (NNZ_t ptr = xadj[u]; ptr < xadj[u + 1]; ptr++)
+            {
+              ID_t v = adj[ptr];
+              if (distance[v] == (ID_t)-1)
+              {
+                distance[v] = distance[u] + 1;
+                Q[qwp++] = v;
+              }
+            }
+          }
+
+          qlevel = 0;
+          for (ID_t i = 0; i < qrp; i++)
+          {
+            if (qlevel < distance[Q[i]])
+            {
+              qlevel = distance[Q[i]];
+              r = Q[i];
+            }
+          }
+#endif
+        }
+        return r;
+      }
+      template <typename ID_t, typename NNZ_t, typename VAL_t>
+      ID_t *RCMReorder<ID_t, NNZ_t, VAL_t>::get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> formats)
+      {
         CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
+        NNZ_t * xadj = csr->get_xadj();
+        ID_t * adj = csr->get_adj();
+        ID_t n = csr->get_dimensions()[0];
+        ID_t *Q = new ID_t[n];
+
+        ID_t *Qp = new ID_t[n];
+        s_ID_t *distance = new s_ID_t[n];
+        ID_t *V = new ID_t[n];
+        for (ID_t i = 0; i < n; i++)
+          V[i] = 0;
+        std::priority_queue<pair<ID_t, ID_t> > PQ;
+        int qrp = 0, qwp = 0;
+        ID_t reverse = n - 1;
+
+        for (ID_t i = 0; i < n; i++)
+        {
+          if (V[i] == 0)
+          {
+            if (xadj[i] == xadj[i + 1])
+            {
+              Q[reverse--] = i;
+              V[i] = 1;
+              continue;
+            }
+
+            // cout << i << endl;
+            ID_t perv = peripheral(xadj, adj, n, i, distance, Qp);
+            V[perv] = 1;
+            Q[qwp++] = perv;
+
+            while (qrp < qwp)
+            {
+              ID_t u = Q[qrp++];
+              for (ID_t ptr = xadj[u]; ptr < xadj[u + 1]; ptr++)
+              {
+                ID_t v = adj[ptr];
+                if (V[v] == 0)
+                {
+                  PQ.push(std::make_pair(xadj[v + 1] - xadj[v], v));
+                  V[v] = 1;
+                }
+              }
+
+              while (!PQ.empty())
+              {
+                Q[qwp++] = PQ.top().second;
+                ;
+                PQ.pop();
+              }
+            }
+          }
+        }
+
+        // Reverse
+        for (ID_t i = 0; i < n / 2; i++)
+        {
+          ID_t t = Q[i];
+          Q[i] = Q[n - i - 1];
+          Q[n - i - 1] = t;
+        }
+        delete [] Qp;
+        delete [] distance;
+        delete [] V;
+        return Q;
       }
   template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
     ID_t* ReorderInstance<ID_t, NNZ_t, VAL_t, Reorder_T>::get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr){
@@ -195,7 +312,9 @@ namespace sparsebase {
       return func(sfs);
     }
     template class DegreeReorder<unsigned int, unsigned int, void>;
+    template class RCMReorder<unsigned int, unsigned int, void>;
     template class ReorderPreprocessType<unsigned int, unsigned int, void>;
     template class DegreeReorderInstance<unsigned int, unsigned int, void>;
     template class DegreeReorderInstance<unsigned int, unsigned int, unsigned int>;
+    template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder<unsigned int, unsigned int, void>>;
 }
