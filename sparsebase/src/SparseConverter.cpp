@@ -154,6 +154,10 @@ namespace sparsebase
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     SparseFormat<ID_t, NNZ_t, VAL_t> *SparseConverter<ID_t, NNZ_t, VAL_t>::convert(SparseFormat<ID_t, NNZ_t, VAL_t> *source, Format to_format)
     {
+        if(to_format == source->get_format()){
+            return source;
+        }
+
         try{
             ConversionFunctor<ID_t,NNZ_t,VAL_t>* conv_func = get_conversion_function(source->get_format(),to_format);
             return (*conv_func)(source);
@@ -187,7 +191,7 @@ namespace sparsebase
         std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> ret;
         for (int i = 0; i < cs.size(); i++){
             auto conversion = cs[i];
-            if (get<0>(conversion) == true){
+            if (get<0>(conversion)){
                 ret.push_back(this->convert(packed_sfs[i], get<1>(conversion)));
             } else {
                 ret.push_back(packed_sfs[i]);
