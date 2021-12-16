@@ -38,10 +38,12 @@
 graphs
 build
 debug_build
+cmake-build-debug
 
 # local environment
 .vscode
 .DS_Store
+.idea
 
 CMakeLists.txt.user
 CMakeCache.txt

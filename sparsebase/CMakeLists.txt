@@ -8,3 +8,4 @@ add_library(sparsebase
 target_include_directories(sparsebase PUBLIC include/)
 install(TARGETS sparsebase DESTINATION lib)
 target_compile_features(sparsebase PRIVATE cxx_std_17)
+install(DIRECTORY include/sparsebase DESTINATION include)
