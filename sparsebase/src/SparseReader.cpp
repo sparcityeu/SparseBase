@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseReader.hpp"
 #include "sparsebase/SparseException.hpp"
@@ -122,7 +123,7 @@ namespace sparsebase
         v_t M, N, L;
 
         // Ignore headers and comments:
-        while (fin.peek() == '%') fin.ignore(2048, '\n');
+        while (fin.peek() == '%') fin.ignore(std::numeric_limits<streamsize>::max(), '\n');
 
         fin >> M >> N >> L;
 
@@ -131,8 +132,8 @@ namespace sparsebase
         if constexpr(!std::is_same_v<void,w_t>) {
             if(weighted){
                 w_t* vals = new w_t[L];
-                for (int l = 0; l < L; l++) {
-                    int m, n;
+                for (e_t l = 0; l < L; l++) {
+                    v_t m, n;
                     w_t w;
                     fin >> m >> n >> w;
                     adj[l] = m-1;
@@ -148,8 +149,8 @@ namespace sparsebase
             }
 
         } else {
-            for (int l = 0; l < L; l++) {
-                int m, n;
+            for (e_t l = 0; l < L; l++) {
+                v_t m, n;
                 fin >> m >> n;
                 adj[l] = m-1;
                 is[l] = n-1;
