@@ -28,8 +28,4 @@ int main(int argc, char * argv[]){
 
     cout << "NNZ: " << nnz << endl;
 
-    for(int i=0; i<nnz; i++){
-        cout << adj[i] << " " << is[i] << endl;
-    }
-
 }
