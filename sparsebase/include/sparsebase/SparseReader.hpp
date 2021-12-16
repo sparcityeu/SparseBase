@@ -32,6 +32,19 @@ namespace sparsebase{
         virtual ~UedgelistReader();
     };
 
+    template<typename v_t, typename e_t, typename w_t>
+    class MTXReader : public SparseReader<v_t, e_t, w_t>{
+    public:
+        MTXReader(string filename, bool _weighted=false);
+        vector<SparseFormat<v_t, e_t, w_t> *> read();
+    private:
+        string filename;
+        bool weighted;
+        virtual ~MTXReader();
+    };
+
+
+
 }
 
 #endif
