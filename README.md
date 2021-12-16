@@ -22,6 +22,7 @@ To install the library to a custom directory, do the following:
 cd build
 cmake --install . --prefix "/custom/location"
 ```
+**Note:** We suggest using **absolute paths** for prefixes as relative paths have been known to cause problems from time to time.
 
 ## Usage
 
