@@ -11,7 +11,7 @@ This will generate the library as a static library. In addition, the example cod
 
 ## Installation
 
-To install the library, compile the library as shwon in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:
+To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:
 ```
 cd build
 cmake --install .
@@ -40,6 +40,73 @@ Once its built, while in the build directory, do the following:
 ``` 
 ctest -V
 ```
+
+# Getting Started
+
+## Input
+
+Currently we support two sparse data file formats:
+- Matrix Market Files (.mtx)
+- Undirected Edge List Files (.uedgelist)
+
+We can perform a read operation on these formats as shown below: (use `UEdgeListReader` fro .uedgelist files)
+```c++
+auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
+auto data = reader->read();
+```
+
+The data object retrieved here is a vector of SparseFormats. If the file contains a single SparseFormat (tensor, matrix etc.),
+then we can simply take the 0-th index of this.
+```c++
+auto result = data[0];
+```
+
+Currently, both readers only support a single SparseFormat per file. But we have plans to change this.
+
+## Converting Formats
+
+Readers might use different formats. So we can not be sure about the format of the final result of the read operation.
+
+We can convert the data into the format we desire using ``SparseConverter``:
+```c++
+auto converter = SparseConverter<vertex_type, edge_type, value_type>();
+auto converted = converter.convert(result, CSR_f);
+auto csr = dynamic_cast<CSR<vertex_type, edge_type, value_type>>(converted);
+```
+
+## Working with Graphs
+
+Graphs can be created from a vector of formats. So we can use the output of the readers directly.
+
+```c++
+auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
+auto data = reader->read();
+auto g = Graph<vertex_type, edge_type, value_type>(data);
+```
+
+As of the current version of the library graphs function as containers of sparse data. There are plans to change this however in future releases.
+
+## Ordering
+
+Ordering can be handled using the ``ReorderInstance`` class. Note that this class takes a ``ReorderPreprocessType`` as a template parameter.
+As of the current version two such ``ReorderPreprocessType`` classes exist ``RCMReorder`` and ``DegreeReorder``.
+
+Below you can see an example of an RCM reordering of a graph.
+```c++
+ReorderInstance<vertex_type, edge_type, value_type, RCMReorder<vertex_type, edge_type, value_type>> orderer;
+SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+vertex_type * order = orderer.get_reorder(con);
+```
+
+For these operations, we also support an alternative syntax (without the template parameter) using the ``RCMReorderInstance`` and ``DegreeReorderInstance`` wrapper classes.
+
+Below you can see this alternative syntax being used to reorder the same graph.
+```c++
+RCMReorderInstance<vertex_type, edge_type, value_type> orderer;
+SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+vertex_type * order = orderer.get_reorder(con);
+```
+
 
 # Contribution Guidelines
 
