@@ -14,4 +14,15 @@ namespace sparsebase{
                 return msg.c_str();
             }
     };
+
+    class SparseReaderException : public exception
+    {
+        string msg;
+        public:
+            SparseReaderException(const string & msg) : msg(msg){}
+            virtual const char* what() const throw()
+            {
+                return msg.c_str();
+            }
+    };
 }

@@ -5,6 +5,7 @@
 #include <iostream>
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseReader.hpp"
+#include "sparsebase/SparseException.hpp"
 
 namespace sparsebase
 {
@@ -143,7 +144,7 @@ namespace sparsebase
                 return vector<SparseFormat<v_t, e_t, w_t> *>(1,coo);
             } else {
                 // TODO: Add an exception class for this
-                throw "well named exception";
+                throw SparseReaderException("Weight type for weighted graphs can not be void");
             }
 
         } else {
