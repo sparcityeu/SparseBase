@@ -43,8 +43,8 @@ namespace sparsebase
   template <typename v_t, typename e_t, typename w_t>
   void Graph<v_t, e_t, w_t>::read_connectivity_from_edgelist_to_csr(string filename)
   {
-    MTXReader<v_t, e_t, w_t> reader(filename);
-    this->connectivity = reader.read_coo();
+    UedgelistReader<v_t, e_t, w_t> reader(filename);
+    this->connectivity = reader.read_csr();
     this->verify_structure();
     initialize_info_from_connection();
     std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
@@ -52,8 +52,8 @@ namespace sparsebase
   template <typename v_t, typename e_t, typename w_t>
   void Graph<v_t, e_t, w_t>::read_connectivity_from_mtx_to_coo(string filename)
   {
-    UedgelistReader<v_t, e_t, w_t> reader(filename);
-    this->connectivity = reader.read_csr();
+    MTXReader<v_t, e_t, w_t> reader(filename);
+    this->connectivity = reader.read_coo();
     this->verify_structure();
     initialize_info_from_connection();
     std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
