@@ -33,7 +33,6 @@ int main(int argc, char * argv[]){
   //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.get_reorder(con);
-  cout << "Order 22804 " << order[22804] << endl;
   vertex_type n = con->get_dimensions()[0];
   auto xadj = con->get_xadj();
   auto adj = con->get_adj();
