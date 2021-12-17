@@ -100,7 +100,33 @@ namespace sparsebase
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr);
   };
-} // namespace sparsebase
 
+//transform
+template <typename ID_t, typename NNZ_t, typename VAL_t>
+using TransformFunction = SparseFormat<ID_t, NNZ_t, VAL_t>* (*)(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*>, ID_t * ordr);
+
+template<typename ID_t, typename NNZ_t, typename VAL_t>
+class TransformPreprocessType : public MapToFunctionMixin<SparseConverterMixin<PreprocessType, ID_t, NNZ_t, VAL_t>, TransformFunction<ID_t, NNZ_t, VAL_t>>{
+  public:
+    virtual ~TransformPreprocessType();
+};
+
+template<typename ID_t, typename NNZ_t, typename VAL_t>
+class Transform: public TransformPreprocessType<ID_t, NNZ_t, VAL_t> {
+  public:
+    Transform(int hyperparameter);
+  protected:
+    int _hyperparameter;
+    static SparseFormat<ID_t, NNZ_t, VAL_t>* transform_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ID_t * order);
+};
+template <typename ID_t, typename NNZ_t, typename VAL_t, typename TRANSFORM_t>
+class TransformInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t, TransformFunction<ID_t, NNZ_t, VAL_t>> {
+  typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t, TransformFunction<ID_t, NNZ_t, VAL_t>> Base;
+  using Base::Base; // Used to forward constructors from base
+  public:
+  SparseFormat<ID_t, NNZ_t, VAL_t>* get_transformation(SparseFormat<ID_t, NNZ_t, VAL_t>* csr, ID_t * ordr);
+};
+
+} // namespace sparsebase
 
 #endif
