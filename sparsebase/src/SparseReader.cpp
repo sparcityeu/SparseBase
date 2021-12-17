@@ -24,7 +24,12 @@ namespace sparsebase
   template <typename v_t, typename e_t, typename w_t>
   UedgelistReader<v_t, e_t, w_t>::UedgelistReader(string filename, bool _weighted) : filename(filename), weighted(_weighted) {}
   template <typename v_t, typename e_t, typename w_t>
-  std::vector<SparseFormat<v_t, e_t, w_t> *> UedgelistReader<v_t, e_t, w_t>::read()
+  SparseFormat<v_t, e_t, w_t>*  UedgelistReader<v_t, e_t, w_t>::read_sparseformat() const
+  {
+    return this->read_csr();
+  }
+  template <typename v_t, typename e_t, typename w_t>
+  CSR<v_t, e_t, w_t>*  UedgelistReader<v_t, e_t, w_t>::read_csr() const
   {
     std::ifstream infile(this->filename);
     if (infile.is_open())
@@ -87,7 +92,7 @@ namespace sparsebase
         xadj[i] = xadj[i - 1];
       }
       xadj[0] = 0;
-      return {new CSR<v_t, e_t, void>(n, n, xadj, adj, nullptr)};
+      return new CSR<v_t, e_t, w_t>(n, n, xadj, adj, nullptr);
     }
     else
     {
@@ -109,13 +114,18 @@ namespace sparsebase
   }
   template <typename v_t, typename e_t, typename w_t>
   UedgelistReader<v_t, e_t, w_t>::~UedgelistReader(){};
+  template <typename v_t, typename e_t, typename w_t>
+  SparseFormat<v_t, e_t, w_t>*  MTXReader<v_t, e_t, w_t>::read_sparseformat() const
+  {
+    return this->read_coo();
+  }
 
 
     template <typename v_t, typename e_t, typename w_t>
     MTXReader<v_t, e_t, w_t>::MTXReader(string filename, bool _weighted) : filename(filename), weighted(_weighted) {}
 
     template <typename v_t, typename e_t, typename w_t>
-    std::vector<SparseFormat<v_t, e_t, w_t> *> MTXReader<v_t, e_t, w_t>::read() {
+    COO<v_t, e_t, w_t> * MTXReader<v_t, e_t, w_t>::read_coo() const {
         // Open the file:
         std::ifstream fin(filename);
 
@@ -142,12 +152,11 @@ namespace sparsebase
                 }
 
                 auto coo = new COO<v_t,e_t,w_t>(M,N,L,adj,is,vals);
-                return vector<SparseFormat<v_t, e_t, w_t> *>(1,coo);
+                return coo;
             } else {
                 // TODO: Add an exception class for this
                 throw SparseReaderException("Weight type for weighted graphs can not be void");
             }
-
         } else {
             for (e_t l = 0; l < L; l++) {
                 v_t m, n;
@@ -157,7 +166,7 @@ namespace sparsebase
             }
 
             auto coo = new COO<v_t, e_t, w_t>(M,N,L,adj,is,nullptr);
-            return vector<SparseFormat<v_t, e_t, w_t> *>(1,coo);
+            return coo;
         }
     }
 
@@ -165,6 +174,8 @@ namespace sparsebase
     MTXReader<v_t, e_t, w_t>::~MTXReader(){};
 
 
+        template class MTXReader<unsigned int, unsigned int, unsigned int>;
+        template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
 
         template class MTXReader<unsigned int, unsigned int, void>;
         template class UedgelistReader<unsigned int, unsigned int, void>;
