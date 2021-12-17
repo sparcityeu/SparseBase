@@ -3,7 +3,7 @@
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseObject.hpp"
 #include "sparsebase/SparseReader.hpp"
-#include "sparsebase/SparseProcess.hpp"
+#include "sparsebase/SparsePreprocess.hpp"
 
 #include <set>
 
@@ -30,6 +30,7 @@ int main(int argc, char * argv[]){
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
   DegreeReorderInstance<vertex_type, edge_type, value_type> orderer(1);
+  //ReorderInstance<vertex_type, edge_type, value_type, DegreeReorder<vertex_type, edge_type, value_type>> orderer(1);
   TransformInstance<vertex_type, edge_type, value_type, Transform<vertex_type, edge_type, value_type>> transformer(1);
   //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();

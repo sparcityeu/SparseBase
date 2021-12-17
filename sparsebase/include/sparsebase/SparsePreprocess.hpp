@@ -31,11 +31,15 @@ namespace sparsebase
       void reset_converter();
   };
 
+  struct ReorderParams
+  {};
   template <typename ID_t, typename NNZ_t, typename VAL_t>
-  using ReorderFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*>);
+  using ReorderFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*>, ReorderParams*);
 
   template<typename ID_t, typename NNZ_t, typename VAL_t>
   class ReorderPreprocessType : public MapToFunctionMixin<SparseConverterMixin<PreprocessType, ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>>{
+    protected:
+      unique_ptr<ReorderParams> _params;
     public:
       virtual ~ReorderPreprocessType ();
   };
@@ -63,8 +67,11 @@ namespace sparsebase
     public:
       DegreeReorder(int hyperparameter);
     protected:
-      int _hyperparameter;
-      static ID_t* calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats);
+      struct DegreeReorderParams : ReorderParams{
+        int _hyperparameter;
+        DegreeReorderParams(int h):_hyperparameter(h){}
+      };
+      static ID_t* calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ReorderParams*params);
   };
 
   template <typename ID_t, typename NNZ_t, typename VAL_t>
@@ -79,10 +86,15 @@ namespace sparsebase
   class RCMReorder : public ReorderPreprocessType<ID_t, NNZ_t, VAL_t> {
     typedef typename std::make_signed<ID_t>::type s_ID_t;  
     public:
-      RCMReorder();
+      RCMReorder(float a, float b);
     protected:
+      struct RCMReorderParams : ReorderParams{
+        float alpha;
+        float beta;
+        RCMReorderParams(float a, float b):alpha(a), beta(b){}
+      };
       static ID_t peripheral(NNZ_t* xadj, ID_t* adj, ID_t n, ID_t start, s_ID_t* distance, ID_t* Q);
-      static ID_t* get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats);
+      static ID_t* get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ReorderParams*);
   };
 
   template <typename ID_t, typename NNZ_t, typename VAL_t>
