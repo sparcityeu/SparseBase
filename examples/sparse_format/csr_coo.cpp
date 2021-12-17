@@ -3,7 +3,7 @@
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseObject.hpp"
 #include "sparsebase/SparseReader.hpp"
-#include "sparsebase/SparseProcess.hpp"
+#include "sparsebase/SparsePreprocess.hpp"
 #include "sparsebase/SparseException.hpp"
 
 using namespace std;
