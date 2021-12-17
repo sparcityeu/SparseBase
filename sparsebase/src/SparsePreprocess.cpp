@@ -1,4 +1,4 @@
-#include "sparsebase/SparseProcess.hpp"
+#include "sparsebase/SparsePreprocess.hpp"
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseConverter.hpp"
 #include <iostream>
@@ -147,13 +147,16 @@ namespace sparsebase {
       //return get<0>(cs)(packed_sfs);
     }
   template<typename ID_t, typename NNZ_t, typename VAL_t>
-      DegreeReorder<ID_t, NNZ_t, VAL_t>::DegreeReorder(int hyperparameter):_hyperparameter(hyperparameter){
+      DegreeReorder<ID_t, NNZ_t, VAL_t>::DegreeReorder(int hyperparameter){
         //this->map[{CSR_f}]= calculate_order_csr;
         this->register_function({CSR_f}, calculate_Reorder_csr);
+        this->_params = unique_ptr<DegreeReorderParams>(new DegreeReorderParams(hyperparameter));
       }
   template<typename ID_t, typename NNZ_t, typename VAL_t>
-      ID_t* DegreeReorder<ID_t, NNZ_t, VAL_t>::calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats){
+      ID_t* DegreeReorder<ID_t, NNZ_t, VAL_t>::calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ReorderParams* params){
         CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
+        DegreeReorderParams* cast_params = static_cast<DegreeReorderParams*>(params);
+        cout <<cast_params->_hyperparameter;
         ID_t n = csr->get_dimensions()[0];
         ID_t * counts = new ID_t[n]();
         for(ID_t u = 0; u < n; u++){
@@ -182,11 +185,12 @@ namespace sparsebase {
       std::tuple <ReorderFunction<ID_t, NNZ_t, VAL_t>, std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
       ReorderFunction<ID_t, NNZ_t, VAL_t> func = get<0>(func_formats);
       std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> sfs = get<1>(func_formats);
-      return func(sfs);
+      return func(sfs, this->_params.get());
     }
   template<typename ID_t, typename NNZ_t, typename VAL_t>
-      RCMReorder<ID_t, NNZ_t, VAL_t>::RCMReorder() {
+      RCMReorder<ID_t, NNZ_t, VAL_t>::RCMReorder(float a, float b) {
         this->register_function({CSR_f}, get_reorder_csr);
+        this->_params = unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
       }
       template <typename ID_t, typename NNZ_t, typename VAL_t>
       ID_t RCMReorder<ID_t, NNZ_t, VAL_t>::peripheral(NNZ_t *xadj, ID_t *adj, ID_t n, ID_t start, s_ID_t *distance, ID_t *Q)
@@ -233,9 +237,11 @@ namespace sparsebase {
         return r;
       }
       template <typename ID_t, typename NNZ_t, typename VAL_t>
-      ID_t *RCMReorder<ID_t, NNZ_t, VAL_t>::get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> formats)
+      ID_t *RCMReorder<ID_t, NNZ_t, VAL_t>::get_reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> formats, ReorderParams* params)
       {
         CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
+        RCMReorderParams* _params = static_cast<RCMReorderParams*>(params); 
+        std::cout << "using the parameters " << _params->alpha << " and " << _params->beta << std::endl;
         NNZ_t * xadj = csr->get_xadj();
         ID_t * adj = csr->get_adj();
         ID_t n = csr->get_dimensions()[0];
@@ -306,7 +312,7 @@ namespace sparsebase {
       std::tuple <ReorderFunction<ID_t, NNZ_t, VAL_t>, std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
       ReorderFunction<ID_t, NNZ_t, VAL_t> func = get<0>(func_formats);
       std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> sfs = get<1>(func_formats);
-      return func(sfs);
+      return func(sfs, this->_params.get());
     }
 
   template<typename ID_t, typename NNZ_t, typename VAL_t>
