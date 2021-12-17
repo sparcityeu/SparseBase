@@ -25,14 +25,42 @@ namespace sparsebase
     initialize_info_from_connection();
   }
   template <typename v_t, typename e_t, typename w_t>
-  Graph<v_t, e_t, w_t>::Graph(SparseReader<v_t, e_t, w_t> *r)
+  void Graph<v_t, e_t, w_t>::read_connectivity_to_coo(const ReadsCOO<v_t, e_t, w_t>& reader)
   {
-    this->connectivity = r->read()[0];
-    delete r;
+    this->connectivity = reader.read_coo();
     this->verify_structure();
     initialize_info_from_connection();
     std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
   }
+  template <typename v_t, typename e_t, typename w_t>
+  void Graph<v_t, e_t, w_t>::read_connectivity_to_csr(const ReadsCSR<v_t, e_t, w_t>& reader)
+  {
+    this->connectivity = reader.read_csr();
+    this->verify_structure();
+    initialize_info_from_connection();
+    std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
+  }
+  template <typename v_t, typename e_t, typename w_t>
+  void Graph<v_t, e_t, w_t>::read_connectivity_from_edgelist_to_csr(string filename)
+  {
+    UedgelistReader<v_t, e_t, w_t> reader(filename);
+    this->connectivity = reader.read_csr();
+    this->verify_structure();
+    initialize_info_from_connection();
+    std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
+  }
+  template <typename v_t, typename e_t, typename w_t>
+  void Graph<v_t, e_t, w_t>::read_connectivity_from_mtx_to_coo(string filename)
+  {
+    MTXReader<v_t, e_t, w_t> reader(filename);
+    this->connectivity = reader.read_coo();
+    this->verify_structure();
+    initialize_info_from_connection();
+    std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", " << this->connectivity->get_dimensions()[1] << endl;
+  }
+  template <typename v_t, typename e_t, typename w_t>
+  Graph<v_t, e_t, w_t>::Graph()
+  {}
   template <typename v_t, typename e_t, typename VAL_t>
   void Graph<v_t, e_t, VAL_t>::initialize_info_from_connection()
   {

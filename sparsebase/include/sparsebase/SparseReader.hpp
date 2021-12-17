@@ -15,32 +15,50 @@ namespace sparsebase{
   class SparseReader{
     public:
       virtual ~SparseReader();
-      virtual vector<SparseFormat<ID_t, NNZ_t, VAL_t> *> read() = 0;
   };
 
+  template <class v_t, typename e_t, typename w_t>
+  class ReadsSparseFormat {
+    public:
+    virtual SparseFormat<v_t, e_t, w_t>* read_sparseformat() const = 0;
+  };
+
+  template <class v_t, typename e_t, typename w_t>
+  class ReadsCSR {
+    public:
+    virtual CSR<v_t, e_t, w_t>* read_csr() const = 0;
+  };
+
+  template <class v_t, typename e_t, typename w_t>
+  class ReadsCOO {
+    public:
+    virtual COO<v_t, e_t, w_t>* read_coo() const = 0;
+  };
 // Add weighted option with contexpr
   template<typename v_t, typename e_t, typename w_t>
-    class UedgelistReader : public SparseReader<v_t, e_t, w_t>{
+    class UedgelistReader : public SparseReader<v_t, e_t, w_t>, public ReadsCSR<v_t, e_t, w_t>, public ReadsSparseFormat<v_t, e_t, w_t>{
       public:
         UedgelistReader(string filename, bool _weighted=false);
-        vector<SparseFormat<v_t, e_t, w_t> *> read();
+        CSR<v_t, e_t, w_t>* read_csr() const;
+        SparseFormat<v_t, e_t, w_t>* read_sparseformat() const;
+        virtual ~UedgelistReader();
       private:
         static bool sortedge(const pair<v_t,v_t> &a,
             const pair<v_t,v_t> &b);
         string filename;
         bool weighted;
-        virtual ~UedgelistReader();
     };
 
     template<typename v_t, typename e_t, typename w_t>
-    class MTXReader : public SparseReader<v_t, e_t, w_t>{
+    class MTXReader : public SparseReader<v_t, e_t, w_t>, public ReadsCOO<v_t, e_t, w_t>, public ReadsSparseFormat<v_t, e_t, w_t>{
     public:
         MTXReader(string filename, bool _weighted=false);
-        vector<SparseFormat<v_t, e_t, w_t> *> read();
+        COO<v_t, e_t, w_t>* read_coo() const;
+        SparseFormat<v_t, e_t, w_t>* read_sparseformat() const;
+        virtual ~MTXReader();
     private:
         string filename;
         bool weighted;
-        virtual ~MTXReader();
     };
 
 
