@@ -25,7 +25,11 @@ namespace sparsebase{
   class Graph : public AbstractSparseObject<v_t, e_t, w_t>{
     public:
       Graph(SparseFormat<v_t, e_t, w_t> * _connectivity);
-      Graph(SparseReader<v_t, e_t, w_t> * r);
+      Graph();
+      void read_connectivity_to_csr(const ReadsCSR<v_t, e_t, w_t>&);
+      void read_connectivity_to_coo(const ReadsCOO<v_t, e_t, w_t>&);
+      void read_connectivity_from_mtx_to_coo(string filename);
+      void read_connectivity_from_edgelist_to_csr(string filename);
       void initialize_info_from_connection();
       virtual ~Graph();
       void verify_structure();
