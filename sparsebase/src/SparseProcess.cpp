@@ -170,9 +170,12 @@ namespace sparsebase {
           sorted[ec + mr[ec]] = u;
           mr[ec]++;
         }
+        ID_t * inv_sorted = new ID_t[n];
+        for (ID_t i = 0; i < n; i++) inv_sorted[sorted[i]] = i;
         delete [] mr;
         delete [] counts;
-        return sorted;
+        delete [] sorted;
+        return inv_sorted;
       }
   template <typename ID_t, typename NNZ_t, typename VAL_t>
     ID_t* DegreeReorderInstance<ID_t, NNZ_t, VAL_t>::get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr){
@@ -305,6 +308,55 @@ namespace sparsebase {
       std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> sfs = get<1>(func_formats);
       return func(sfs);
     }
+
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+    Transform<ID_t, NNZ_t, VAL_t>::Transform(int hyperparameter):_hyperparameter(hyperparameter){
+      this->register_function({CSR_f}, transform_csr);
+    }
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+      TransformPreprocessType<ID_t, NNZ_t, VAL_t>::~TransformPreprocessType(){};
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+    SparseFormat<ID_t, NNZ_t, VAL_t>* Transform<ID_t, NNZ_t, VAL_t>::transform_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ID_t * order){
+      SparseFormat<ID_t, NNZ_t, VAL_t>* sp = formats[0];
+      vector<ID_t> dimensions = sp->get_dimensions();
+      ID_t n = dimensions[0];
+      ID_t m = dimensions[1];
+      NNZ_t nnz = sp->get_num_nnz();
+      NNZ_t * xadj = sp->get_xadj();
+      ID_t * adj = sp->get_adj();
+      VAL_t * vals = sp->get_vals();
+      NNZ_t * nxadj = new ID_t[n+1]();
+      ID_t * nadj = new NNZ_t[nnz]();
+      VAL_t * nvals;
+      if constexpr (!std::is_same_v<void, VAL_t>){
+        nvals = new VAL_t[nnz]();
+      }
+
+      ID_t * inverse_order = new ID_t[n]();
+      for (ID_t i = 0; i < n; i++) inverse_order[order[i]] = i;
+      NNZ_t c = 0;
+      for (ID_t i = 0; i < n; i++){
+        ID_t u = inverse_order[i];
+        nxadj[i+1] = nxadj[i] + (xadj[u+1] - xadj[u]); 
+        for (NNZ_t v = xadj[u]; v < xadj[u+1]; v++){
+          nadj[c] = order[adj[v]];
+          if constexpr (!std::is_same_v<void, VAL_t>){
+            nvals[c] = vals[v];
+          }
+          c++;
+        }
+      }
+      delete [] inverse_order;
+      CSR<ID_t, NNZ_t, VAL_t> * csr = new CSR(n, m, nxadj, nadj, nvals);
+      return csr;
+    }
+  template <typename ID_t, typename NNZ_t, typename VAL_t, typename TRANSFORM_t>
+    SparseFormat<ID_t, NNZ_t, VAL_t>* TransformInstance<ID_t, NNZ_t, VAL_t, TRANSFORM_t>::get_transformation(SparseFormat<ID_t, NNZ_t, VAL_t>* csr, ID_t * ordr){
+      std::tuple <TransformFunction<ID_t, NNZ_t, VAL_t>, std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      TransformFunction<ID_t, NNZ_t, VAL_t> func = get<0>(func_formats);
+      std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> sfs = get<1>(func_formats);
+      return func(sfs, ordr);
+    }
     template class DegreeReorder<unsigned int, unsigned int, void>;
     template class ReorderPreprocessType<unsigned int, unsigned int, void>;
 
@@ -315,4 +367,8 @@ namespace sparsebase {
     template class RCMReorder<unsigned int, unsigned int, void>;
     template class RCMReorderInstance<unsigned int, unsigned int, void>;
     template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder<unsigned int, unsigned int, void>>;
+
+    template class Transform<unsigned int, unsigned int, void>;
+    template class TransformPreprocessType<unsigned int, unsigned int, void>;
+    template class TransformInstance<unsigned int, unsigned int, void, Transform<unsigned int, unsigned int, void>>;
 }
