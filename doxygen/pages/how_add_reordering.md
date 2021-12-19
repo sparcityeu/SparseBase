@@ -5,7 +5,7 @@
 Adding new reordering algorithms to SparseBase is very simple. It consists of five steps:
 
 1. create a new class for your ordering. It must inherit from the base `ReorderPreprocessType` class.
-2. Inside the class, create a new struct that will contain the hyperparameters needed by your ordering, and initialize it in the constructor. Note: This is step is only needed if your reordering requires hyperparameters.
+2. Inside the class, create a new struct that will contain the hyperparameters needed by your ordering, and initialize it in the constructor. Note: This step is only needed if your reordering requires hyperparameters.
 3. Add implementation functions that will carry out the reordering. 
 4. Register the implementation functions in the constructor.
 5. Add explicit template instantiations of your class.
@@ -15,11 +15,11 @@ Adding new reordering algorithms to SparseBase is very simple. It consists of fi
 The following example demonstrates the process of creating a new reordering `OptimalReorder`.
 
 - This reordering requires two float hyperparameters for execution, `alpha` and `beta`.
-- It has two implementations. One that operators on a `CSR` format, and another that operates on a `COO` format.
+- It has two implementations. One that operates on a `CSR` format, and another that operates on a `COO` format.
 
 ### 1. Create a new class for the ordering
 
-In the header file `sparsebase/include/SparsePreprocess.hpp`, add the definition of your class. It must be templated on three types `ID_t`, `NNZ_t`, `NNZ_t` which define the data types of the `SparseFormat` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
+In the header file `sparsebase/include/SparsePreprocess.hpp`, add the definition of your class. It must be templated on three types `ID_t`, `NNZ_t`, `VAL_t` which define the data types of the `SparseFormat` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
 
 ```cpp
 template <typename ID_t, typename NNZ_t, typename VAL_t>
@@ -30,7 +30,7 @@ class OptimalReorder : ReorderPreprocessType<ID_t, NNZ_t, VAL_t> {
 
 ### 2. Create a struct containing the hyperparameters you need, and initialize them in the constructor
 
-Inside the class, create a new struct inheriting from `ReorderParams`. Its members will be whichever hyperparameters that your reordering will require. We will call this struct `OptimalReorderParams`. We add to it `alpha` and `beta`.
+Inside the class, create a new struct inheriting from `ReorderParams`. Its members will be whichever hyperparameters that your reordering will require. We will call this struct `OptimalReorderParams`. We add `alpha` and `beta` to it.
 
 ```cpp
 template <typename ID_t, typename NNZ_t, typename VAL_t>
@@ -58,7 +58,7 @@ class OptimalReorder : ReorderPreprocessType<ID_t, NNZ_t, VAL_t> {
 
 ### 3. Add implementations for optimal reordering
 
-Add **implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions must be *static* and should match the `ReorderFunction` signature:
+Add implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions must be *static* and should match the `ReorderFunction` signature:
 
 ```cpp
 ID_t* function_name(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*>, ReorderParams*) 
@@ -123,7 +123,7 @@ In addition, you must add explicit instantiations of the `ReorderInstance` class
 template class ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, unsigned int, void>>
 ```
 
-Now, you can easily use your reordering like so:
+Now, you can easily use your reordering like the following example:
 
 ```cpp
  
