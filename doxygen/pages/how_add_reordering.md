@@ -49,8 +49,7 @@ template <typename ID_t, typename NNZ_t, typename VAL_t>
 class OptimalReorder : ReorderPreprocessType<ID_t, NNZ_t, VAL_t> {
 	// ...
 	OptimalReorder(float alpha, float beta){
-		this->_params = unique_ptr<OptimalReorderParams>(
-											new OptimalReorderParams{alpha, beta});
+		this->_params = unique_ptr<OptimalReorderParams>(new OptimalReorderParams{alpha, beta});
 
 	// ...
 };
@@ -58,11 +57,12 @@ class OptimalReorder : ReorderPreprocessType<ID_t, NNZ_t, VAL_t> {
 
 ### 3. Add implementations for optimal reordering
 
-Add implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions must be *static* and should match the `ReorderFunction` signature:
+Add implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions should match the `ReorderFunction` signature:
 
 ```cpp
-ID_t* function_name(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*>, ReorderParams*) 
+static ID_t* function_name(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*>, ReorderParams*) 
 ```
+Not that the functions must also be *static*. This is required to enable the mechanism of choosing the correct implementation function for the input `SparseFormat` object's Format.  
 
 The parameters that your function will take are:
 
@@ -132,4 +132,4 @@ ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, u
 unsigned int * order = reorder.get_order(some_sparseformat_object);
 ```
 
-If that format of `some_sparseformat_object` is `CSR_f`, `COO_f`, or any other format that is convertible to these two formats, then an order will be calculated for it.
+If the format of `some_sparseformat_object` is `CSR_f`, `COO_f`, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.
