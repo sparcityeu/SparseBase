@@ -70,8 +70,8 @@ Currently Sparsebase supports two ways to create a sparse format:
 
 ## Currently Supported Sparse Formats
 
-| Type | ENUM | ORDER |
-| --- | --- | --- |
-| COO | COO_f | 2 |
-| CSR | CSR_f | 2 |
+| Type | ENUM | ORDER | READERS
+| --- | --- | --- | --- |
+| COO | COO_f | 2 | MTX |
+| CSR | CSR_f | 2 | EDGELIST |
 
