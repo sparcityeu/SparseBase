@@ -31,7 +31,6 @@ int main(int argc, char * argv[]){
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
   DegreeReorderInstance<vertex_type, edge_type, value_type> orderer(1);
   //ReorderInstance<vertex_type, edge_type, value_type, DegreeReorder<vertex_type, edge_type, value_type>> orderer(1);
-  TransformInstance<vertex_type, edge_type, value_type, Transform<vertex_type, edge_type, value_type>> transformer(1);
   //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.get_reorder(con);
@@ -73,12 +72,13 @@ int main(int argc, char * argv[]){
     cout << "Order is correct." << endl;
   }
 
+  TransformInstance<vertex_type, edge_type, value_type, Transform> transformer(1);
   SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.get_transformation(con, order);
   auto * nxadj = csr->get_xadj();
   auto * nadj = csr->get_adj();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
-  for(vertex_type i = 0; i < n-1 && order_is_correct; i++){
+  for(vertex_type i = 0; i < n-1 && transform_is_correct; i++){
     if(nxadj[i+2] - nxadj[i+1] < nxadj[i+1] - nxadj[i])
     {
       cout << "Transformation is incorrect!" << endl;
