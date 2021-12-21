@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <memory>
 
 namespace sparsebase
 {
@@ -39,7 +40,7 @@ namespace sparsebase
   template<typename ID_t, typename NNZ_t, typename VAL_t>
   class ReorderPreprocessType : public MapToFunctionMixin<SparseConverterMixin<PreprocessType, ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>>{
     protected:
-      unique_ptr<ReorderParams> _params;
+      std::unique_ptr<ReorderParams> _params;
     public:
       virtual ~ReorderPreprocessType ();
   };
