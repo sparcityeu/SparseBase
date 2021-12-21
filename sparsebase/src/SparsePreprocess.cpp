@@ -307,7 +307,7 @@ namespace sparsebase {
         delete [] V;
         return Q;
       }
-  template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
+  template <typename ID_t, typename NNZ_t, typename VAL_t, template<typename, typename, typename> class Reorder_T>
     ID_t* ReorderInstance<ID_t, NNZ_t, VAL_t, Reorder_T>::get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr){
       std::tuple <ReorderFunction<ID_t, NNZ_t, VAL_t>, std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
       ReorderFunction<ID_t, NNZ_t, VAL_t> func = get<0>(func_formats);
@@ -356,7 +356,7 @@ namespace sparsebase {
       CSR<ID_t, NNZ_t, VAL_t> * csr = new CSR(n, m, nxadj, nadj, nvals);
       return csr;
     }
-  template <typename ID_t, typename NNZ_t, typename VAL_t, typename TRANSFORM_t>
+  template <typename ID_t, typename NNZ_t, typename VAL_t, template<typename, typename, typename> class TRANSFORM_t>
     SparseFormat<ID_t, NNZ_t, VAL_t>* TransformInstance<ID_t, NNZ_t, VAL_t, TRANSFORM_t>::get_transformation(SparseFormat<ID_t, NNZ_t, VAL_t>* csr, ID_t * ordr){
       std::tuple <TransformFunction<ID_t, NNZ_t, VAL_t>, std::vector<SparseFormat<ID_t, NNZ_t, VAL_t> *>> func_formats = this->execute(this->_map_to_function, this->_sc, csr);
       TransformFunction<ID_t, NNZ_t, VAL_t> func = get<0>(func_formats);
@@ -368,13 +368,13 @@ namespace sparsebase {
 
     template class DegreeReorderInstance<unsigned int, unsigned int, void>;
     template class DegreeReorderInstance<unsigned int, unsigned int, unsigned int>;
-    template class ReorderInstance<unsigned int, unsigned int, void, DegreeReorder<unsigned int, unsigned int, void>>;
+    template class ReorderInstance<unsigned int, unsigned int, void, DegreeReorder>;
 
     template class RCMReorder<unsigned int, unsigned int, void>;
     template class RCMReorderInstance<unsigned int, unsigned int, void>;
-    template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder<unsigned int, unsigned int, void>>;
+    template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder>;
 
     template class Transform<unsigned int, unsigned int, void>;
     template class TransformPreprocessType<unsigned int, unsigned int, void>;
-    template class TransformInstance<unsigned int, unsigned int, void, Transform<unsigned int, unsigned int, void>>;
+    template class TransformInstance<unsigned int, unsigned int, void, Transform>;
 }
