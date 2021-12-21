@@ -28,7 +28,8 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Generating RCM ordering..." << endl;
-  ReorderInstance<vertex_type, edge_type, value_type, RCMReorder<vertex_type, edge_type, value_type>> orderer(1,4);
+  //ReorderInstance<vertex_type, edge_type, value_type, RCMReorder<vertex_type, edge_type, value_type>> orderer(1,4);
+  ReorderInstance<vertex_type, edge_type, value_type, RCMReorder> orderer(1,4);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.get_reorder(con);
   auto xadj = con->get_xadj();
