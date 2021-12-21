@@ -106,9 +106,10 @@ namespace sparsebase
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr);
   };
 
-  template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
-  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
-    typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
+  //template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
+  template <typename ID_t, typename NNZ_t, typename VAL_t, template <typename, typename, typename> class Reorder_T>
+  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
+    typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr);
@@ -132,9 +133,10 @@ class Transform: public TransformPreprocessType<ID_t, NNZ_t, VAL_t> {
     int _hyperparameter;
     static SparseFormat<ID_t, NNZ_t, VAL_t>* transform_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ID_t * order);
 };
-template <typename ID_t, typename NNZ_t, typename VAL_t, typename TRANSFORM_t>
-class TransformInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t, TransformFunction<ID_t, NNZ_t, VAL_t>> {
-  typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t, TransformFunction<ID_t, NNZ_t, VAL_t>> Base;
+//template <typename ID_t, typename NNZ_t, typename VAL_t, typename TRANSFORM_t>
+template <typename ID_t, typename NNZ_t, typename VAL_t, template <typename, typename, typename> class TRANSFORM_t>
+class TransformInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t<ID_t, NNZ_t, VAL_t>, TransformFunction<ID_t, NNZ_t, VAL_t>> {
+  typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t<ID_t, NNZ_t, VAL_t>, TransformFunction<ID_t, NNZ_t, VAL_t>> Base;
   using Base::Base; // Used to forward constructors from base
   public:
   SparseFormat<ID_t, NNZ_t, VAL_t>* get_transformation(SparseFormat<ID_t, NNZ_t, VAL_t>* csr, ID_t * ordr);
