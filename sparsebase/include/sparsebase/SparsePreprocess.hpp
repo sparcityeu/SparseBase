@@ -74,6 +74,11 @@ namespace sparsebase
       static ID_t* calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ReorderParams*params);
   };
 
+  template<typename ID_t, typename NNZ_t, typename VAL_t>
+  class GenericReorder: public ReorderPreprocessType<ID_t, NNZ_t, VAL_t> {
+    public:
+      GenericReorder();
+  };
   template <typename ID_t, typename NNZ_t, typename VAL_t>
   class DegreeReorderInstance : public FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
     typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
@@ -112,6 +117,7 @@ namespace sparsebase
     using Base::Base; // Used to forward constructors from base
     public:
     ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr);
+    ID_t* get_reorder(SparseFormat<ID_t, NNZ_t, VAL_t>* csr, ReorderParams* params);
   };
 
 //transform
