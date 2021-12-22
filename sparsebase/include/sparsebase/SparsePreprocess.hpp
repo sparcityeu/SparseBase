@@ -15,7 +15,7 @@ namespace sparsebase
   template <class Preprocess, typename func, typename key = std::vector<Format>, typename key_hash = FormatVectorHash, typename key_equal = std::equal_to<std::vector<Format>>>
   class MapToFunctionMixin : public Preprocess {
     using Preprocess::Preprocess;
-    protected:
+    public:
     std::unordered_map<key, func, key_hash, key_equal> _map_to_function;
     bool register_function_no_override(const key& key_of_function, const func & func_ptr);
     void register_function(const key& key_of_function, const func & func_ptr);
@@ -75,7 +75,7 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t, typename VAL_t>
-  class DegreeReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
+  class DegreeReorderInstance : public FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
     typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, DegreeReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
@@ -98,7 +98,7 @@ namespace sparsebase
   };
 
   template <typename ID_t, typename NNZ_t, typename VAL_t>
-  class RCMReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, RCMReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
+  class RCMReorderInstance : public FormatMatcherMixin<ID_t, NNZ_t, VAL_t, RCMReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
     typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, RCMReorder<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
@@ -107,7 +107,7 @@ namespace sparsebase
 
   //template <typename ID_t, typename NNZ_t, typename VAL_t, typename Reorder_T>
   template <typename ID_t, typename NNZ_t, typename VAL_t, template <typename, typename, typename> class Reorder_T>
-  class ReorderInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
+  class ReorderInstance : public FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> {
     typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, Reorder_T<ID_t, NNZ_t, VAL_t>, ReorderFunction<ID_t, NNZ_t, VAL_t>> Base;
     using Base::Base; // Used to forward constructors from base
     public:
@@ -134,7 +134,7 @@ class Transform: public TransformPreprocessType<ID_t, NNZ_t, VAL_t> {
 };
 //template <typename ID_t, typename NNZ_t, typename VAL_t, typename TRANSFORM_t>
 template <typename ID_t, typename NNZ_t, typename VAL_t, template <typename, typename, typename> class TRANSFORM_t>
-class TransformInstance : FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t<ID_t, NNZ_t, VAL_t>, TransformFunction<ID_t, NNZ_t, VAL_t>> {
+class TransformInstance : public FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t<ID_t, NNZ_t, VAL_t>, TransformFunction<ID_t, NNZ_t, VAL_t>> {
   typedef FormatMatcherMixin<ID_t, NNZ_t, VAL_t, TRANSFORM_t<ID_t, NNZ_t, VAL_t>, TransformFunction<ID_t, NNZ_t, VAL_t>> Base;
   using Base::Base; // Used to forward constructors from base
   public:
