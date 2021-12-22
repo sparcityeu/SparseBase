@@ -49,7 +49,7 @@ Currently we support two sparse data file formats:
 - Matrix Market Files (.mtx)
 - Undirected Edge List Files (.uedgelist)
 
-We can perform a read operation on these formats as shown below: (use `UEdgeListReader` fro .uedgelist files)
+We can perform a read operation on these formats as shown below: (use `UEdgeListReader` for .uedgelist files)
 ```c++
 auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
 auto data = reader->read();
@@ -65,9 +65,9 @@ Currently, both readers only support a single SparseFormat per file. But we have
 
 ## Converting Formats
 
-Readers might use different formats. So we can not be sure about the format of the final result of the read operation.
+Readers might default to different formats (either CSR or COO). So we can not be sure about the format of the final result of the read operation.
 
-We can convert the data into the format we desire using ``SparseConverter``:
+However, we can convert the data into the format we desire using ``SparseConverter``:
 ```c++
 auto converter = SparseConverter<vertex_type, edge_type, value_type>();
 auto converted = converter.convert(result, CSR_f);
