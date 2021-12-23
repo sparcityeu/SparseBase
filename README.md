@@ -52,20 +52,18 @@ Currently we support two sparse data file formats:
 We can perform a read operation on these formats as shown below: (use `UEdgeListReader` for .uedgelist files)
 ```c++
 auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
-auto data = reader->read();
+auto data = reader->read_coo();
 ```
 
-The data object retrieved here is a vector of SparseFormats. If the file contains a single SparseFormat (tensor, matrix etc.),
-then we can simply take the 0-th index of this.
-```c++
-auto result = data[0];
-```
+There are certain limitations to readers, which will be addressed in future releases:
+- `UEdgeListReader` can only read to CSR format
+- `MTXReader` can only read to COO format
+- Reading multiple tensors, matrices or graphs from a single file is not supported.
 
-Currently, both readers only support a single SparseFormat per file. But we have plans to change this.
 
 ## Converting Formats
 
-Readers might default to different formats (either CSR or COO). So we can not be sure about the format of the final result of the read operation.
+As explained in the previous section, readers will read to different formats.
 
 However, we can convert the data into the format we desire using ``SparseConverter``:
 ```c++
@@ -76,12 +74,19 @@ auto csr = dynamic_cast<CSR<vertex_type, edge_type, value_type>>(converted);
 
 ## Working with Graphs
 
-Graphs can be created from a vector of formats. So we can use the output of the readers directly.
+Graphs can be created by using any SparseFormat as the connectivity information of the graph.
 
 ```c++
 auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
 auto data = reader->read();
 auto g = Graph<vertex_type, edge_type, value_type>(data);
+```
+
+Alternatively we can create a graph by directly passing the reader.
+
+```c++
+ Graph<vertex_type, edge_type, value_type> g;
+ g.read_connectivity_to_coo(MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
 As of the current version of the library graphs function as containers of sparse data. There are plans to change this however in future releases.
@@ -93,7 +98,7 @@ As of the current version two such ``ReorderPreprocessType`` classes exist ``RCM
 
 Below you can see an example of an RCM reordering of a graph.
 ```c++
-ReorderInstance<vertex_type, edge_type, value_type, RCMReorder<vertex_type, edge_type, value_type>> orderer;
+ReorderInstance<vertex_type, edge_type, value_type, RCMReorder> orderer;
 SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
 vertex_type * order = orderer.get_reorder(con);
 ```
@@ -107,6 +112,13 @@ SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
 vertex_type * order = orderer.get_reorder(con);
 ```
 
+Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
+So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `TransformInstance` class
+
+```c++
+TransformInstance<vertex_type, edge_type, value_type, Transform> transformer(1);
+auto csr = transformer.get_transformation(con, order);
+```
 
 # Contribution Guidelines
 
