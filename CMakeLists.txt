@@ -22,6 +22,11 @@ endif()
 add_subdirectory(sparsebase)
 add_subdirectory(examples)
 
+add_custom_target(format
+    COMMAND bash ${CMAKE_SOURCE_DIR}/.format.bash ${CMAKE_SOURCE_DIR}
+    COMMENT "Formatting source files"
+)
+
 if ( RUN_TESTS )
     execute_process(COMMAND git submodule update --recursive --init
     ${CMAKE_CURRENT_SOURCE_DIR})
