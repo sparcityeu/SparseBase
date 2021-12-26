@@ -7,6 +7,7 @@
 #include <tuple>
 #include <queue>
 #include <utility>
+#include <memory>
 
 namespace sparsebase {
     std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const{
@@ -153,7 +154,7 @@ namespace sparsebase {
       DegreeReorder<ID_t, NNZ_t, VAL_t>::DegreeReorder(int hyperparameter){
         //this->map[{CSR_f}]= calculate_order_csr;
         this->register_function({CSR_f}, calculate_Reorder_csr);
-        this->_params = unique_ptr<DegreeReorderParams>(new DegreeReorderParams(hyperparameter));
+        this->_params = std::unique_ptr<DegreeReorderParams>(new DegreeReorderParams(hyperparameter));
       }
   template<typename ID_t, typename NNZ_t, typename VAL_t>
       ID_t* DegreeReorder<ID_t, NNZ_t, VAL_t>::calculate_Reorder_csr(std::vector<SparseFormat<ID_t, NNZ_t, VAL_t>*> formats, ReorderParams* params){
@@ -193,7 +194,7 @@ namespace sparsebase {
   template<typename ID_t, typename NNZ_t, typename VAL_t>
       RCMReorder<ID_t, NNZ_t, VAL_t>::RCMReorder(float a, float b) {
         this->register_function({CSR_f}, get_reorder_csr);
-        this->_params = unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
+        this->_params = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
       }
       template <typename ID_t, typename NNZ_t, typename VAL_t>
       ID_t RCMReorder<ID_t, NNZ_t, VAL_t>::peripheral(NNZ_t *xadj, ID_t *adj, ID_t n, ID_t start, s_ID_t *distance, ID_t *Q)
