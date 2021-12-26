@@ -63,7 +63,14 @@ Once its built, while in the build directory, do the following:
 ``` 
 ctest -V
 ```
-
+## Formatting
+Source files can be automatically formatted using `clang-format`. After installing `clang-format`, generate the build system using CMake and build the target `format`. This example shows its usage with `make`:
+```
+mkdir build
+cd build
+cmake ..
+make format
+``` 
 # Contribution Guidelines
 
 Contributions preferably start with an issue on the issue tracker of GitHub. In addition, a contribution of any kind must be forked out of `origin/develop` and merged back into it. 
