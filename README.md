@@ -25,8 +25,31 @@ cmake --install . --prefix "/custom/location"
 **Note:** We suggest using **absolute paths** for prefixes as relative paths have been known to cause problems from time to time.
 
 ## Usage
+SparseBase can be easily added to your project either through CMake's `find_package()` command, or by directly linking it at compilation time.
+### Adding SparseBase through CMake
+If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
+```
+find_package(sparsebase 0.1 REQUIRED)
+```
+However, if you installed the library to a different path, say `/custom/location/`, you must specify that path in the command:
+```
+find_package(sparsebase 0.1 REQUIRED PATHS /custom/location/)
+```
+After the library is added to your project, you can simply link your targets to `sparsebase::sparsebase`:
 
-When compiling a project that uses SparseBase, simply link the project with the library using the flag `-lsparsebase`.
+```
+target_link_libraries(your_target sparsebase::sparsebase)
+```
+
+### Linking to SparseBase at compile time 
+You can link SparseBase directly to your targets by passing the appropriate flag for your compiler. For example, for `g++`, add the `-lsparsebase` flag:
+```
+g++ source.cpp -lsparsebase
+```
+If the library was installed to a different location, say `/custom/location/`, then make sure to guide the compiler to the locations of the headers and the binary:
+```
+g++ source.cpp -I/custom/location/include -L/custom/location/lib -lsparsebase
+```
 
 ## Tests
 
