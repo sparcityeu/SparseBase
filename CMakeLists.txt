@@ -29,3 +29,34 @@ if ( RUN_TESTS )
     enable_testing()
     add_test(NAME sparseformat_tests COMMAND tests/sparseformat_tests.test)
 endif()
+
+# Create the sparseprocess export set
+install(EXPORT sparsebaseTargets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sparsebase
+        NAMESPACE sparsebase::
+        FILE sparsebaseTargets.cmake
+        )
+
+# configure the package configuration file
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "Config.cmake.in"
+    "sparsebaseConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sparsebase
+    PATH_VARS
+        CMAKE_INSTALL_LIBDIR
+)
+
+# create the package version file
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfigVersion.cmake
+    VERSION ${sparsebase_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+# install the package
+install(
+    FILES   "${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfig.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sparsebase"
+)
