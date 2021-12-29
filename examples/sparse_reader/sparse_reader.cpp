@@ -25,8 +25,8 @@ int main(int argc, char * argv[]){
     auto coo = dynamic_cast<sparsebase::COO<vertex_type,edge_type,value_type>*>(g.get_connectivity());
 
     vertex_type nnz = coo->get_num_nnz();
-    vertex_type * adj = coo->get_adj();
-    vertex_type * is = coo->get_is();
+    vertex_type * col = coo->get_col();
+    vertex_type * row = coo->get_row();
 
     cout << "NNZ: " << nnz << endl;
 

@@ -28,9 +28,9 @@ namespace sparsebase{
       virtual Format get_format() = 0;
       virtual std::vector<ID_t> get_dimensions() = 0;
       virtual NNZ_t get_num_nnz() = 0;
-      virtual NNZ_t * get_xadj() = 0;
-      virtual ID_t * get_adj() = 0;
-      virtual ID_t * get_is() = 0;
+      virtual NNZ_t * get_row_ptr() = 0;
+      virtual ID_t * get_col() = 0;
+      virtual ID_t * get_row() = 0;
       virtual VAL_t * get_vals() = 0;
       virtual ID_t ** get_ind() = 0;
   };
@@ -46,9 +46,9 @@ namespace sparsebase{
       virtual Format get_format() override;
       std::vector<ID_t>get_dimensions() override;
       NNZ_t get_num_nnz() override;
-      NNZ_t * get_xadj() override;
-      ID_t * get_adj() override;
-      ID_t * get_is() override;
+      NNZ_t * get_row_ptr() override;
+      ID_t * get_col() override;
+      ID_t * get_row() override;
       VAL_t * get_vals() override;
       ID_t ** get_ind() override;
 
@@ -62,28 +62,28 @@ namespace sparsebase{
   class COO : public AbstractSparseFormat<ID_t, NNZ_t, VAL_t>{
     public:
       COO();
-      COO(ID_t _n, ID_t _m, NNZ_t _nnz, ID_t * _adj, ID_t* _is, VAL_t* _vals);
+      COO(ID_t _n, ID_t _m, NNZ_t _nnz, ID_t* _row, ID_t * _col, VAL_t* _vals);
       virtual ~COO();
       Format get_format() override;
-      ID_t * adj;
-      ID_t * is;
+      ID_t * col;
+      ID_t * row;
       VAL_t * vals;
-      ID_t * get_adj() override;
-      ID_t * get_is() override;
+      ID_t * get_col() override;
+      ID_t * get_row() override;
       VAL_t * get_vals() override;
   };
   template<typename ID_t, typename NNZ_t, typename VAL_t>
   class CSR : public AbstractSparseFormat<ID_t, NNZ_t, VAL_t>{
     public:
       CSR();
-      CSR(ID_t _n, ID_t _m, NNZ_t *_xadj, ID_t *_adj, VAL_t *_vals);
+      CSR(ID_t _n, ID_t _m, NNZ_t *_row_ptr, ID_t *_col, VAL_t *_vals);
       Format get_format() override;
       virtual ~CSR();
-      NNZ_t * xadj;
-      ID_t * adj;
+      NNZ_t * row_ptr;
+      ID_t * col;
       VAL_t * vals;
-      ID_t * get_xadj() override;
-      ID_t * get_adj() override;
+      ID_t * get_row_ptr() override;
+      ID_t * get_col() override;
       VAL_t * get_vals() override;
   };
 

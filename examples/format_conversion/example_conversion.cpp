@@ -8,11 +8,11 @@ using namespace sparsebase;
 
 int main(){
 
-    int adj[6] = {0,0,1,1,2,2};
-    int is[6] = {0,1,1,2,3,3};
+    int row[6] = {0, 0, 1, 1, 2, 2};
+    int col[6] = {0, 1, 1, 2, 3, 3};
     int vals[6] = {10, 20, 30, 40, 50, 60};
 
-    COO<int,int,int>* coo = new COO<int,int,int>(6,6,6,adj,is,vals);
+    COO<int,int,int>* coo = new COO<int,int,int>(6, 6, 6, row, col, vals);
 
     auto converter = new SparseConverter<int,int,int>();
     auto csr = converter->convert(coo,CSR_f);
@@ -30,11 +30,11 @@ int main(){
     cout << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << csr2->adj[i] << ",";
+        cout << csr2->col[i] << ",";
     cout << endl;
     
     for(int i=0; i<n+1; i++)
-        cout << csr2->xadj[i] << ",";
+        cout << csr2->row_ptr[i] << ",";
     cout << endl;
     
     cout << endl;
@@ -50,11 +50,11 @@ int main(){
     cout << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << coo3->is[i] << ",";
+        cout << coo3->row[i] << ",";
     cout << endl;
     
     for(int i=0; i<nnz; i++)
-        cout << coo3->adj[i] << ",";
+        cout << coo3->col[i] << ",";
     cout << endl;
 
     delete coo;

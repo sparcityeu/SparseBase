@@ -11,14 +11,14 @@ using namespace sparsebase;
 
 int main(int argc, char * argv[]){
   cout << "F t re  s sp r e!" << endl;
-  unsigned int xadj[4] = {0, 2, 3, 4};
-  unsigned int adj[4] = {1,2,0,0};
+  unsigned int row_ptr[4] = {0, 2, 3, 4};
+  unsigned int col[4] = {1, 2, 0, 0};
   {
-    CSR<unsigned int, unsigned int, void> csr(3, 3, xadj, adj, nullptr);
+    CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
     auto format = csr.get_format();
     auto dimensions = csr.get_dimensions();
-    auto xadj = csr.get_xadj();
-    auto adj = csr.get_adj();
+    auto row_ptr2 = csr.get_row_ptr();
+    auto col2 = csr.get_col();
     auto vals = csr.get_vals();
     cout << "Format: " << format << endl;
     cout << "# of dimensions: " << dimensions.size() << endl;
@@ -38,15 +38,15 @@ int main(int argc, char * argv[]){
     COO<unsigned int, unsigned int, void> * coo = reader.read_coo();
     auto format = coo->get_format();
     auto dimensions = coo->get_dimensions();
-    auto adj = coo->get_adj();
+    auto coo_col = coo->get_col();
     try{ //if the data member is invalid, sparse format throws an exception
-      auto xadj = coo->get_xadj();
+      auto coo_row_ptr = coo->get_row_ptr();
     }
-    catch(InvalidDataMember ex){
+    catch(InvalidDataMember& ex){
       cout << ex.what() << endl;
     }
-    auto is = coo->get_is();
-    auto vals = coo->get_vals();
+    auto coo_row = coo->get_row();
+    auto coo_vals = coo->get_vals();
     cout << "Format: " << coo->get_format() << endl;
     cout << "# of dimensions: " << dimensions.size() << endl;
     for(int i = 0; i < dimensions.size(); i++){

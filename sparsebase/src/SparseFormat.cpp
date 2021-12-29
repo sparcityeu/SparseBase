@@ -40,19 +40,19 @@ namespace sparsebase
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    NNZ_t * AbstractSparseFormat<ID_t, NNZ_t, VAL_t>::get_xadj()
+    NNZ_t * AbstractSparseFormat<ID_t, NNZ_t, VAL_t>::get_row_ptr()
     {
-        throw InvalidDataMember(to_string(get_format()), string("xadj"));
+        throw InvalidDataMember(to_string(get_format()), string("row_ptr"));
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    ID_t * AbstractSparseFormat<ID_t, NNZ_t, VAL_t>::get_adj()
+    ID_t * AbstractSparseFormat<ID_t, NNZ_t, VAL_t>::get_col()
     {
-        throw InvalidDataMember(to_string(get_format()), string("adj"));
+        throw InvalidDataMember(to_string(get_format()), string("col"));
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    ID_t * AbstractSparseFormat<ID_t, NNZ_t, VAL_t>::get_is()
+    ID_t * AbstractSparseFormat<ID_t, NNZ_t, VAL_t>::get_row()
     {
         throw InvalidDataMember(to_string(get_format()), string("is"));
     }
@@ -76,14 +76,14 @@ namespace sparsebase
         this->format = Format::COO_f;
         this->dimension = std::vector<ID_t>(2, 0);
         this->nnz = 0;
-        adj = nullptr;
+        col = nullptr;
         vals = nullptr;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    COO<ID_t, NNZ_t, VAL_t>::COO(ID_t _n, ID_t _m, NNZ_t _nnz, ID_t *_adj, ID_t *_is, VAL_t *_vals)
+    COO<ID_t, NNZ_t, VAL_t>::COO(ID_t _n, ID_t _m, NNZ_t _nnz, ID_t *_row, ID_t *_col, VAL_t *_vals)
     {
-        adj = _adj;
-        is = _is;
+        col = _col;
+        row = _row;
         vals = _vals;
         this->nnz = _nnz;
         this->format = Format::CSR_f;
@@ -95,14 +95,14 @@ namespace sparsebase
         return COO_f;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    ID_t * COO<ID_t, NNZ_t, VAL_t>::get_adj()
+    ID_t * COO<ID_t, NNZ_t, VAL_t>::get_col()
     {
-        return adj;
+        return col;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    ID_t * COO<ID_t, NNZ_t, VAL_t>::get_is()
+    ID_t * COO<ID_t, NNZ_t, VAL_t>::get_row()
     {
-        return is;
+        return row;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     VAL_t * COO<ID_t, NNZ_t, VAL_t>::get_vals()
@@ -119,34 +119,34 @@ namespace sparsebase
         this->format = Format::CSR_f;
         this->dimension = std::vector<ID_t>(2, 0);
         this->nnz = 0;
-        this->adj = nullptr;
-        this->xadj = nullptr;
+        this->col = nullptr;
+        this->row_ptr = nullptr;
         this->vals = nullptr;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    CSR<ID_t, NNZ_t, VAL_t>::CSR(ID_t _n, ID_t _m, NNZ_t *_xadj, ID_t *_adj, VAL_t *_vals)
+    CSR<ID_t, NNZ_t, VAL_t>::CSR(ID_t _n, ID_t _m, NNZ_t *_row_ptr, ID_t *_col, VAL_t *_vals)
     {
-        this->xadj = _xadj;
-        this->adj = _adj;
+        this->row_ptr = _row_ptr;
+        this->col = _col;
         this->vals = _vals;
         this->format = Format::CSR_f;
         this->order = 2;
         this->dimension = {_n, _m};
-        this->nnz = this->xadj[this->dimension[0]];
+        this->nnz = this->row_ptr[this->dimension[0]];
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     Format CSR<ID_t,NNZ_t,VAL_t>::get_format(){
         return CSR_f;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    ID_t * CSR<ID_t, NNZ_t, VAL_t>::get_adj()
+    ID_t * CSR<ID_t, NNZ_t, VAL_t>::get_col()
     {
-        return adj;
+        return col;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
-    ID_t * CSR<ID_t, NNZ_t, VAL_t>::get_xadj()
+    ID_t * CSR<ID_t, NNZ_t, VAL_t>::get_row_ptr()
     {
-        return xadj;
+        return row_ptr;
     }
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     VAL_t * CSR<ID_t, NNZ_t, VAL_t>::get_vals()

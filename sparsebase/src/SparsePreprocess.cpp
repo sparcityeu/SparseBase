@@ -164,7 +164,7 @@ namespace sparsebase {
         ID_t n = csr->get_dimensions()[0];
         ID_t * counts = new ID_t[n]();
         for(ID_t u = 0; u < n; u++){
-          counts[csr->xadj[u+1] - csr->xadj[u]+1]++;
+          counts[csr->row_ptr[u + 1] - csr->row_ptr[u] + 1]++;
         }
         for(ID_t u = 1; u < n; u++){
           counts[u] += counts[u - 1];
@@ -173,7 +173,7 @@ namespace sparsebase {
         memset(sorted, -1, sizeof(ID_t) * n);
         ID_t * mr = new ID_t[n]();
         for(ID_t u = 0; u < n; u++){
-          ID_t ec = counts[csr->xadj[u+1] - csr->xadj[u]];
+          ID_t ec = counts[csr->row_ptr[u + 1] - csr->row_ptr[u]];
           sorted[ec + mr[ec]] = u;
           mr[ec]++;
         }
@@ -246,8 +246,8 @@ namespace sparsebase {
         CSR<ID_t, NNZ_t, VAL_t>* csr = static_cast<CSR<ID_t, NNZ_t, VAL_t>*>(formats[0]);
         RCMReorderParams* _params = static_cast<RCMReorderParams*>(params); 
         std::cout << "using the parameters " << _params->alpha << " and " << _params->beta << std::endl;
-        NNZ_t * xadj = csr->get_xadj();
-        ID_t * adj = csr->get_adj();
+        NNZ_t * xadj = csr->get_row_ptr();
+        ID_t * adj = csr->get_col();
         ID_t n = csr->get_dimensions()[0];
         ID_t *Q = new ID_t[n];
 
@@ -339,8 +339,8 @@ namespace sparsebase {
       ID_t n = dimensions[0];
       ID_t m = dimensions[1];
       NNZ_t nnz = sp->get_num_nnz();
-      NNZ_t * xadj = sp->get_xadj();
-      ID_t * adj = sp->get_adj();
+      NNZ_t * xadj = sp->get_row_ptr();
+      ID_t * adj = sp->get_col();
       VAL_t * vals = sp->get_vals();
       NNZ_t * nxadj = new ID_t[n+1]();
       ID_t * nadj = new NNZ_t[nnz]();
