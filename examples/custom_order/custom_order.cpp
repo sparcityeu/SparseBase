@@ -27,7 +27,7 @@ vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type,
   vertex_type *counts = new vertex_type[n]();
   for (vertex_type u = 0; u < n; u++)
   {
-    counts[csr->xadj[u + 1] - csr->xadj[u] + 1]++;
+    counts[csr->row_ptr[u + 1] - csr->row_ptr[u] + 1]++;
   }
   for (vertex_type u = 1; u < n; u++)
   {
@@ -38,7 +38,7 @@ vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type,
   vertex_type *mr = new vertex_type[n]();
   for (vertex_type u = 0; u < n; u++)
   {
-    vertex_type ec = counts[csr->xadj[u + 1] - csr->xadj[u]];
+    vertex_type ec = counts[csr->row_ptr[u + 1] - csr->row_ptr[u]];
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
@@ -73,8 +73,8 @@ int main(int argc, char * argv[]){
   vertex_type * order = orderer.get_reorder(con, &params);
 
   vertex_type n = con->get_dimensions()[0];
-  auto xadj = con->get_xadj();
-  auto adj = con->get_adj();
+  auto xadj = con->get_row_ptr();
+  auto adj = con->get_col();
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << order[0] << ", Degree: " << xadj[order[0]+1] - xadj[order[0]] << endl;
   cout << "Last vertex, ID: " << order[n-1] << ", Degree: " << xadj[order[n-1]+1] - xadj[order[n-1]] << endl;
@@ -112,12 +112,12 @@ int main(int argc, char * argv[]){
 
   TransformInstance<vertex_type, edge_type, value_type, Transform> transformer(1);
   SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.get_transformation(con, order);
-  auto * nxadj = csr->get_xadj();
-  auto * nadj = csr->get_adj();
+  auto * n_row_ptr = csr->get_row_ptr();
+  auto * n_col = csr->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for(vertex_type i = 0; i < n-1 && transform_is_correct; i++){
-    if(nxadj[i+2] - nxadj[i+1] < nxadj[i+1] - nxadj[i])
+    if(n_row_ptr[i + 2] - n_row_ptr[i + 1] < n_row_ptr[i + 1] - n_row_ptr[i])
     {
       cout << "Transformation is incorrect!" << endl;
       transform_is_correct = false;

@@ -63,36 +63,36 @@ namespace sparsebase
       edges.erase(unique(edges.begin(), edges.end()), edges.end());
 
       //allocate the memory
-      e_t *xadj = new e_t[n + 1];
-      v_t *adj = new v_t[m];
+      e_t *row_ptr = new e_t[n + 1];
+      v_t *col = new v_t[m];
       v_t *tadj = new v_t[m];
       v_t *is = new v_t[m];
 
-      //populate adj and xadj
-      memset(xadj, 0, sizeof(e_t) * (n + 1));
+      //populate col and row_ptr
+      memset(row_ptr, 0, sizeof(e_t) * (n + 1));
       int mt = 0;
       for (std::pair<v_t, v_t> &e : edges)
       {
-        xadj[e.first + 1]++;
+        row_ptr[e.first + 1]++;
         is[mt] = e.first;
-        adj[mt++] = e.second;
+        col[mt++] = e.second;
       }
 
       for (e_t i = 1; i <= n; i++)
       {
-        xadj[i] += xadj[i - 1];
+          row_ptr[i] += row_ptr[i - 1];
       }
 
       for (v_t i = 0; i < m; i++)
       {
-        tadj[i] = xadj[adj[i]]++;
+        tadj[i] = row_ptr[col[i]]++;
       }
       for (e_t i = n; i > 0; i--)
       {
-        xadj[i] = xadj[i - 1];
+          row_ptr[i] = row_ptr[i - 1];
       }
-      xadj[0] = 0;
-      return new CSR<v_t, e_t, w_t>(n, n, xadj, adj, nullptr);
+        row_ptr[0] = 0;
+      return new CSR<v_t, e_t, w_t>(n, n, row_ptr, col, nullptr);
     }
     else
     {
@@ -137,8 +137,8 @@ namespace sparsebase
 
         fin >> M >> N >> L;
 
-        v_t* adj = new v_t[L];
-        v_t* is = new v_t[L];
+        v_t* row = new v_t[L];
+        v_t* col = new v_t[L];
         if constexpr(!std::is_same_v<void,w_t>) {
             if(weighted){
                 w_t* vals = new w_t[L];
@@ -146,12 +146,12 @@ namespace sparsebase
                     v_t m, n;
                     w_t w;
                     fin >> m >> n >> w;
-                    adj[l] = m-1;
-                    is[l] = n-1;
+                    row[l] = n - 1;
+                    col[l] = m - 1;
                     vals[l] = w;
                 }
 
-                auto coo = new COO<v_t,e_t,w_t>(M,N,L,adj,is,vals);
+                auto coo = new COO<v_t,e_t,w_t>(M, N, L, row, col, vals);
                 return coo;
             } else {
                 // TODO: Add an exception class for this
@@ -161,11 +161,11 @@ namespace sparsebase
             for (e_t l = 0; l < L; l++) {
                 v_t m, n;
                 fin >> m >> n;
-                adj[l] = m-1;
-                is[l] = n-1;
+                row[l] = m - 1;
+                col[l] = n - 1;
             }
 
-            auto coo = new COO<v_t, e_t, w_t>(M,N,L,adj,is,nullptr);
+            auto coo = new COO<v_t, e_t, w_t>(M, N, L, row, col, nullptr);
             return coo;
         }
     }
