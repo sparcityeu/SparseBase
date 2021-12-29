@@ -56,6 +56,10 @@ int main(){
     for(int i=0; i<nnz; i++)
         cout << coo3->adj[i] << ",";
     cout << endl;
-   
+
+    delete coo;
+    delete converter;
+    delete csr2;
+    delete coo3;
 }
 
