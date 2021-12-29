@@ -89,12 +89,12 @@ Alternatively we can create a graph by directly passing the reader.
  g.read_connectivity_to_coo(MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
-As of the current version of the library graphs function as containers of sparse data. There are plans to change this however in future releases.
+As of the current version of the library, graphs function as containers of sparse data. However, there are plans to change this in future releases.
 
 ## Ordering
 
 Ordering can be handled using the ``ReorderInstance`` class. Note that this class takes a ``ReorderPreprocessType`` as a template parameter.
-As of the current version two such ``ReorderPreprocessType`` classes exist ``RCMReorder`` and ``DegreeReorder``.
+As of the current version three such ``ReorderPreprocessType`` classes exist ``RCMReorder``, ``DegreeReorder``, ``GenericReorder``.
 
 Below you can see an example of an RCM reordering of a graph.
 ```c++
