@@ -1,6 +1,7 @@
 #include "sparsebase/SparseFormat.hpp"
 #include "sparsebase/SparseConverter.hpp"
 #include <iostream>
+#include <set>
 
 using namespace std;
 
@@ -135,6 +136,18 @@ namespace sparsebase
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     SparseConverter<ID_t, NNZ_t, VAL_t>::~SparseConverter()
     {
+        set<uintptr_t> deleted_ptrs;
+
+        for(auto x : conversion_map){
+            for(auto y: x.second) {
+                ConversionFunctor<ID_t,NNZ_t,VAL_t>* ptr = y.second;
+                if(deleted_ptrs.count((uintptr_t) ptr) == 0){
+                    deleted_ptrs.insert((uintptr_t) ptr);
+                    delete ptr;
+                }
+            }
+        }
+
     }
 
     template <typename ID_t, typename NNZ_t, typename VAL_t>
