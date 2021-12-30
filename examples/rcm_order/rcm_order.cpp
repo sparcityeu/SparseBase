@@ -32,8 +32,8 @@ int main(int argc, char * argv[]){
   ReorderInstance<vertex_type, edge_type, value_type, RCMReorder> orderer(1,4);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.get_reorder(con);
-  auto xadj = con->get_xadj();
-  auto adj = con->get_adj();
+  auto xadj = con->get_row_ptr();
+  auto adj = con->get_col();
   vertex_type n = con->get_dimensions()[0];
 
   cout << "********************************" << endl;

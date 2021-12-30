@@ -16,9 +16,9 @@ class SparseFormat{
     virtual Format get_format() = 0;
     virtual std::vector<ID_t> get_dimensions() = 0;
     virtual NNZ_t get_num_nnz() = 0;
-    virtual NNZ_t * get_xadj() = 0;
-    virtual ID_t * get_adj() = 0;
-    virtual ID_t * get_is() = 0;
+    virtual NNZ_t * get_row_ptr() = 0;
+    virtual ID_t * get_col() = 0;
+    virtual ID_t * get_row() = 0;
     virtual VAL_t * get_vals() = 0;
     virtual ID_t ** get_ind() = 0;
 };
@@ -36,11 +36,11 @@ All classes that implement the Sparse Format interface store an enum type Format
     CSF_f=2 
   };
 ```
-As you might guess, not all concrete Sparse Formats have the same data members. For instance, compressed sparse rows (CSR) do not have `is` as a data member. So what happens if we call the `get_is()` function from the CSR class? 
+As you might guess, not all concrete Sparse Formats have the same data members. For instance, compressed sparse rows (CSR) do not have `is` as a data member. So what happens if we call the `get_row()` function from the CSR class? 
 
 ```cpp
     try{ //if the data member is invalid, sparse format throws an exception
-      auto is = csr->get_is();
+      auto is = csr->get_row();
     }
     catch(InvalidDataMember ex){
       cout << ex.what() << endl;
@@ -57,9 +57,9 @@ Currently Sparsebase supports two ways to create a sparse format:
 
 1. **User initialized.** The user passes the required data members of the respective sparse format through the constructor.
 ```cpp
-  unsigned int xadj[4] = {0, 2, 3, 4};
-  unsigned int adj[4] = {1,2,0,0};
-  CSR<unsigned int, unsigned int, void> csr(3, 3, xadj, adj, nullptr);
+  unsigned int row_ptr[4] = {0, 2, 3, 4};
+  unsigned int col[4] = {1,2,0,0};
+  CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
 2. **Read directly from the file.** User first creates a reader by passing the file_name. Then calls the correct read function.

@@ -22,8 +22,8 @@ namespace sparsebase
         ID_t m = dimensions[1];
         NNZ_t nnz = csr->get_num_nnz();
 
-        coo->adj = new ID_t[nnz];
-        coo->is = new ID_t[nnz];
+        coo->col = new ID_t[nnz];
+        coo->row = new ID_t[nnz];
         if (csr->vals != nullptr)
             coo->vals = new NNZ_t[nnz];
         else
@@ -31,17 +31,17 @@ namespace sparsebase
 
         ID_t count = 0;        
         for(ID_t i=0; i<n; i++){
-            ID_t start = csr->xadj[i];
-            ID_t end = csr->xadj[i+1];
+            ID_t start = csr->row_ptr[i];
+            ID_t end = csr->row_ptr[i + 1];
 
             for(ID_t j=start; j<end; j++){
-                coo->adj[count] = i;
+                coo->row[count] = i;
                 count++;
             }
         }
 
         for(ID_t i=0; i<m; i++){
-            coo->is[i] = csr->adj[i];
+            coo->col[i] = csr->col[i];
         }
 
         //if (csr->vals != nullptr)
@@ -59,12 +59,12 @@ namespace sparsebase
     }
 
 
-    // Ai -> row indices -> adj
+    // Ai -> row indices -> col
     // Aj -> col indices -> is
     // Ax -> nnz values -> vals
 
-    // Bp -> row -> xadj
-    // Bj -> col -> adj
+    // Bp -> row -> row_ptr
+    // Bj -> col -> col
     // Bx -> nnz -> vals    
     template <typename ID_t, typename NNZ_t, typename VAL_t>
     SparseFormat<ID_t, NNZ_t, VAL_t> * CooCsrFunctor<ID_t, NNZ_t, VAL_t>::operator()(SparseFormat<ID_t, NNZ_t, VAL_t> *source)
@@ -76,16 +76,16 @@ namespace sparsebase
         ID_t m = dimensions[1];
         NNZ_t nnz = coo->get_num_nnz();
 
-        ID_t* xadj = new ID_t[n+1];
-        ID_t* adj = new ID_t[m];
+        ID_t* row_ptr = new ID_t[n + 1];
+        ID_t* col = new ID_t[m];
         NNZ_t* vals;
         if (coo->vals != nullptr)
             vals = new NNZ_t[nnz];
         else
             vals = nullptr;
 
-        fill(xadj, xadj + n + 1, 0);
-        fill(adj, adj + m, 0);
+        fill(row_ptr, row_ptr + n + 1, 0);
+        fill(col, col + m, 0);
         if (coo->vals != nullptr)
             fill(vals, vals + nnz, 0);
 
@@ -93,26 +93,26 @@ namespace sparsebase
         // Maybe add a sort check and then not do this if it is already sorted
         vector<pair<ID_t,ID_t>> edges;
         for(ID_t i=0; i<nnz; i++){
-            edges.emplace_back(coo->adj[i], coo->is[i]);
+            edges.emplace_back(coo->col[i], coo->row[i]);
         }
         sort(edges.begin(), edges.end(), less<pair<ID_t,ID_t>>());
 
 
         for(ID_t i=0; i<m; i++){
-            adj[i] = edges[i].second;
-            xadj[edges[i].first]++;
+            col[i] = edges[i].second;
+            row_ptr[edges[i].first]++;
         }
 
         for (ID_t i = 1; i <= n; i++)
         {
-          xadj[i] += xadj[i - 1];
+            row_ptr[i] += row_ptr[i - 1];
         }
 
         for (ID_t i = n; i > 0; i--)
         {
-          xadj[i] = xadj[i - 1];
+            row_ptr[i] = row_ptr[i - 1];
         }
-        xadj[0] = 0;
+        row_ptr[0] = 0;
 
 
         if constexpr (!std::is_same_v<void, VAL_t>){
@@ -122,7 +122,7 @@ namespace sparsebase
                 }
         }
         
-        auto csr =  new CSR<ID_t, NNZ_t, VAL_t>(n, m, xadj, adj, vals);
+        auto csr =  new CSR<ID_t, NNZ_t, VAL_t>(n, m, row_ptr, col, vals);
         return csr;
     }
 
