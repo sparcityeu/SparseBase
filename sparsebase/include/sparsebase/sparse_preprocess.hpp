@@ -30,7 +30,7 @@ class SparseConverterMixin : public Parent {
   using Parent::Parent;
 
 protected:
-  SparseConverter<ID, NumNonZeros, Value> _sc;
+  SparseConverter<ID, NumNonZeros, Value> sc_;
 
 public:
   void set_converter(const SparseConverter<ID, NumNonZeros, Value> &new_sc);
@@ -48,7 +48,7 @@ class ReorderPreprocessType
           SparseConverterMixin<PreprocessType, ID, NumNonZeros, Value>,
           ReorderFunction<ID, NumNonZeros, Value>> {
 protected:
-  std::unique_ptr<ReorderParams> _params;
+  std::unique_ptr<ReorderParams> params_;
 
 public:
   virtual ~ReorderPreprocessType();
@@ -88,8 +88,8 @@ public:
 
 protected:
   struct DegreeReorderParams : ReorderParams {
-    int _hyperparameter;
-    DegreeReorderParams(int h) : _hyperparameter(h) {}
+    int hyperparameter;
+    DegreeReorderParams(int h) : hyperparameter(h) {}
   };
   static ID *
   calculate_Reorder_csr(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
@@ -182,10 +182,9 @@ public:
 template <typename ID, typename NumNonZeros, typename Value>
 class Transform : public TransformPreprocessType<ID, NumNonZeros, Value> {
 public:
-  Transform(int hyperparameter);
+  Transform();
 
 protected:
-  int _hyperparameter;
   static SparseFormat<ID, NumNonZeros, Value> *
   transform_csr(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
                 ID *order);

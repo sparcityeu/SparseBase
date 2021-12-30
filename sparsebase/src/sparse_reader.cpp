@@ -17,12 +17,12 @@ SparseReader<ID, NumNonZeros, Value>::~SparseReader(){};
 /*!
   Detailed description
   \param filename string
-  \param _weighted bool
+  \param weighted bool
   \return std::vector of formats
 */
 template <typename VertexID, typename NumEdges, typename Weight>
-UedgelistReader<VertexID, NumEdges, Weight>::UedgelistReader(std::string filename, bool _weighted)
-    : filename(filename), weighted(_weighted) {}
+UedgelistReader<VertexID, NumEdges, Weight>::UedgelistReader(std::string filename, bool weighted)
+    : filename_(filename), weighted_(weighted) {}
 template <typename VertexID, typename NumEdges, typename Weight>
 SparseFormat<VertexID, NumEdges, Weight> *
 UedgelistReader<VertexID, NumEdges, Weight>::read_sparseformat() const {
@@ -30,7 +30,7 @@ UedgelistReader<VertexID, NumEdges, Weight>::read_sparseformat() const {
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::read_csr() const {
-  std::ifstream infile(this->filename);
+  std::ifstream infile(this->filename_);
   if (infile.is_open()) {
     VertexID u, v;
     NumEdges edges_read = 0;
@@ -107,13 +107,13 @@ MTXReader<VertexID, NumEdges, Weight>::read_sparseformat() const {
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
-MTXReader<VertexID, NumEdges, Weight>::MTXReader(std::string filename, bool _weighted)
-    : filename(filename), weighted(_weighted) {}
+MTXReader<VertexID, NumEdges, Weight>::MTXReader(std::string filename, bool weighted)
+    : filename_(filename), weighted_(weighted) {}
 
 template <typename VertexID, typename NumEdges, typename Weight>
 COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::read_coo() const {
   // Open the file:
-  std::ifstream fin(filename);
+  std::ifstream fin(filename_);
 
   // Declare variables: (check the types here)
   VertexID M, N, L;
@@ -127,7 +127,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::read_coo
   VertexID *row = new VertexID[L];
   VertexID *col = new VertexID[L];
   if constexpr (!std::is_same_v<void, Weight>) {
-    if (weighted) {
+    if (weighted_) {
       Weight *vals = new Weight[L];
       for (NumEdges l = 0; l < L; l++) {
         VertexID m, n;

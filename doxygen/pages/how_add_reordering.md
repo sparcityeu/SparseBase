@@ -42,14 +42,14 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 };
 ```
 
-Inside the constructor, you will take the hyperparameters from the user, add them to an instance of the struct you just created, and set the data member `_params`, which your class inherited from `ReorderPreprocessType`, to the newly added struct.
+Inside the constructor, you will take the hyperparameters from the user, add them to an instance of the struct you just created, and set the data member `params_`, which your class inherited from `ReorderPreprocessType`, to the newly added struct.
 
 ```cpp
 template <typename ID, typename NumNonZeros, typename Value>
 class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 	// ...
 	OptimalReorder(float alpha, float beta){
-		this->_params = unique_ptr<OptimalReorderParams>(new OptimalReorderParams{alpha, beta});
+		this->params_ = unique_ptr<OptimalReorderParams>(new OptimalReorderParams{alpha, beta});
 
 	// ...
 };

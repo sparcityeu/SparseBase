@@ -41,8 +41,8 @@ public:
 
 private:
   static bool sortedge(const std::pair<VertexID, VertexID> &a, const std::pair<VertexID, VertexID> &b);
-  std::string filename;
-  bool weighted;
+  std::string filename_;
+  bool weighted_;
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -56,8 +56,8 @@ public:
   virtual ~MTXReader();
 
 private:
-  std::string filename;
-  bool weighted;
+  std::string filename_;
+  bool weighted_;
 };
 
 } // namespace sparsebase

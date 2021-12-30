@@ -15,7 +15,7 @@ public:
 template <typename ID, typename NumNonZeros, typename Value>
 class AbstractSparseObject : public SparseObject {
 protected:
-  SparseFormat<ID, NumNonZeros, Value> *connectivity;
+  SparseFormat<ID, NumNonZeros, Value> *connectivity_;
 
 public:
   virtual ~AbstractSparseObject();
@@ -25,7 +25,7 @@ public:
 template <typename VertexID, typename NumEdges, typename Weight>
 class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
 public:
-  Graph(SparseFormat<VertexID, NumEdges, Weight> *_connectivity);
+  Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity);
   Graph();
   void read_connectivity_to_csr(const ReadsCSR<VertexID, NumEdges, Weight> &);
   void read_connectivity_to_coo(const ReadsCOO<VertexID, NumEdges, Weight> &);
@@ -34,8 +34,8 @@ public:
   void initialize_info_from_connection();
   virtual ~Graph();
   void verify_structure();
-  VertexID n;
-  NumEdges m;
+  VertexID n_;
+  NumEdges m_;
 };
 
 // template<typename VertexID, typename NumEdges, typename t_t>

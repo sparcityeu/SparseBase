@@ -41,7 +41,7 @@ private:
       std::unordered_map<Format, ConversionFunctor<ID, NumNonZeros, Value> *,
                          FormatHash>,
       FormatHash>
-      ConversionMap;
+      conversion_map_;
 
 public:
   SparseConverter();

@@ -22,8 +22,8 @@ int main(int argc, char * argv[]){
   cout << "Reading graph from " << file_name << "..." << endl;
   Graph<vertex_type, edge_type, value_type> g;
   g.read_connectivity_from_edgelist_to_csr(file_name);
-  cout << "Number of vertices: " << g.n << endl; 
-  cout << "Number of edges: " << g.m << endl; 
+  cout << "Number of vertices: " << g.n_ << endl; 
+  cout << "Number of edges: " << g.m_ << endl; 
 
   cout << "********************************" << endl;
 

@@ -15,19 +15,20 @@ using edge_type = unsigned int;
 using value_type = void;
 
 struct customParam : ReorderParams{
-  customParam(int h):_hyperparameter(h){}
-  int _hyperparameter;
+  customParam(int h):hyperparameter(h){}
+  int hyperparameter;
 };
 vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type, value_type> *> formats, ReorderParams *params)
 {
   CSR<vertex_type, edge_type, value_type> *csr = static_cast<CSR<vertex_type, edge_type, value_type> *>(formats[0]);
   customParam  *cast_params = static_cast<customParam *>(params);
-  cout << cast_params->_hyperparameter << endl;
+  cout << cast_params->hyperparameter << endl;
   vertex_type n = csr->get_dimensions()[0];
   vertex_type *counts = new vertex_type[n]();
+  auto row_ptr = csr->get_row_ptr();
   for (vertex_type u = 0; u < n; u++)
   {
-    counts[csr->row_ptr[u + 1] - csr->row_ptr[u] + 1]++;
+    counts[row_ptr[u + 1] - row_ptr[u] + 1]++;
   }
   for (vertex_type u = 1; u < n; u++)
   {
@@ -38,7 +39,7 @@ vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type,
   vertex_type *mr = new vertex_type[n]();
   for (vertex_type u = 0; u < n; u++)
   {
-    vertex_type ec = counts[csr->row_ptr[u + 1] - csr->row_ptr[u]];
+    vertex_type ec = counts[row_ptr[u + 1] - row_ptr[u]];
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
@@ -59,8 +60,8 @@ int main(int argc, char * argv[]){
   cout << "Reading graph from " << file_name << "..." << endl;
   Graph<vertex_type, edge_type, value_type> g;
   g.read_connectivity_from_edgelist_to_csr(file_name);
-  cout << "Number of vertices: " << g.n << endl; 
-  cout << "Number of edges: " << g.m << endl; 
+  cout << "Number of vertices: " << g.n_ << endl; 
+  cout << "Number of edges: " << g.m_ << endl; 
 
   cout << "********************************" << endl;
 
@@ -110,7 +111,7 @@ int main(int argc, char * argv[]){
     cout << "Order is correct." << endl;
   }
 
-  TransformInstance<vertex_type, edge_type, value_type, Transform> transformer(1);
+  TransformInstance<vertex_type, edge_type, value_type, Transform> transformer;
   SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.get_transformation(con, order);
   auto * n_row_ptr = csr->get_row_ptr();
   auto * n_col = csr->get_col();
