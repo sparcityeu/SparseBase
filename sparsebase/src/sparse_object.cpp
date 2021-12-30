@@ -8,69 +8,69 @@ namespace sparsebase {
 
 SparseObject::~SparseObject(){};
 
-template <typename ID_t, typename NNZ_t, typename VAL_t>
-AbstractSparseObject<ID_t, NNZ_t, VAL_t>::~AbstractSparseObject(){};
-template <typename ID_t, typename NNZ_t, typename VAL_t>
-SparseFormat<ID_t, NNZ_t, VAL_t> *
-AbstractSparseObject<ID_t, NNZ_t, VAL_t>::get_connectivity() {
+template <typename ID, typename NumNonZeros, typename Value>
+AbstractSparseObject<ID, NumNonZeros, Value>::~AbstractSparseObject(){};
+template <typename ID, typename NumNonZeros, typename Value>
+SparseFormat<ID, NumNonZeros, Value> *
+AbstractSparseObject<ID, NumNonZeros, Value>::get_connectivity() {
   return connectivity;
 }
 
-template <typename v_t, typename e_t, typename w_t>
-Graph<v_t, e_t, w_t>::Graph(SparseFormat<v_t, e_t, w_t> *_connectivity) {
+template <typename VertexID, typename NumEdges, typename Weight>
+Graph<VertexID, NumEdges, Weight>::Graph(SparseFormat<VertexID, NumEdges, Weight> *_connectivity) {
   this->connectivity = _connectivity;
   this->verify_structure();
   initialize_info_from_connection();
 }
-template <typename v_t, typename e_t, typename w_t>
-void Graph<v_t, e_t, w_t>::read_connectivity_to_coo(
-    const ReadsCOO<v_t, e_t, w_t> &reader) {
+template <typename VertexID, typename NumEdges, typename Weight>
+void Graph<VertexID, NumEdges, Weight>::read_connectivity_to_coo(
+    const ReadsCOO<VertexID, NumEdges, Weight> &reader) {
   this->connectivity = reader.read_coo();
   this->verify_structure();
   initialize_info_from_connection();
   std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", "
-            << this->connectivity->get_dimensions()[1] << endl;
+            << this->connectivity->get_dimensions()[1] << std::endl;
 }
-template <typename v_t, typename e_t, typename w_t>
-void Graph<v_t, e_t, w_t>::read_connectivity_to_csr(
-    const ReadsCSR<v_t, e_t, w_t> &reader) {
+template <typename VertexID, typename NumEdges, typename Weight>
+void Graph<VertexID, NumEdges, Weight>::read_connectivity_to_csr(
+    const ReadsCSR<VertexID, NumEdges, Weight> &reader) {
   this->connectivity = reader.read_csr();
   this->verify_structure();
   initialize_info_from_connection();
   std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", "
-            << this->connectivity->get_dimensions()[1] << endl;
+            << this->connectivity->get_dimensions()[1] << std::endl;
 }
-template <typename v_t, typename e_t, typename w_t>
-void Graph<v_t, e_t, w_t>::read_connectivity_from_edgelist_to_csr(
-    string filename) {
-  UedgelistReader<v_t, e_t, w_t> reader(filename);
+template <typename VertexID, typename NumEdges, typename Weight>
+void Graph<VertexID, NumEdges, Weight>::read_connectivity_from_edgelist_to_csr(
+    std::string filename) {
+  UedgelistReader<VertexID, NumEdges, Weight> reader(filename);
   this->connectivity = reader.read_csr();
   this->verify_structure();
   initialize_info_from_connection();
   std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", "
-            << this->connectivity->get_dimensions()[1] << endl;
+            << this->connectivity->get_dimensions()[1] << std::endl;
 }
-template <typename v_t, typename e_t, typename w_t>
-void Graph<v_t, e_t, w_t>::read_connectivity_from_mtx_to_coo(string filename) {
-  MTXReader<v_t, e_t, w_t> reader(filename);
+template <typename VertexID, typename NumEdges, typename Weight>
+void Graph<VertexID, NumEdges, Weight>::read_connectivity_from_mtx_to_coo(std::string filename) {
+  MTXReader<VertexID, NumEdges, Weight> reader(filename);
   this->connectivity = reader.read_coo();
   this->verify_structure();
   initialize_info_from_connection();
   std::cout << "dimensions " << this->connectivity->get_dimensions()[0] << ", "
-            << this->connectivity->get_dimensions()[1] << endl;
+            << this->connectivity->get_dimensions()[1] << std::endl;
 }
-template <typename v_t, typename e_t, typename w_t>
-Graph<v_t, e_t, w_t>::Graph() {}
-template <typename v_t, typename e_t, typename VAL_t>
-void Graph<v_t, e_t, VAL_t>::initialize_info_from_connection() {
+template <typename VertexID, typename NumEdges, typename Weight>
+Graph<VertexID, NumEdges, Weight>::Graph() {}
+template <typename VertexID, typename NumEdges, typename Value>
+void Graph<VertexID, NumEdges, Value>::initialize_info_from_connection() {
   auto dimensions = this->connectivity->get_dimensions();
   n = dimensions[0];
   m = this->connectivity->get_num_nnz();
 }
-template <typename v_t, typename e_t, typename VAL_t>
-Graph<v_t, e_t, VAL_t>::~Graph(){};
-template <typename v_t, typename e_t, typename VAL_t>
-void Graph<v_t, e_t, VAL_t>::verify_structure() {
+template <typename VertexID, typename NumEdges, typename Value>
+Graph<VertexID, NumEdges, Value>::~Graph(){};
+template <typename VertexID, typename NumEdges, typename Value>
+void Graph<VertexID, NumEdges, Value>::verify_structure() {
   // check order
   if (this->connectivity->get_order() != 2)
     throw -1;
@@ -81,13 +81,13 @@ template class AbstractSparseObject<unsigned int, unsigned int, unsigned int>;
 template class AbstractSparseObject<unsigned int, unsigned int, void>;
 template class Graph<unsigned int, unsigned int, unsigned int>;
 template class Graph<unsigned int, unsigned int, void>;
-// template<typename v_t, typename e_t, typename t_t>
-// class TemporalGraph : public AbstractSparseObject<v_t, e_t>{
+// template<typename VertexID, typename NumEdges, typename t_t>
+// class TemporalGraph : public AbstractSparseObject<VertexID, NumEdges>{
 //   public:
-//     TemporalGraph(SparseFormat<v_t, e_t, t_t> * _connectivity){
+//     TemporalGraph(SparseFormat<VertexID, NumEdges, t_t> * _connectivity){
 //       // init temporal graph
 //     }
-//     TemporalGraph(SparseReader<v_t, e_t, t_t> * r){
+//     TemporalGraph(SparseReader<VertexID, NumEdges, t_t> * r){
 //       // init temporal graph from file
 //     }
 //     virtual ~TemporalGraph(){};
@@ -96,8 +96,8 @@ template class Graph<unsigned int, unsigned int, void>;
 //       if (this->connectivity->get_order() != 2) //throw error
 //       // check dimensions
 //     }
-//     v_t n;
-//     e_t m;
+//     VertexID n;
+//     NumEdges m;
 //     // ...
 // };
 
