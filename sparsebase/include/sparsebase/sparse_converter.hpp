@@ -46,15 +46,15 @@ private:
 public:
   SparseConverter();
   ~SparseConverter();
-  void register_conversion_function(
+  void RegisterConversionFunction(
       Format from_format, Format to_format,
       ConversionFunctor<ID, NumNonZeros, Value> *conv_func);
   ConversionFunctor<ID, NumNonZeros, Value> *
-  get_conversion_function(Format from_format, Format to_format);
+  GetConversionFunction(Format from_format, Format to_format);
   SparseFormat<ID, NumNonZeros, Value> *
-  convert(SparseFormat<ID, NumNonZeros, Value> *source, Format to_format);
-  bool can_convert(Format from_format, Format to_format);
-  std::vector<SparseFormat<ID, NumNonZeros, Value> *> apply_conversion_schema(
+  Convert(SparseFormat<ID, NumNonZeros, Value> *source, Format to_format);
+  bool CanConvert(Format from_format, Format to_format);
+  std::vector<SparseFormat<ID, NumNonZeros, Value> *> ApplyConversionSchema(
       ConversionSchema cs,
       std::vector<SparseFormat<ID, NumNonZeros, Value> *> packed_sfs);
 };

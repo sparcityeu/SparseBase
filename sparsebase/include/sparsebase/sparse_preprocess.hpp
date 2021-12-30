@@ -20,10 +20,10 @@ class MapToFunctionMixin : public Preprocess {
 
 public:
   std::unordered_map<Key, Function, KeyHash, KeyEqualTo> _map_to_function;
-  bool register_function_no_override(const Key &key_of_function,
+  bool RegisterFunctionNoOverride(const Key &key_of_function,
                                      const Function &func_ptr);
-  void register_function(const Key &key_of_function, const Function &func_ptr);
-  bool unregister_function(const Key &key_of_function);
+  void RegisterFunction(const Key &key_of_function, const Function &func_ptr);
+  bool UnregisterFunction(const Key &key_of_function);
 };
 template <class Parent, typename ID, typename NumNonZeros, typename Value>
 class SparseConverterMixin : public Parent {
@@ -33,8 +33,8 @@ protected:
   SparseConverter<ID, NumNonZeros, Value> sc_;
 
 public:
-  void set_converter(const SparseConverter<ID, NumNonZeros, Value> &new_sc);
-  void reset_converter();
+  void SetConverter(const SparseConverter<ID, NumNonZeros, Value> &new_sc);
+  void ResetConverter();
 };
 
 struct ReorderParams {};
@@ -67,18 +67,18 @@ class FormatMatcherMixin : public PreprocessingImpl {
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   std::tuple<PreprocessFunction, ConversionSchema>
-  get_function(Key key, ConversionMap map,
+  GetFunction(Key key, ConversionMap map,
                SparseConverter<ID, NumNonZeros, Value> sc);
-  template <typename F> std::vector<Format> pack_formats(F sf);
+  template <typename F> std::vector<Format> PackFormats(F sf);
   template <typename F, typename... SF>
-  std::vector<Format> pack_formats(F sf, SF... sfs);
-  template <typename F> std::vector<F> pack_sfs(F sf);
+  std::vector<Format> PackFormats(F sf, SF... sfs);
+  template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF>
-  std::vector<F> pack_sfs(F sf, SF... sfs);
+  std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
   std::tuple<PreprocessFunction,
              std::vector<SparseFormat<ID, NumNonZeros, Value> *>>
-  execute(ConversionMap map, SparseConverter<ID, NumNonZeros, Value> sc, F sf,
+  Execute(ConversionMap map, SparseConverter<ID, NumNonZeros, Value> sc, F sf,
           SF... sfs);
 };
 template <typename ID, typename NumNonZeros, typename Value>
@@ -92,7 +92,7 @@ protected:
     DegreeReorderParams(int h) : hyperparameter(h) {}
   };
   static ID *
-  calculate_Reorder_csr(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
+  CalculateReorderCSR(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
                         ReorderParams *params);
 };
 
@@ -112,7 +112,7 @@ class DegreeReorderInstance
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  ID *get_reorder(SparseFormat<ID, NumNonZeros, Value> *csr);
+  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr);
 };
 
 template <typename ID, typename NumNonZeros, typename Value>
@@ -131,7 +131,7 @@ protected:
   static ID peripheral(NumNonZeros *xadj, ID *adj, ID n, ID start,
                          SignedID *distance, ID *Q);
   static ID *
-  get_reorder_csr(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
+  GetReorderCSR(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
                   ReorderParams *);
 };
 
@@ -145,7 +145,7 @@ class RCMReorderInstance
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  ID *get_reorder(SparseFormat<ID, NumNonZeros, Value> *csr);
+  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr);
 };
 
 // template <typename ID, typename NumNonZeros, typename Value, typename ReorderImpl>
@@ -160,8 +160,8 @@ class ReorderInstance
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  ID *get_reorder(SparseFormat<ID, NumNonZeros, Value> *csr);
-  ID *get_reorder(SparseFormat<ID, NumNonZeros, Value> *csr,
+  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr);
+  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr,
                     ReorderParams *params);
 };
 
@@ -186,7 +186,7 @@ public:
 
 protected:
   static SparseFormat<ID, NumNonZeros, Value> *
-  transform_csr(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
+  TransformCSR(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
                 ID *order);
 };
 // template <typename ID, typename NumNonZeros, typename Value, typename
@@ -204,7 +204,7 @@ class TransformInstance
   using Base::Base; // Used to forward constructors from base
 public:
   SparseFormat<ID, NumNonZeros, Value> *
-  get_transformation(SparseFormat<ID, NumNonZeros, Value> *csr, ID *order);
+  GetTransformation(SparseFormat<ID, NumNonZeros, Value> *csr, ID *order);
 };
 
 } // namespace sparsebase

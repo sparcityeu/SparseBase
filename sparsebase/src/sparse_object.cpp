@@ -19,50 +19,50 @@ AbstractSparseObject<ID, NumNonZeros, Value>::get_connectivity() {
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity) {
   this->connectivity_ = connectivity;
-  this->verify_structure();
-  initialize_info_from_connection();
+  this->VerifyStructure();
+  InitializeInfoFromConnection();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-void Graph<VertexID, NumEdges, Weight>::read_connectivity_to_coo(
+void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
     const ReadsCOO<VertexID, NumEdges, Weight> &reader) {
-  this->connectivity_ = reader.read_coo();
-  this->verify_structure();
-  initialize_info_from_connection();
+  this->connectivity_ = reader.ReadCOO();
+  this->VerifyStructure();
+  InitializeInfoFromConnection();
   std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
             << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-void Graph<VertexID, NumEdges, Weight>::read_connectivity_to_csr(
+void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
     const ReadsCSR<VertexID, NumEdges, Weight> &reader) {
-  this->connectivity_ = reader.read_csr();
-  this->verify_structure();
-  initialize_info_from_connection();
+  this->connectivity_ = reader.ReadCSR();
+  this->VerifyStructure();
+  InitializeInfoFromConnection();
   std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
             << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-void Graph<VertexID, NumEdges, Weight>::read_connectivity_from_edgelist_to_csr(
+void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
     std::string filename) {
   UedgelistReader<VertexID, NumEdges, Weight> reader(filename);
-  this->connectivity_ = reader.read_csr();
-  this->verify_structure();
-  initialize_info_from_connection();
+  this->connectivity_ = reader.ReadCSR();
+  this->VerifyStructure();
+  InitializeInfoFromConnection();
   std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
             << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-void Graph<VertexID, NumEdges, Weight>::read_connectivity_from_mtx_to_coo(std::string filename) {
+void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(std::string filename) {
   MTXReader<VertexID, NumEdges, Weight> reader(filename);
-  this->connectivity_ = reader.read_coo();
-  this->verify_structure();
-  initialize_info_from_connection();
+  this->connectivity_ = reader.ReadCOO();
+  this->VerifyStructure();
+  InitializeInfoFromConnection();
   std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
             << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph() {}
 template <typename VertexID, typename NumEdges, typename Value>
-void Graph<VertexID, NumEdges, Value>::initialize_info_from_connection() {
+void Graph<VertexID, NumEdges, Value>::InitializeInfoFromConnection() {
   auto dimensions = this->connectivity_->get_dimensions();
   n_ = dimensions[0];
   m_ = this->connectivity_->get_num_nnz();
@@ -70,7 +70,7 @@ void Graph<VertexID, NumEdges, Value>::initialize_info_from_connection() {
 template <typename VertexID, typename NumEdges, typename Value>
 Graph<VertexID, NumEdges, Value>::~Graph(){};
 template <typename VertexID, typename NumEdges, typename Value>
-void Graph<VertexID, NumEdges, Value>::verify_structure() {
+void Graph<VertexID, NumEdges, Value>::VerifyStructure() {
   // check order
   if (this->connectivity_->get_order() != 2)
     throw -1;
@@ -91,7 +91,7 @@ template class Graph<unsigned int, unsigned int, void>;
 //       // init temporal graph from file
 //     }
 //     virtual ~TemporalGraph(){};
-//     void verify_structure(){
+//     void VerifyStructure(){
 //       // check order
 //       if (this->connectivity->get_order() != 2) //throw error
 //       // check dimensions
