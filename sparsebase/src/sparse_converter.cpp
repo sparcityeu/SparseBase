@@ -123,9 +123,9 @@ SparseFormat<ID, NumNonZeros, Value> *CooCsrFunctor<ID, NumNonZeros, Value>::ope
 
 template <typename ID, typename NumNonZeros, typename Value>
 SparseConverter<ID, NumNonZeros, Value>::SparseConverter() {
-  this->RegisterConversionFunction(COO_f, CSR_f,
+  this->RegisterConversionFunction(kCOOFormat, kCSRFormat,
                                      new CooCsrFunctor<ID, NumNonZeros, Value>());
-  this->RegisterConversionFunction(CSR_f, COO_f,
+  this->RegisterConversionFunction(kCSRFormat, kCOOFormat,
                                      new CsrCooFunctor<ID, NumNonZeros, Value>());
 }
 

@@ -206,8 +206,8 @@ template <typename ID, typename NumNonZeros, typename Value>
 GenericReorder<ID, NumNonZeros, Value>::GenericReorder() {}
 template <typename ID, typename NumNonZeros, typename Value>
 DegreeReorder<ID, NumNonZeros, Value>::DegreeReorder(int hyperparameter) {
-  // this->map[{CSR_f}]= calculate_order_csr;
-  this->RegisterFunction({CSR_f}, CalculateReorderCSR);
+  // this->map[{kCSRFormat}]= calculate_order_csr;
+  this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
   this->params_ = std::unique_ptr<DegreeReorderParams>(
       new DegreeReorderParams(hyperparameter));
 }
@@ -255,7 +255,7 @@ ID *DegreeReorderInstance<ID, NumNonZeros, Value>::GetReorder(
 }
 template <typename ID, typename NumNonZeros, typename Value>
 RCMReorder<ID, NumNonZeros, Value>::RCMReorder(float a, float b) {
-  this->RegisterFunction({CSR_f}, GetReorderCSR);
+  this->RegisterFunction({kCSRFormat}, GetReorderCSR);
   this->params_ = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
 }
 template <typename ID, typename NumNonZeros, typename Value>
@@ -388,7 +388,7 @@ ID *ReorderInstance<ID, NumNonZeros, Value, ReorderImpl>::GetReorder(
 
 template <typename ID, typename NumNonZeros, typename Value>
 Transform<ID, NumNonZeros, Value>::Transform(){
-  this->RegisterFunction({CSR_f}, TransformCSR);
+  this->RegisterFunction({kCSRFormat}, TransformCSR);
 }
 template <typename ID, typename NumNonZeros, typename Value>
 TransformPreprocessType<ID, NumNonZeros, Value>::~TransformPreprocessType(){};

@@ -12,9 +12,9 @@ namespace sparsebase {
 //! Enum keeping formats
 enum Format {
   //! CSR Format
-  CSR_f = 0,
+  kCSRFormat = 0,
   //! COO Format
-  COO_f = 1
+  kCOOFormat = 1
 };
 // TENSORS
 

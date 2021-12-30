@@ -102,8 +102,8 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		// ...
-		this->RegisterFunction({CSR_f}, optimally_order_csr);
-		this->RegisterFunction({COO_f}, optimally_order_coo);
+		this->RegisterFunction({kCSRFormat}, optimally_order_csr);
+		this->RegisterFunction({kCOOFormat}, optimally_order_coo);
 		// ...
 	// ...
 };
@@ -132,4 +132,4 @@ ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, u
 unsigned int * order = reorder.get_order(some_sparseformat_object);
 ```
 
-If the format of `some_sparseformat_object` is `CSR_f`, `COO_f`, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.
+If the format of `some_sparseformat_object` is `kCSRFormat`, `kCOOFormat`, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.
