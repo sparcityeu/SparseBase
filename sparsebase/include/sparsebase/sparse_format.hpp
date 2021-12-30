@@ -20,7 +20,6 @@ enum Format {
 
 template <typename ID, typename NumNonZeros, typename Value> class SparseFormat {
 public:
-  Format format;
   virtual ~SparseFormat(){};
   virtual unsigned int get_order() = 0;
   virtual Format get_format() = 0;
@@ -50,39 +49,41 @@ public:
   Value *get_vals() override;
   ID **get_ind() override;
 
-  unsigned int order;
-  std::vector<ID> dimension;
-  Format format;
-  NumNonZeros nnz;
+  Format format_;
+  unsigned int order_;
+  std::vector<ID> dimension_;
+  NumNonZeros nnz_;
 };
 
 template <typename ID, typename NumNonZeros, typename Value>
 class COO : public AbstractSparseFormat<ID, NumNonZeros, Value> {
 public:
   COO();
-  COO(ID _n, ID _m, NumNonZeros _nnz, ID *_row, ID *_col, Value *_vals);
+  COO(ID n, ID m, NumNonZeros nnz, ID *row, ID *col, Value *vals);
   virtual ~COO();
   Format get_format() override;
-  ID *col;
-  ID *row;
-  Value *vals;
   ID *get_col() override;
   ID *get_row() override;
   Value *get_vals() override;
+
+  ID *col_;
+  ID *row_;
+  Value *vals_;
 };
 template <typename ID, typename NumNonZeros, typename Value>
 class CSR : public AbstractSparseFormat<ID, NumNonZeros, Value> {
 public:
   CSR();
-  CSR(ID _n, ID _m, NumNonZeros *_row_ptr, ID *_col, Value *_vals);
+  CSR(ID n, ID m, NumNonZeros *row_ptr, ID *col, Value *vals);
   Format get_format() override;
   virtual ~CSR();
-  NumNonZeros *row_ptr;
-  ID *col;
-  Value *vals;
   ID *get_row_ptr() override;
   ID *get_col() override;
   Value *get_vals() override;
+
+  NumNonZeros *row_ptr_;
+  ID *col_;
+  Value *vals_;
 };
 
 template <typename ID, typename NumNonZeros, typename Value>
@@ -91,10 +92,11 @@ public:
   CSF(unsigned int order);
   Format get_format() override;
   virtual ~CSF();
-  NumNonZeros **ind;
-  Value *vals;
   ID **get_ind() override;
   Value *get_vals() override;
+
+  NumNonZeros **ind_;
+  Value *vals_;
 };
 
 } // namespace sparsebase

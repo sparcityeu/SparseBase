@@ -18,8 +18,8 @@ int main(int argc, char * argv[]){
     sparsebase::Graph<vertex_type, edge_type, value_type> g;
     g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 
-    cout << "Number of vertices: " << g.n << endl;
-    cout << "Number of edges: " << g.m << endl;
+    cout << "Number of vertices: " << g.n_ << endl;
+    cout << "Number of edges: " << g.m_ << endl;
 
     // Extracting connectivity information from a graph and casting it
     auto coo = dynamic_cast<sparsebase::COO<vertex_type,edge_type,value_type>*>(g.get_connectivity());

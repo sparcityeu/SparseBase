@@ -49,12 +49,12 @@ bool MapToFunctionMixin<Preprocess, Function, Key, KeyHash, KeyEqualTo>::
 template <class Parent, typename ID, typename NumNonZeros, typename Value>
 void SparseConverterMixin<Parent, ID, NumNonZeros, Value>::set_converter(
     const SparseConverter<ID, NumNonZeros, Value> &new_sc) {
-  _sc = new_sc;
+  sc_ = new_sc;
 }
 template <class Parent, typename ID, typename NumNonZeros, typename Value>
 void SparseConverterMixin<Parent, ID, NumNonZeros, Value>::reset_converter() {
   SparseConverter<ID, NumNonZeros, Value> new_sc;
-  _sc = new_sc;
+  sc_ = new_sc;
 }
 template <typename ID, typename NumNonZeros, typename Value>
 ReorderPreprocessType<ID, NumNonZeros, Value>::~ReorderPreprocessType(){};
@@ -208,7 +208,7 @@ template <typename ID, typename NumNonZeros, typename Value>
 DegreeReorder<ID, NumNonZeros, Value>::DegreeReorder(int hyperparameter) {
   // this->map[{CSR_f}]= calculate_order_csr;
   this->register_function({CSR_f}, calculate_Reorder_csr);
-  this->_params = std::unique_ptr<DegreeReorderParams>(
+  this->params_ = std::unique_ptr<DegreeReorderParams>(
       new DegreeReorderParams(hyperparameter));
 }
 template <typename ID, typename NumNonZeros, typename Value>
@@ -218,11 +218,11 @@ ID *DegreeReorder<ID, NumNonZeros, Value>::calculate_Reorder_csr(
   CSR<ID, NumNonZeros, Value> *csr =
       static_cast<CSR<ID, NumNonZeros, Value> *>(formats[0]);
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
-  std::cout << cast_params->_hyperparameter;
+  std::cout << cast_params->hyperparameter;
   ID n = csr->get_dimensions()[0];
   ID *counts = new ID[n]();
   for (ID u = 0; u < n; u++) {
-    counts[csr->row_ptr[u + 1] - csr->row_ptr[u] + 1]++;
+    counts[csr->row_ptr_[u + 1] - csr->row_ptr_[u] + 1]++;
   }
   for (ID u = 1; u < n; u++) {
     counts[u] += counts[u - 1];
@@ -231,7 +231,7 @@ ID *DegreeReorder<ID, NumNonZeros, Value>::calculate_Reorder_csr(
   memset(sorted, -1, sizeof(ID) * n);
   ID *mr = new ID[n]();
   for (ID u = 0; u < n; u++) {
-    ID ec = counts[csr->row_ptr[u + 1] - csr->row_ptr[u]];
+    ID ec = counts[csr->row_ptr_[u + 1] - csr->row_ptr_[u]];
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
@@ -248,15 +248,15 @@ ID *DegreeReorderInstance<ID, NumNonZeros, Value>::get_reorder(
     SparseFormat<ID, NumNonZeros, Value> *csr) {
   std::tuple<ReorderFunction<ID, NumNonZeros, Value>,
              std::vector<SparseFormat<ID, NumNonZeros, Value> *>>
-      func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      func_formats = this->execute(this->_map_to_function, this->sc_, csr);
   ReorderFunction<ID, NumNonZeros, Value> func = std::get<0>(func_formats);
   std::vector<SparseFormat<ID, NumNonZeros, Value> *> sfs = std::get<1>(func_formats);
-  return func(sfs, this->_params.get());
+  return func(sfs, this->params_.get());
 }
 template <typename ID, typename NumNonZeros, typename Value>
 RCMReorder<ID, NumNonZeros, Value>::RCMReorder(float a, float b) {
   this->register_function({CSR_f}, get_reorder_csr);
-  this->_params = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
+  this->params_ = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
 }
 template <typename ID, typename NumNonZeros, typename Value>
 ID RCMReorder<ID, NumNonZeros, Value>::peripheral(NumNonZeros *xadj, ID *adj, ID n,
@@ -303,9 +303,9 @@ ID *RCMReorder<ID, NumNonZeros, Value>::get_reorder_csr(
     ReorderParams *params) {
   CSR<ID, NumNonZeros, Value> *csr =
       static_cast<CSR<ID, NumNonZeros, Value> *>(formats[0]);
-  RCMReorderParams *_params = static_cast<RCMReorderParams *>(params);
-  std::cout << "using the parameters " << _params->alpha << " and "
-            << _params->beta << std::endl;
+  RCMReorderParams *params_ = static_cast<RCMReorderParams *>(params);
+  std::cout << "using the parameters " << params_->alpha << " and "
+            << params_->beta << std::endl;
   NumNonZeros *xadj = csr->get_row_ptr();
   ID *adj = csr->get_col();
   ID n = csr->get_dimensions()[0];
@@ -369,10 +369,10 @@ ID *ReorderInstance<ID, NumNonZeros, Value, ReorderImpl>::get_reorder(
     SparseFormat<ID, NumNonZeros, Value> *csr) {
   std::tuple<ReorderFunction<ID, NumNonZeros, Value>,
              std::vector<SparseFormat<ID, NumNonZeros, Value> *>>
-      func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      func_formats = this->execute(this->_map_to_function, this->sc_, csr);
   ReorderFunction<ID, NumNonZeros, Value> func = std::get<0>(func_formats);
   std::vector<SparseFormat<ID, NumNonZeros, Value> *> sfs = std::get<1>(func_formats);
-  return func(sfs, this->_params.get());
+  return func(sfs, this->params_.get());
 }
 template <typename ID, typename NumNonZeros, typename Value,
           template <typename, typename, typename> class ReorderImpl>
@@ -380,15 +380,14 @@ ID *ReorderInstance<ID, NumNonZeros, Value, ReorderImpl>::get_reorder(
     SparseFormat<ID, NumNonZeros, Value> *csr, ReorderParams *params) {
   std::tuple<ReorderFunction<ID, NumNonZeros, Value>,
              std::vector<SparseFormat<ID, NumNonZeros, Value> *>>
-      func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      func_formats = this->execute(this->_map_to_function, this->sc_, csr);
   ReorderFunction<ID, NumNonZeros, Value> func = std::get<0>(func_formats);
   std::vector<SparseFormat<ID, NumNonZeros, Value> *> sfs = std::get<1>(func_formats);
   return func(sfs, params);
 }
 
 template <typename ID, typename NumNonZeros, typename Value>
-Transform<ID, NumNonZeros, Value>::Transform(int hyperparameter)
-    : _hyperparameter(hyperparameter) {
+Transform<ID, NumNonZeros, Value>::Transform(){
   this->register_function({CSR_f}, transform_csr);
 }
 template <typename ID, typename NumNonZeros, typename Value>
@@ -437,7 +436,7 @@ TransformInstance<ID, NumNonZeros, Value, TransformImpl>::get_transformation(
     SparseFormat<ID, NumNonZeros, Value> *csr, ID *ordr) {
   std::tuple<TransformFunction<ID, NumNonZeros, Value>,
              std::vector<SparseFormat<ID, NumNonZeros, Value> *>>
-      func_formats = this->execute(this->_map_to_function, this->_sc, csr);
+      func_formats = this->execute(this->_map_to_function, this->sc_, csr);
   TransformFunction<ID, NumNonZeros, Value> func = std::get<0>(func_formats);
   std::vector<SparseFormat<ID, NumNonZeros, Value> *> sfs = std::get<1>(func_formats);
   return func(sfs, ordr);
