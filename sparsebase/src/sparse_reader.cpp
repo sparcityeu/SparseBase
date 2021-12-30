@@ -25,11 +25,11 @@ UedgelistReader<VertexID, NumEdges, Weight>::UedgelistReader(std::string filenam
     : filename_(filename), weighted_(weighted) {}
 template <typename VertexID, typename NumEdges, typename Weight>
 SparseFormat<VertexID, NumEdges, Weight> *
-UedgelistReader<VertexID, NumEdges, Weight>::read_sparseformat() const {
-  return this->read_csr();
+UedgelistReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
+  return this->ReadCSR();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::read_csr() const {
+CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::ReadCSR() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
     VertexID u, v;
@@ -55,7 +55,7 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::re
     NumEdges m = edges.size();
     std::cout << "No edges is " << m << std::endl;
 
-    sort(edges.begin(), edges.end(), sortedge);
+    sort(edges.begin(), edges.end(), SortEdge);
     edges.erase(unique(edges.begin(), edges.end()), edges.end());
 
     // allocate the memory
@@ -90,7 +90,7 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::re
   }
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-bool UedgelistReader<VertexID, NumEdges, Weight>::sortedge(const std::pair<VertexID, VertexID> &a,
+bool UedgelistReader<VertexID, NumEdges, Weight>::SortEdge(const std::pair<VertexID, VertexID> &a,
                                               const std::pair<VertexID, VertexID> &b) {
   if (a.first == b.first) {
     return (a.second < b.second);
@@ -102,8 +102,8 @@ template <typename VertexID, typename NumEdges, typename Weight>
 UedgelistReader<VertexID, NumEdges, Weight>::~UedgelistReader(){};
 template <typename VertexID, typename NumEdges, typename Weight>
 SparseFormat<VertexID, NumEdges, Weight> *
-MTXReader<VertexID, NumEdges, Weight>::read_sparseformat() const {
-  return this->read_coo();
+MTXReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
+  return this->ReadCOO();
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -111,7 +111,7 @@ MTXReader<VertexID, NumEdges, Weight>::MTXReader(std::string filename, bool weig
     : filename_(filename), weighted_(weighted) {}
 
 template <typename VertexID, typename NumEdges, typename Weight>
-COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::read_coo() const {
+COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 

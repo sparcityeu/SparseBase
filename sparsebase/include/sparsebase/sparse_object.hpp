@@ -9,7 +9,7 @@ namespace sparsebase {
 class SparseObject {
 public:
   virtual ~SparseObject();
-  virtual void verify_structure() = 0;
+  virtual void VerifyStructure() = 0;
 };
 
 template <typename ID, typename NumNonZeros, typename Value>
@@ -27,13 +27,13 @@ class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
 public:
   Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity);
   Graph();
-  void read_connectivity_to_csr(const ReadsCSR<VertexID, NumEdges, Weight> &);
-  void read_connectivity_to_coo(const ReadsCOO<VertexID, NumEdges, Weight> &);
-  void read_connectivity_from_mtx_to_coo(std::string filename);
-  void read_connectivity_from_edgelist_to_csr(std::string filename);
-  void initialize_info_from_connection();
+  void ReadConnectivityToCSR(const ReadsCSR<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCOO(const ReadsCOO<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityFromMTXToCOO(std::string filename);
+  void ReadConnectivityFromEdgelistToCSR(std::string filename);
+  void InitializeInfoFromConnection();
   virtual ~Graph();
-  void verify_structure();
+  void VerifyStructure();
   VertexID n_;
   NumEdges m_;
 };
@@ -48,7 +48,7 @@ public:
 //       // init temporal graph from file
 //     }
 //     virtual ~TemporalGraph(){};
-//     void verify_structure(){
+//     void VerifyStructure(){
 //       // check order
 //       if (this->connectivity->get_order() != 2) //throw error
 //       // check dimensions

@@ -35,7 +35,7 @@ int main(int argc, char * argv[]){
   {
     string file_name = argv[1];
     MTXReader<unsigned int, unsigned int, void> reader(file_name);
-    COO<unsigned int, unsigned int, void> * coo = reader.read_coo();
+    COO<unsigned int, unsigned int, void> * coo = reader.ReadCOO();
     auto format = coo->get_format();
     auto dimensions = coo->get_dimensions();
     auto coo_col = coo->get_col();

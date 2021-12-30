@@ -22,7 +22,7 @@ int main(int argc, char * argv[]){
 
   cout << "Reading graph from " << file_name << "..." << endl;
   Graph<vertex_type, edge_type, value_type> g;
-  g.read_connectivity_from_edgelist_to_csr(file_name);
+  g.ReadConnectivityFromEdgelistToCSR(file_name);
   cout << "Number of vertices: " << g.n_ << endl; 
   cout << "Number of edges: " << g.m_ << endl; 
 
@@ -33,7 +33,7 @@ int main(int argc, char * argv[]){
   //ReorderInstance<vertex_type, edge_type, value_type, DegreeReorder<vertex_type, edge_type, value_type>> orderer(1);
   //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
-  vertex_type * order = orderer.get_reorder(con);
+  vertex_type * order = orderer.GetReorder(con);
   vertex_type n = con->get_dimensions()[0];
   auto row_ptr = con->get_row_ptr();
   auto col = con->get_col();
@@ -73,7 +73,7 @@ int main(int argc, char * argv[]){
   }
 
   TransformInstance<vertex_type, edge_type, value_type, Transform> transformer;
-  SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.get_transformation(con, order);
+  SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
   auto * n_row_ptr = csr->get_row_ptr();
   auto * n_col = csr->get_col();
   cout << "Checking the correctness of the transformation..." << endl;

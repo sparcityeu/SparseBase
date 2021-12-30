@@ -15,7 +15,7 @@ int main(){
     COO<int,int,int>* coo = new COO<int,int,int>(6, 6, 6, row, col, vals);
 
     auto converter = new SparseConverter<int,int,int>();
-    auto csr = converter->convert(coo,CSR_f);
+    auto csr = converter->Convert(coo,CSR_f);
     auto csr2 = dynamic_cast<CSR<int,int,int>*>(csr);
 
     auto dims = csr2->get_dimensions();
@@ -39,7 +39,7 @@ int main(){
     
     cout << endl;
 
-    auto coo2 = converter->convert(csr,COO_f);
+    auto coo2 = converter->Convert(csr,COO_f);
 
     auto coo3 = dynamic_cast<COO<int,int,int>*>(coo2);
 

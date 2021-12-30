@@ -123,9 +123,9 @@ SparseFormat<ID, NumNonZeros, Value> *CooCsrFunctor<ID, NumNonZeros, Value>::ope
 
 template <typename ID, typename NumNonZeros, typename Value>
 SparseConverter<ID, NumNonZeros, Value>::SparseConverter() {
-  this->register_conversion_function(COO_f, CSR_f,
+  this->RegisterConversionFunction(COO_f, CSR_f,
                                      new CooCsrFunctor<ID, NumNonZeros, Value>());
-  this->register_conversion_function(CSR_f, COO_f,
+  this->RegisterConversionFunction(CSR_f, COO_f,
                                      new CsrCooFunctor<ID, NumNonZeros, Value>());
 }
 
@@ -145,7 +145,7 @@ SparseConverter<ID, NumNonZeros, Value>::~SparseConverter() {
 }
 
 template <typename ID, typename NumNonZeros, typename Value>
-void SparseConverter<ID, NumNonZeros, Value>::register_conversion_function(
+void SparseConverter<ID, NumNonZeros, Value>::RegisterConversionFunction(
     Format from_format, Format to_format,
     ConversionFunctor<ID, NumNonZeros, Value> *conv_func) {
   if (conversion_map_.count(from_format) == 0) {
@@ -163,7 +163,7 @@ void SparseConverter<ID, NumNonZeros, Value>::register_conversion_function(
 }
 
 template <typename ID, typename NumNonZeros, typename Value>
-SparseFormat<ID, NumNonZeros, Value> *SparseConverter<ID, NumNonZeros, Value>::convert(
+SparseFormat<ID, NumNonZeros, Value> *SparseConverter<ID, NumNonZeros, Value>::Convert(
     SparseFormat<ID, NumNonZeros, Value> *source, Format to_format) {
   if (to_format == source->get_format()) {
     return source;
@@ -171,7 +171,7 @@ SparseFormat<ID, NumNonZeros, Value> *SparseConverter<ID, NumNonZeros, Value>::c
 
   try {
     ConversionFunctor<ID, NumNonZeros, Value> *conv_func =
-        get_conversion_function(source->get_format(), to_format);
+        GetConversionFunction(source->get_format(), to_format);
     return (*conv_func)(source);
   } catch (...) {
     throw "Unsupported conversion error"; // TODO: Add decent exception
@@ -181,7 +181,7 @@ SparseFormat<ID, NumNonZeros, Value> *SparseConverter<ID, NumNonZeros, Value>::c
 
 template <typename ID, typename NumNonZeros, typename Value>
 ConversionFunctor<ID, NumNonZeros, Value> *
-SparseConverter<ID, NumNonZeros, Value>::get_conversion_function(Format from_format,
+SparseConverter<ID, NumNonZeros, Value>::GetConversionFunction(Format from_format,
                                                              Format to_format) {
   try {
     return conversion_map_[from_format][to_format];
@@ -192,7 +192,7 @@ SparseConverter<ID, NumNonZeros, Value>::get_conversion_function(Format from_for
 }
 
 template <typename ID, typename NumNonZeros, typename Value>
-bool SparseConverter<ID, NumNonZeros, Value>::can_convert(Format from_format,
+bool SparseConverter<ID, NumNonZeros, Value>::CanConvert(Format from_format,
                                                       Format to_format) {
   if (conversion_map_.find(from_format) != conversion_map_.end()) {
     if (conversion_map_[from_format].find(to_format) !=
@@ -205,14 +205,14 @@ bool SparseConverter<ID, NumNonZeros, Value>::can_convert(Format from_format,
 
 template <typename ID, typename NumNonZeros, typename Value>
 std::vector<SparseFormat<ID, NumNonZeros, Value> *>
-SparseConverter<ID, NumNonZeros, Value>::apply_conversion_schema(
+SparseConverter<ID, NumNonZeros, Value>::ApplyConversionSchema(
     ConversionSchema cs,
     std::vector<SparseFormat<ID, NumNonZeros, Value> *> packed_sfs) {
   std::vector<SparseFormat<ID, NumNonZeros, Value> *> ret;
   for (int i = 0; i < cs.size(); i++) {
     auto conversion = cs[i];
     if (std::get<0>(conversion)) {
-      ret.push_back(this->convert(packed_sfs[i], std::get<1>(conversion)));
+      ret.push_back(this->Convert(packed_sfs[i], std::get<1>(conversion)));
     } else {
       ret.push_back(packed_sfs[i]);
     }
