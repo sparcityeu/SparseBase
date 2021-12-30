@@ -12,39 +12,39 @@ public:
   virtual void verify_structure() = 0;
 };
 
-template <typename ID_t, typename NNZ_t, typename VAL_t>
+template <typename ID, typename NumNonZeros, typename Value>
 class AbstractSparseObject : public SparseObject {
 protected:
-  SparseFormat<ID_t, NNZ_t, VAL_t> *connectivity;
+  SparseFormat<ID, NumNonZeros, Value> *connectivity;
 
 public:
   virtual ~AbstractSparseObject();
-  SparseFormat<ID_t, NNZ_t, VAL_t> *get_connectivity();
+  SparseFormat<ID, NumNonZeros, Value> *get_connectivity();
 };
 
-template <typename v_t, typename e_t, typename w_t>
-class Graph : public AbstractSparseObject<v_t, e_t, w_t> {
+template <typename VertexID, typename NumEdges, typename Weight>
+class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
 public:
-  Graph(SparseFormat<v_t, e_t, w_t> *_connectivity);
+  Graph(SparseFormat<VertexID, NumEdges, Weight> *_connectivity);
   Graph();
-  void read_connectivity_to_csr(const ReadsCSR<v_t, e_t, w_t> &);
-  void read_connectivity_to_coo(const ReadsCOO<v_t, e_t, w_t> &);
-  void read_connectivity_from_mtx_to_coo(string filename);
-  void read_connectivity_from_edgelist_to_csr(string filename);
+  void read_connectivity_to_csr(const ReadsCSR<VertexID, NumEdges, Weight> &);
+  void read_connectivity_to_coo(const ReadsCOO<VertexID, NumEdges, Weight> &);
+  void read_connectivity_from_mtx_to_coo(std::string filename);
+  void read_connectivity_from_edgelist_to_csr(std::string filename);
   void initialize_info_from_connection();
   virtual ~Graph();
   void verify_structure();
-  v_t n;
-  e_t m;
+  VertexID n;
+  NumEdges m;
 };
 
-// template<typename v_t, typename e_t, typename t_t>
-// class TemporalGraph : public AbstractSparseObject<v_t, e_t>{
+// template<typename VertexID, typename NumEdges, typename t_t>
+// class TemporalGraph : public AbstractSparseObject<VertexID, NumEdges>{
 //   public:
-//     TemporalGraph(SparseFormat<v_t, e_t, t_t> * _connectivity){
+//     TemporalGraph(SparseFormat<VertexID, NumEdges, t_t> * _connectivity){
 //       // init temporal graph
 //     }
-//     TemporalGraph(SparseReader<v_t, e_t, t_t> * r){
+//     TemporalGraph(SparseReader<VertexID, NumEdges, t_t> * r){
 //       // init temporal graph from file
 //     }
 //     virtual ~TemporalGraph(){};
@@ -53,8 +53,8 @@ public:
 //       if (this->connectivity->get_order() != 2) //throw error
 //       // check dimensions
 //     }
-//     v_t n;
-//     e_t m;
+//     VertexID n;
+//     NumEdges m;
 //     // ...
 // };
 

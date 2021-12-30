@@ -7,58 +7,56 @@
 #include <fstream>
 #include <vector>
 
-using namespace std;
-
 namespace sparsebase {
 
-template <typename ID_t, typename NNZ_t, typename VAL_t> class SparseReader {
+template <typename ID, typename NumNonZeros, typename Value> class SparseReader {
 public:
   virtual ~SparseReader();
 };
 
-template <class v_t, typename e_t, typename w_t> class ReadsSparseFormat {
+template <class VertexID, typename NumEdges, typename Weight> class ReadsSparseFormat {
 public:
-  virtual SparseFormat<v_t, e_t, w_t> *read_sparseformat() const = 0;
+  virtual SparseFormat<VertexID, NumEdges, Weight> *read_sparseformat() const = 0;
 };
 
-template <class v_t, typename e_t, typename w_t> class ReadsCSR {
+template <class VertexID, typename NumEdges, typename Weight> class ReadsCSR {
 public:
-  virtual CSR<v_t, e_t, w_t> *read_csr() const = 0;
+  virtual CSR<VertexID, NumEdges, Weight> *read_csr() const = 0;
 };
 
-template <class v_t, typename e_t, typename w_t> class ReadsCOO {
+template <class VertexID, typename NumEdges, typename Weight> class ReadsCOO {
 public:
-  virtual COO<v_t, e_t, w_t> *read_coo() const = 0;
+  virtual COO<VertexID, NumEdges, Weight> *read_coo() const = 0;
 };
 // Add weighted option with contexpr
-template <typename v_t, typename e_t, typename w_t>
-class UedgelistReader : public SparseReader<v_t, e_t, w_t>,
-                        public ReadsCSR<v_t, e_t, w_t>,
-                        public ReadsSparseFormat<v_t, e_t, w_t> {
+template <typename VertexID, typename NumEdges, typename Weight>
+class UedgelistReader : public SparseReader<VertexID, NumEdges, Weight>,
+                        public ReadsCSR<VertexID, NumEdges, Weight>,
+                        public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
-  UedgelistReader(string filename, bool _weighted = false);
-  CSR<v_t, e_t, w_t> *read_csr() const;
-  SparseFormat<v_t, e_t, w_t> *read_sparseformat() const;
+  UedgelistReader(std::string filename, bool _weighted = false);
+  CSR<VertexID, NumEdges, Weight> *read_csr() const;
+  SparseFormat<VertexID, NumEdges, Weight> *read_sparseformat() const;
   virtual ~UedgelistReader();
 
 private:
-  static bool sortedge(const pair<v_t, v_t> &a, const pair<v_t, v_t> &b);
-  string filename;
+  static bool sortedge(const std::pair<VertexID, VertexID> &a, const std::pair<VertexID, VertexID> &b);
+  std::string filename;
   bool weighted;
 };
 
-template <typename v_t, typename e_t, typename w_t>
-class MTXReader : public SparseReader<v_t, e_t, w_t>,
-                  public ReadsCOO<v_t, e_t, w_t>,
-                  public ReadsSparseFormat<v_t, e_t, w_t> {
+template <typename VertexID, typename NumEdges, typename Weight>
+class MTXReader : public SparseReader<VertexID, NumEdges, Weight>,
+                  public ReadsCOO<VertexID, NumEdges, Weight>,
+                  public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
-  MTXReader(string filename, bool _weighted = false);
-  COO<v_t, e_t, w_t> *read_coo() const;
-  SparseFormat<v_t, e_t, w_t> *read_sparseformat() const;
+  MTXReader(std::string filename, bool _weighted = false);
+  COO<VertexID, NumEdges, Weight> *read_coo() const;
+  SparseFormat<VertexID, NumEdges, Weight> *read_sparseformat() const;
   virtual ~MTXReader();
 
 private:
-  string filename;
+  std::string filename;
   bool weighted;
 };
 
