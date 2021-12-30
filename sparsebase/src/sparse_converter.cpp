@@ -1,5 +1,5 @@
-#include "sparsebase/SparseConverter.hpp"
-#include "sparsebase/SparseFormat.hpp"
+#include "sparsebase/sparse_converter.hpp"
+#include "sparsebase/sparse_format.hpp"
 #include <iostream>
 #include <set>
 

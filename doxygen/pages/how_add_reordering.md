@@ -19,7 +19,7 @@ The following example demonstrates the process of creating a new reordering `Opt
 
 ### 1. Create a new class for the ordering
 
-In the header file `sparsebase/include/SparsePreprocess.hpp`, add the definition of your class. It must be templated on three types `ID_t`, `NNZ_t`, `VAL_t` which define the data types of the `SparseFormat` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
+In the header file `sparsebase/include/sparse_preprocess.hpp`, add the definition of your class. It must be templated on three types `ID_t`, `NNZ_t`, `VAL_t` which define the data types of the `SparseFormat` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
 
 ```cpp
 template <typename ID_t, typename NNZ_t, typename VAL_t>

@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "sparsebase/SparseFormat.hpp"
-#include "sparsebase/SparseReader.hpp"
-#include "sparsebase/SparseObject.hpp"
+#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_reader.hpp"
+#include "sparsebase/sparse_object.hpp"
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
