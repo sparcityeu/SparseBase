@@ -62,7 +62,7 @@ ID **AbstractSparseFormat<ID, NumNonZeros, Value>::get_ind() {
 template <typename ID, typename NumNonZeros, typename Value>
 COO<ID, NumNonZeros, Value>::COO() {
   this->order_ = 2;
-  this->format_ = Format::COO_f;
+  this->format_ = Format::kCOOFormat;
   this->dimension_ = std::vector<ID>(2, 0);
   this->nnz_ = 0;
   col_ = nullptr;
@@ -75,13 +75,13 @@ COO<ID, NumNonZeros, Value>::COO(ID n, ID m, NumNonZeros nnz, ID *row,
   row_ = row;
   vals_ = vals;
   this->nnz_ = nnz;
-  this->format_ = Format::CSR_f;
+  this->format_ = Format::kCSRFormat;
   this->order_ = 2;
   this->dimension_ = {n, m};
 }
 template <typename ID, typename NumNonZeros, typename Value>
 Format COO<ID, NumNonZeros, Value>::get_format() {
-  return COO_f;
+  return kCOOFormat;
 }
 template <typename ID, typename NumNonZeros, typename Value>
 ID *COO<ID, NumNonZeros, Value>::get_col() {
@@ -101,7 +101,7 @@ COO<ID, NumNonZeros, Value>::~COO(){};
 template <typename ID, typename NumNonZeros, typename Value>
 CSR<ID, NumNonZeros, Value>::CSR() {
   this->order_ = 2;
-  this->format_ = Format::CSR_f;
+  this->format_ = Format::kCSRFormat;
   this->dimension_ = std::vector<ID>(2, 0);
   this->nnz_ = 0;
   this->col_ = nullptr;
@@ -114,14 +114,14 @@ CSR<ID, NumNonZeros, Value>::CSR(ID n, ID m, NumNonZeros *row_ptr, ID *col,
   this->row_ptr_ = row_ptr;
   this->col_ = col;
   this->vals_ = vals;
-  this->format_ = Format::CSR_f;
+  this->format_ = Format::kCSRFormat;
   this->order_ = 2;
   this->dimension_ = {n, m};
   this->nnz_ = this->row_ptr_[this->dimension_[0]];
 }
 template <typename ID, typename NumNonZeros, typename Value>
 Format CSR<ID, NumNonZeros, Value>::get_format() {
-  return CSR_f;
+  return kCSRFormat;
 }
 template <typename ID, typename NumNonZeros, typename Value>
 ID *CSR<ID, NumNonZeros, Value>::get_col() {

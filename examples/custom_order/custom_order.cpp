@@ -69,7 +69,7 @@ int main(int argc, char * argv[]){
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
 
   ReorderInstance<vertex_type, edge_type, value_type, GenericReorder> orderer;
-  orderer.RegisterFunction({CSR_f}, degree_reorder_csr);
+  orderer.RegisterFunction({kCSRFormat}, degree_reorder_csr);
   customParam params{10};
   vertex_type * order = orderer.GetReorder(con, &params);
 
