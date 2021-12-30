@@ -1,7 +1,7 @@
 #ifndef _SPARSECONVERTER_HPP
 #define _SPARSECONVERTER_HPP
 
-#include "SparseFormat.hpp"
+#include "sparse_format.hpp"
 #include <unordered_map>
 
 using namespace std;

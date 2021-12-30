@@ -1,8 +1,8 @@
 #ifndef _SPARSEOBJECT_HPP
 #define _SPARSEOBJECT_HPP
 
-#include "SparseFormat.hpp"
-#include "SparseReader.hpp"
+#include "sparse_format.hpp"
+#include "sparse_reader.hpp"
 
 namespace sparsebase {
 

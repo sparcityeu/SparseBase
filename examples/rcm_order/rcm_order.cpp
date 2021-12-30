@@ -1,10 +1,10 @@
 #include <iostream>
 #include <set>
 
-#include "sparsebase/SparseFormat.hpp"
-#include "sparsebase/SparseObject.hpp"
-#include "sparsebase/SparseReader.hpp"
-#include "sparsebase/SparsePreprocess.hpp"
+#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_object.hpp"
+#include "sparsebase/sparse_reader.hpp"
+#include "sparsebase/sparse_preprocess.hpp"
 
 using namespace std;
 using namespace sparsebase;

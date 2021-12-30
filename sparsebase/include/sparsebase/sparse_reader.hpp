@@ -1,7 +1,7 @@
 #ifndef _SPARSEREADER_HPP
 #define _SPARSEREADER_HPP
 
-#include "SparseFormat.hpp"
+#include "sparse_format.hpp"
 #include <algorithm>
 #include <cstring>
 #include <fstream>
