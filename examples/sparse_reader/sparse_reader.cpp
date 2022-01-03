@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "sparsebase/SparseFormat.hpp"
-#include "sparsebase/SparseReader.hpp"
-#include "sparsebase/SparseObject.hpp"
+#include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_reader.h"
+#include "sparsebase/sparse_object.h"
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
@@ -16,10 +16,10 @@ int main(int argc, char * argv[]){
     // Reading the mtx into a graph object
     //auto reader = new sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name);
     sparsebase::Graph<vertex_type, edge_type, value_type> g;
-    g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
+    g.ReadConnectivityToCOO(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 
-    cout << "Number of vertices: " << g.n << endl;
-    cout << "Number of edges: " << g.m << endl;
+    cout << "Number of vertices: " << g.n_ << endl;
+    cout << "Number of edges: " << g.m_ << endl;
 
     // Extracting connectivity information from a graph and casting it
     auto coo = dynamic_cast<sparsebase::COO<vertex_type,edge_type,value_type>*>(g.get_connectivity());

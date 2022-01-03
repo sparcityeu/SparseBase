@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "sparsebase/SparseFormat.hpp"
-#include "sparsebase/SparseObject.hpp"
-#include "sparsebase/SparseReader.hpp"
-#include "sparsebase/SparsePreprocess.hpp"
-#include "sparsebase/SparseException.hpp"
+#include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_object.h"
+#include "sparsebase/sparse_reader.h"
+#include "sparsebase/sparse_preprocess.h"
+#include "sparsebase/sparse_exception.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -35,7 +35,7 @@ int main(int argc, char * argv[]){
   {
     string file_name = argv[1];
     MTXReader<unsigned int, unsigned int, void> reader(file_name);
-    COO<unsigned int, unsigned int, void> * coo = reader.read_coo();
+    COO<unsigned int, unsigned int, void> * coo = reader.ReadCOO();
     auto format = coo->get_format();
     auto dimensions = coo->get_dimensions();
     auto coo_col = coo->get_col();
