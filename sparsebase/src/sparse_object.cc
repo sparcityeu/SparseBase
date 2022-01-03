@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "sparsebase/sparse_format.hpp"
-#include "sparsebase/sparse_object.hpp"
-#include "sparsebase/sparse_reader.hpp"
+#include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_object.h"
+#include "sparsebase/sparse_reader.h"
 
 namespace sparsebase {
 

@@ -1,6 +1,6 @@
-#include "sparsebase/sparse_preprocess.hpp"
-#include "sparsebase/sparse_converter.hpp"
-#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_preprocess.h"
+#include "sparsebase/sparse_converter.h"
+#include "sparsebase/sparse_format.h"
 #include <iostream>
 #include <memory>
 #include <queue>

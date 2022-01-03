@@ -1,7 +1,7 @@
 
 #include "gtest/gtest.h"
 
-#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_format.h"
 
 TEST(SparseFormat, CreationTest){
   unsigned int xadj[4] = {0, 2, 3, 4};

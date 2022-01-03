@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "sparsebase/sparse_exception.hpp"
-#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_exception.h"
+#include "sparsebase/sparse_format.h"
 
 namespace sparsebase {
 

@@ -1,10 +1,10 @@
 # Creating the sparsebase library executable
 add_library(sparsebase 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_format.cpp 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_reader.cpp 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_object.cpp 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_converter.cpp 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_preprocess.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_format.cc 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_reader.cc 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_object.cc 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_converter.cc 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_preprocess.cc 
 )
 target_compile_features(sparsebase PRIVATE cxx_std_17)
 
