@@ -1,7 +1,7 @@
 #ifndef _Reorder_HPP
 #define _Reorder_HPP
-#include "sparse_converter.hpp"
-#include "sparse_format.hpp"
+#include "sparse_converter.h"
+#include "sparse_format.h"
 #include <iostream>
 #include <memory>
 #include <unordered_map>

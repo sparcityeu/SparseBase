@@ -1,6 +1,6 @@
-#include "sparsebase/sparse_reader.hpp"
-#include "sparsebase/sparse_exception.hpp"
-#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_reader.h"
+#include "sparsebase/sparse_exception.h"
+#include "sparsebase/sparse_format.h"
 #include <algorithm>
 #include <cstring>
 #include <fstream>

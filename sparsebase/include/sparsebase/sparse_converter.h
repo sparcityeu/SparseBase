@@ -1,7 +1,7 @@
 #ifndef _SPARSECONVERTER_HPP
 #define _SPARSECONVERTER_HPP
 
-#include "sparse_format.hpp"
+#include "sparse_format.h"
 #include <unordered_map>
 
 namespace sparsebase {

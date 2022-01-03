@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "sparsebase/sparse_format.hpp"
-#include "sparsebase/sparse_converter.hpp"
+#include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_converter.h"
 
 using namespace std;
 using namespace sparsebase;
