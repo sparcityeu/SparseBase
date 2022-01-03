@@ -25,28 +25,28 @@ public:
   void RegisterFunction(const Key &key_of_function, const Function &func_ptr);
   bool UnregisterFunction(const Key &key_of_function);
 };
-template <class Parent, typename ID, typename NumNonZeros, typename Value>
+template <class Parent, typename IDType, typename NNZType, typename ValueType>
 class SparseConverterMixin : public Parent {
   using Parent::Parent;
 
 protected:
-  SparseConverter<ID, NumNonZeros, Value> sc_;
+  SparseConverter<IDType, NNZType, ValueType> sc_;
 
 public:
-  void SetConverter(const SparseConverter<ID, NumNonZeros, Value> &new_sc);
+  void SetConverter(const SparseConverter<IDType, NNZType, ValueType> &new_sc);
   void ResetConverter();
 };
 
 struct ReorderParams {};
-template <typename ID, typename NumNonZeros, typename Value>
+template <typename IDType, typename NNZType, typename ValueType>
 using ReorderFunction =
-    ID *(*)(std::vector<SparseFormat<ID, NumNonZeros, Value> *>, ReorderParams *);
+    IDType *(*)(std::vector<SparseFormat<IDType, NNZType, ValueType> *>, ReorderParams *);
 
-template <typename ID, typename NumNonZeros, typename Value>
+template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
     : public MapToFunctionMixin<
-          SparseConverterMixin<PreprocessType, ID, NumNonZeros, Value>,
-          ReorderFunction<ID, NumNonZeros, Value>> {
+          SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
+          ReorderFunction<IDType, NNZType, ValueType>> {
 protected:
   std::unique_ptr<ReorderParams> params_;
 
@@ -54,7 +54,7 @@ public:
   virtual ~ReorderPreprocessType();
 };
 
-template <typename ID, typename NumNonZeros, typename Value,
+template <typename IDType, typename NNZType, typename ValueType,
           class PreprocessingImpl, typename PreprocessFunction,
           typename Key = std::vector<Format>,
           typename KeyHash = FormatVectorHash,
@@ -68,7 +68,7 @@ protected:
   using PreprocessingImpl::PreprocessingImpl;
   std::tuple<PreprocessFunction, ConversionSchema>
   GetFunction(Key key, ConversionMap map,
-               SparseConverter<ID, NumNonZeros, Value> sc);
+               SparseConverter<IDType, NNZType, ValueType> sc);
   template <typename F> std::vector<Format> PackFormats(F sf);
   template <typename F, typename... SF>
   std::vector<Format> PackFormats(F sf, SF... sfs);
@@ -77,12 +77,12 @@ protected:
   std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
   std::tuple<PreprocessFunction,
-             std::vector<SparseFormat<ID, NumNonZeros, Value> *>>
-  Execute(ConversionMap map, SparseConverter<ID, NumNonZeros, Value> sc, F sf,
+             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+  Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType> sc, F sf,
           SF... sfs);
 };
-template <typename ID, typename NumNonZeros, typename Value>
-class DegreeReorder : public ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NNZType, typename ValueType>
+class DegreeReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
 public:
   DegreeReorder(int hyperparameter);
 
@@ -91,33 +91,33 @@ protected:
     int hyperparameter;
     DegreeReorderParams(int h) : hyperparameter(h) {}
   };
-  static ID *
-  CalculateReorderCSR(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
+  static IDType *
+  CalculateReorderCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
                         ReorderParams *params);
 };
 
-template <typename ID, typename NumNonZeros, typename Value>
-class GenericReorder : public ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NNZType, typename ValueType>
+class GenericReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
 public:
   GenericReorder();
 };
-template <typename ID, typename NumNonZeros, typename Value>
+template <typename IDType, typename NNZType, typename ValueType>
 class DegreeReorderInstance
-    : public FormatMatcherMixin<ID, NumNonZeros, Value,
-                                DegreeReorder<ID, NumNonZeros, Value>,
-                                ReorderFunction<ID, NumNonZeros, Value>> {
-  typedef FormatMatcherMixin<ID, NumNonZeros, Value,
-                             DegreeReorder<ID, NumNonZeros, Value>,
-                             ReorderFunction<ID, NumNonZeros, Value>>
+    : public FormatMatcherMixin<IDType, NNZType, ValueType,
+                                DegreeReorder<IDType, NNZType, ValueType>,
+                                ReorderFunction<IDType, NNZType, ValueType>> {
+  typedef FormatMatcherMixin<IDType, NNZType, ValueType,
+                             DegreeReorder<IDType, NNZType, ValueType>,
+                             ReorderFunction<IDType, NNZType, ValueType>>
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr);
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
 };
 
-template <typename ID, typename NumNonZeros, typename Value>
-class RCMReorder : public ReorderPreprocessType<ID, NumNonZeros, Value> {
-  typedef typename std::make_signed<ID>::type SignedID;
+template <typename IDType, typename NNZType, typename ValueType>
+class RCMReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
+  typedef typename std::make_signed<IDType>::type SignedID;
 
 public:
   RCMReorder(float a, float b);
@@ -128,83 +128,83 @@ protected:
     float beta;
     RCMReorderParams(float a, float b) : alpha(a), beta(b) {}
   };
-  static ID peripheral(NumNonZeros *xadj, ID *adj, ID n, ID start,
-                         SignedID *distance, ID *Q);
-  static ID *
-  GetReorderCSR(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
+  static IDType peripheral(NNZType *xadj, IDType *adj, IDType n, IDType start,
+                         SignedID *distance, IDType *Q);
+  static IDType *
+  GetReorderCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
                   ReorderParams *);
 };
 
-template <typename ID, typename NumNonZeros, typename Value>
+template <typename IDType, typename NNZType, typename ValueType>
 class RCMReorderInstance
-    : public FormatMatcherMixin<ID, NumNonZeros, Value,
-                                RCMReorder<ID, NumNonZeros, Value>,
-                                ReorderFunction<ID, NumNonZeros, Value>> {
-  typedef FormatMatcherMixin<ID, NumNonZeros, Value, RCMReorder<ID, NumNonZeros, Value>,
-                             ReorderFunction<ID, NumNonZeros, Value>>
+    : public FormatMatcherMixin<IDType, NNZType, ValueType,
+                                RCMReorder<IDType, NNZType, ValueType>,
+                                ReorderFunction<IDType, NNZType, ValueType>> {
+  typedef FormatMatcherMixin<IDType, NNZType, ValueType, RCMReorder<IDType, NNZType, ValueType>,
+                             ReorderFunction<IDType, NNZType, ValueType>>
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr);
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
 };
 
-// template <typename ID, typename NumNonZeros, typename Value, typename ReorderImpl>
-template <typename ID, typename NumNonZeros, typename Value,
+// template <typename IDType, typename NNZType, typename ValueType, typename ReorderImpl>
+template <typename IDType, typename NNZType, typename ValueType,
           template <typename, typename, typename> class ReorderImpl>
 class ReorderInstance
-    : public FormatMatcherMixin<ID, NumNonZeros, Value,
-                                ReorderImpl<ID, NumNonZeros, Value>,
-                                ReorderFunction<ID, NumNonZeros, Value>> {
-  typedef FormatMatcherMixin<ID, NumNonZeros, Value, ReorderImpl<ID, NumNonZeros, Value>,
-                             ReorderFunction<ID, NumNonZeros, Value>>
+    : public FormatMatcherMixin<IDType, NNZType, ValueType,
+                                ReorderImpl<IDType, NNZType, ValueType>,
+                                ReorderFunction<IDType, NNZType, ValueType>> {
+  typedef FormatMatcherMixin<IDType, NNZType, ValueType, ReorderImpl<IDType, NNZType, ValueType>,
+                             ReorderFunction<IDType, NNZType, ValueType>>
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr);
-  ID *GetReorder(SparseFormat<ID, NumNonZeros, Value> *csr,
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
                     ReorderParams *params);
 };
 
 // transform
-template <typename ID, typename NumNonZeros, typename Value>
-using TransformFunction = SparseFormat<ID, NumNonZeros, Value>
-    *(*)(std::vector<SparseFormat<ID, NumNonZeros, Value> *>, ID *order);
+template <typename IDType, typename NNZType, typename ValueType>
+using TransformFunction = SparseFormat<IDType, NNZType, ValueType>
+    *(*)(std::vector<SparseFormat<IDType, NNZType, ValueType> *>, IDType *order);
 
-template <typename ID, typename NumNonZeros, typename Value>
+template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
     : public MapToFunctionMixin<
-          SparseConverterMixin<PreprocessType, ID, NumNonZeros, Value>,
-          TransformFunction<ID, NumNonZeros, Value>> {
+          SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
+          TransformFunction<IDType, NNZType, ValueType>> {
 public:
   virtual ~TransformPreprocessType();
 };
 
-template <typename ID, typename NumNonZeros, typename Value>
-class Transform : public TransformPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NNZType, typename ValueType>
+class Transform : public TransformPreprocessType<IDType, NNZType, ValueType> {
 public:
   Transform();
 
 protected:
-  static SparseFormat<ID, NumNonZeros, Value> *
-  TransformCSR(std::vector<SparseFormat<ID, NumNonZeros, Value> *> formats,
-                ID *order);
+  static SparseFormat<IDType, NNZType, ValueType> *
+  TransformCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
+                IDType *order);
 };
-// template <typename ID, typename NumNonZeros, typename Value, typename
+// template <typename IDType, typename NNZType, typename ValueType, typename
 // TransformImpl>
-template <typename ID, typename NumNonZeros, typename Value,
+template <typename IDType, typename NNZType, typename ValueType,
           template <typename, typename, typename> class TransformImpl>
 class TransformInstance
-    : public FormatMatcherMixin<ID, NumNonZeros, Value,
-                                TransformImpl<ID, NumNonZeros, Value>,
-                                TransformFunction<ID, NumNonZeros, Value>> {
-  typedef FormatMatcherMixin<ID, NumNonZeros, Value,
-                             TransformImpl<ID, NumNonZeros, Value>,
-                             TransformFunction<ID, NumNonZeros, Value>>
+    : public FormatMatcherMixin<IDType, NNZType, ValueType,
+                                TransformImpl<IDType, NNZType, ValueType>,
+                                TransformFunction<IDType, NNZType, ValueType>> {
+  typedef FormatMatcherMixin<IDType, NNZType, ValueType,
+                             TransformImpl<IDType, NNZType, ValueType>,
+                             TransformFunction<IDType, NNZType, ValueType>>
       Base;
   using Base::Base; // Used to forward constructors from base
 public:
-  SparseFormat<ID, NumNonZeros, Value> *
-  GetTransformation(SparseFormat<ID, NumNonZeros, Value> *csr, ID *order);
+  SparseFormat<IDType, NNZType, ValueType> *
+  GetTransformation(SparseFormat<IDType, NNZType, ValueType> *csr, IDType *order);
 };
 
 } // namespace sparsebase

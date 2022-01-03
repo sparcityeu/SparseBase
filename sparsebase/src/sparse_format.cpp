@@ -9,68 +9,68 @@
 
 namespace sparsebase {
 
-template <typename ID, typename NumNonZeros, typename Value>
-AbstractSparseFormat<ID, NumNonZeros, Value>::~AbstractSparseFormat(){};
-template <typename ID, typename NumNonZeros, typename Value>
-AbstractSparseFormat<ID, NumNonZeros, Value>::AbstractSparseFormat() {}
+template <typename IDType, typename NNZType, typename ValueType>
+AbstractSparseFormat<IDType, NNZType, ValueType>::~AbstractSparseFormat(){};
+template <typename IDType, typename NNZType, typename ValueType>
+AbstractSparseFormat<IDType, NNZType, ValueType>::AbstractSparseFormat() {}
 
-template <typename ID, typename NumNonZeros, typename Value>
-unsigned int AbstractSparseFormat<ID, NumNonZeros, Value>::get_order() {
+template <typename IDType, typename NNZType, typename ValueType>
+unsigned int AbstractSparseFormat<IDType, NNZType, ValueType>::get_order() {
   return order_;
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-Format AbstractSparseFormat<ID, NumNonZeros, Value>::get_format() {
+template <typename IDType, typename NNZType, typename ValueType>
+Format AbstractSparseFormat<IDType, NNZType, ValueType>::get_format() {
   return format_;
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-std::vector<ID> AbstractSparseFormat<ID, NumNonZeros, Value>::get_dimensions() {
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<IDType> AbstractSparseFormat<IDType, NNZType, ValueType>::get_dimensions() {
   return dimension_;
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-NumNonZeros AbstractSparseFormat<ID, NumNonZeros, Value>::get_num_nnz() {
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType AbstractSparseFormat<IDType, NNZType, ValueType>::get_num_nnz() {
   return nnz_;
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-NumNonZeros *AbstractSparseFormat<ID, NumNonZeros, Value>::get_row_ptr() {
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType *AbstractSparseFormat<IDType, NNZType, ValueType>::get_row_ptr() {
   throw InvalidDataMember(std::to_string(get_format()), std::string("row_ptr"));
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-ID *AbstractSparseFormat<ID, NumNonZeros, Value>::get_col() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *AbstractSparseFormat<IDType, NNZType, ValueType>::get_col() {
   throw InvalidDataMember(std::to_string(get_format()), std::string("col"));
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-ID *AbstractSparseFormat<ID, NumNonZeros, Value>::get_row() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *AbstractSparseFormat<IDType, NNZType, ValueType>::get_row() {
   throw InvalidDataMember(std::to_string(get_format()), std::string("is"));
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-Value *AbstractSparseFormat<ID, NumNonZeros, Value>::get_vals() {
+template <typename IDType, typename NNZType, typename ValueType>
+ValueType *AbstractSparseFormat<IDType, NNZType, ValueType>::get_vals() {
   throw InvalidDataMember(std::to_string(get_format()), std::string("vals"));
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-ID **AbstractSparseFormat<ID, NumNonZeros, Value>::get_ind() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType **AbstractSparseFormat<IDType, NNZType, ValueType>::get_ind() {
   throw InvalidDataMember(std::to_string(get_format()), std::string("ind"));
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-COO<ID, NumNonZeros, Value>::COO() {
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType>::COO() {
   this->order_ = 2;
   this->format_ = Format::kCOOFormat;
-  this->dimension_ = std::vector<ID>(2, 0);
+  this->dimension_ = std::vector<IDType>(2, 0);
   this->nnz_ = 0;
   col_ = nullptr;
   vals_ = nullptr;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-COO<ID, NumNonZeros, Value>::COO(ID n, ID m, NumNonZeros nnz, ID *row,
-                             ID *col, Value *vals) {
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz, IDType *row,
+                             IDType *col, ValueType *vals) {
   col_ = col;
   row_ = row;
   vals_ = vals;
@@ -79,38 +79,38 @@ COO<ID, NumNonZeros, Value>::COO(ID n, ID m, NumNonZeros nnz, ID *row,
   this->order_ = 2;
   this->dimension_ = {n, m};
 }
-template <typename ID, typename NumNonZeros, typename Value>
-Format COO<ID, NumNonZeros, Value>::get_format() {
+template <typename IDType, typename NNZType, typename ValueType>
+Format COO<IDType, NNZType, ValueType>::get_format() {
   return kCOOFormat;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-ID *COO<ID, NumNonZeros, Value>::get_col() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *COO<IDType, NNZType, ValueType>::get_col() {
   return col_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-ID *COO<ID, NumNonZeros, Value>::get_row() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *COO<IDType, NNZType, ValueType>::get_row() {
   return row_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-Value *COO<ID, NumNonZeros, Value>::get_vals() {
+template <typename IDType, typename NNZType, typename ValueType>
+ValueType *COO<IDType, NNZType, ValueType>::get_vals() {
   return vals_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-COO<ID, NumNonZeros, Value>::~COO(){};
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType>::~COO(){};
 
-template <typename ID, typename NumNonZeros, typename Value>
-CSR<ID, NumNonZeros, Value>::CSR() {
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType>::CSR() {
   this->order_ = 2;
   this->format_ = Format::kCSRFormat;
-  this->dimension_ = std::vector<ID>(2, 0);
+  this->dimension_ = std::vector<IDType>(2, 0);
   this->nnz_ = 0;
   this->col_ = nullptr;
   this->row_ptr_ = nullptr;
   this->vals_ = nullptr;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-CSR<ID, NumNonZeros, Value>::CSR(ID n, ID m, NumNonZeros *row_ptr, ID *col,
-                             Value *vals) {
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col,
+                             ValueType *vals) {
   this->row_ptr_ = row_ptr;
   this->col_ = col;
   this->vals_ = vals;
@@ -119,39 +119,39 @@ CSR<ID, NumNonZeros, Value>::CSR(ID n, ID m, NumNonZeros *row_ptr, ID *col,
   this->dimension_ = {n, m};
   this->nnz_ = this->row_ptr_[this->dimension_[0]];
 }
-template <typename ID, typename NumNonZeros, typename Value>
-Format CSR<ID, NumNonZeros, Value>::get_format() {
+template <typename IDType, typename NNZType, typename ValueType>
+Format CSR<IDType, NNZType, ValueType>::get_format() {
   return kCSRFormat;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-ID *CSR<ID, NumNonZeros, Value>::get_col() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *CSR<IDType, NNZType, ValueType>::get_col() {
   return col_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-ID *CSR<ID, NumNonZeros, Value>::get_row_ptr() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *CSR<IDType, NNZType, ValueType>::get_row_ptr() {
   return row_ptr_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-Value *CSR<ID, NumNonZeros, Value>::get_vals() {
+template <typename IDType, typename NNZType, typename ValueType>
+ValueType *CSR<IDType, NNZType, ValueType>::get_vals() {
   return vals_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-CSR<ID, NumNonZeros, Value>::~CSR() {}
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType>::~CSR() {}
 
-template <typename ID, typename NumNonZeros, typename Value>
-CSF<ID, NumNonZeros, Value>::CSF(unsigned int order) {
+template <typename IDType, typename NNZType, typename ValueType>
+CSF<IDType, NNZType, ValueType>::CSF(unsigned int order) {
   // init CSF
 }
-template <typename ID, typename NumNonZeros, typename Value>
-ID **CSF<ID, NumNonZeros, Value>::get_ind() {
+template <typename IDType, typename NNZType, typename ValueType>
+IDType **CSF<IDType, NNZType, ValueType>::get_ind() {
   return ind_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-Value *CSF<ID, NumNonZeros, Value>::get_vals() {
+template <typename IDType, typename NNZType, typename ValueType>
+ValueType *CSF<IDType, NNZType, ValueType>::get_vals() {
   return vals_;
 }
-template <typename ID, typename NumNonZeros, typename Value>
-CSF<ID, NumNonZeros, Value>::~CSF(){};
+template <typename IDType, typename NNZType, typename ValueType>
+CSF<IDType, NNZType, ValueType>::~CSF(){};
 
 template class COO<int, int, int>;
 template class COO<unsigned int, unsigned int, unsigned int>;

@@ -12,14 +12,14 @@ public:
   virtual void VerifyStructure() = 0;
 };
 
-template <typename ID, typename NumNonZeros, typename Value>
+template <typename IDType, typename NNZType, typename ValueType>
 class AbstractSparseObject : public SparseObject {
 protected:
-  SparseFormat<ID, NumNonZeros, Value> *connectivity_;
+  SparseFormat<IDType, NNZType, ValueType> *connectivity_;
 
 public:
   virtual ~AbstractSparseObject();
-  SparseFormat<ID, NumNonZeros, Value> *get_connectivity();
+  SparseFormat<IDType, NNZType, ValueType> *get_connectivity();
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>

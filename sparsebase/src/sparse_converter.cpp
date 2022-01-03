@@ -9,48 +9,48 @@ namespace sparsebase {
 
 size_t FormatHash::operator()(Format f) const { return f; }
 
-template <typename ID, typename NumNonZeros, typename Value>
-SparseFormat<ID, NumNonZeros, Value> *CsrCooFunctor<ID, NumNonZeros, Value>::operator()(
-    SparseFormat<ID, NumNonZeros, Value> *source) {
-  CSR<ID, NumNonZeros, Value> *csr =
-      dynamic_cast<CSR<ID, NumNonZeros, Value> *>(source);
-  COO<ID, NumNonZeros, Value> *coo = new COO<ID, NumNonZeros, Value>();
+template <typename IDType, typename NNZType, typename ValueType>
+SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
+    SparseFormat<IDType, NNZType, ValueType> *source) {
+  CSR<IDType, NNZType, ValueType> *csr =
+      dynamic_cast<CSR<IDType, NNZType, ValueType> *>(source);
+  COO<IDType, NNZType, ValueType> *coo = new COO<IDType, NNZType, ValueType>();
 
-  std::vector<ID> dimensions = csr->get_dimensions();
-  ID n = dimensions[0];
-  ID m = dimensions[1];
-  NumNonZeros nnz = csr->get_num_nnz();
+  std::vector<IDType> dimensions = csr->get_dimensions();
+  IDType n = dimensions[0];
+  IDType m = dimensions[1];
+  NNZType nnz = csr->get_num_nnz();
 
-  coo->col_ = new ID[nnz];
-  coo->row_ = new ID[nnz];
+  coo->col_ = new IDType[nnz];
+  coo->row_ = new IDType[nnz];
   if (csr->vals_ != nullptr)
-    coo->vals_ = new NumNonZeros[nnz];
+    coo->vals_ = new NNZType[nnz];
   else
     coo->vals_ = nullptr;
 
-  ID count = 0;
-  for (ID i = 0; i < n; i++) {
-    ID start = csr->row_ptr_[i];
-    ID end = csr->row_ptr_[i + 1];
+  IDType count = 0;
+  for (IDType i = 0; i < n; i++) {
+    IDType start = csr->row_ptr_[i];
+    IDType end = csr->row_ptr_[i + 1];
 
-    for (ID j = start; j < end; j++) {
+    for (IDType j = start; j < end; j++) {
       coo->row_[count] = i;
       count++;
     }
   }
 
-  for (ID i = 0; i < m; i++) {
+  for (IDType i = 0; i < m; i++) {
     coo->col_[i] = csr->col_[i];
   }
 
   // if (csr->vals != nullptr)
-  if constexpr (!std::is_same_v<void, Value>) {
+  if constexpr (!std::is_same_v<void, ValueType>) {
     if (coo->vals_ != nullptr)
-      for (NumNonZeros i = 0; i < nnz; i++) {
+      for (NNZType i = 0; i < nnz; i++) {
         coo->vals_[i] = csr->vals_[i];
       }
   }
-  std::vector<ID> dims{n, m};
+  std::vector<IDType> dims{n, m};
   coo->dimension_ = dims;
   coo->nnz_ = nnz;
 
@@ -64,22 +64,22 @@ SparseFormat<ID, NumNonZeros, Value> *CsrCooFunctor<ID, NumNonZeros, Value>::ope
 // Bp -> row -> row_ptr
 // Bj -> col -> col
 // Bx -> nnz -> vals
-template <typename ID, typename NumNonZeros, typename Value>
-SparseFormat<ID, NumNonZeros, Value> *CooCsrFunctor<ID, NumNonZeros, Value>::operator()(
-    SparseFormat<ID, NumNonZeros, Value> *source) {
-  COO<ID, NumNonZeros, NumNonZeros> *coo =
-      dynamic_cast<COO<ID, NumNonZeros, NumNonZeros> *>(source);
+template <typename IDType, typename NNZType, typename ValueType>
+SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
+    SparseFormat<IDType, NNZType, ValueType> *source) {
+  COO<IDType, NNZType, NNZType> *coo =
+      dynamic_cast<COO<IDType, NNZType, NNZType> *>(source);
 
-  std::vector<ID> dimensions = coo->get_dimensions();
-  ID n = dimensions[0];
-  ID m = dimensions[1];
-  NumNonZeros nnz = coo->get_num_nnz();
+  std::vector<IDType> dimensions = coo->get_dimensions();
+  IDType n = dimensions[0];
+  IDType m = dimensions[1];
+  NNZType nnz = coo->get_num_nnz();
 
-  ID *row_ptr = new ID[n + 1];
-  ID *col = new ID[m];
-  NumNonZeros *vals;
+  IDType *row_ptr = new IDType[n + 1];
+  IDType *col = new IDType[m];
+  NNZType *vals;
   if (coo->vals_ != nullptr)
-    vals = new NumNonZeros[nnz];
+    vals = new NNZType[nnz];
   else
     vals = nullptr;
 
@@ -90,52 +90,52 @@ SparseFormat<ID, NumNonZeros, Value> *CooCsrFunctor<ID, NumNonZeros, Value>::ope
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
-  std::vector<std::pair<ID, ID>> edges;
-  for (ID i = 0; i < nnz; i++) {
+  std::vector<std::pair<IDType, IDType>> edges;
+  for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo->col_[i], coo->row_[i]);
   }
-  sort(edges.begin(), edges.end(), less<std::pair<ID, ID>>());
+  sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
 
-  for (ID i = 0; i < m; i++) {
+  for (IDType i = 0; i < m; i++) {
     col[i] = edges[i].second;
     row_ptr[edges[i].first]++;
   }
 
-  for (ID i = 1; i <= n; i++) {
+  for (IDType i = 1; i <= n; i++) {
     row_ptr[i] += row_ptr[i - 1];
   }
 
-  for (ID i = n; i > 0; i--) {
+  for (IDType i = n; i > 0; i--) {
     row_ptr[i] = row_ptr[i - 1];
   }
   row_ptr[0] = 0;
 
-  if constexpr (!std::is_same_v<void, Value>) {
+  if constexpr (!std::is_same_v<void, ValueType>) {
     if (coo->vals_ != nullptr)
-      for (NumNonZeros i = 0; i < nnz; i++) {
+      for (NNZType i = 0; i < nnz; i++) {
         vals[i] = coo->vals_[i];
       }
   }
 
-  auto csr = new CSR<ID, NumNonZeros, Value>(n, m, row_ptr, col, vals);
+  auto csr = new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals);
   return csr;
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-SparseConverter<ID, NumNonZeros, Value>::SparseConverter() {
+template <typename IDType, typename NNZType, typename ValueType>
+SparseConverter<IDType, NNZType, ValueType>::SparseConverter() {
   this->RegisterConversionFunction(kCOOFormat, kCSRFormat,
-                                     new CooCsrFunctor<ID, NumNonZeros, Value>());
+                                     new CooCsrFunctor<IDType, NNZType, ValueType>());
   this->RegisterConversionFunction(kCSRFormat, kCOOFormat,
-                                     new CsrCooFunctor<ID, NumNonZeros, Value>());
+                                     new CsrCooFunctor<IDType, NNZType, ValueType>());
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-SparseConverter<ID, NumNonZeros, Value>::~SparseConverter() {
+template <typename IDType, typename NNZType, typename ValueType>
+SparseConverter<IDType, NNZType, ValueType>::~SparseConverter() {
   set<uintptr_t> deleted_ptrs;
 
   for (auto x : conversion_map_) {
     for (auto y : x.second) {
-      ConversionFunctor<ID, NumNonZeros, Value> *ptr = y.second;
+      ConversionFunctor<IDType, NNZType, ValueType> *ptr = y.second;
       if (deleted_ptrs.count((uintptr_t)ptr) == 0) {
         deleted_ptrs.insert((uintptr_t)ptr);
         delete ptr;
@@ -144,14 +144,14 @@ SparseConverter<ID, NumNonZeros, Value>::~SparseConverter() {
   }
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-void SparseConverter<ID, NumNonZeros, Value>::RegisterConversionFunction(
+template <typename IDType, typename NNZType, typename ValueType>
+void SparseConverter<IDType, NNZType, ValueType>::RegisterConversionFunction(
     Format from_format, Format to_format,
-    ConversionFunctor<ID, NumNonZeros, Value> *conv_func) {
+    ConversionFunctor<IDType, NNZType, ValueType> *conv_func) {
   if (conversion_map_.count(from_format) == 0) {
     conversion_map_.emplace(
         from_format,
-        std::unordered_map<Format, ConversionFunctor<ID, NumNonZeros, Value> *,
+        std::unordered_map<Format, ConversionFunctor<IDType, NNZType, ValueType> *,
                       FormatHash>());
   }
 
@@ -162,15 +162,15 @@ void SparseConverter<ID, NumNonZeros, Value>::RegisterConversionFunction(
   }
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-SparseFormat<ID, NumNonZeros, Value> *SparseConverter<ID, NumNonZeros, Value>::Convert(
-    SparseFormat<ID, NumNonZeros, Value> *source, Format to_format) {
+template <typename IDType, typename NNZType, typename ValueType>
+SparseFormat<IDType, NNZType, ValueType> *SparseConverter<IDType, NNZType, ValueType>::Convert(
+    SparseFormat<IDType, NNZType, ValueType> *source, Format to_format) {
   if (to_format == source->get_format()) {
     return source;
   }
 
   try {
-    ConversionFunctor<ID, NumNonZeros, Value> *conv_func =
+    ConversionFunctor<IDType, NNZType, ValueType> *conv_func =
         GetConversionFunction(source->get_format(), to_format);
     return (*conv_func)(source);
   } catch (...) {
@@ -179,9 +179,9 @@ SparseFormat<ID, NumNonZeros, Value> *SparseConverter<ID, NumNonZeros, Value>::C
   }
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-ConversionFunctor<ID, NumNonZeros, Value> *
-SparseConverter<ID, NumNonZeros, Value>::GetConversionFunction(Format from_format,
+template <typename IDType, typename NNZType, typename ValueType>
+ConversionFunctor<IDType, NNZType, ValueType> *
+SparseConverter<IDType, NNZType, ValueType>::GetConversionFunction(Format from_format,
                                                              Format to_format) {
   try {
     return conversion_map_[from_format][to_format];
@@ -191,8 +191,8 @@ SparseConverter<ID, NumNonZeros, Value>::GetConversionFunction(Format from_forma
   }
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-bool SparseConverter<ID, NumNonZeros, Value>::CanConvert(Format from_format,
+template <typename IDType, typename NNZType, typename ValueType>
+bool SparseConverter<IDType, NNZType, ValueType>::CanConvert(Format from_format,
                                                       Format to_format) {
   if (conversion_map_.find(from_format) != conversion_map_.end()) {
     if (conversion_map_[from_format].find(to_format) !=
@@ -203,12 +203,12 @@ bool SparseConverter<ID, NumNonZeros, Value>::CanConvert(Format from_format,
   return false;
 }
 
-template <typename ID, typename NumNonZeros, typename Value>
-std::vector<SparseFormat<ID, NumNonZeros, Value> *>
-SparseConverter<ID, NumNonZeros, Value>::ApplyConversionSchema(
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<SparseFormat<IDType, NNZType, ValueType> *>
+SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
     ConversionSchema cs,
-    std::vector<SparseFormat<ID, NumNonZeros, Value> *> packed_sfs) {
-  std::vector<SparseFormat<ID, NumNonZeros, Value> *> ret;
+    std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs) {
+  std::vector<SparseFormat<IDType, NNZType, ValueType> *> ret;
   for (int i = 0; i < cs.size(); i++) {
     auto conversion = cs[i];
     if (std::get<0>(conversion)) {

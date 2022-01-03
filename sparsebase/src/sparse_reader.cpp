@@ -9,8 +9,8 @@
 #include <vector>
 
 namespace sparsebase {
-template <typename ID, typename NumNonZeros, typename Value>
-SparseReader<ID, NumNonZeros, Value>::~SparseReader(){};
+template <typename IDType, typename NNZType, typename ValueType>
+SparseReader<IDType, NNZType, ValueType>::~SparseReader(){};
 
 // Add weighted option with contexpr
 //! Brief description
