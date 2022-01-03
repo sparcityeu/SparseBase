@@ -16,7 +16,7 @@ Since `SparsePreprocess` can be used as an abstraction for many different perpro
 Using this generalization, we classify `SparsePreprocess` into different *types;* a `PreprocessType` is identified by the signature of its function, i.e., its `PreprocessFunction`. For example, reordering, partitioning, coarsening, and factorization are all different types, and this is the `PreprocessFunction` defining the reorder type:
 
 ```cpp
-ID_t* ReorderFunction(std::vector<SparseFormat<ID_t, NNZ_t>*>)
+ID* ReorderFunction(std::vector<SparseFormat<ID, NumNonZeros>*>)
 ```
 
 Concretely, each `PreprocessType` is defined by a class that is templated using the type’s `PreprocessFunction`. 

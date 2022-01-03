@@ -147,8 +147,8 @@ Given that the module you are unit-testing is in the file `sparsebase/src/path/p
 
 ```cpp
 #include "gtest/gtest.h"
-#include "sparsebase/SparseFormat.hpp"
-#include "sparsebase/SparseObject.hpp"
+#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_object.hpp"
 
 // test suites and test functions
 ```

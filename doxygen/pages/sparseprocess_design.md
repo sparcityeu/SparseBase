@@ -25,7 +25,7 @@ We define classes for each preprocess type in the library. The manner in which w
 Logically, a preprocess type is defined by the signature of its preprocess functions. We use function pointers to represent these signatures. There is no class that encapsulates these function pointers. Instead, we use [C++ aliases](https://en.cppreference.com/w/cpp/language/type_alias) to refer to them. The alias of the preprocess function signature of some preprocess type is referred to as the `PreprocessFunction` of that type. For example, the `PreprocessFunction` of the preprocess type "Reorder", `ReorderFunction` is:
 
 ```cpp
-using ReorderFunction = ID_t* (*)(std::vector<SparseFormat<ID_t, NNZ_t>*>)
+using ReorderFunction = ID* (*)(std::vector<SparseFormat<ID, NumNonZeros>*>)
 ```
 
 We refer to the inputs of a `PreprocessFunction` as `PreprocessInput...`, and to the output as `PreprocessOutput`. 
@@ -39,7 +39,7 @@ A preprocess type must also have a `SparseConverter` object to allow it to conve
 For example, to define the preprocess type class for the preprocess type `Conc`, we define a concrete `PreprocessFunction` for it:
 
 ```bash
-using ConcPreprocessFunction = ID_t* (*)(vector<SparseFormat>) 
+using ConcPreprocessFunction = ID* (*)(vector<SparseFormat>) 
 ```
 
 Then, we define a class for it, which will combine the three components above, and specialize the `MapToFunction` mixin to the defined `ConcPrepFunction` in order for it to have the correct map.
@@ -73,7 +73,7 @@ The following is a code example of a preprocess implementation belonging to the 
 ```cpp
 class SomeConcImpl : public ConcPreprocessType{
    protected:
-		 static ID_t* impl_for_csr(vector<SparseFormat>){
+		 static ID* impl_for_csr(vector<SparseFormat>){
 				// implementation
 		}
 		int _hyperparameter1;
