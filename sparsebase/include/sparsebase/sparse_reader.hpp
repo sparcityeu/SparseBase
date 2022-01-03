@@ -9,7 +9,7 @@
 
 namespace sparsebase {
 
-template <typename ID, typename NumNonZeros, typename Value> class SparseReader {
+template <typename IDType, typename NNZType, typename ValueType> class SparseReader {
 public:
   virtual ~SparseReader();
 };

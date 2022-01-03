@@ -8,11 +8,11 @@ namespace sparsebase {
 
 SparseObject::~SparseObject(){};
 
-template <typename ID, typename NumNonZeros, typename Value>
-AbstractSparseObject<ID, NumNonZeros, Value>::~AbstractSparseObject(){};
-template <typename ID, typename NumNonZeros, typename Value>
-SparseFormat<ID, NumNonZeros, Value> *
-AbstractSparseObject<ID, NumNonZeros, Value>::get_connectivity() {
+template <typename IDType, typename NNZType, typename ValueType>
+AbstractSparseObject<IDType, NNZType, ValueType>::~AbstractSparseObject(){};
+template <typename IDType, typename NNZType, typename ValueType>
+SparseFormat<IDType, NNZType, ValueType> *
+AbstractSparseObject<IDType, NNZType, ValueType>::get_connectivity() {
   return connectivity_;
 }
 
@@ -61,16 +61,16 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(std::string
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph() {}
-template <typename VertexID, typename NumEdges, typename Value>
-void Graph<VertexID, NumEdges, Value>::InitializeInfoFromConnection() {
+template <typename VertexID, typename NumEdges, typename ValueType>
+void Graph<VertexID, NumEdges, ValueType>::InitializeInfoFromConnection() {
   auto dimensions = this->connectivity_->get_dimensions();
   n_ = dimensions[0];
   m_ = this->connectivity_->get_num_nnz();
 }
-template <typename VertexID, typename NumEdges, typename Value>
-Graph<VertexID, NumEdges, Value>::~Graph(){};
-template <typename VertexID, typename NumEdges, typename Value>
-void Graph<VertexID, NumEdges, Value>::VerifyStructure() {
+template <typename VertexID, typename NumEdges, typename ValueType>
+Graph<VertexID, NumEdges, ValueType>::~Graph(){};
+template <typename VertexID, typename NumEdges, typename ValueType>
+void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
   // check order
   if (this->connectivity_->get_order() != 2)
     throw -1;
