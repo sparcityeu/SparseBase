@@ -1,6 +1,6 @@
 project(Tests)
 
-add_subdirectory(lib)
+add_subdirectory(lib EXCLUDE_FROM_ALL)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_source_dir})
 
