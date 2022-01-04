@@ -6,7 +6,7 @@
 Welcome to SparseBase's documentation!
 ======================================
 
-Our vision of
+Our vision for
 SparseBase is a library built in C++ that encapsulates, preprocesses,
 and performs I/O operations on sparse data structures seamlessly and
 optimally to provide a backbone for algorithms that use these structures.
@@ -21,7 +21,7 @@ embedding, tensor-tensor mathematical operations, or factorization, for example.
 preprocessor that will make carrying out different downstream tasks easier and more standardized.
 It will give developers quick utilities in terms of converting between formats, preprocessing, and reading/writing.
 
-The library is currently in an early stage of development. As a result the api is not stable and
+The library is currently in an early stage of development. As a result the API is not stable and
 likely to change in the near future.
 
 If you are new to the project, we suggest starting here: :doc:`pages/getting_started`
