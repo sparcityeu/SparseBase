@@ -16,7 +16,7 @@ Since `SparsePreprocess` can be used as an abstraction for many different perpro
 Using this generalization, we classify `SparsePreprocess` into different *types;* a `PreprocessType` is identified by the signature of its function, i.e., its `PreprocessFunction`. For example, reordering, partitioning, coarsening, and factorization are all different types, and this is the `PreprocessFunction` defining the reorder type:
 
 ```cpp
-ID* ReorderFunction(std::vector<SparseFormat<ID, NumNonZeros>*>)
+IDType* ReorderFunction(std::vector<SparseFormat<IDType, NumNonZerosType>*>)
 ```
 
 Concretely, each `PreprocessType` is defined by a class that is templated using the type’s `PreprocessFunction`. 
@@ -34,6 +34,6 @@ ReorderInstance<int, int, void, RCMReorder> rcm_orderer;
 auto order = rcm_reorderer.get_order(csr);
 ```
 
-## Why use instance class?
+## Why use the instance class?
 
 An important design decision was whether or not to merge the `PreprocessType` and `PreprocessInstance` classes into a single class. This would mean that a `PreprocessType` would be defined by its operation’s function signature, as well as its public API. Even though this approach might have resulted in cleaner code, we found it might not be as scalable as the current approach. The current approach allows for multiple APIs for a single preprocess type, which we believe might become necessary for more complex preprocessing types.
