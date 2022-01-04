@@ -1,14 +1,31 @@
 # Documentation Guide
 
-## Using Doxygen
+## Using Sphinx and Exhale
 
-- Doxyfile is already setup in the root directory of the project
-- You can use it as shown below (you can replace firefox with your choice of browser or xdg-open if you are using Linux)
+### Installation
+
+- Documentations are build using [Sphinx](https://www.sphinx-doc.org/en/master/) 
+with the [Read The Docs](https://readthedocs.org/) theme.
+- We are using [Exhale](https://exhale.readthedocs.io/en/latest/) to embed the 
+[Doxygen](https://www.doxygen.nl/index.html) generated C++ documentation into Sphinx.
+- As well as having Doxygen installed you also need to install the following python packages:
+  - sphinx
+  - exhale
+  - sphinx-rtd-theme
+- You can also use the provided `requirements.txt` file in the `docs` directory. But the requirements 
+here are frozen to ensure that they work correctly on Read The Docs' build servers.
+
+### Usage
+
+- Documentation can be build using the following commands
 
 ```bash
-doxygen
-firefox docs/html/index.html
+cd docs
+make html
 ```
+
+- This will generate the necessary html files in `_build/html` 
+and you can view the documentation by opening the `index.html` file located there.
 
 ## Documenting Code
 
@@ -83,7 +100,7 @@ enum TEnum {
 ```cpp
 //! Brief Description.
 /*!
-	Detailed Description.
+  Detailed Description.
   \param a an integer argument.
   \param s a constant character pointer.
   \tparam T a templated argument
