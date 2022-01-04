@@ -1,6 +1,6 @@
 # Representing operations using SparsePreprocess
 
-# Overview
+## Overview
 
 Preprocessing, as in the name, represents preprocessing operations that involve `SparseFormat` objects. Reordering, partitioning, graph coarsening, matrix factorization, and tensor decomposition are a few examples of such operations. Preprocessing in SparseBase is done using objects. Each object carries out a certain operation and can contain multiple functions that handle different `SparseFormat` formats. Every object also comes with a matching and conversion mechanism for these functions. This mechanism allows the object to take the user input, find a function that matches the input format, and if none are found, convert the input into a different format for which it has a function. This mechanism has two main benefits:
 
@@ -9,14 +9,14 @@ Preprocessing, as in the name, represents preprocessing operations that involve 
 
 The rest of this document will describe the hierarchy of `SparsePreprocess`.
 
-# Hierarchy
+## Hierarchy
 
 Since `SparsePreprocess` can be used as an abstraction for many different perprocessing operations. It is important to keep it as generic as possible. We achieve this generality by making `SparsePreprocess` abstract in terms of the *preprocess operation’s function signature*, or what we will refer to moving forward as `PreprocessFunction`. In other words, a preprocess type can be created for any combination of inputs and outputs — the data types of inputs and outputs have no restrictions, and there can be as many inputs as the developer needs. Obviously, inputs should have at least one `SparseFormat` object to justify using the `SparsePreprocess` matching mechanism.  
 
 Using this generalization, we classify `SparsePreprocess` into different *types;* a `PreprocessType` is identified by the signature of its function, i.e., its `PreprocessFunction`. For example, reordering, partitioning, coarsening, and factorization are all different types, and this is the `PreprocessFunction` defining the reorder type:
 
 ```cpp
-ID* ReorderFunction(std::vector<SparseFormat<ID, NumNonZeros>*>)
+IDType* ReorderFunction(std::vector<SparseFormat<IDType, NumNonZerosType>*>)
 ```
 
 Concretely, each `PreprocessType` is defined by a class that is templated using the type’s `PreprocessFunction`. 
@@ -34,6 +34,6 @@ ReorderInstance<int, int, void, RCMReorder> rcm_orderer;
 auto order = rcm_reorderer.get_order(csr);
 ```
 
-# Why use instance class?
+## Why use the instance class?
 
 An important design decision was whether or not to merge the `PreprocessType` and `PreprocessInstance` classes into a single class. This would mean that a `PreprocessType` would be defined by its operation’s function signature, as well as its public API. Even though this approach might have resulted in cleaner code, we found it might not be as scalable as the current approach. The current approach allows for multiple APIs for a single preprocess type, which we believe might become necessary for more complex preprocessing types.

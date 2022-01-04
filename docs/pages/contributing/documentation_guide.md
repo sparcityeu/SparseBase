@@ -1,16 +1,38 @@
 # Documentation Guide
 
-# Using Doxygen
+## Using Sphinx and Exhale
 
-- Doxyfile is already setup in the root directory of the project
-- You can use it as shown below (you can replace firefox with your choice of browser or xdg-open if you are using Linux)
+### Installation
+
+- Documentations are build using [Sphinx](https://www.sphinx-doc.org/en/master/) 
+with the [Read The Docs](https://readthedocs.org/) theme.
+- We are using [Exhale](https://exhale.readthedocs.io/en/latest/) to embed the 
+[Doxygen](https://www.doxygen.nl/index.html) generated C++ documentation into Sphinx.
+- As well as having Doxygen installed you also need to install the following python packages:
+  - sphinx
+  - exhale
+  - sphinx-rtd-theme
+  - myst_parser
+- You can also use the provided `requirements.txt` file in the `docs` directory. But the requirements 
+here are frozen to ensure that they work correctly on Read The Docs' build servers.
 
 ```bash
-doxygen
-firefox docs/html/index.html
+pip install -r requirements.txt
 ```
 
-# Documenting Code
+### Usage
+
+- Documentation can be build using the following commands
+
+```bash
+cd docs
+make html
+```
+
+- This will generate the necessary html files in `_build/html` 
+and you can view the documentation by opening the `index.html` file located there.
+
+## Documenting Code
 
 - Doxygen will automatically generate docs from specially marked comments in the code
 - For this project, we prefer the QT style marked comments shown below
@@ -27,7 +49,7 @@ firefox docs/html/index.html
 
 - In general we will try to use the QT commenting styles as much as possible.
 
-## Documenting Classes/Structs
+### Documenting Classes/Structs
 
 - The line comment is a brief description of the class.
 - The block comment is a more detailed description of the class.
@@ -41,7 +63,7 @@ firefox docs/html/index.html
 class TestClass {};
 ```
 
-## Documenting Data Members
+### Documenting Data Members
 
 - Data members inside classes are commented using a brief description and a detailed description.
 - Same pattern as classes
@@ -57,7 +79,7 @@ class TestClass {
 };
 ```
 
-## Documenting Enums
+### Documenting Enums
 
 - Each value and the whole enum must be given a short description as show below.
 
@@ -72,7 +94,7 @@ enum TEnum {
 
 - In very critical cases the enum itself can be given a more detailed description using the same syntax as a class (see previous section).
 
-## Documenting Functions and Methods
+### Documenting Functions and Methods
 
 - The line comment is a brief description of the function. For example, these will be used when viewing all the methods of a class. This should not exceed a single line (~80 chars max).
 - First part of the block comment is a more detailed description of the function and can be as long as you wish.
@@ -83,7 +105,7 @@ enum TEnum {
 ```cpp
 //! Brief Description.
 /*!
-	Detailed Description.
+  Detailed Description.
   \param a an integer argument.
   \param s a constant character pointer.
   \tparam T a templated argument

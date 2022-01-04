@@ -1,7 +1,9 @@
-# SparseBase
+# Getting Started
 
-## Compiling
-```
+## Installation & Building
+
+### Compiling
+```bash
 mkdir build && cd build
 cmake ..
 make
@@ -9,70 +11,68 @@ make
 
 This will generate the library as a static library. In addition, the example codes are compiled and their binaries are located in `build/examples`.
 
-## Installation
+### Installation
 
 To install the library, compile the library as shwon in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:
-```
+```bash
 cd build
 cmake --install .
 ```
 
 To install the library to a custom directory, do the following:
-```
+```bash
 cd build
 cmake --install . --prefix "/custom/location"
 ```
 **Note:** We suggest using **absolute paths** for prefixes as relative paths have been known to cause problems from time to time.
 
-## Usage
+### Usage
 SparseBase can be easily added to your project either through CMake's `find_package()` command, or by directly linking it at compilation time.
-### Adding SparseBase through CMake
+#### Adding SparseBase through CMake
 If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
-```
+```cmake
 find_package(sparsebase 0.1 REQUIRED)
 ```
 However, if you installed the library to a different path, say `/custom/location/`, you must specify that path in the command:
-```
+```cmake
 find_package(sparsebase 0.1 REQUIRED PATHS /custom/location/)
 ```
 After the library is added to your project, you can simply link your targets to `sparsebase::sparsebase`:
 
-```
+```cmake
 target_link_libraries(your_target sparsebase::sparsebase)
 ```
 
-### Linking to SparseBase at compile time 
+#### Linking to SparseBase at compile time
 You can link SparseBase directly to your targets by passing the appropriate flag for your compiler. For example, for `g++`, add the `-lsparsebase` flag:
-```
+```bash
 g++ source.cpp -lsparsebase
 ```
 If the library was installed to a different location, say `/custom/location/`, then make sure to guide the compiler to the locations of the headers and the binary:
-```
+```bash
 g++ source.cpp -I/custom/location/include -L/custom/location/lib -lsparsebase
 ```
 
-## Tests
+### Tests
 
 Users can run unit tests easily after building the project. To do so, they must configure CMake to compile tests:
-```
+```bash
 mkdir build # if a build directory doesn't exist
 cd build
 cmake -DRUN_TESTS ..
 ```
 Once its built, while in the build directory, do the following:
-``` 
+```bash
 ctest -V
 ```
-## Formatting
+### Formatting
 Source files can be automatically formatted using `clang-format`. After installing `clang-format`, generate the build system using CMake and build the target `format`. This example shows its usage with `make`:
-```
+```bash
 mkdir build
 cd build
 cmake ..
 make format
 ``` 
-
-# Getting Started
 
 ## Creating a SparseFormat Object
 
@@ -80,13 +80,18 @@ Currently two sparse data formats are supported:
 - COO (Coordinate List)
 - CSR (Compressed Sparse Row)
 
-In the code snippet below you can see the creation of a CSR type object
-which only contains connectivity information. As a result the value type and parameter
+In the code snippet below you can see the creation of a CSR type object 
+which only contains connectivity information. As a result the value type and parameter 
 are set as `void` and `nullptr respectively.
 ```cpp
 unsigned int row_ptr[4] = {0, 2, 3, 4};
 unsigned int col[4] = {1, 2, 0, 0};
 
+// There are 3 template parameters for each sparse data format
+// First is IDType which is related to the size of the dimensions
+// Second is NumNonZerosType which is related to the number of non-zeros stored
+// Third is ValueType which determines the type of the stored values
+// In this example ValueType is set to void since we are not storing any values
 CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
@@ -97,6 +102,7 @@ int row[6] = {0, 0, 1, 1, 2, 2};
 int col[6] = {0, 1, 1, 2, 3, 3};
 int vals[6] = {10, 20, 30, 40, 50, 60};
 
+// Unlike the previous example we are storing integer type values here
 COO<int,int,int>* coo = new COO<int,int,int>(6, 6, 6, row, col, vals);
 ```
 
@@ -177,44 +183,3 @@ So by default, reordering won't actually mutate the graph. If the user wishes to
 TransformInstance<vertex_type, edge_type, value_type, Transform> transformer(1);
 auto csr = transformer.get_transformation(con, order);
 ```
-
-# Contribution Guidelines
-
-Contributions preferably start with an issue on the issue tracker of GitHub. In addition, a contribution of any kind must be forked out of `origin/develop` and merged back into it. 
-
-TL;DR: the process for making a contribution is to make a topic branch out of `origin/develop` into your local machine, make your contributions on this topic branch, push your new branch back into `origin`, and create a pull request to pull your new topic branch into `origin/develop`. Please do not merge your changes to `develop` on your local machine and push your changes to `origin/develop` directly. 
-
-More precisely, a typical contribution will follow this pattern:
-
-1. Create an issue on GitHub discussing your contribution. At this point, a discussion may happen where the entire team can get on the same page.
-2. Pull `origin/develop` into your local to start developing from the latest state of the project, and create a new branch for your contribution. The naming convention for a contribution branch is `feature/<new_feature>`:
-    
-    ```bash
-    # on your local
-    cd sparsebase
-    git checkout develop
-    git pull origin develop
-    git checkout -b feature/<new_feature>
-    ```
-    
-3. After you're done working on your feature, make sure that it can be merged cleanly with `origin/develop` by pulling `origin/develop` back into your local machine and merging it with your feature branch:
-    
-    ```bash
-    git checkout develop
-    git pull origin develop
-    git checkout feature/<new_feature>
-    git merge develop
-    # merge conflicts may arise
-    ```
-    
-4. Once your feature branch merges successfully with `develop`, push your branch to `origin`:
-    
-    ```bash
-    git checkout feature/<new_feature>
-    git push origin feature/<new_feature>
-    ```
-    
-5. On GitHub, create a pull request to merge your branch with `develop`; the base of the request will be `develop` and the merging branch will be `feature/<new_feature>`.
-6.  Once the contribution is reviewed, a maintainer from the team will merge the pull request into `origin/develop`.
-
-Thank you for your efforts!
