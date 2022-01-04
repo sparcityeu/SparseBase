@@ -74,20 +74,47 @@ cmake ..
 make format
 ``` 
 
+## Creating a SparseFormat Object
+
+Currently two sparse data formats are supported:
+- COO (Coordinate List)
+- CSR (Compressed Sparse Row)
+
+In the code snippet below you can see the creation of a CSR type object 
+which only contains connectivity information. As a result the value type and parameter 
+are set as `void` and `nullptr respectively.
+```cpp
+unsigned int row_ptr[4] = {0, 2, 3, 4};
+unsigned int col[4] = {1, 2, 0, 0};
+
+CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
+```
+
+In the code snippet below you can see the creation of a COO type object which also contains value information.
+
+```cpp
+int row[6] = {0, 0, 1, 1, 2, 2};
+int col[6] = {0, 1, 1, 2, 3, 3};
+int vals[6] = {10, 20, 30, 40, 50, 60};
+
+COO<int,int,int>* coo = new COO<int,int,int>(6, 6, 6, row, col, vals);
+```
+
+
 ## Input
 
-Currently we support two sparse data file formats:
+Currently, we support two sparse data file formats:
 - Matrix Market Files (.mtx)
 - Undirected Edge List Files (.uedgelist)
 
-We can perform a read operation on these formats as shown below: (use `UEdgeListReader` for .uedgelist files)
+We can perform a read operation on these formats as shown below: (use `UedgeListReader` for .uedgelist files)
 ```cpp
 auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
 auto data = reader->read_coo();
 ```
 
 There are certain limitations to readers, which will be addressed in future releases:
-- `UEdgeListReader` can only read to CSR format
+- `UedgeListReader` can only read to CSR format
 - `MTXReader` can only read to COO format
 - Reading multiple tensors, matrices or graphs from a single file is not supported.
 
@@ -105,7 +132,7 @@ auto csr = dynamic_cast<CSR<vertex_type, edge_type, value_type>>(converted);
 
 ## Working with Graphs
 
-Graphs can be created by using any SparseFormat as the connectivity information of the graph.
+Graphs can be created using any SparseFormat as the connectivity information of the graph.
 
 ```cpp
 auto reader = new MTXReader<vertex_type, edge_type, value_type>(file_name);
@@ -120,7 +147,7 @@ Alternatively we can create a graph by directly passing the reader.
  g.read_connectivity_to_coo(MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
-As of the current version of the library, graphs function as containers of sparse data. However, there are plans to change this in future releases.
+As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
 
 ## Ordering
 

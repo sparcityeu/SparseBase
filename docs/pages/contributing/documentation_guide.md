@@ -12,8 +12,13 @@ with the [Read The Docs](https://readthedocs.org/) theme.
   - sphinx
   - exhale
   - sphinx-rtd-theme
+  - myst_parser
 - You can also use the provided `requirements.txt` file in the `docs` directory. But the requirements 
 here are frozen to ensure that they work correctly on Read The Docs' build servers.
+
+```bash
+pip install -r requirements.txt
+```
 
 ### Usage
 

@@ -19,11 +19,11 @@ The following example demonstrates the process of creating a new reordering `Opt
 
 ### 1. Create a new class for the ordering
 
-In the header file `sparsebase/include/sparse_preprocess.hpp`, add the definition of your class. It must be templated on three types `ID`, `NumNonZeros`, `Value` which define the data types of the `SparseFormat` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
+In the header file `sparsebase/include/sparse_preprocess.hpp`, add the definition of your class. It must be templated on three types `IDType`, `NumNonZerosType`, `ValueType` which define the data types of the `SparseFormat` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
 
 ```cpp
-template <typename ID, typename NumNonZeros, typename Value>
-class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NumNonZerosType, typename ValueType>
+class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 
 };
 ```
@@ -33,8 +33,8 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 Inside the class, create a new struct inheriting from `ReorderParams`. Its members will be whichever hyperparameters that your reordering will require. We will call this struct `OptimalReorderParams`. We add `alpha` and `beta` to it.
 
 ```cpp
-template <typename ID, typename NumNonZeros, typename Value>
-class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NumNonZerosType, typename ValueType>
+class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	struct OptimalReorderParams : ReorderParams {
 		float alpha;
 		float beta;
@@ -45,8 +45,8 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 Inside the constructor, you will take the hyperparameters from the user, add them to an instance of the struct you just created, and set the data member `params_`, which your class inherited from `ReorderPreprocessType`, to the newly added struct.
 
 ```cpp
-template <typename ID, typename NumNonZeros, typename Value>
-class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NumNonZerosType, typename ValueType>
+class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		this->params_ = unique_ptr<OptimalReorderParams>(new OptimalReorderParams{alpha, beta});
@@ -60,7 +60,7 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 Add implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions should match the `ReorderFunction` signature:
 
 ```cpp
-static ID* function_name(std::vector<SparseFormat<ID, NumNonZeros, Value>*>, ReorderParams*) 
+static IDType* function_name(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*>, ReorderParams*) 
 ```
 Not that the functions must also be *static*. This is required to enable the mechanism of choosing the correct implementation function for the input `SparseFormat` object's Format.  
 
@@ -72,18 +72,18 @@ The parameters that your function will take are:
 For our example, we add two functions, `optimally_order_csr()` and `optimally_order_coo()`. Notice how we use the inputs to extract the `SparseFormat` object we will reorder, and the `OptimalReorderParams` object storing the user's parameters:
 
 ```cpp
-template <typename ID, typename NumNonZeros, typename Value>
-class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NumNonZerosType, typename ValueType>
+class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	//.......
-	static ID* optimally_order_csr(std::vector<SparseFormat<ID, NumNonZeros, Value>*> input_sf, ReorderParams* poly_params){
-		CSR<ID, NumNonZeros, Value> csr = static_cast<CSR<ID, NumNonZeros, Value>(input_sf[0]);
+	static IDType* optimally_order_csr(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
+		CSR<IDType, NumNonZerosType, ValueType> csr = static_cast<CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		OptimalReorderParams* params = static_cast<OptimalReorderParams*>(poly_params);
 		// ... carry out the ordering logic
 		return order;
 	}
 
-	static ID* optimally_order_coo(std::vector<SparseFormat<ID, NumNonZeros, Value>*> input_sf, ReorderParams* poly_params){
-		COO<ID, NumNonZeros, Value> coo = static_cast<COO<ID, NumNonZeros, Value>(input_sf[0]);
+	static IDType* optimally_order_coo(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
+		COO<IDType, NumNonZerosType, ValueType> coo = static_cast<COO<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		OptimalReorderParams* params = static_cast<OptimalReorderParams*>(poly_params);
 		// ... carry out the ordering logic
 		return order;
@@ -97,8 +97,8 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 Inside the constructor, register the functions you made to the correct `Format`. 
 
 ```cpp
-template <typename ID, typename NumNonZeros, typename Value>
-class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
+template <typename IDType, typename NumNonZerosType, typename ValueType>
+class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		// ...
@@ -111,7 +111,7 @@ class OptimalReorder : ReorderPreprocessType<ID, NumNonZeros, Value> {
 
 ### 5. Add explicit template instantiations
 
-Since this library is compiled, you must add explicit instantiations of your class depending on the data types you are going to use for `ID`, `NumNonZeros`, and `Value`. 
+Since this library is compiled, you must add explicit instantiations of your class depending on the data types you are going to use for `IDType`, `NumNonZerosType`, and `ValueType`. 
 
 ```cpp
 template class OptimalReorder<unsigned int, unsigned int, void>;
