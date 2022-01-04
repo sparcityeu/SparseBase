@@ -87,6 +87,11 @@ are set as `void` and `nullptr respectively.
 unsigned int row_ptr[4] = {0, 2, 3, 4};
 unsigned int col[4] = {1, 2, 0, 0};
 
+// There are 3 template parameters for each sparse data format
+// First is IDType which is related to the size of the dimensions
+// Second is NumNonZerosType which is related to the number of non-zeros stored
+// Third is ValueType which determines the type of the stored values
+// In this example ValueType is set to void since we are not storing any values
 CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
@@ -97,6 +102,7 @@ int row[6] = {0, 0, 1, 1, 2, 2};
 int col[6] = {0, 1, 1, 2, 3, 3};
 int vals[6] = {10, 20, 30, 40, 50, 60};
 
+// Unlike the previous example we are storing integer type values here
 COO<int,int,int>* coo = new COO<int,int,int>(6, 6, 6, row, col, vals);
 ```
 
