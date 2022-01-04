@@ -58,4 +58,8 @@ CTestTestfile.cmake
 _deps
 
 # Docs
-docs/
+docs/_build
+docs/_doxygen
+docs/_static
+docs/_templates
+docs/api
