@@ -2,7 +2,7 @@
 
 We use Google Test for carrying out tests. It is a compiled testing library with minimal dependencies. It's integrated into the project using git submodules. We start by going through some Google Test basics. If you're familiar with Google Tests and wish to see how to add tests to our project, skip to the [Adding Tests](#adding-tests) section.
 
-# Terminology
+## Terminology
 
 | Term | GTest API | Meaning |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ We use Google Test for carrying out tests. It is a compiled testing library with
 | Test fixture class | class _ : public ::testing::Test {}; | A class containing objects and routines that can be reused by multiple test cases. |
 | Test program |  | A piece of code containing one or more test suites. |
 
-# Assertions
+## Assertions
 
 A test is done through one or more *assertions.* An assertion can succeed or fail, and failures are two types depending on the name of the assertion:
 
@@ -22,7 +22,7 @@ A test is done through one or more *assertions.* An assertion can succeed or fai
     Important: this can cause memory leaks since clean-up code doesn't run. Be careful.
     
 
-## Custom message
+### Custom message
 
 When an assertion fails, Google Test prints an automated message. Users can add their own message to an assertion using the `operator<<`:
 
@@ -30,7 +30,7 @@ When an assertion fails, Google Test prints an automated message. Users can add 
 ASSERT_EQ(x.size(), y.size()) << "Vectors x and y are of unequal length";
 ```
 
-## Assertion semantics
+### Assertion semantics
 
 Find the full list of assertions [here](https://google.github.io/googletest/reference/assertions.html).
 
@@ -38,7 +38,7 @@ Find the full list of assertions [here](https://google.github.io/googletest/refe
 | --- | --- |
 | *_EQ(a, b) | Check a and b are equal |
 
-# Test cases
+## Test cases
 
 A test case is a C++ function containing a group of assertions. Since it's a function, code within a test case has a state (variables) that can be changed within the test case, but different test cases cannot share states (variables). If all assertions in a test case pass then so does the test case, and if any of them fails then so does the test case.
 
@@ -54,7 +54,7 @@ TEST(SparseFormatSuite, CSR){
 
 Test cases are grouped by test suite when executing.
 
-# Test Fixtures
+## Test Fixtures
 
 When multiple tests might use the same initial state (same starting variables), we can place these variables inside a "Fixture" class that defines how they are constructed and deleted. Then, every test case that needs these variables in this initial state will get a fresh copy of the fixture without any code repetition. Methods can also be added to fixtures for added utility.
 
@@ -108,11 +108,11 @@ As you can see, we use the data members `q0_`, `q1_`, and `q2_` directly.
 
 **Important:** each one of these test cases will use *a fresh copy* of the `QueueTest` fixture. They don't affect each other.
 
-## Set up and tear down
+### Set up and tear down
 
 Since the fixture is a class, you can define the steps for setting it up inside the constructor, or inside the `SetUp()` function. Similarly, you can define the clean-up code in the destructor or in the `TearDown()` function. For differences between the two, check [here.](https://google.github.io/googletest/faq.html#CtorVsSetUp) 
 
-## Defining a fixture
+### Defining a fixture
 
 To create a fixture:
 
@@ -129,17 +129,17 @@ constructor/destructor and when you should use `SetUp()/TearDown()`, read
 the [FAQ](https://google.github.io/googletest/faq.html#CtorVsSetUp).
 5. If needed, define subroutines for your tests to share.
 
-# Adding tests
+## Adding tests
 
 For `SparseBase`, we will have the test files following the file structure of the library itself. Tests for a module in file `sparsebase/src/<file_name>.cpp`, the tests of that file will be located in `tests/suites/<file_name>_tests.cpp`. Each test file will be a separate `CTest` test.
 
 When adding a test for some module, first check to see if that module has a test file or not. If it does, add your tests there. Otherwise, create a new test file and modify the `CMakeLists.txt` files as shown in the next section.
 
-## Adding a new test file
+### Adding a new test file
 
 When adding a test file, there are three steps you need to follow:
 
-### 1. Create the '.cpp' file.
+#### 1. Create the '.cpp' file.
 
 Given that the module you are unit-testing is in the file `sparsebase/src/path/package.cpp`, create the file `tests/suites/path/package_tests.cpp`. 
 
@@ -147,15 +147,15 @@ Given that the module you are unit-testing is in the file `sparsebase/src/path/p
 
 ```cpp
 #include "gtest/gtest.h"
-#include "sparsebase/SparseFormat.hpp"
-#include "sparsebase/SparseObject.hpp"
+#include "sparsebase/sparse_format.hpp"
+#include "sparsebase/sparse_object.hpp"
 
 // test suites and test functions
 ```
 
 Your tests will follow these headers.
 
-### 2. Add an executable target to the 'CMakeLists.txt' file in the 'tests' top-level directory.
+#### 2. Add an executable target to the 'CMakeLists.txt' file in the 'tests' top-level directory.
 
 To add a target for the file we defined in step 1, add the following lines to the end of the file `tests/CMakeLists.txt`
 

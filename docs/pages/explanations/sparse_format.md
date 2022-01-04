@@ -4,23 +4,23 @@
 
 ## Sparse Format Interface
 
-SparseFormat interface have three variable templates; `ID_t`, `NNZ_t`, and `VAL_t`. `ID_t` is related to the size of the dimensions, where the largest dimension must be in the range of type `ID_t`. Likewise, `NNZ_t` is related to the number of non-zeros stored, where the number of non-zeros must be in the range of type `NNZ_t`. Lastly, `VAL_t` represents the type of the `vals` data member, which stores the weight of the connections. For instance, for a road network, `VAL_t` can be a floating-point number representing the distance in between, or, for a social network, it can be of type void since the connections may not have a weight attached. 
+SparseFormat interface have three variable templates; `ID`, `NumNonZeros`, and `Value`. `ID` is related to the size of the dimensions, where the largest dimension must be in the range of type `ID`. Likewise, `NumNonZeros` is related to the number of non-zeros stored, where the number of non-zeros must be in the range of type `NumNonZeros`. Lastly, `Value` represents the type of the `vals` data member, which stores the weight of the connections. For instance, for a road network, `Value` can be a floating-point number representing the distance in between, or, for a social network, it can be of type void since the connections may not have a weight attached. 
 
 ```cpp
-template<typename ID_t, typename NNZ_t, typename VAL_t>
+template<typename ID, typename NumNonZeros, typename Value>
 class SparseFormat{
     public:
     Format format;
     virtual ~SparseFormat(){};
     virtual unsigned int get_order() = 0;
     virtual Format get_format() = 0;
-    virtual std::vector<ID_t> get_dimensions() = 0;
-    virtual NNZ_t get_num_nnz() = 0;
-    virtual NNZ_t * get_row_ptr() = 0;
-    virtual ID_t * get_col() = 0;
-    virtual ID_t * get_row() = 0;
-    virtual VAL_t * get_vals() = 0;
-    virtual ID_t ** get_ind() = 0;
+    virtual std::vector<ID> get_dimensions() = 0;
+    virtual NumNonZeros get_num_nnz() = 0;
+    virtual NumNonZeros * get_row_ptr() = 0;
+    virtual ID * get_col() = 0;
+    virtual ID * get_row() = 0;
+    virtual Value * get_vals() = 0;
+    virtual ID ** get_ind() = 0;
 };
 ```
 All classes that implement the Sparse Format interface store an enum type Format.

@@ -1,6 +1,6 @@
 # Documentation Guide
 
-# Using Doxygen
+## Using Doxygen
 
 - Doxyfile is already setup in the root directory of the project
 - You can use it as shown below (you can replace firefox with your choice of browser or xdg-open if you are using Linux)
@@ -10,7 +10,7 @@ doxygen
 firefox docs/html/index.html
 ```
 
-# Documenting Code
+## Documenting Code
 
 - Doxygen will automatically generate docs from specially marked comments in the code
 - For this project, we prefer the QT style marked comments shown below
@@ -27,7 +27,7 @@ firefox docs/html/index.html
 
 - In general we will try to use the QT commenting styles as much as possible.
 
-## Documenting Classes/Structs
+### Documenting Classes/Structs
 
 - The line comment is a brief description of the class.
 - The block comment is a more detailed description of the class.
@@ -41,7 +41,7 @@ firefox docs/html/index.html
 class TestClass {};
 ```
 
-## Documenting Data Members
+### Documenting Data Members
 
 - Data members inside classes are commented using a brief description and a detailed description.
 - Same pattern as classes
@@ -57,7 +57,7 @@ class TestClass {
 };
 ```
 
-## Documenting Enums
+### Documenting Enums
 
 - Each value and the whole enum must be given a short description as show below.
 
@@ -72,7 +72,7 @@ enum TEnum {
 
 - In very critical cases the enum itself can be given a more detailed description using the same syntax as a class (see previous section).
 
-## Documenting Functions and Methods
+### Documenting Functions and Methods
 
 - The line comment is a brief description of the function. For example, these will be used when viewing all the methods of a class. This should not exceed a single line (~80 chars max).
 - First part of the block comment is a more detailed description of the function and can be as long as you wish.
