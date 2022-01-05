@@ -68,7 +68,7 @@ protected:
   using PreprocessingImpl::PreprocessingImpl;
   std::tuple<PreprocessFunction, ConversionSchema>
   GetFunction(Key key, ConversionMap map,
-               SparseConverter<IDType, NNZType, ValueType> sc);
+               SparseConverter<IDType, NNZType, ValueType>& sc);
   template <typename F> std::vector<Format> PackFormats(F sf);
   template <typename F, typename... SF>
   std::vector<Format> PackFormats(F sf, SF... sfs);
@@ -78,7 +78,7 @@ protected:
   template <typename F, typename... SF>
   std::tuple<PreprocessFunction,
              std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-  Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType> sc, F sf,
+  Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
           SF... sfs);
 };
 template <typename IDType, typename NNZType, typename ValueType>

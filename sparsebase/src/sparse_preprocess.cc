@@ -67,7 +67,7 @@ std::tuple<PreprocessFunction, ConversionSchema>
 FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(Key key, ConversionMap map,
-                 SparseConverter<IDType, NNZType, ValueType> sc) {
+                 SparseConverter<IDType, NNZType, ValueType>& sc) {
   ConversionSchema cs;
   PreprocessFunction func = nullptr;
   if (map.find(key) != map.end()) {
@@ -184,7 +184,7 @@ template <typename F, typename... SF>
 std::tuple<PreprocessFunction, std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
 FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
-    Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType> sc, F sf,
+    Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
             SF... sfs) {
   // pack the SFs into a vector
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs = PackSFS(sf, sfs...);
