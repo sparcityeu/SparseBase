@@ -63,4 +63,6 @@ docs/_doxygen
 docs/_static
 docs/_templates
 docs/api
+docs/html
+docs/latex
 !docs/Makefile
