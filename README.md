@@ -1,5 +1,14 @@
 # SparseBase
 
+SparseBase is a library built in C++ that encapsulates, preprocesses, and performs I/O operations on sparse data structures seamlessly and optimally to provide a backbone for algorithms that use these structures.
+
+It is designed with HPC (High Performance Computing) usage at the forefront. It is meant as a container of sparse objects such as tensors, graphs, multi-graphs, and hypergraphs. It mainly focuses on re-ordering, partitioning, and coarsening sparse objects. Also, it supports many different formats (representations) of sparse data and enables smooth conversion between formats.
+
+The library is still in early stages of development. As a result, the API is not stable and likely to change in the near future.
+
+Please check our [documentation](https://sabanciparallelcomputing.github.io/sparsebase_docs/index.html) for tutorials, how-to guides, and a reference for the API.
+
+Below you will find [instructions](#compiling) on building and installing the library, as well as some quick [tutorials](#getting-started) on its basic operations.
 ## Compiling
 ```
 mkdir build && cd build
