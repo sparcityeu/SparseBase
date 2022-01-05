@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char * argv[]){
   if (argc < 2){
-    cout << "Usage: ./sparse_reader <uedgelist_file>\n";
+    cout << "Usage: ./sparse_reader <matrix_market_format>\n";
     cout << "Hint: You can use the matrix market file: examples/data/ash958.mtx\n";
     return 1;
   }
