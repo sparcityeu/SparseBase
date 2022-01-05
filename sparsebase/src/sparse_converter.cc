@@ -223,15 +223,6 @@ SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
   return ret;
 }
 
-template class SparseConverter<int, int, int>;
-template class CooCsrFunctor<int, int, int>;
-template class CsrCooFunctor<int, int, int>;
+#include "init/sparse_converter.inc"
 
-template class SparseConverter<unsigned int, unsigned int, void>;
-template class CooCsrFunctor<unsigned int, unsigned int, void>;
-template class CsrCooFunctor<unsigned int, unsigned int, void>;
-
-template class SparseConverter<unsigned int, unsigned int, unsigned int>;
-template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
-template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
 } // namespace sparsebase

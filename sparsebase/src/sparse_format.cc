@@ -153,10 +153,5 @@ ValueType *CSF<IDType, NNZType, ValueType>::get_vals() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSF<IDType, NNZType, ValueType>::~CSF(){};
 
-template class COO<int, int, int>;
-template class COO<unsigned int, unsigned int, unsigned int>;
-template class COO<unsigned int, unsigned int, void>;
-template class CSR<unsigned int, unsigned int, unsigned int>;
-template class CSR<unsigned int, unsigned int, void>;
-template class CSR<int, int, int>;
+#include "init/sparse_format.inc"
 }; // namespace sparsebase
