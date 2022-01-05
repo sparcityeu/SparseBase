@@ -128,7 +128,7 @@ IDType *CSR<IDType, NNZType, ValueType>::get_col() {
   return col_;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-IDType *CSR<IDType, NNZType, ValueType>::get_row_ptr() {
+NNZType *CSR<IDType, NNZType, ValueType>::get_row_ptr() {
   return row_ptr_;
 }
 template <typename IDType, typename NNZType, typename ValueType>

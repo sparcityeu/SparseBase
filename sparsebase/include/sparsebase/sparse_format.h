@@ -77,7 +77,7 @@ public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals);
   Format get_format() override;
   virtual ~CSR();
-  IDType *get_row_ptr() override;
+  NNZType *get_row_ptr() override;
   IDType *get_col() override;
   ValueType *get_vals() override;
 
