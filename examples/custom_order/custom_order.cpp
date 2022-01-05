@@ -22,7 +22,7 @@ vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type,
 {
   CSR<vertex_type, edge_type, value_type> *csr = static_cast<CSR<vertex_type, edge_type, value_type> *>(formats[0]);
   customParam  *cast_params = static_cast<customParam *>(params);
-  cout << cast_params->hyperparameter << endl;
+  cout << "Custom hyperparameter: " << cast_params->hyperparameter << endl;
   vertex_type n = csr->get_dimensions()[0];
   vertex_type *counts = new vertex_type[n]();
   auto row_ptr = csr->get_row_ptr();
@@ -52,6 +52,11 @@ vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type,
   return inv_sorted;
 }
 int main(int argc, char * argv[]){
+  if (argc < 2){
+    cout << "Usage: ./custom_order <uedgelist_file>\n";
+    cout << "Hint: You can use the edgelist: examples/data/com-dblp.uedgelist\n";
+    return 1;
+  }
   cout << "F t re  s sp r e!" << endl;
   string file_name = argv[1];
 
