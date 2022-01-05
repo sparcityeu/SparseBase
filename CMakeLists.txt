@@ -18,7 +18,7 @@ else()
     # MSVC, On by default (if available)
 endif()
 # Got this from https://github.com/district10/cmake-templates/blob/master/cpp11_vs2010/CMakeLists.txt
-
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -fno-inline")
 add_subdirectory(sparsebase)
 add_subdirectory(examples)
 

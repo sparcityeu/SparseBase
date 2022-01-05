@@ -223,6 +223,20 @@ SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
   return ret;
 }
 
-#include "init/sparse_converter.inc"
 
+#ifdef NDEBUG
+#include "init/sparse_converter.inc"
+#else
+template class SparseConverter<int, int, int>;
+template class CooCsrFunctor<int, int, int>;
+template class CsrCooFunctor<int, int, int>;
+
+template class SparseConverter<unsigned int, unsigned int, void>;
+template class CooCsrFunctor<unsigned int, unsigned int, void>;
+template class CsrCooFunctor<unsigned int, unsigned int, void>;
+
+template class SparseConverter<unsigned int, unsigned int, unsigned int>;
+template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
+template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
+#endif
 } // namespace sparsebase
