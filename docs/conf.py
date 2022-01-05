@@ -22,7 +22,7 @@ copyright = '2022, SparCity Project'
 author = 'SparCity Project Members'
 
 # The full version, including alpha/beta/rc tags
-release = 'pre-release'
+release = 'v0.1.0'
 
 
 # -- General configuration ---------------------------------------------------
