@@ -174,7 +174,7 @@ Orders are returned as arrays which describe the transformation that needs to ta
 So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `TransformInstance` class
 
 ```cpp
-TransformInstance<vertex_type, edge_type, value_type, Transform> transformer(1);
+TransformInstance<vertex_type, edge_type, value_type, Transform> transformer;
 auto csr = transformer.get_transformation(con, order);
 ```
 
