@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.0 )
 
-project( SparseBase_project VERSION 0.1.0 )
+project( SparseBase_project VERSION 0.1.1 )
 option(RUN_TESTS "Enable running tests" OFF)
 
 include( CheckCXXCompilerFlag )
@@ -20,8 +20,6 @@ endif()
 # Got this from https://github.com/district10/cmake-templates/blob/master/cpp11_vs2010/CMakeLists.txt
 if (MSVC)
     add_compile_options("/bigobj")
-else()
-    add_compile_options("-fno-inline")
 endif()
 add_subdirectory(sparsebase)
 add_subdirectory(examples)
