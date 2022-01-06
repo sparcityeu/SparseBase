@@ -10,6 +10,11 @@ using namespace std;
 using namespace sparsebase;
 
 int main(int argc, char * argv[]){
+  if (argc < 2){
+    cout << "Usage: ./csr_coo <matrix_market_format>\n";
+    cout << "Hint: You can use the matrix market file: examples/data/ash958.mtx\n";
+    return 1;
+  }
   cout << "F t re  s sp r e!" << endl;
   unsigned int row_ptr[4] = {0, 2, 3, 4};
   unsigned int col[4] = {1, 2, 0, 0};
