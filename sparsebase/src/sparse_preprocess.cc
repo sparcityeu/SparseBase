@@ -405,7 +405,7 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
   ValueType *vals = sp->get_vals();
   NNZType *nxadj = new NNZType[n + 1]();
   IDType *nadj = new IDType[nnz]();
-  ValueType *nvals;
+  ValueType *nvals = nullptr;
   if constexpr (!std::is_same_v<void, ValueType>) {
     nvals = new ValueType[nnz]();
   }
