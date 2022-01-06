@@ -34,8 +34,35 @@
 # Vim
 *.swp 
 
-.vscode
-
 #data
 graphs
-bin
+build
+debug_build
+cmake-build-*
+
+# local environment
+.vscode
+.DS_Store
+.idea
+
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+# Docs
+docs/_build
+docs/_doxygen
+docs/_static
+docs/_templates
+docs/api
+docs/html
+docs/latex
+!docs/Makefile

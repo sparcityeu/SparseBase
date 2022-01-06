@@ -1,0 +1,26 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Specifications for the environment used for the build
+build:
+  os: ubuntu-20.04
+  tools:
+    python: "3.9"
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# Additional formats to build besides html
+# These will be available for download on read the docs
+formats:
+  - pdf
+
+# Python Requirements
+python:
+  install:
+    - requirements: docs/requirements.txt
