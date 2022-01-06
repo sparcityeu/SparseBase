@@ -23,7 +23,7 @@ In the header file `sparsebase/include/sparse_preprocess.hpp`, add the definitio
 
 ```cpp
 template <typename IDType, typename NumNonZerosType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
+class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 
 };
 ```
@@ -34,7 +34,7 @@ Inside the class, create a new struct inheriting from `ReorderParams`. Its membe
 
 ```cpp
 template <typename IDType, typename NumNonZerosType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
+class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	struct OptimalReorderParams : ReorderParams {
 		float alpha;
 		float beta;
@@ -46,7 +46,7 @@ Inside the constructor, you will take the hyperparameters from the user, add the
 
 ```cpp
 template <typename IDType, typename NumNonZerosType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
+class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		this->params_ = unique_ptr<OptimalReorderParams>(new OptimalReorderParams{alpha, beta});
@@ -73,17 +73,17 @@ For our example, we add two functions, `optimally_order_csr()` and `optimally_or
 
 ```cpp
 template <typename IDType, typename NumNonZerosType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
+class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	//.......
 	static IDType* optimally_order_csr(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
-		CSR<IDType, NumNonZerosType, ValueType> csr = static_cast<CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
+		auto csr = static_cast<sparsebase::CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		OptimalReorderParams* params = static_cast<OptimalReorderParams*>(poly_params);
 		// ... carry out the ordering logic
 		return order;
 	}
 
 	static IDType* optimally_order_coo(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
-		COO<IDType, NumNonZerosType, ValueType> coo = static_cast<COO<IDType, NumNonZerosType, ValueType>(input_sf[0]);
+		auto coo = static_cast<sparsebase::COO<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		OptimalReorderParams* params = static_cast<OptimalReorderParams*>(poly_params);
 		// ... carry out the ordering logic
 		return order;
@@ -98,7 +98,7 @@ Inside the constructor, register the functions you made to the correct `Format`.
 
 ```cpp
 template <typename IDType, typename NumNonZerosType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
+class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		// ...
@@ -120,7 +120,7 @@ template class OptimalReorder<unsigned int, unsigned int, void>;
 In addition, you must add explicit instantiations of the `ReorderInstance` class with your class as the template argument. This class is the access point of users to use reordering.
 
 ```cpp
-template class ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, unsigned int, void>>
+template class sparsebase::ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, unsigned int, void>>
 ```
 
 Now, you can easily use your reordering like the following example:
@@ -128,7 +128,7 @@ Now, you can easily use your reordering like the following example:
 ```cpp
  
 float alpha= 1.0, beta = 0.5;
-ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, unsigned int, void>> reorder(alpha, beta);
+sparsebase::ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, unsigned int, void>> reorder(alpha, beta);
 unsigned int * order = reorder.get_order(some_sparseformat_object);
 ```
 

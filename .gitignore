@@ -38,7 +38,7 @@
 graphs
 build
 debug_build
-cmake-build-debug
+cmake-build-*
 
 # local environment
 .vscode
@@ -63,4 +63,6 @@ docs/_doxygen
 docs/_static
 docs/_templates
 docs/api
+docs/html
+docs/latex
 !docs/Makefile

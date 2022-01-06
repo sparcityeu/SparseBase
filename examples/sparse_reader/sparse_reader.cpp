@@ -11,6 +11,11 @@ using value_type = void;
 using namespace std;
 
 int main(int argc, char * argv[]){
+  if (argc < 2){
+    cout << "Usage: ./sparse_reader <matrix_market_format>\n";
+    cout << "Hint: You can use the matrix market file: examples/data/ash958.mtx\n";
+    return 1;
+  }
     string file_name = argv[1];
 
     // Reading the mtx into a graph object

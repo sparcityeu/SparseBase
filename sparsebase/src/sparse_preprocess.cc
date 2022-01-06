@@ -67,7 +67,7 @@ std::tuple<PreprocessFunction, ConversionSchema>
 FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(Key key, ConversionMap map,
-                 SparseConverter<IDType, NNZType, ValueType> sc) {
+                 SparseConverter<IDType, NNZType, ValueType>& sc) {
   ConversionSchema cs;
   PreprocessFunction func = nullptr;
   if (map.find(key) != map.end()) {
@@ -184,7 +184,7 @@ template <typename F, typename... SF>
 std::tuple<PreprocessFunction, std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
 FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
-    Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType> sc, F sf,
+    Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
             SF... sfs) {
   // pack the SFs into a vector
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs = PackSFS(sf, sfs...);
@@ -403,9 +403,9 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
   NNZType *xadj = sp->get_row_ptr();
   IDType *adj = sp->get_col();
   ValueType *vals = sp->get_vals();
-  NNZType *nxadj = new IDType[n + 1]();
-  IDType *nadj = new NNZType[nnz]();
-  ValueType *nvals;
+  NNZType *nxadj = new NNZType[n + 1]();
+  IDType *nadj = new IDType[nnz]();
+  ValueType *nvals = nullptr;
   if constexpr (!std::is_same_v<void, ValueType>) {
     nvals = new ValueType[nnz]();
   }
@@ -441,9 +441,14 @@ TransformInstance<IDType, NNZType, ValueType, TransformImpl>::GetTransformation(
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
   return func(sfs, ordr);
 }
-template class DegreeReorder<unsigned int, unsigned int, void>;
+
+#ifdef NDEBUG
+#include "init/sparse_preprocess.inc"
+#include "init/sparse_preprocess_instance.inc"
+#else
 template class ReorderPreprocessType<unsigned int, unsigned int, void>;
 
+template class DegreeReorder<unsigned int, unsigned int, void>;
 template class DegreeReorderInstance<unsigned int, unsigned int, void>;
 template class DegreeReorderInstance<unsigned int, unsigned int, unsigned int>;
 template class ReorderInstance<unsigned int, unsigned int, void, DegreeReorder>;
@@ -459,4 +464,5 @@ template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder>;
 template class Transform<unsigned int, unsigned int, void>;
 template class TransformPreprocessType<unsigned int, unsigned int, void>;
 template class TransformInstance<unsigned int, unsigned int, void, Transform>;
+#endif
 } // namespace sparsebase

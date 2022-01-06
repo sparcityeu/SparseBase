@@ -128,7 +128,7 @@ IDType *CSR<IDType, NNZType, ValueType>::get_col() {
   return col_;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-IDType *CSR<IDType, NNZType, ValueType>::get_row_ptr() {
+NNZType *CSR<IDType, NNZType, ValueType>::get_row_ptr() {
   return row_ptr_;
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -153,10 +153,14 @@ ValueType *CSF<IDType, NNZType, ValueType>::get_vals() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSF<IDType, NNZType, ValueType>::~CSF(){};
 
+#ifdef NDEBUG
+#include "init/sparse_format.inc"
+#else
 template class COO<int, int, int>;
 template class COO<unsigned int, unsigned int, unsigned int>;
 template class COO<unsigned int, unsigned int, void>;
 template class CSR<unsigned int, unsigned int, unsigned int>;
 template class CSR<unsigned int, unsigned int, void>;
 template class CSR<int, int, int>;
+#endif
 }; // namespace sparsebase
