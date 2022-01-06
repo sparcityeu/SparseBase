@@ -161,10 +161,14 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
 template <typename VertexID, typename NumEdges, typename Weight>
 MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 
+#ifdef NDEBUG
+#include "init/sparse_reader.inc"
+#else
 template class MTXReader<unsigned int, unsigned int, unsigned int>;
 template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
 
 template class MTXReader<unsigned int, unsigned int, void>;
 template class UedgelistReader<unsigned int, unsigned int, void>;
+#endif
 
 } // namespace sparsebase

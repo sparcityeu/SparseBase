@@ -23,10 +23,6 @@ SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueTy
 
   coo->col_ = new IDType[nnz];
   coo->row_ = new IDType[nnz];
-  if (csr->vals_ != nullptr)
-    coo->vals_ = new NNZType[nnz];
-  else
-    coo->vals_ = nullptr;
 
   IDType count = 0;
   for (IDType i = 0; i < n; i++) {
@@ -45,10 +41,16 @@ SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueTy
 
   // if (csr->vals != nullptr)
   if constexpr (!std::is_same_v<void, ValueType>) {
-    if (coo->vals_ != nullptr)
+    if (csr->vals_ != nullptr){
+      coo->vals_ = new ValueType[nnz];
       for (NNZType i = 0; i < nnz; i++) {
         coo->vals_[i] = csr->vals_[i];
       }
+    } else{
+      coo->vals_ = nullptr;
+    }
+  } else {
+    coo->vals_ = nullptr;
   }
   std::vector<IDType> dims{n, m};
   coo->dimension_ = dims;
@@ -75,18 +77,12 @@ SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueTy
   IDType m = dimensions[1];
   NNZType nnz = coo->get_num_nnz();
 
-  IDType *row_ptr = new IDType[n + 1];
+  NNZType *row_ptr = new NNZType[n + 1];
   IDType *col = new IDType[m];
-  NNZType *vals;
-  if (coo->vals_ != nullptr)
-    vals = new NNZType[nnz];
-  else
-    vals = nullptr;
+  ValueType *vals;
 
   fill(row_ptr, row_ptr + n + 1, 0);
   fill(col, col + m, 0);
-  if (coo->vals_ != nullptr)
-    fill(vals, vals + nnz, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -111,10 +107,17 @@ SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueTy
   row_ptr[0] = 0;
 
   if constexpr (!std::is_same_v<void, ValueType>) {
-    if (coo->vals_ != nullptr)
+    if (coo->vals_ != nullptr){
+      vals = new ValueType[nnz];
+      fill(vals, vals + nnz, 0);
       for (NNZType i = 0; i < nnz; i++) {
         vals[i] = coo->vals_[i];
       }
+    } else {
+      vals = nullptr;
+    }
+  } else {
+    vals = nullptr;
   }
 
   auto csr = new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals);
@@ -220,6 +223,10 @@ SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
   return ret;
 }
 
+
+#ifdef NDEBUG
+#include "init/sparse_converter.inc"
+#else
 template class SparseConverter<int, int, int>;
 template class CooCsrFunctor<int, int, int>;
 template class CsrCooFunctor<int, int, int>;
@@ -231,4 +238,5 @@ template class CsrCooFunctor<unsigned int, unsigned int, void>;
 template class SparseConverter<unsigned int, unsigned int, unsigned int>;
 template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
 template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
+#endif
 } // namespace sparsebase

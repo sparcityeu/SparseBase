@@ -57,15 +57,15 @@ Currently Sparsebase supports two ways to create a sparse format:
 
 1. **User initialized.** The user passes the required data members of the respective sparse format through the constructor.
 ```cpp
-  unsigned int row_ptr[4] = {0, 2, 3, 4};
-  unsigned int col[4] = {1,2,0,0};
-  CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
+unsigned int row_ptr[4] = {0, 2, 3, 4};
+unsigned int col[4] = {1,2,0,0};
+sparsebase::CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
 2. **Read directly from the file.** User first creates a reader by passing the file_name. Then calls the correct read function.
 ```cpp
-  MTXReader<unsigned int, unsigned int, void> reader(file_name);
-  COO<unsigned int, unsigned int, void> * coo = reader.read_coo();
+sparsebase::MTXReader<unsigned int, unsigned int, void> reader(file_name);
+sparsebase::COO<unsigned int, unsigned int, void> * coo = reader.read_coo();
 ```
 
 ## Currently Supported Sparse Formats
