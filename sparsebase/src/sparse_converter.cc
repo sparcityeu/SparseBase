@@ -69,8 +69,8 @@ SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueTy
 template <typename IDType, typename NNZType, typename ValueType>
 SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
     SparseFormat<IDType, NNZType, ValueType> *source) {
-  COO<IDType, NNZType, NNZType> *coo =
-      dynamic_cast<COO<IDType, NNZType, NNZType> *>(source);
+  COO<IDType, NNZType, ValueType> *coo =
+      dynamic_cast<COO<IDType, NNZType, ValueType> *>(source);
 
   std::vector<IDType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];
