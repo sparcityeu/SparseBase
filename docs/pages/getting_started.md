@@ -161,8 +161,8 @@ However, we can convert the data into the format we desire using ``SparseConvert
 #include "sparsebase/sparse_converter.h"
 
 auto converter = sparsebase::SparseConverter<vertex_type, edge_type, value_type>();
-auto converted = converter.Convert(result, CSR_f);
-auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>>(converted);
+auto converted = converter.Convert(result, kCSRFormat);
+auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>*>(converted);
 ```
 
 ## Working with Graphs

@@ -57,7 +57,7 @@ class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType
 
 ### 3. Add implementations for optimal reordering
 
-Add implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions should match the `ReorderFunction` signature:
+Add implementation functions that will carry out the reordering to the file `sparsebase/src/sparse_preprocess.cc`. Each function will be specific for an input `SparseFormat` Format. These functions should match the `ReorderFunction` signature:
 
 ```cpp
 static IDType* FunctionName(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*>, ReorderParams*) 
