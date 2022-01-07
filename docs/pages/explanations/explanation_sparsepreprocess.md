@@ -26,12 +26,15 @@ Each `PreprocessType` can have multiple *implementations.* These are different a
 Finally, each `PreprocessType` can have one or more `PreprocessInstance` classes. These are adapters that take an implementation class and expose an API to the user. Every `PreprocessType` has a `PreprocessInstance` that can be used with all of its implementations. However, one can also build instances for specific implementations as well. For example, the `ReorderInstance` is an instance that can be used with any reordering implementation (RCM, degree, etc.) and it will expose the same API to the user regardless of the implementation its given. On the other hand, the `RCMReorderInstance` is an instance that is specifically made for RCM reordering, and its API can be specialized for it. The following example demonstrates the usage of preprocessing instances:
 
 ```cpp
+#include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_preprocess.h"
+
 sparsebase::COO<int, int, void> coo;
 sparsebase::ReorderInstance<int, int, void, sparsebase::RCMReorder> rcm_orderer;
 // Even though there is no function to carry out RCM Reordering 
 // on a COO, the data will be converted to CSR behind the scenes
 // and reordered.
-auto order = rcm_reorderer.get_order(csr);
+auto order = rcm_reorderer.GetOrder(csr);
 ```
 
 ## Why use the instance class?

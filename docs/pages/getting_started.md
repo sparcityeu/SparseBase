@@ -139,8 +139,10 @@ Currently, we support two sparse data file formats:
 
 We can perform a read operation on these formats as shown below: (use `UedgeListReader` for .uedgelist files)
 ```cpp
+#include "sparsebase/sparse_reader.h"
+
 auto reader = new sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name);
-auto data = reader->read_coo();
+auto data = reader->ReadCOO();
 ```
 
 There are certain limitations to readers, which will be addressed in future releases:
@@ -155,8 +157,11 @@ As explained in the previous section, readers will read to different formats.
 
 However, we can convert the data into the format we desire using ``SparseConverter``:
 ```cpp
+#include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_converter.h"
+
 auto converter = sparsebase::SparseConverter<vertex_type, edge_type, value_type>();
-auto converted = converter.convert(result, CSR_f);
+auto converted = converter.Convert(result, CSR_f);
 auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>>(converted);
 ```
 
@@ -165,14 +170,20 @@ auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>>(con
 Graphs can be created using any SparseFormat as the connectivity information of the graph.
 
 ```cpp
+#include "sparsebase/sparse_reader.h"
+#include "sparsebase/sparse_object.h"
+
 auto reader = new sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name);
-auto data = reader->read();
+auto data = reader->ReadCOO();
 auto g = sparsebase::Graph<vertex_type, edge_type, value_type>(data);
 ```
 
 Alternatively we can create a graph by directly passing the reader.
 
 ```cpp
+#include "sparsebase/sparse_reader.h"
+#include "sparsebase/sparse_object.h"
+
  sparsebase::Graph<vertex_type, edge_type, value_type> g;
  g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
@@ -186,9 +197,12 @@ As of the current version three such ``ReorderPreprocessType`` classes exist ``R
 
 Below you can see an example of an RCM reordering of a graph.
 ```cpp
+#include "sparsebase/sparse_preprocess.h"
+#include "sparsebase/sparse_format.h"
+
 sparsebase::ReorderInstance<vertex_type, edge_type, value_type, sparsebase::RCMReorder> orderer;
 sparsebase::SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
-vertex_type * order = orderer.get_reorder(con);
+vertex_type * order = orderer.GetReorder(con);
 ```
 
 For these operations, we also support an alternative syntax (without the template parameter) using the ``RCMReorderInstance`` and ``DegreeReorderInstance`` wrapper classes.
@@ -197,13 +211,15 @@ Below you can see this alternative syntax being used to reorder the same graph.
 ```cpp
 RCMReorderInstance<vertex_type, edge_type, value_type> orderer;
 SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
-vertex_type * order = orderer.get_reorder(con);
+vertex_type * order = orderer.GetReorder(con);
 ```
 
 Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
 So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `TransformInstance` class
 
 ```cpp
+#include "sparsebase/sparse_preprocess.h"
+
 sparsebase::TransformInstance<vertex_type, edge_type, value_type, sparsebase::Transform> transformer;
-auto csr = transformer.get_transformation(con, order);
+auto csr = transformer.GetTransformation(con, order);
 ```
