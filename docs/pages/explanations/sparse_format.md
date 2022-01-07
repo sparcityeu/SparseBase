@@ -4,7 +4,7 @@
 
 ## Sparse Format Interface
 
-SparseFormat interface have three variable templates; `IDType`, `NNZType`, and `ValueType`. `IDType` is related to the size of the dimensions, where the largest dimension must be in the range of type `IDType`. Likewise, `NNZType` is related to the number of non-zeros stored, where the number of non-zeros must be in the range of type `NZType`. Lastly, `ValueType` represents the type of the `vals` data member, which stores the weight of the connections. For instance, for a road network, `ValueType` can be a floating-point number representing the distance in between, or, for a social network, it can be of type void since the connections may not have a weight attached. 
+SparseFormat interface have three variable templates; `IDType`, `NNZType`, and `ValueType`. `IDType` is related to the size of the dimensions, where the largest dimension must be in the range of type `IDType`. Likewise, `NNZType` is related to the number of non-zeros stored, where the number of non-zeros must be in the range of type `NNZType`. Lastly, `ValueType` represents the type of the `vals` data member, which stores the weight of the connections. For instance, for a road network, `ValueType` can be a floating-point number representing the distance in between, or, for a social network, it can be of type void since the connections may not have a weight attached. 
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType> class SparseFormat {
