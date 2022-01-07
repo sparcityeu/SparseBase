@@ -60,7 +60,7 @@ class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType
 Add implementation functions that will carry out the reordering. Each function will be specific for an input `SparseFormat` Format. These functions should match the `ReorderFunction` signature:
 
 ```cpp
-static IDType* function_name(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*>, ReorderParams*) 
+static IDType* FunctionName(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*>, ReorderParams*) 
 ```
 Not that the functions must also be *static*. This is required to enable the mechanism of choosing the correct implementation function for the input `SparseFormat` object's Format.  
 
@@ -69,20 +69,20 @@ The parameters that your function will take are:
 1. A vector of pointers at `SparseFormat` objects.
 2. A pointer at a `ReorderParams` struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your ordering. 
 
-For our example, we add two functions, `optimally_order_csr()` and `optimally_order_coo()`. Notice how we use the inputs to extract the `SparseFormat` object we will reorder, and the `OptimalReorderParams` object storing the user's parameters:
+For our example, we add two functions, `OptimallyOrderCSR()` and `OptimallyOrderCOO()`. Notice how we use the inputs to extract the `SparseFormat` object we will reorder, and the `OptimalReorderParams` object storing the user's parameters:
 
 ```cpp
 template <typename IDType, typename NumNonZerosType, typename ValueType>
 class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NumNonZerosType, ValueType> {
 	//.......
-	static IDType* optimally_order_csr(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
+	static IDType* OptimallyOrderCSR(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
 		auto csr = static_cast<sparsebase::CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		OptimalReorderParams* params = static_cast<OptimalReorderParams*>(poly_params);
 		// ... carry out the ordering logic
 		return order;
 	}
 
-	static IDType* optimally_order_coo(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
+	static IDType* OptimallyOrderCOO(std::vector<SparseFormat<IDType, NumNonZerosType, ValueType>*> input_sf, ReorderParams* poly_params){
 		auto coo = static_cast<sparsebase::COO<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		OptimalReorderParams* params = static_cast<OptimalReorderParams*>(poly_params);
 		// ... carry out the ordering logic
@@ -126,10 +126,11 @@ template class sparsebase::ReorderInstance<unsigned int, unsigned int, void, Opt
 Now, you can easily use your reordering like the following example:
 
 ```cpp
+#include "sparsebase/sparse_preprocess.h"
  
 float alpha= 1.0, beta = 0.5;
 sparsebase::ReorderInstance<unsigned int, unsigned int, void, OptimalReorder<unsigned int, unsigned int, void>> reorder(alpha, beta);
-unsigned int * order = reorder.get_order(some_sparseformat_object);
+unsigned int * order = reorder.GetOrder(some_sparseformat_object);
 ```
 
 If the format of `some_sparseformat_object` is `kCSRFormat`, `kCOOFormat`, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.
