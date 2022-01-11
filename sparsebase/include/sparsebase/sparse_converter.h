@@ -3,6 +3,7 @@
 
 #include "sparse_format.h"
 #include <unordered_map>
+#include <tuple>
 
 namespace sparsebase {
 
