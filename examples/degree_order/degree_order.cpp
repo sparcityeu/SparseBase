@@ -34,8 +34,8 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  DegreeReorderInstance<vertex_type, edge_type, value_type> orderer(1);
-  //ReorderInstance<vertex_type, edge_type, value_type, DegreeReorder<vertex_type, edge_type, value_type>> orderer(1);
+  //DegreeReorderInstance<vertex_type, edge_type, value_type> orderer(1);
+  ReorderInstance<vertex_type, edge_type, value_type, DegreeReorder> orderer(1);
   //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.GetReorder(con);
