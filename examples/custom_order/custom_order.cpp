@@ -73,7 +73,8 @@ int main(int argc, char * argv[]){
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
   SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
 
-  ReorderInstance<vertex_type, edge_type, value_type, GenericReorder> orderer;
+  //ReorderInstance<vertex_type, edge_type, value_type, GenericReorder> orderer;
+  GenericReorder<vertex_type, edge_type, value_type> orderer;
   orderer.RegisterFunction({kCSRFormat}, degree_reorder_csr);
   customParam params{10};
   vertex_type * order = orderer.GetReorder(con, &params);

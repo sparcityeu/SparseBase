@@ -79,6 +79,9 @@ protected:
   std::unique_ptr<ReorderParams> params_;
 
 public:
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
+                    ReorderParams *params);
   virtual ~ReorderPreprocessType();
 };
 
@@ -87,6 +90,8 @@ class DegreeReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
 public:
   DegreeReorder(int hyperparameter);
 
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
+                    ReorderParams *params) = delete;
 protected:
   struct DegreeReorderParams : ReorderParams {
     int hyperparameter;
@@ -136,25 +141,25 @@ protected:
                   ReorderParams *);
 };
 
-template <typename IDType, typename NNZType, typename ValueType,
-          template <typename, typename, typename> class ReorderImpl>
-class ReorderInstance
-    : public ReorderImpl<IDType, NNZType, ValueType> {
-  typedef ReorderImpl<IDType, NNZType, ValueType> Base;
-  using Base::Base; // Used to forward constructors from base
-public:
-  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
-                    ReorderParams *params);
-};
-template <typename IDType, typename NNZType, typename ValueType>
-class RCMReorderInstance
-    : public RCMReorder<IDType, NNZType, ValueType> {
-  typedef RCMReorder<IDType, NNZType, ValueType> Base;
-  using Base::Base; // Used to forward constructors from base
-public:
-  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-};
+//template <typename IDType, typename NNZType, typename ValueType,
+//          template <typename, typename, typename> class ReorderImpl>
+//class ReorderInstance
+//    : public ReorderImpl<IDType, NNZType, ValueType> {
+//  typedef ReorderImpl<IDType, NNZType, ValueType> Base;
+//  using Base::Base; // Used to forward constructors from base
+//public:
+//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
+//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
+//                    ReorderParams *params);
+//};
+//template <typename IDType, typename NNZType, typename ValueType>
+//class RCMReorderInstance
+//    : public RCMReorder<IDType, NNZType, ValueType> {
+//  typedef RCMReorder<IDType, NNZType, ValueType> Base;
+//  using Base::Base; // Used to forward constructors from base
+//public:
+//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
+//};
 //
 //// template <typename IDType, typename NNZType, typename ValueType, typename ReorderImpl>
 //template <typename IDType, typename NNZType, typename ValueType,
