@@ -1,5 +1,5 @@
 #add_subdirectory(sparse_format)
-add_subdirectory(degree_order)
+#add_subdirectory(degree_order)
 add_subdirectory(custom_order)
 #add_subdirectory(format_conversion)
 add_subdirectory(rcm_order)
