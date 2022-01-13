@@ -147,18 +147,14 @@ public:
   IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
                     ReorderParams *params);
 };
-//template <typename IDType, typename NNZType, typename ValueType>
-//class RCMReorderInstance
-//    : public FormatMatcherMixin<IDType, NNZType, ValueType,
-//                                RCMReorder<IDType, NNZType, ValueType>,
-//                                ReorderFunction<IDType, NNZType, ValueType>> {
-//  typedef FormatMatcherMixin<IDType, NNZType, ValueType, RCMReorder<IDType, NNZType, ValueType>,
-//                             ReorderFunction<IDType, NNZType, ValueType>>
-//      Base;
-//  using Base::Base; // Used to forward constructors from base
-//public:
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-//};
+template <typename IDType, typename NNZType, typename ValueType>
+class RCMReorderInstance
+    : public RCMReorder<IDType, NNZType, ValueType> {
+  typedef RCMReorder<IDType, NNZType, ValueType> Base;
+  using Base::Base; // Used to forward constructors from base
+public:
+  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
+};
 //
 //// template <typename IDType, typename NNZType, typename ValueType, typename ReorderImpl>
 //template <typename IDType, typename NNZType, typename ValueType,
