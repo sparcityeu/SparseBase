@@ -243,6 +243,16 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   delete[] sorted;
   return inv_sorted;
 }
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *RCMReorderInstance<IDType, NNZType, ValueType>::GetReorder(
+    SparseFormat<IDType, NNZType, ValueType> *csr) {
+  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
+             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
+  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
+  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
+  return func(sfs, this->params_.get());
+}
 //template <typename IDType, typename NNZType, typename ValueType>
 //IDType *DegreeReorderInstance<IDType, NNZType, ValueType>::GetReorder(
 //    SparseFormat<IDType, NNZType, ValueType> *csr) {
@@ -458,7 +468,7 @@ template class ReorderInstance<unsigned int, unsigned int, void,
                                GenericReorder>;
 
 template class RCMReorder<unsigned int, unsigned int, void>;
-//template class RCMReorderInstance<unsigned int, unsigned int, void>;
+template class RCMReorderInstance<unsigned int, unsigned int, void>;
 //template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder>;
 
 template class Transform<unsigned int, unsigned int, void>;
