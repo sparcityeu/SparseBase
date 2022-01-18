@@ -12,14 +12,7 @@ struct FormatVectorHash {
   std::size_t operator()(std::vector<Format> vf) const;
 };
 class PreprocessType {};
-// template <class Preprocess, typename Function, typename Key = std::vector<Format>,
-//           typename KeyHash = FormatVectorHash,
-//           typename KeyEqualTo = std::equal_to<std::vector<Format>>>
-// class MapToFunctionMixin : public Preprocess {
-//   using Preprocess::Preprocess;
-// 
-// public:
-// };
+
 template <class Parent, typename IDType, typename NNZType, typename ValueType>
 class SparseConverterMixin : public Parent {
   using Parent::Parent;
@@ -103,19 +96,6 @@ class GenericReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> 
 public:
   GenericReorder();
 };
-//template <typename IDType, typename NNZType, typename ValueType>
-//class DegreeReorderInstance
-//    : public FormatMatcherMixin<IDType, NNZType, ValueType,
-//                                DegreeReorder<IDType, NNZType, ValueType>,
-//                                ReorderFunction<IDType, NNZType, ValueType>> {
-//  typedef FormatMatcherMixin<IDType, NNZType, ValueType,
-//                             DegreeReorder<IDType, NNZType, ValueType>,
-//                             ReorderFunction<IDType, NNZType, ValueType>>
-//      Base;
-//  using Base::Base; // Used to forward constructors from base
-//public:
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-//};
 
 template <typename IDType, typename NNZType, typename ValueType>
 class RCMReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
@@ -136,43 +116,6 @@ protected:
   GetReorderCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
                   ReorderParams *);
 };
-
-//template <typename IDType, typename NNZType, typename ValueType,
-//          template <typename, typename, typename> class ReorderImpl>
-//class ReorderInstance
-//    : public ReorderImpl<IDType, NNZType, ValueType> {
-//  typedef ReorderImpl<IDType, NNZType, ValueType> Base;
-//  using Base::Base; // Used to forward constructors from base
-//public:
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
-//                    ReorderParams *params);
-//};
-//template <typename IDType, typename NNZType, typename ValueType>
-//class RCMReorderInstance
-//    : public RCMReorder<IDType, NNZType, ValueType> {
-//  typedef RCMReorder<IDType, NNZType, ValueType> Base;
-//  using Base::Base; // Used to forward constructors from base
-//public:
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-//};
-//
-//// template <typename IDType, typename NNZType, typename ValueType, typename ReorderImpl>
-//template <typename IDType, typename NNZType, typename ValueType,
-//          template <typename, typename, typename> class ReorderImpl>
-//class ReorderInstance
-//    : public FormatMatcherMixin<IDType, NNZType, ValueType,
-//                                ReorderImpl<IDType, NNZType, ValueType>,
-//                                ReorderFunction<IDType, NNZType, ValueType>> {
-//  typedef FormatMatcherMixin<IDType, NNZType, ValueType, ReorderImpl<IDType, NNZType, ValueType>,
-//                             ReorderFunction<IDType, NNZType, ValueType>>
-//      Base;
-//  using Base::Base; // Used to forward constructors from base
-//public:
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-//  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
-//                    ReorderParams *params);
-//};
 
 // transform
 template <typename IDType, typename NNZType, typename ValueType>
@@ -200,21 +143,6 @@ protected:
   TransformCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
                 IDType *order);
 };
-// template <typename IDType, typename NNZType, typename ValueType, typename
-// TransformImpl>
-//template <typename IDType, typename NNZType, typename ValueType,
-//          template <typename, typename, typename> class TransformImpl>
-//class TransformInstance
-//    : public FormatMatcherMixin<IDType, NNZType, ValueType,
-//                                TransformImpl<IDType, NNZType, ValueType>,
-//                                TransformFunction<IDType, NNZType, ValueType>> {
-//  typedef FormatMatcherMixin<IDType, NNZType, ValueType,
-//                             TransformImpl<IDType, NNZType, ValueType>,
-//                             TransformFunction<IDType, NNZType, ValueType>>
-//      Base;
-//  using Base::Base; // Used to forward constructors from base
-//public:
-//};
 
 } // namespace sparsebase
 
