@@ -117,7 +117,7 @@ int main(int argc, char * argv[]){
     cout << "Order is correct." << endl;
   }
 
-  TransformInstance<vertex_type, edge_type, value_type, Transform> transformer;
+  Transform<vertex_type, edge_type, value_type> transformer;
   SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
   auto * n_row_ptr = csr->get_row_ptr();
   auto * n_col = csr->get_col();
