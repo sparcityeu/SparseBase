@@ -452,25 +452,14 @@ TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
 
 #ifdef NDEBUG
 #include "init/sparse_preprocess.inc"
-#include "init/sparse_preprocess_instance.inc"
 #else
 template class ReorderPreprocessType<unsigned int, unsigned int, void>;
 
 template class DegreeReorder<unsigned int, unsigned int, void>;
-//template class DegreeReorderInstance<unsigned int, unsigned int, void>;
-//template class DegreeReorderInstance<unsigned int, unsigned int, unsigned int>;
-//template class ReorderInstance<unsigned int, unsigned int, void, DegreeReorder>;
-
 template class GenericReorder<unsigned int, unsigned int, void>;
-//template class ReorderInstance<unsigned int, unsigned int, void,
- //                              GenericReorder>;
-
 template class RCMReorder<unsigned int, unsigned int, void>;
-//template class RCMReorderInstance<unsigned int, unsigned int, void>;
-//template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder>;
 
-template class Transform<unsigned int, unsigned int, void>;
 template class TransformPreprocessType<unsigned int, unsigned int, void>;
-//template class TransformInstance<unsigned int, unsigned int, void, Transform>;
+template class Transform<unsigned int, unsigned int, void>;
 #endif
 } // namespace sparsebase
