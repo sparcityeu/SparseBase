@@ -12,19 +12,14 @@ struct FormatVectorHash {
   std::size_t operator()(std::vector<Format> vf) const;
 };
 class PreprocessType {};
-template <class Preprocess, typename Function, typename Key = std::vector<Format>,
-          typename KeyHash = FormatVectorHash,
-          typename KeyEqualTo = std::equal_to<std::vector<Format>>>
-class MapToFunctionMixin : public Preprocess {
-  using Preprocess::Preprocess;
-
-public:
-  std::unordered_map<Key, Function, KeyHash, KeyEqualTo> _map_to_function;
-  bool RegisterFunctionNoOverride(const Key &key_of_function,
-                                     const Function &func_ptr);
-  void RegisterFunction(const Key &key_of_function, const Function &func_ptr);
-  bool UnregisterFunction(const Key &key_of_function);
-};
+// template <class Preprocess, typename Function, typename Key = std::vector<Format>,
+//           typename KeyHash = FormatVectorHash,
+//           typename KeyEqualTo = std::equal_to<std::vector<Format>>>
+// class MapToFunctionMixin : public Preprocess {
+//   using Preprocess::Preprocess;
+// 
+// public:
+// };
 template <class Parent, typename IDType, typename NNZType, typename ValueType>
 class SparseConverterMixin : public Parent {
   using Parent::Parent;
@@ -46,9 +41,15 @@ class FormatMatcherMixin : public PreprocessingImpl {
   typedef std::unordered_map<Key, PreprocessFunction, KeyHash,
                              KeyEqualTo>
       ConversionMap;
+public:
+  bool RegisterFunctionNoOverride(const Key &key_of_function,
+                                     const PreprocessFunction &func_ptr);
+  void RegisterFunction(const Key &key_of_function, const PreprocessFunction &func_ptr);
+  bool UnregisterFunction(const Key &key_of_function);
 
 protected:
   using PreprocessingImpl::PreprocessingImpl;
+  std::unordered_map<Key, PreprocessFunction, KeyHash, KeyEqualTo> _map_to_function;
   std::tuple<PreprocessFunction, ConversionSchema>
   GetFunction(Key key, ConversionMap map,
                SparseConverter<IDType, NNZType, ValueType>& sc);
@@ -72,9 +73,7 @@ using ReorderFunction =
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
-    : public FormatMatcherMixin<IDType, NNZType, ValueType,MapToFunctionMixin<
-          SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
-          ReorderFunction<IDType, NNZType, ValueType>>, ReorderFunction<IDType, NNZType, ValueType>> {
+    : public FormatMatcherMixin<IDType, NNZType, ValueType, SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>, ReorderFunction<IDType, NNZType, ValueType>> {
 protected:
   std::unique_ptr<ReorderParams> params_;
 
@@ -89,9 +88,6 @@ template <typename IDType, typename NNZType, typename ValueType>
 class DegreeReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
 public:
   DegreeReorder(int hyperparameter);
-
-  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
-                    ReorderParams *params) = delete;
 protected:
   struct DegreeReorderParams : ReorderParams {
     int hyperparameter;
@@ -185,10 +181,12 @@ using TransformFunction = SparseFormat<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
-    : public MapToFunctionMixin<
+    : public FormatMatcherMixin< IDType, NNZType, ValueType,
           SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
           TransformFunction<IDType, NNZType, ValueType>> {
 public:
+  SparseFormat<IDType, NNZType, ValueType> *
+  GetTransformation(SparseFormat<IDType, NNZType, ValueType> *csr, IDType *order);
   virtual ~TransformPreprocessType();
 };
 
@@ -204,21 +202,19 @@ protected:
 };
 // template <typename IDType, typename NNZType, typename ValueType, typename
 // TransformImpl>
-template <typename IDType, typename NNZType, typename ValueType,
-          template <typename, typename, typename> class TransformImpl>
-class TransformInstance
-    : public FormatMatcherMixin<IDType, NNZType, ValueType,
-                                TransformImpl<IDType, NNZType, ValueType>,
-                                TransformFunction<IDType, NNZType, ValueType>> {
-  typedef FormatMatcherMixin<IDType, NNZType, ValueType,
-                             TransformImpl<IDType, NNZType, ValueType>,
-                             TransformFunction<IDType, NNZType, ValueType>>
-      Base;
-  using Base::Base; // Used to forward constructors from base
-public:
-  SparseFormat<IDType, NNZType, ValueType> *
-  GetTransformation(SparseFormat<IDType, NNZType, ValueType> *csr, IDType *order);
-};
+//template <typename IDType, typename NNZType, typename ValueType,
+//          template <typename, typename, typename> class TransformImpl>
+//class TransformInstance
+//    : public FormatMatcherMixin<IDType, NNZType, ValueType,
+//                                TransformImpl<IDType, NNZType, ValueType>,
+//                                TransformFunction<IDType, NNZType, ValueType>> {
+//  typedef FormatMatcherMixin<IDType, NNZType, ValueType,
+//                             TransformImpl<IDType, NNZType, ValueType>,
+//                             TransformFunction<IDType, NNZType, ValueType>>
+//      Base;
+//  using Base::Base; // Used to forward constructors from base
+//public:
+//};
 
 } // namespace sparsebase
 

@@ -16,9 +16,9 @@ std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const {
     hash += f * 19381;
   return hash;
 }
-template <class Preprocess, typename Function, typename Key, typename KeyHash,
+template <typename IDType, typename NNZType, typename ValueType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool MapToFunctionMixin<Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+bool FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     RegisterFunctionNoOverride(const Key &key_of_function,
                                   const Function &func_ptr) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
@@ -29,15 +29,15 @@ bool MapToFunctionMixin<Preprocess, Function, Key, KeyHash, KeyEqualTo>::
   }
 }
 
-template <class Preprocess, typename Function, typename Key, typename KeyHash,
+template <typename IDType, typename NNZType, typename ValueType,class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-void MapToFunctionMixin<Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+void FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     RegisterFunction(const Key &key_of_function, const Function &func_ptr) {
   _map_to_function[key_of_function] = func_ptr;
 }
-template <class Preprocess, typename Function, typename Key, typename KeyHash,
+template <typename IDType, typename NNZType, typename ValueType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool MapToFunctionMixin<Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+bool FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     UnregisterFunction(const Key &key_of_function) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
     return false; // function already exists for this Key
@@ -438,10 +438,9 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
   CSR<IDType, NNZType, ValueType> *csr = new CSR(n, m, nxadj, nadj, nvals);
   return csr;
 }
-template <typename IDType, typename NNZType, typename ValueType,
-          template <typename, typename, typename> class TransformImpl>
+template <typename IDType, typename NNZType, typename ValueType>
 SparseFormat<IDType, NNZType, ValueType> *
-TransformInstance<IDType, NNZType, ValueType, TransformImpl>::GetTransformation(
+TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
     SparseFormat<IDType, NNZType, ValueType> *csr, IDType *ordr) {
   std::tuple<TransformFunction<IDType, NNZType, ValueType>,
              std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
@@ -472,6 +471,6 @@ template class RCMReorder<unsigned int, unsigned int, void>;
 
 template class Transform<unsigned int, unsigned int, void>;
 template class TransformPreprocessType<unsigned int, unsigned int, void>;
-template class TransformInstance<unsigned int, unsigned int, void, Transform>;
+//template class TransformInstance<unsigned int, unsigned int, void, Transform>;
 #endif
 } // namespace sparsebase
