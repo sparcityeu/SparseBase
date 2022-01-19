@@ -18,7 +18,7 @@ std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const {
 }
 template <typename IDType, typename NNZType, typename ValueType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+bool FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     RegisterFunctionNoOverride(const Key &key_of_function,
                                   const Function &func_ptr) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
@@ -31,13 +31,13 @@ bool FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, K
 
 template <typename IDType, typename NNZType, typename ValueType,class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-void FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+void FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     RegisterFunction(const Key &key_of_function, const Function &func_ptr) {
   _map_to_function[key_of_function] = func_ptr;
 }
 template <typename IDType, typename NNZType, typename ValueType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool FormatMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+bool FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     UnregisterFunction(const Key &key_of_function) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
     return false; // function already exists for this Key
@@ -64,7 +64,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 std::tuple<PreprocessFunction, ConversionSchema>
-FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(Key key, ConversionMap map,
                  SparseConverter<IDType, NNZType, ValueType>& sc) {
@@ -124,7 +124,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename KeyEqualTo>
 template <typename F>
 std::vector<Format>
-FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash,
                    KeyEqualTo>::PackFormats(F sf) {
   SparseFormat<IDType, NNZType, ValueType> *casted =
@@ -137,7 +137,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 std::vector<Format>
-FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash,
                    KeyEqualTo>::PackFormats(F sf, SF... sfs) {
   SparseFormat<IDType, NNZType, ValueType> *casted =
@@ -155,7 +155,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename KeyEqualTo>
 template <typename F>
 std::vector<F>
-FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash,
                    KeyEqualTo>::PackSFS(F sf) {
   return {sf};
@@ -166,7 +166,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 std::vector<F>
-FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash,
                    KeyEqualTo>::PackSFS(F sf, SF... sfs) {
   std::vector<F> f = {sf};
@@ -182,7 +182,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 std::tuple<PreprocessFunction, std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-FormatMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
     Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
             SF... sfs) {
