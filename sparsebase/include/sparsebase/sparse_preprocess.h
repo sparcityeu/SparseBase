@@ -30,7 +30,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename Key = std::vector<Format>,
           typename KeyHash = FormatVectorHash,
           typename KeyEqualTo = std::equal_to<std::vector<Format>>>
-class FormatMatcherMixin : public PreprocessingImpl {
+class FunctionMatcherMixin : public PreprocessingImpl {
   typedef std::unordered_map<Key, PreprocessFunction, KeyHash,
                              KeyEqualTo>
       ConversionMap;
@@ -66,7 +66,7 @@ using ReorderFunction =
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
-    : public FormatMatcherMixin<IDType, NNZType, ValueType, SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>, ReorderFunction<IDType, NNZType, ValueType>> {
+    : public FunctionMatcherMixin<IDType, NNZType, ValueType, SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>, ReorderFunction<IDType, NNZType, ValueType>> {
 protected:
   std::unique_ptr<ReorderParams> params_;
 
@@ -124,7 +124,7 @@ using TransformFunction = SparseFormat<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
-    : public FormatMatcherMixin< IDType, NNZType, ValueType,
+    : public FunctionMatcherMixin< IDType, NNZType, ValueType,
           SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
           TransformFunction<IDType, NNZType, ValueType>> {
 public:
