@@ -232,10 +232,6 @@ template class SparseConverter<int, int, int>;
 template class CooCsrFunctor<int, int, int>;
 template class CsrCooFunctor<int, int, int>;
 
-template class SparseConverter<unsigned int, unsigned int, void>;
-template class CooCsrFunctor<unsigned int, unsigned int, void>;
-template class CsrCooFunctor<unsigned int, unsigned int, void>;
-
 template class SparseConverter<unsigned int, unsigned int, unsigned int>;
 template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
 template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;

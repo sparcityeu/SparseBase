@@ -84,7 +84,7 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::Re
       row_ptr[i] = row_ptr[i - 1];
     }
     row_ptr[0] = 0;
-    return new CSR<VertexID, NumEdges, Weight>(n, n, &row_ptr, &col, nullptr);
+    return new CSR<VertexID, NumEdges, Weight>(n, n, row_ptr, col, nullptr, true);
   } else {
     throw std::invalid_argument("file does not exists!!");
   }
@@ -126,8 +126,9 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
 
   VertexID *row = new VertexID[L];
   VertexID *col = new VertexID[L];
-  if constexpr (!std::is_same_v<void, Weight>) {
-    if (weighted_) {
+  std::cout << "weighted " << weighted_ << std::endl; 
+  if (weighted_) {
+    if constexpr (!std::is_same_v<void, Weight>) {
       Weight *vals = new Weight[L];
       for (NumEdges l = 0; l < L; l++) {
         VertexID m, n;
@@ -138,7 +139,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
         vals[l] = w;
       }
 
-      auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, &row, &col, &vals);
+      auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, true);
       return coo;
     } else {
       // TODO: Add an exception class for this
@@ -153,7 +154,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
       col[l] = n - 1;
     }
 
-    auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, std::move(row), std::move(col), std::move(nullptr));
+    auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, true);
     return coo;
   }
 }
@@ -167,8 +168,6 @@ MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 template class MTXReader<unsigned int, unsigned int, unsigned int>;
 template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
 
-template class MTXReader<unsigned int, unsigned int, void>;
-template class UedgelistReader<unsigned int, unsigned int, void>;
 #endif
 
 } // namespace sparsebase
