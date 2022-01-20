@@ -407,7 +407,8 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
   IDType *nadj = new IDType[nnz]();
   ValueType *nvals = nullptr;
   if constexpr (!std::is_same_v<void, ValueType>) {
-    nvals = new ValueType[nnz]();
+    if (sp->get_vals()!=nullptr)
+      nvals = new ValueType[nnz]();
   }
 
   IDType *inverse_order = new IDType[n]();
@@ -420,7 +421,8 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
     for (NNZType v = xadj[u]; v < xadj[u + 1]; v++) {
       nadj[c] = order[adj[v]];
       if constexpr (!std::is_same_v<void, ValueType>) {
-        nvals[c] = vals[v];
+        if (sp->get_vals()!=nullptr)
+          nvals[c] = vals[v];
       }
       c++;
     }
@@ -446,23 +448,22 @@ TransformInstance<IDType, NNZType, ValueType, TransformImpl>::GetTransformation(
 #include "init/sparse_preprocess.inc"
 #include "init/sparse_preprocess_instance.inc"
 #else
-template class ReorderPreprocessType<unsigned int, unsigned int, void>;
+template class ReorderPreprocessType<unsigned int, unsigned int, unsigned int>;
 
-template class DegreeReorder<unsigned int, unsigned int, void>;
-template class DegreeReorderInstance<unsigned int, unsigned int, void>;
+template class DegreeReorder<unsigned int, unsigned int, unsigned int>;
 template class DegreeReorderInstance<unsigned int, unsigned int, unsigned int>;
-template class ReorderInstance<unsigned int, unsigned int, void, DegreeReorder>;
+template class ReorderInstance<unsigned int, unsigned int, unsigned int, DegreeReorder>;
 
-template class GenericReorder<unsigned int, unsigned int, void>;
-template class ReorderInstance<unsigned int, unsigned int, void,
+template class GenericReorder<unsigned int, unsigned int, unsigned int>;
+template class ReorderInstance<unsigned int, unsigned int, unsigned int,
                                GenericReorder>;
 
-template class RCMReorder<unsigned int, unsigned int, void>;
-template class RCMReorderInstance<unsigned int, unsigned int, void>;
-template class ReorderInstance<unsigned int, unsigned int, void, RCMReorder>;
+template class RCMReorder<unsigned int, unsigned int, unsigned int>;
+template class RCMReorderInstance<unsigned int, unsigned int, unsigned int>;
+template class ReorderInstance<unsigned int, unsigned int, unsigned int, RCMReorder>;
 
-template class Transform<unsigned int, unsigned int, void>;
-template class TransformPreprocessType<unsigned int, unsigned int, void>;
-template class TransformInstance<unsigned int, unsigned int, void, Transform>;
+template class Transform<unsigned int, unsigned int, unsigned int>;
+template class TransformPreprocessType<unsigned int, unsigned int, unsigned int>;
+template class TransformInstance<unsigned int, unsigned int, unsigned int, Transform>;
 #endif
 } // namespace sparsebase
