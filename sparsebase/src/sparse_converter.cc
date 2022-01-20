@@ -14,47 +14,46 @@ SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueTy
     SparseFormat<IDType, NNZType, ValueType> *source) {
   CSR<IDType, NNZType, ValueType> *csr =
       dynamic_cast<CSR<IDType, NNZType, ValueType> *>(source);
-  COO<IDType, NNZType, ValueType> *coo = new COO<IDType, NNZType, ValueType>();
 
   std::vector<IDType> dimensions = csr->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
   NNZType nnz = csr->get_num_nnz();
 
-  coo->col_ = new IDType[nnz];
-  coo->row_ = new IDType[nnz];
+  auto col = new IDType[nnz];
+  auto row = new IDType[nnz];
+  auto csr_row_ptr = csr->get_row_ptr();
+  auto csr_col = csr->get_col();
 
   IDType count = 0;
   for (IDType i = 0; i < n; i++) {
-    IDType start = csr->row_ptr_[i];
-    IDType end = csr->row_ptr_[i + 1];
+    IDType start = csr_row_ptr[i];
+    IDType end = csr_row_ptr[i + 1];
 
     for (IDType j = start; j < end; j++) {
-      coo->row_[count] = i;
+      row[count] = i;
       count++;
     }
   }
 
   for (IDType i = 0; i < m; i++) {
-    coo->col_[i] = csr->col_[i];
+    col[i] = csr_col[i];
   }
 
   // if (csr->vals != nullptr)
+  ValueType * vals = nullptr;
   if constexpr (!std::is_same_v<void, ValueType>) {
     if (csr->vals_ != nullptr){
-      coo->vals_ = new ValueType[nnz];
+      vals = new ValueType[nnz];
+      auto csr_vals = csr->get_vals();
       for (NNZType i = 0; i < nnz; i++) {
-        coo->vals_[i] = csr->vals_[i];
+        vals[i] = csr_vals[i];
       }
     } else{
-      coo->vals_ = nullptr;
+      vals = nullptr;
     }
-  } else {
-    coo->vals_ = nullptr;
-  }
-  std::vector<IDType> dims{n, m};
-  coo->dimension_ = dims;
-  coo->nnz_ = nnz;
+  }  
+  COO<IDType, NNZType, ValueType> *coo = new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals);
 
   return coo;
 }
@@ -76,7 +75,8 @@ SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueTy
   IDType n = dimensions[0];
   IDType m = dimensions[1];
   NNZType nnz = coo->get_num_nnz();
-
+  auto coo_col = coo->get_col();
+  auto coo_row = coo->get_row();
   NNZType *row_ptr = new NNZType[n + 1];
   IDType *col = new IDType[m];
   ValueType *vals;
@@ -88,7 +88,7 @@ SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueTy
   // Maybe add a sort check and then not do this if it is already sorted
   std::vector<std::pair<IDType, IDType>> edges;
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(coo->col_[i], coo->row_[i]);
+    edges.emplace_back(coo_col[i], coo_row[i]);
   }
   sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
 
@@ -107,11 +107,12 @@ SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueTy
   row_ptr[0] = 0;
 
   if constexpr (!std::is_same_v<void, ValueType>) {
-    if (coo->vals_ != nullptr){
+    if (coo->get_vals() != nullptr){
       vals = new ValueType[nnz];
+      auto coo_vals = coo->get_vals();
       fill(vals, vals + nnz, 0);
       for (NNZType i = 0; i < nnz; i++) {
-        vals[i] = coo->vals_[i];
+        vals[i] = coo_vals[i];
       }
     } else {
       vals = nullptr;

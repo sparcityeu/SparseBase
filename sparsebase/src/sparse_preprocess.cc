@@ -222,7 +222,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   IDType n = csr->get_dimensions()[0];
   IDType *counts = new IDType[n]();
   for (IDType u = 0; u < n; u++) {
-    counts[csr->row_ptr_[u + 1] - csr->row_ptr_[u] + 1]++;
+    counts[csr->row_ptr_.get()[u + 1] - csr->row_ptr_.get()[u] + 1]++;
   }
   for (IDType u = 1; u < n; u++) {
     counts[u] += counts[u - 1];
@@ -231,7 +231,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   memset(sorted, -1, sizeof(IDType) * n);
   IDType *mr = new IDType[n]();
   for (IDType u = 0; u < n; u++) {
-    IDType ec = counts[csr->row_ptr_[u + 1] - csr->row_ptr_[u]];
+    IDType ec = counts[csr->row_ptr_.get()[u + 1] - csr->row_ptr_.get()[u]];
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
