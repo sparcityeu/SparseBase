@@ -1,0 +1,47 @@
+name: CMake
+
+on:
+  # This action will activate on pushes and pull requests to the branches specified below
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  # CMake Build Type
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    # For now the actions is only performed on ubuntu
+    # However in future we should go for multiple operating systems
+    # See: https://github.community/t/create-matrix-with-multiple-os-and-env-for-each-one/16895/2
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Data
+      run: cp -r ${{github.workspace}}/examples/data ${{github.workspace}}/build/examples/
+
+    - name: Examples
+      working-directory: ${{github.workspace}}/build/examples
+      run: >-
+        ./custom_order/custom_order ./data/com-dblp.uedgelist ;
+        ./degree_order/degree_order ./data/com-dblp.uedgelist ;
+        ./rcm_order/rcm_order ./data/com-dblp.uedgelist ;
+        ./format_conversion/example_conversion ;
+        ./sparse_format/csr_coo ./data/ash958.mtx ;
+        ./sparse_reader/sparse_reader ./data/ash958.mtx ;
+      
+    # Tests are turned off for now since we don't have any
+    #- name: Test
+      #working-directory: ${{github.workspace}}/build
+      #run: ctest -C ${{env.BUILD_TYPE}}
+      
