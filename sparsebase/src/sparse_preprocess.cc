@@ -364,10 +364,14 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
   // Reverse
   for (IDType i = 0; i < n / 2; i++) {
-    IDType t = Q[i];
-    Q[i] = Q[n - i - 1];
-    Q[n - i - 1] = t;
+    Qp[i] = Q[n - i - 1];
+    Qp[n - i - 1] = Q[i];
   }
+  // Place it in the form that the transform function takes
+  for (IDType i = 0; i < n; i++) {
+    Q[Qp[i]] = i;
+  }
+
   delete[] Qp;
   delete[] distance;
   delete[] V;
