@@ -9,6 +9,8 @@
 
 namespace sparsebase {
 
+namespace format {
+
 //! Enum keeping formats
 enum Format {
   //! CSR Format
@@ -98,6 +100,8 @@ public:
   NNZType **ind_;
   ValueType *vals_;
 };
+
+} // namespace format
 
 } // namespace sparsebase
 #endif

@@ -7,7 +7,11 @@
 #include "sparsebase/sparse_exception.h"
 #include "sparsebase/sparse_format.h"
 
+using namespace sparsebase::utils;
+
 namespace sparsebase {
+
+namespace format {
 
 template <typename IDType, typename NNZType, typename ValueType>
 AbstractSparseFormat<IDType, NNZType, ValueType>::~AbstractSparseFormat(){};
@@ -163,4 +167,7 @@ template class CSR<unsigned int, unsigned int, unsigned int>;
 template class CSR<unsigned int, unsigned int, void>;
 template class CSR<int, int, int>;
 #endif
+
+} //namespace format
+
 }; // namespace sparsebase

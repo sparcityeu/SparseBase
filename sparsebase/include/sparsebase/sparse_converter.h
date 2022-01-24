@@ -5,7 +5,11 @@
 #include <unordered_map>
 #include <tuple>
 
+using namespace sparsebase::format;
+
 namespace sparsebase {
+
+namespace utils {
 
 typedef std::vector<std::tuple<bool, Format>> ConversionSchema;
 struct FormatHash {
@@ -59,6 +63,8 @@ public:
       ConversionSchema cs,
       std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs);
 };
+
+} // namespace utils
 
 } // namespace sparsebase
 
