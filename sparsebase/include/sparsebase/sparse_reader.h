@@ -7,7 +7,11 @@
 #include <fstream>
 #include <vector>
 
+using namespace sparsebase::format;
+
 namespace sparsebase {
+
+namespace utils {
 
 template <typename IDType, typename NNZType, typename ValueType> class SparseReader {
 public:
@@ -59,6 +63,8 @@ private:
   std::string filename_;
   bool weighted_;
 };
+
+} // namespace utils
 
 } // namespace sparsebase
 

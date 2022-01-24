@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace sparsebase;
+using namespace sparsebase::utils;
 
 int main(){
 

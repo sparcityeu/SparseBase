@@ -2,6 +2,9 @@
 #include <iostream>
 
 namespace sparsebase {
+
+namespace utils {
+
 class InvalidDataMember : public std::exception {
   std::string msg_;
 
@@ -19,4 +22,7 @@ public:
   SparseReaderException(const std::string &msg) : msg_(msg) {}
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
+
+} // namespace utils
+
 } // namespace sparsebase

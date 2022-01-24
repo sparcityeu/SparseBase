@@ -8,6 +8,8 @@
 
 using namespace std;
 using namespace sparsebase;
+using namespace sparsebase::preprocess;
+using namespace sparsebase::object;
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
