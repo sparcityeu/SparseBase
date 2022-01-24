@@ -24,7 +24,7 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
 
     - name: Build
       # Build your program with the given configuration
@@ -42,11 +42,8 @@ jobs:
         ./format_conversion/example_conversion
         ./sparse_format/csr_coo ./data/ash958.mtx
         ./sparse_reader/sparse_reader ./data/ash958.mtx
-      
 
-    #- name: Test
-     # working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.  
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      #run: ctest -C ${{env.BUILD_TYPE}}
+    - name: Run Tests
+      working-directory: ${{github.workspace}}/build
+      run: ctest -V
       
