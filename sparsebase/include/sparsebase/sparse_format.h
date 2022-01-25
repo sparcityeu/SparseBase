@@ -60,6 +60,11 @@ public:
   virtual IDType* release_row() = 0;
   virtual ValueType* release_vals() = 0;
   virtual ValueType ** release_ind() = 0;
+  virtual void set_row_ptr(NNZType*, bool own) = 0;
+  virtual void set_row(IDType*, bool own) = 0;
+  virtual void set_col(IDType*, bool own) = 0;
+  virtual void set_vals(ValueType*, bool own) = 0;
+  virtual void set_ind(ValueType**, bool own) = 0;
 };
 
 // abstract class
@@ -78,6 +83,12 @@ public:
   IDType * get_row() const override;
   ValueType * get_vals() const override;
   ValueType **get_ind() const override;
+
+  void set_row_ptr(NNZType*, bool own) override;
+  void set_row(IDType*, bool own) override;
+  void set_col(IDType*, bool own) override;
+  void set_vals(ValueType*, bool own) override;
+  void set_ind(ValueType**, bool own) override;
 
   NNZType* release_row_ptr() override;
   IDType* release_col() override;
@@ -109,6 +120,10 @@ public:
   IDType* release_row() override;
   ValueType* release_vals() override;
 
+  void set_row(IDType*, bool own) override;
+  void set_col(IDType*, bool own) override;
+  void set_vals(ValueType*, bool own) override;
+
 protected:
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> row_;
@@ -130,6 +145,10 @@ public:
   NNZType* release_row_ptr() override;
   IDType* release_col() override;
   ValueType* release_vals() override;
+
+  void set_row_ptr(NNZType*, bool own) override;
+  void set_col(IDType*, bool own) override;
+  void set_vals(ValueType*, bool own) override;
   
 protected:
   std::unique_ptr<NNZType[], std::function<void(NNZType*)>> row_ptr_;
