@@ -87,6 +87,7 @@ public:
   ValueType* release_vals() override;
   ValueType ** release_ind() override;
 
+protected:
   Format format_;
   unsigned int order_;
   std::vector<IDType> dimension_;
@@ -110,6 +111,7 @@ public:
   IDType* release_row() override;
   ValueType* release_vals() override;
 
+protected:
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> row_;
   std::unique_ptr<ValueType[], std::function<void (ValueType*)>> vals_;
@@ -131,6 +133,7 @@ public:
   IDType* release_col() override;
   ValueType* release_vals() override;
   
+protected:
   std::unique_ptr<NNZType[], std::function<void(NNZType*)>> row_ptr_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
   std::unique_ptr<ValueType[], std::function<void(ValueType*)>> vals_;
