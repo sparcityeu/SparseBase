@@ -22,10 +22,8 @@ enum Format {
 template <typename T>
 struct Deleter{
   void operator()(T*obj){
-    if constexpr (!std::is_same_v<void, T>) {
-      if (obj != nullptr)
-        delete obj;
-    }
+    if (obj != nullptr)
+      delete obj;
   }
 };
 
