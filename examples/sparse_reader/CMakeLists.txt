@@ -1,3 +1,2 @@
 add_executable(sparse_reader ${CMAKE_CURRENT_SOURCE_DIR}/sparse_reader.cpp)
 target_link_libraries(sparse_reader sparsebase)
-target_compile_features(sparse_reader PRIVATE cxx_std_17)
