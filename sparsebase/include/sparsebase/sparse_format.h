@@ -9,6 +9,10 @@
 
 namespace sparsebase {
 
+class Prototype {
+  public:
+  virtual Prototype*clone() = 0;
+};
 //! Enum keeping formats
 enum Format {
   //! CSR Format
@@ -18,7 +22,7 @@ enum Format {
 };
 // TENSORS
 
-template <typename IDType, typename NNZType, typename ValueType> class SparseFormat {
+template <typename IDType, typename NNZType, typename ValueType> class SparseFormat : public Prototype{
 public:
   virtual ~SparseFormat(){};
   virtual unsigned int get_order() = 0;
@@ -60,6 +64,7 @@ class COO : public AbstractSparseFormat<IDType, NNZType, ValueType> {
 public:
   COO();
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col, ValueType *vals);
+  Prototype* clone() override;
   virtual ~COO();
   Format get_format() override;
   IDType *get_col() override;
@@ -75,6 +80,7 @@ class CSR : public AbstractSparseFormat<IDType, NNZType, ValueType> {
 public:
   CSR();
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals);
+  Prototype* clone() override;
   Format get_format() override;
   virtual ~CSR();
   NNZType *get_row_ptr() override;

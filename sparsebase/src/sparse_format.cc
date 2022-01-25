@@ -80,6 +80,10 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz, IDType *ro
   this->dimension_ = {n, m};
 }
 template <typename IDType, typename NNZType, typename ValueType>
+Prototype* COO<IDType, NNZType, ValueType>::clone() {
+  return new COO(this->dimension_[0], this->dimension_[1], this->nnz_, this->row_, this->col_, this->vals_);
+}
+template <typename IDType, typename NNZType, typename ValueType>
 Format COO<IDType, NNZType, ValueType>::get_format() {
   return kCOOFormat;
 }
@@ -118,6 +122,11 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr, IDTyp
   this->order_ = 2;
   this->dimension_ = {n, m};
   this->nnz_ = this->row_ptr_[this->dimension_[0]];
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Prototype* CSR<IDType, NNZType, ValueType>::clone() {
+  return new CSR(this->dimension_[0], this->dimension_[1], this->row_ptr_, this->col_, this->vals_);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format CSR<IDType, NNZType, ValueType>::get_format() {
