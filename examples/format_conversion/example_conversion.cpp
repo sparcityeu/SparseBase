@@ -5,7 +5,6 @@
 
 using namespace std;
 using namespace sparsebase;
-using namespace sparsebase::utils;
 
 int main(){
 
@@ -13,11 +12,11 @@ int main(){
     int col[6] = {0, 1, 1, 2, 3, 3};
     int vals[6] = {10, 20, 30, 40, 50, 60};
 
-    COO<int,int,int>* coo = new COO<int,int,int>(6, 6, 6, row, col, vals);
+    format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
 
-    auto converter = new SparseConverter<int,int,int>();
+    auto converter = new utils::SparseConverter<int,int,int>();
     auto csr = converter->Convert(coo,kCSRFormat);
-    auto csr2 = dynamic_cast<CSR<int,int,int>*>(csr);
+    auto csr2 = dynamic_cast<format::CSR<int,int,int>*>(csr);
 
     auto dims = csr2->get_dimensions();
     int n = dims[0];
@@ -42,7 +41,7 @@ int main(){
 
     auto coo2 = converter->Convert(csr,kCOOFormat);
 
-    auto coo3 = dynamic_cast<COO<int,int,int>*>(coo2);
+    auto coo3 = dynamic_cast<format::COO<int,int,int>*>(coo2);
 
     cout << "COO" << endl;
 
