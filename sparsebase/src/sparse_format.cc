@@ -84,6 +84,32 @@ ValueType **AbstractSparseFormat<IDType, NNZType, ValueType>::release_ind() {
   throw InvalidDataMember(std::to_string(get_format()), std::string("ind"));
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+void AbstractSparseFormat<IDType, NNZType, ValueType>::set_row_ptr(NNZType*, bool) {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("row_ptr"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void AbstractSparseFormat<IDType, NNZType, ValueType>::set_row(IDType*, bool) {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("row"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void AbstractSparseFormat<IDType, NNZType, ValueType>::set_col(IDType*, bool) {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("col"));
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+void AbstractSparseFormat<IDType, NNZType, ValueType>::set_vals(ValueType*, bool) {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("vals"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void AbstractSparseFormat<IDType, NNZType, ValueType>::set_ind(ValueType**, bool) {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("ind"));
+}
+
 //template <typename IDType, typename NNZType, typename ValueType>
 //COO<IDType, NNZType, ValueType>::COO() {
 //  this->order_ = 2;
@@ -173,6 +199,34 @@ ValueType* COO<IDType, NNZType, ValueType>::release_vals() {
   this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
   return vals;
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+void COO<IDType, NNZType, ValueType>::set_col(IDType* col, bool own) {
+  if (own){
+    this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, Deleter<IDType>());
+  } else {
+    this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, BlankDeleter<IDType>());
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void COO<IDType, NNZType, ValueType>::set_row(IDType* row, bool own) {
+  if (own){
+    this->row_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(row, Deleter<IDType>());
+  } else {
+    this->row_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(row, BlankDeleter<IDType>());
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void COO<IDType, NNZType, ValueType>::set_vals(ValueType* vals, bool own) {
+  if (own){
+    this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, Deleter<ValueType>());
+  } else {
+    this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
+  }
+}
+
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::~COO(){};
 
@@ -264,6 +318,33 @@ ValueType* CSR<IDType, NNZType, ValueType>::release_vals() {
   auto vals = vals_.release();
   this->vals_ = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
   return vals;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void CSR<IDType, NNZType, ValueType>::set_col(IDType* col, bool own) {
+  if (own){
+    this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, Deleter<IDType>());
+  } else {
+    this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, BlankDeleter<IDType>());
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void CSR<IDType, NNZType, ValueType>::set_row_ptr(NNZType* row_ptr, bool own) {
+  if (own){
+    this->row_ptr_  = std::unique_ptr<NNZType[], std::function<void (NNZType*)>>(row_ptr, Deleter<NNZType>());
+  } else {
+    this->row_ptr_  = std::unique_ptr<NNZType[], std::function<void (NNZType*)>>(row_ptr, BlankDeleter<NNZType>());
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void CSR<IDType, NNZType, ValueType>::set_vals(ValueType* vals, bool own) {
+  if (own){
+    this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, Deleter<ValueType>());
+  } else {
+    this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
+  }
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
