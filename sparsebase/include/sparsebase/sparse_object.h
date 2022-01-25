@@ -1,6 +1,8 @@
 #ifndef _SPARSEOBJECT_HPP
 #define _SPARSEOBJECT_HPP
 
+#include <memory>
+#include <functional>
 #include "sparse_format.h"
 #include "sparse_reader.h"
 
@@ -15,11 +17,15 @@ public:
 template <typename IDType, typename NNZType, typename ValueType>
 class AbstractSparseObject : public SparseObject {
 protected:
-  SparseFormat<IDType, NNZType, ValueType> *connectivity_;
+  std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>> connectivity_;
 
 public:
   virtual ~AbstractSparseObject();
-  SparseFormat<IDType, NNZType, ValueType> *get_connectivity();
+  AbstractSparseObject();
+  SparseFormat<IDType, NNZType, ValueType> *get_connectivity() const;
+  SparseFormat<IDType, NNZType, ValueType> *release_connectivity();
+  void set_connectivity(SparseFormat<IDType, NNZType, ValueType>*, bool);
+
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
