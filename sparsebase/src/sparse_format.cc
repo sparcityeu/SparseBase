@@ -250,19 +250,19 @@ ValueType *CSR<IDType, NNZType, ValueType>::get_vals() const {
 template <typename IDType, typename NNZType, typename ValueType>
 IDType* CSR<IDType, NNZType, ValueType>::release_col() {
   auto col = col_.release();
-  this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, Deleter<IDType>());
+  this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, BlankDeleter<IDType>());
   return col;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 NNZType* CSR<IDType, NNZType, ValueType>::release_row_ptr() {
   auto row_ptr = row_ptr_.release();
-  this->row_ptr_ = std::unique_ptr<NNZType[], std::function<void(NNZType*)>>(row_ptr, Deleter<NNZType>());
+  this->row_ptr_ = std::unique_ptr<NNZType[], std::function<void(NNZType*)>>(row_ptr, BlankDeleter<NNZType>());
   return row_ptr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 ValueType* CSR<IDType, NNZType, ValueType>::release_vals() {
   auto vals = vals_.release();
-  this->vals_ = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, Deleter<ValueType>());
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
   return vals;
 }
 template <typename IDType, typename NNZType, typename ValueType>
