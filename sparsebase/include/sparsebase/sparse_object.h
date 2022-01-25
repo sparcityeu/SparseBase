@@ -22,6 +22,8 @@ protected:
 public:
   virtual ~AbstractSparseObject();
   AbstractSparseObject();
+  //AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>&);
+  AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&&);
   SparseFormat<IDType, NNZType, ValueType> *get_connectivity() const;
   SparseFormat<IDType, NNZType, ValueType> *release_connectivity();
   void set_connectivity(SparseFormat<IDType, NNZType, ValueType>*, bool);
