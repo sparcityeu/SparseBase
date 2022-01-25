@@ -9,8 +9,6 @@
 
 using namespace std;
 using namespace sparsebase;
-using namespace sparsebase::preprocess;
-using namespace sparsebase::object;
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
@@ -28,7 +26,7 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Reading graph from " << file_name << "..." << endl;
-  Graph<vertex_type, edge_type, value_type> g;
+  object::Graph<vertex_type, edge_type, value_type> g;
   g.ReadConnectivityFromEdgelistToCSR(file_name);
   cout << "Number of vertices: " << g.n_ << endl; 
   cout << "Number of edges: " << g.m_ << endl; 
@@ -36,10 +34,9 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  //DegreeReorderInstance<vertex_type, edge_type, value_type> orderer(1);
-  DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
-  //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
-  SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+
+  preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
+  format::SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.GetReorder(con);
   vertex_type n = con->get_dimensions()[0];
   auto row_ptr = con->get_row_ptr();
@@ -79,8 +76,8 @@ int main(int argc, char * argv[]){
     cout << "Order is correct." << endl;
   }
 
-  Transform<vertex_type, edge_type, value_type> transformer;
-  SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
+  preprocess::Transform<vertex_type, edge_type, value_type> transformer;
+  format::SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
   auto * n_row_ptr = csr->get_row_ptr();
   auto * n_col = csr->get_col();
   cout << "Checking the correctness of the transformation..." << endl;

@@ -9,20 +9,18 @@
 
 using namespace std;
 using namespace sparsebase;
-using namespace sparsebase::preprocess;
-using namespace sparsebase::object;
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = void;
 
-struct customParam : ReorderParams{
+struct customParam : preprocess::ReorderParams{
   customParam(int h):hyperparameter(h){}
   int hyperparameter;
 };
-vertex_type* degree_reorder_csr(std::vector<SparseFormat<vertex_type, edge_type, value_type> *> formats, ReorderParams *params)
+vertex_type* degree_reorder_csr(std::vector<format::SparseFormat<vertex_type, edge_type, value_type> *> formats, preprocess::ReorderParams *params)
 {
-  CSR<vertex_type, edge_type, value_type> *csr = static_cast<CSR<vertex_type, edge_type, value_type> *>(formats[0]);
+  format::CSR<vertex_type, edge_type, value_type> *csr = static_cast<format::CSR<vertex_type, edge_type, value_type> *>(formats[0]);
   customParam  *cast_params = static_cast<customParam *>(params);
   cout << "Custom hyperparameter: " << cast_params->hyperparameter << endl;
   vertex_type n = csr->get_dimensions()[0];
@@ -65,7 +63,7 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Reading graph from " << file_name << "..." << endl;
-  Graph<vertex_type, edge_type, value_type> g;
+  object::Graph<vertex_type, edge_type, value_type> g;
   g.ReadConnectivityFromEdgelistToCSR(file_name);
   cout << "Number of vertices: " << g.n_ << endl; 
   cout << "Number of edges: " << g.m_ << endl; 
@@ -73,10 +71,10 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+  format::SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
 
   //ReorderInstance<vertex_type, edge_type, value_type, GenericReorder> orderer;
-  GenericReorder<vertex_type, edge_type, value_type> orderer;
+  preprocess::GenericReorder<vertex_type, edge_type, value_type> orderer;
   orderer.RegisterFunction({kCSRFormat}, degree_reorder_csr);
   customParam params{10};
   vertex_type * order = orderer.GetReorder(con, &params);
@@ -119,7 +117,7 @@ int main(int argc, char * argv[]){
     cout << "Order is correct." << endl;
   }
 
-  Transform<vertex_type, edge_type, value_type> transformer;
+  preprocess::Transform<vertex_type, edge_type, value_type> transformer;
   SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
   auto * n_row_ptr = csr->get_row_ptr();
   auto * n_col = csr->get_col();

@@ -8,8 +8,6 @@
 
 using namespace std;
 using namespace sparsebase;
-using namespace sparsebase::preprocess;
-using namespace sparsebase::object;
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
@@ -27,7 +25,7 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Reading graph from " << file_name << "..." << endl;
-  Graph<vertex_type, edge_type, value_type> g;
+  object::Graph<vertex_type, edge_type, value_type> g;
   g.ReadConnectivityFromEdgelistToCSR(file_name);
   cout << "Number of vertices: " << g.n_ << endl; 
   cout << "Number of edges: " << g.m_ << endl; 
@@ -35,11 +33,9 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Generating RCM ordering..." << endl;
-  //ReorderInstance<vertex_type, edge_type, value_type, RCMReorder<vertex_type, edge_type, value_type>> orderer(1,4);
-  //ReorderInstance<vertex_type, edge_type, value_type, RCMReorder> orderer(1,4);
-  RCMReorder<vertex_type, edge_type, value_type> orderer(1,4);
-  //RCMReorderInstance<vertex_type, edge_type, value_type> orderer(1,4);
-  SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+
+  preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer(1,4);
+  format::SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.GetReorder(con);
   auto xadj = con->get_row_ptr();
   auto adj = con->get_col();
