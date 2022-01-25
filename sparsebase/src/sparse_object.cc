@@ -25,6 +25,10 @@ AbstractSparseObject<IDType, NNZType, ValueType>::~AbstractSparseObject(){};
 template <typename IDType, typename NNZType, typename ValueType>
 AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(): connectivity_(nullptr, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>()){};
 template <typename IDType, typename NNZType, typename ValueType>
+AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&& rhs): connectivity_(std::move(rhs.connectivity_)){};
+//template <typename IDType, typename NNZType, typename ValueType>
+//AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>& rhs): connectivity_(new SparseFormat<IDType, NNZType, ValueType>(rhs.connectivity_.get()), BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>()){};
+template <typename IDType, typename NNZType, typename ValueType>
 SparseFormat<IDType, NNZType, ValueType> *
 AbstractSparseObject<IDType, NNZType, ValueType>::get_connectivity() const {
   return connectivity_.get();
