@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Making Contributions to the Repo &mdash; SparseBase v0.1.4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Testing" href="testing_guide.html" />
+    <link rel="prev" title="Documentation Guide" href="documentation_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Contributing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="documentation_guide.html">Documentation Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Making Contributions to the Repo</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creatin-an-issue">Creatin an Issue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributing-to-the-code">Contributing to the code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testing_guide.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing_guide.html#running-tests">Running tests</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Contributing</a> &raquo;</li>
+      <li>Making Contributions to the Repo</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/contributing/github_guide.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="making-contributions-to-the-repo">
+<h1>Making Contributions to the Repo<a class="headerlink" href="#making-contributions-to-the-repo" title="Permalink to this headline"></a></h1>
+<p>This page will explain the exact flow of making a contribution. That includes creating an issue, making a pull request, reviewing it, and merging it.</p>
+<section id="creatin-an-issue">
+<h2>Creatin an Issue<a class="headerlink" href="#creatin-an-issue" title="Permalink to this headline"></a></h2>
+<p>Contributions preferably start with an issue on the issue tracker of GitHub. An issue can represent bugs, features, fixes, discussions, or any other addition to the codebase or the documentation.</p>
+<p>When creating an issue, you can give it labels. Labels help communicate information about issues like their type, priority, and current state of development. Issues don’t necessarily need to have labels. However, labels can make browsing the issue tracker much easier and will provide better visibility for all the contributers to the project.</p>
+<p>Labels in this project have three kinds, “type”, “state” and “priority”. The type of a label is going to be used as its prefix, e.g. “state: pending”. The following are the labels used in this project.</p>
+<ol class="arabic simple">
+<li><p>type: the reason (or contents) of the issue:</p>
+<ul class="simple">
+<li><p>bug.</p></li>
+<li><p>feature.</p></li>
+<li><p>docs: this includes documenting inside the code (Doxygen and comments), adding documentation pages, and adding examples.</p></li>
+<li><p>discussion: not the same as docs; these are discussions about the project, design decisions, directions of development, etc. It can be the case that the result of a discussion is some added documentation. If that happens, the type should change to docs.</p></li>
+<li><p>chore: mindless work (to an extent.) Changing file names, changing extensions, copying info from README to pages, etc.</p></li>
+<li><p>fix: Iterations on existing features or infrastructure. Optimizations, refactoring, improving API, etc.</p></li>
+<li><p>testing: tests related.</p></li>
+</ul>
+</li>
+<li><p>priority: <em>if</em> the issue is urgent, how urgent it is:</p>
+<ul class="simple">
+<li><p>now: now</p></li>
+<li><p>soon: less than now</p></li>
+</ul>
+</li>
+<li><p>state: the progress of the issue. Note that the “closed” or “done” state is implicitly defined by closing an issue:</p>
+<ul class="simple">
+<li><p>pending: someone’s working on this issue.</p></li>
+<li><p>review needed: work is done, someone needs to review the work.</p></li>
+<li><p>revision needed: if a reviewer reviews the issue and thinks it’s an issue isn’t done yet, they place it here.</p></li>
+<li><p>approved: ready to be merged (and closed)</p></li>
+<li><p>inactive: issue is abandoned for now, but might become active later.</p></li>
+<li><p>wontfix: abandoned indefinetely.</p></li>
+</ul>
+</li>
+</ol>
+<p>There is also a single label without a kind: “good first issue.” This label is for issues that serve as a good starting point for new contributers.</p>
+<p>Note 1: priority labels should only be added to urgent issues; not all issues should have a priority label.</p>
+<p>Note 2: it is preferable that an issue have a type and a state, but that is not necessarily the case.</p>
+</section>
+<section id="contributing-to-the-code">
+<h2>Contributing to the code<a class="headerlink" href="#contributing-to-the-code" title="Permalink to this headline"></a></h2>
+<p>If you wish to contribute to the code base, you can do so through pull requests.</p>
+<p>TL;DR: the process for making a contribution is to make a topic branch out of <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code> into your local machine, make your contributions on this topic branch, push your new branch back into <code class="docutils literal notranslate"><span class="pre">origin</span></code>, and create a pull request to pull your new topic branch into <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code>. DO NOT merge your changes to <code class="docutils literal notranslate"><span class="pre">develop</span></code> on your local machine and push to <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code> directly.</p>
+<p>More precisely, a typical contribution will follow this pattern:</p>
+<ol class="arabic">
+<li><p>Create an issue on GitHub discussing your contribution. At this point, a discussion may happen where the entire team can get on the same page.</p></li>
+<li><p>Pull <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code> into your local to start developing from the latest state of the project, and create a new branch for your contribution. The naming convention for a contribution branch is <code class="docutils literal notranslate"><span class="pre">feature/&lt;new_feature&gt;</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># on your local</span>
+<span class="nb">cd</span> sparsebase
+git checkout develop
+git pull origin develop
+git checkout -b feature/&lt;new_feature&gt;
+</pre></div>
+</div>
+</li>
+<li><p>After you’re done working on your feature, make sure that it can be merged cleanly with <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code> by pulling <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code> back into your local machine and merging it with your feature branch:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout develop
+git pull origin develop
+git checkout feature/&lt;new_feature&gt;
+git merge develop
+<span class="c1"># merge conflicts may arise</span>
+</pre></div>
+</div>
+</li>
+<li><p>Once your feature branch merges successfully with <code class="docutils literal notranslate"><span class="pre">develop</span></code>, push your branch to <code class="docutils literal notranslate"><span class="pre">origin</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout feature/&lt;new_feature&gt;
+git push origin feature/&lt;new_feature&gt;
+</pre></div>
+</div>
+</li>
+<li><p>On GitHub, create a pull request to merge your branch with <code class="docutils literal notranslate"><span class="pre">develop</span></code>; the base of the request will be <code class="docutils literal notranslate"><span class="pre">develop</span></code> and the merging branch will be <code class="docutils literal notranslate"><span class="pre">feature/&lt;new_feature&gt;</span></code>. You can use the same labels used for issues with pull requests. You can also link an issue to your pull request.</p></li>
+<li><p>Once the contribution is reviewed, a maintainer from the team will merge the pull request into <code class="docutils literal notranslate"><span class="pre">origin/develop</span></code>.</p></li>
+</ol>
+<p>Thank you for your efforts!</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="documentation_guide.html" class="btn btn-neutral float-left" title="Documentation Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="testing_guide.html" class="btn btn-neutral float-right" title="Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

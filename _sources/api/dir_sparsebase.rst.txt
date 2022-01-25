@@ -1,0 +1,22 @@
+.. _dir_sparsebase:
+
+
+Directory sparsebase
+====================
+
+
+*Directory path:* ``sparsebase``
+
+Subdirectories
+--------------
+
+- :ref:`dir_sparsebase_include`
+- :ref:`dir_sparsebase_src`
+
+
+Files
+-----
+
+- :ref:`file_sparsebase_CMakeLists.txt`
+
+

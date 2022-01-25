@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1ReadsSparseFormat:
+
+Template Class ReadsSparseFormat
+================================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_reader.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::MTXReader< VertexID, NumEdges, Weight >`` (:ref:`exhale_class_classsparsebase_1_1MTXReader`)
+- ``public sparsebase::UedgelistReader< VertexID, NumEdges, Weight >`` (:ref:`exhale_class_classsparsebase_1_1UedgelistReader`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::ReadsSparseFormat
+   :members:
+   :protected-members:
+   :undoc-members:

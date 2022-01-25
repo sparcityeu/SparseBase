@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sparse Format Guide &mdash; SparseBase v0.1.4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How To Guides" href="../how_to_guides/index.html" />
+    <link rel="prev" title="Representing operations using SparsePreprocess" href="explanation_sparsepreprocess.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Explanations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="explanation_sparsepreprocess.html">Representing operations using SparsePreprocess</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Sparse Format Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sparse-format-interface">Sparse Format Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#currently-supported-sparse-formats">Currently Supported Sparse Formats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Explanations</a> &raquo;</li>
+      <li>Sparse Format Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/explanations/sparse_format.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="sparse-format-guide">
+<h1>Sparse Format Guide<a class="headerlink" href="#sparse-format-guide" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> is the building block of Sparsebase. A <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> is designed to store the connection/relationship information of a Matrix, Graph, Tensor, etc. Thus an object or a function in Sparsebase makes use of a <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> in some way or another. All sparse formats in the Sparsebase library implement the <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> interface. This makes <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> easily extendible and interchangeable.</p>
+<section id="sparse-format-interface">
+<h2>Sparse Format Interface<a class="headerlink" href="#sparse-format-interface" title="Permalink to this headline"></a></h2>
+<p>SparseFormat interface have three variable templates; <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>, and <code class="docutils literal notranslate"><span class="pre">ValueType</span></code>. <code class="docutils literal notranslate"><span class="pre">IDType</span></code> is related to the size of the dimensions, where the largest dimension must be in the range of type <code class="docutils literal notranslate"><span class="pre">IDType</span></code>. Likewise, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code> is related to the number of non-zeros stored, where the number of non-zeros must be in the range of type <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>. Lastly, <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> represents the type of the <code class="docutils literal notranslate"><span class="pre">vals</span></code> data member, which stores the weight of the connections. For instance, for a road network, <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> can be a floating-point number representing the distance in between, or, for a social network, it can be of type void since the connections may not have a weight attached.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="k">class</span> <span class="nc">SparseFormat</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">SparseFormat</span><span class="p">(){};</span>
+  <span class="k">virtual</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">get_order</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">Format</span> <span class="nf">get_format</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span> <span class="n">get_dimensions</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">NNZType</span> <span class="nf">get_num_nnz</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">NNZType</span> <span class="o">*</span><span class="nf">get_row_ptr</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">IDType</span> <span class="o">*</span><span class="nf">get_col</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">IDType</span> <span class="o">*</span><span class="nf">get_row</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">ValueType</span> <span class="o">*</span><span class="nf">get_vals</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="n">IDType</span> <span class="o">**</span><span class="nf">get_ind</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>All classes that implement the Sparse Format interface store an enum type Format.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>  <span class="c1">//! Enum keeping formats  </span>
+  <span class="k">enum</span> <span class="n">Format</span><span class="p">{</span>
+    <span class="c1">//! CSR Format</span>
+    <span class="n">CSR_f</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+    <span class="c1">//! COO Format</span>
+    <span class="n">COO_f</span><span class="o">=</span><span class="mi">1</span> 
+    <span class="c1">//! CSF Format</span>
+    <span class="n">CSF_f</span><span class="o">=</span><span class="mi">2</span> 
+  <span class="p">};</span>
+</pre></div>
+</div>
+<p>As you might guess, not all concrete Sparse Formats have the same data members. For instance, compressed sparse rows (CSR) do not have <code class="docutils literal notranslate"><span class="pre">is</span></code> as a data member. So what happens if we call the <code class="docutils literal notranslate"><span class="pre">get_row()</span></code> function from the CSR class?</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">{</span> <span class="c1">//if the data member is invalid, sparse format throws an exception</span>
+  <span class="k">auto</span> <span class="n">is</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_row</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">catch</span><span class="p">(</span><span class="n">InvalidDataMember</span> <span class="n">ex</span><span class="p">){</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Format <span class="m">0</span> does not have is as a data member.
+</pre></div>
+</div>
+<p>Thankfully such cases are handled by Sparsebase, where <code class="docutils literal notranslate"><span class="pre">InvalidDataMember</span></code> exception is thrown.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<p>Currently Sparsebase supports two ways to create a sparse format:</p>
+<ol class="arabic simple">
+<li><p><strong>User initialized.</strong> The user passes the required data members of the respective sparse format through the constructor.</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.h&quot;</span><span class="cp"></span>
+
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">row_ptr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;</span> <span class="n">csr</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p><strong>Read directly from the file.</strong> User first creates a reader by passing the file_name. Then calls the correct read function.</p></li>
+</ol>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
+
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;</span> <span class="n">reader</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">COO</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">coo</span> <span class="o">=</span> <span class="n">reader</span><span class="p">.</span><span class="n">ReadCOO</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="currently-supported-sparse-formats">
+<h2>Currently Supported Sparse Formats<a class="headerlink" href="#currently-supported-sparse-formats" title="Permalink to this headline"></a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>ENUM</p></th>
+<th class="head"><p>ORDER</p></th>
+<th class="head"><p>READERS</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>COO</p></td>
+<td><p>kCSRFormat</p></td>
+<td><p>2</p></td>
+<td><p>MTX</p></td>
+</tr>
+<tr class="row-odd"><td><p>CSR</p></td>
+<td><p>kCOOFormat</p></td>
+<td><p>2</p></td>
+<td><p>UEDGELIST</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="explanation_sparsepreprocess.html" class="btn btn-neutral float-left" title="Representing operations using SparsePreprocess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../how_to_guides/index.html" class="btn btn-neutral float-right" title="How To Guides" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

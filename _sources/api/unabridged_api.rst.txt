@@ -1,0 +1,258 @@
+
+Full API
+--------
+
+Namespaces
+**********
+
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_std.rst
+
+Classes and Structs
+*******************
+
+
+.. toctree::
+   :maxdepth: 5
+
+   structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   structsparsebase_1_1FormatHash.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   structsparsebase_1_1FormatVectorHash.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   structsparsebase_1_1RCMReorder_1_1RCMReorderParams.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   structsparsebase_1_1ReorderParams.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1AbstractSparseFormat.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1AbstractSparseObject.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1ConversionFunctor.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1COO.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1CooCsrFunctor.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1CSF.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1CSR.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1CsrCooFunctor.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1DegreeReorder.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1DegreeReorderInstance.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1FormatMatcherMixin.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1GenericReorder.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1Graph.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1InvalidDataMember.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1MapToFunctionMixin.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1MTXReader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1PreprocessType.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1RCMReorder.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1RCMReorderInstance.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1ReadsCOO.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1ReadsCSR.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1ReadsSparseFormat.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1ReorderInstance.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1ReorderPreprocessType.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1SparseConverter.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1SparseConverterMixin.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1SparseFormat.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1SparseObject.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1SparseReader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1SparseReaderException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1Transform.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1TransformInstance.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1TransformPreprocessType.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1UedgelistReader.rst
+
+Enums
+*****
+
+
+.. toctree::
+   :maxdepth: 5
+
+   enum_sparse__format_8h_1a905d26cba0eeff021f572be68aa4ee89.rst
+
+Functions
+*********
+
+
+.. toctree::
+   :maxdepth: 5
+
+   function_CMakeLists_8txt_1a9987f805d77740b579cfe1b2d67c8b8b.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_CMakeLists_8txt_1a38c371107125da6c75e7989e41bbfa4d.rst
+
+Typedefs
+********
+
+
+.. toctree::
+   :maxdepth: 5
+
+   typedef_sparse__converter_8h_1a2ff441af9fc648f2ab6e9c6f4fa691e2.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   typedef_sparse__preprocess_8h_1a2a2bd769d60cb64a372a4680b15a68e6.rst

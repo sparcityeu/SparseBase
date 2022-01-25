@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library API &mdash; SparseBase v0.1.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Namespace sparsebase" href="namespace_sparsebase.html" />
+    <link rel="prev" title="How to: add a new reordering algorithm" href="../pages/how_to_guides/how_add_reordering.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Library API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-api">Full API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#namespaces">Namespaces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespace_sparsebase.html">Namespace sparsebase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_std.html">Namespace std</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#classes-and-structs">Classes and Structs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html">Struct DegreeReorder::DegreeReorderParams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structsparsebase_1_1FormatHash.html">Struct FormatHash</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structsparsebase_1_1FormatVectorHash.html">Struct FormatVectorHash</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html">Struct RCMReorder::RCMReorderParams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structsparsebase_1_1ReorderParams.html">Struct ReorderParams</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1AbstractSparseFormat.html">Template Class AbstractSparseFormat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1AbstractSparseObject.html">Template Class AbstractSparseObject</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1ConversionFunctor.html">Template Class ConversionFunctor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1COO.html">Template Class COO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1CooCsrFunctor.html">Template Class CooCsrFunctor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1CSF.html">Template Class CSF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1CSR.html">Template Class CSR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1CsrCooFunctor.html">Template Class CsrCooFunctor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html">Template Class DegreeReorder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1DegreeReorderInstance.html">Template Class DegreeReorderInstance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1FormatMatcherMixin.html">Template Class FormatMatcherMixin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1GenericReorder.html">Template Class GenericReorder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1Graph.html">Template Class Graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1InvalidDataMember.html">Class InvalidDataMember</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1MapToFunctionMixin.html">Template Class MapToFunctionMixin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1MTXReader.html">Template Class MTXReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1PreprocessType.html">Class PreprocessType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html">Template Class RCMReorder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1RCMReorderInstance.html">Template Class RCMReorderInstance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1ReadsCOO.html">Template Class ReadsCOO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1ReadsCSR.html">Template Class ReadsCSR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1ReadsSparseFormat.html">Template Class ReadsSparseFormat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1ReorderInstance.html">Template Class ReorderInstance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1ReorderPreprocessType.html">Template Class ReorderPreprocessType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1SparseConverter.html">Template Class SparseConverter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1SparseConverterMixin.html">Template Class SparseConverterMixin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1SparseFormat.html">Template Class SparseFormat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1SparseObject.html">Class SparseObject</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1SparseReader.html">Template Class SparseReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1SparseReaderException.html">Class SparseReaderException</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1Transform.html">Template Class Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1TransformInstance.html">Template Class TransformInstance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1TransformPreprocessType.html">Template Class TransformPreprocessType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classsparsebase_1_1UedgelistReader.html">Template Class UedgelistReader</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#enums">Enums</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="enum_sparse__format_8h_1a905d26cba0eeff021f572be68aa4ee89.html">Enum Format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="function_CMakeLists_8txt_1a9987f805d77740b579cfe1b2d67c8b8b.html">Function add_library(sparsebase ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_format.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_reader.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_object.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_converter.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_preprocess.)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_CMakeLists_8txt_1a38c371107125da6c75e7989e41bbfa4d.html">Function add_library(sparsebase::sparsebase ALIAS)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#typedefs">Typedefs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="typedef_sparse__converter_8h_1a2ff441af9fc648f2ab6e9c6f4fa691e2.html">Typedef sparsebase::ConversionSchema</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9.html">Typedef sparsebase::ReorderFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_sparse__preprocess_8h_1a2a2bd769d60cb64a372a4680b15a68e6.html">Typedef sparsebase::TransformFunction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Library API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/library_root.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="library-api">
+<h1>Library API<a class="headerlink" href="#library-api" title="Permalink to this headline"></a></h1>
+<section id="class-hierarchy">
+<h2>Class Hierarchy<a class="headerlink" href="#class-hierarchy" title="Permalink to this headline"></a></h2>
+<ul class="treeView" id="class-treeView">
+  <li>
+    <ul class="collapsibleList">
+      <li>Namespace <a href="namespace_sparsebase.html#namespace-sparsebase">sparsebase</a><ul><li>Struct <a href="structsparsebase_1_1FormatHash.html#exhale-struct-structsparsebase-1-1FormatHash">FormatHash</a></li><li>Struct <a href="structsparsebase_1_1FormatVectorHash.html#exhale-struct-structsparsebase-1-1FormatVectorHash">FormatVectorHash</a></li><li>Struct <a href="structsparsebase_1_1ReorderParams.html#exhale-struct-structsparsebase-1-1ReorderParams">ReorderParams</a></li><li>Template Class <a href="classsparsebase_1_1AbstractSparseFormat.html#exhale-class-classsparsebase-1-1AbstractSparseFormat">AbstractSparseFormat</a></li><li>Template Class <a href="classsparsebase_1_1AbstractSparseObject.html#exhale-class-classsparsebase-1-1AbstractSparseObject">AbstractSparseObject</a></li><li>Template Class <a href="classsparsebase_1_1ConversionFunctor.html#exhale-class-classsparsebase-1-1ConversionFunctor">ConversionFunctor</a></li><li>Template Class <a href="classsparsebase_1_1COO.html#exhale-class-classsparsebase-1-1COO">COO</a></li><li>Template Class <a href="classsparsebase_1_1CooCsrFunctor.html#exhale-class-classsparsebase-1-1CooCsrFunctor">CooCsrFunctor</a></li><li>Template Class <a href="classsparsebase_1_1CSF.html#exhale-class-classsparsebase-1-1CSF">CSF</a></li><li>Template Class <a href="classsparsebase_1_1CSR.html#exhale-class-classsparsebase-1-1CSR">CSR</a></li><li>Template Class <a href="classsparsebase_1_1CsrCooFunctor.html#exhale-class-classsparsebase-1-1CsrCooFunctor">CsrCooFunctor</a></li><li>Template Class <a href="classsparsebase_1_1DegreeReorder.html#exhale-class-classsparsebase-1-1DegreeReorder">DegreeReorder</a><ul><li class="lastChild">Struct <a href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html#exhale-struct-structsparsebase-1-1DegreeReorder-1-1DegreeReorderParams">DegreeReorder::DegreeReorderParams</a></li></ul></li><li>Template Class <a href="classsparsebase_1_1DegreeReorderInstance.html#exhale-class-classsparsebase-1-1DegreeReorderInstance">DegreeReorderInstance</a></li><li>Template Class <a href="classsparsebase_1_1FormatMatcherMixin.html#exhale-class-classsparsebase-1-1FormatMatcherMixin">FormatMatcherMixin</a></li><li>Template Class <a href="classsparsebase_1_1GenericReorder.html#exhale-class-classsparsebase-1-1GenericReorder">GenericReorder</a></li><li>Template Class <a href="classsparsebase_1_1Graph.html#exhale-class-classsparsebase-1-1Graph">Graph</a></li><li>Class <a href="classsparsebase_1_1InvalidDataMember.html#exhale-class-classsparsebase-1-1InvalidDataMember">InvalidDataMember</a></li><li>Template Class <a href="classsparsebase_1_1MapToFunctionMixin.html#exhale-class-classsparsebase-1-1MapToFunctionMixin">MapToFunctionMixin</a></li><li>Template Class <a href="classsparsebase_1_1MTXReader.html#exhale-class-classsparsebase-1-1MTXReader">MTXReader</a></li><li>Class <a href="classsparsebase_1_1PreprocessType.html#exhale-class-classsparsebase-1-1PreprocessType">PreprocessType</a></li><li>Template Class <a href="classsparsebase_1_1RCMReorder.html#exhale-class-classsparsebase-1-1RCMReorder">RCMReorder</a><ul><li class="lastChild">Struct <a href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html#exhale-struct-structsparsebase-1-1RCMReorder-1-1RCMReorderParams">RCMReorder::RCMReorderParams</a></li></ul></li><li>Template Class <a href="classsparsebase_1_1RCMReorderInstance.html#exhale-class-classsparsebase-1-1RCMReorderInstance">RCMReorderInstance</a></li><li>Template Class <a href="classsparsebase_1_1ReadsCOO.html#exhale-class-classsparsebase-1-1ReadsCOO">ReadsCOO</a></li><li>Template Class <a href="classsparsebase_1_1ReadsCSR.html#exhale-class-classsparsebase-1-1ReadsCSR">ReadsCSR</a></li><li>Template Class <a href="classsparsebase_1_1ReadsSparseFormat.html#exhale-class-classsparsebase-1-1ReadsSparseFormat">ReadsSparseFormat</a></li><li>Template Class <a href="classsparsebase_1_1ReorderInstance.html#exhale-class-classsparsebase-1-1ReorderInstance">ReorderInstance</a></li><li>Template Class <a href="classsparsebase_1_1ReorderPreprocessType.html#exhale-class-classsparsebase-1-1ReorderPreprocessType">ReorderPreprocessType</a></li><li>Template Class <a href="classsparsebase_1_1SparseConverter.html#exhale-class-classsparsebase-1-1SparseConverter">SparseConverter</a></li><li>Template Class <a href="classsparsebase_1_1SparseConverterMixin.html#exhale-class-classsparsebase-1-1SparseConverterMixin">SparseConverterMixin</a></li><li>Template Class <a href="classsparsebase_1_1SparseFormat.html#exhale-class-classsparsebase-1-1SparseFormat">SparseFormat</a></li><li>Class <a href="classsparsebase_1_1SparseObject.html#exhale-class-classsparsebase-1-1SparseObject">SparseObject</a></li><li>Template Class <a href="classsparsebase_1_1SparseReader.html#exhale-class-classsparsebase-1-1SparseReader">SparseReader</a></li><li>Class <a href="classsparsebase_1_1SparseReaderException.html#exhale-class-classsparsebase-1-1SparseReaderException">SparseReaderException</a></li><li>Template Class <a href="classsparsebase_1_1Transform.html#exhale-class-classsparsebase-1-1Transform">Transform</a></li><li>Template Class <a href="classsparsebase_1_1TransformInstance.html#exhale-class-classsparsebase-1-1TransformInstance">TransformInstance</a></li><li>Template Class <a href="classsparsebase_1_1TransformPreprocessType.html#exhale-class-classsparsebase-1-1TransformPreprocessType">TransformPreprocessType</a></li><li>Template Class <a href="classsparsebase_1_1UedgelistReader.html#exhale-class-classsparsebase-1-1UedgelistReader">UedgelistReader</a></li><li class="lastChild">Enum <a href="enum_sparse__format_8h_1a905d26cba0eeff021f572be68aa4ee89.html#exhale-enum-sparse-format-8h-1a905d26cba0eeff021f572be68aa4ee89">Format</a></li></ul></li>
+    </ul>
+  </li><!-- only tree view element -->
+</ul><!-- /treeView class-treeView --></section>
+<section id="file-hierarchy">
+<h2>File Hierarchy<a class="headerlink" href="#file-hierarchy" title="Permalink to this headline"></a></h2>
+<ul class="treeView" id="file-treeView">
+  <li>
+    <ul class="collapsibleList">
+      <li class="lastChild">Directory <a href="dir_sparsebase.html#dir-sparsebase">sparsebase</a><ul><li>Directory <a href="dir_sparsebase_include.html#dir-sparsebase-include">include</a><ul><li class="lastChild">Directory <a href="dir_sparsebase_include_sparsebase.html#dir-sparsebase-include-sparsebase">sparsebase</a><ul><li>File <a href="file_sparsebase_include_sparsebase_sparse_converter.h.html#file-sparsebase-include-sparsebase-sparse-converter.h">sparse_converter.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_exception.h.html#file-sparsebase-include-sparsebase-sparse-exception.h">sparse_exception.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_format.h.html#file-sparsebase-include-sparsebase-sparse-format.h">sparse_format.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_object.h.html#file-sparsebase-include-sparsebase-sparse-object.h">sparse_object.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_preprocess.h.html#file-sparsebase-include-sparsebase-sparse-preprocess.h">sparse_preprocess.h</a></li><li class="lastChild">File <a href="file_sparsebase_include_sparsebase_sparse_reader.h.html#file-sparsebase-include-sparsebase-sparse-reader.h">sparse_reader.h</a></li></ul></li></ul></li><li>Directory <a href="dir_sparsebase_src.html#dir-sparsebase-src">src</a><ul><li>Directory <a href="dir_sparsebase_src_init.html#dir-sparsebase-src-init">init</a><ul><li>File <a href="file_sparsebase_src_init_sparse_converter.inc.html#file-sparsebase-src-init-sparse-converter.inc">sparse_converter.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_format.inc.html#file-sparsebase-src-init-sparse-format.inc">sparse_format.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_object.inc.html#file-sparsebase-src-init-sparse-object.inc">sparse_object.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_preprocess.inc.html#file-sparsebase-src-init-sparse-preprocess.inc">sparse_preprocess.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_preprocess_instance.inc.html#file-sparsebase-src-init-sparse-preprocess-instance.inc">sparse_preprocess_instance.inc</a></li><li class="lastChild">File <a href="file_sparsebase_src_init_sparse_reader.inc.html#file-sparsebase-src-init-sparse-reader.inc">sparse_reader.inc</a></li></ul></li><li>File <a href="file_sparsebase_src_sparse_converter.cc.html#file-sparsebase-src-sparse-converter.cc">sparse_converter.cc</a></li><li>File <a href="file_sparsebase_src_sparse_format.cc.html#file-sparsebase-src-sparse-format.cc">sparse_format.cc</a></li><li>File <a href="file_sparsebase_src_sparse_object.cc.html#file-sparsebase-src-sparse-object.cc">sparse_object.cc</a></li><li>File <a href="file_sparsebase_src_sparse_preprocess.cc.html#file-sparsebase-src-sparse-preprocess.cc">sparse_preprocess.cc</a></li><li class="lastChild">File <a href="file_sparsebase_src_sparse_reader.cc.html#file-sparsebase-src-sparse-reader.cc">sparse_reader.cc</a></li></ul></li><li class="lastChild">File <a href="file_sparsebase_CMakeLists.txt.html#file-sparsebase-CMakeLists.txt">CMakeLists.txt</a></li></ul></li>
+    </ul>
+  </li><!-- only tree view element -->
+</ul><!-- /treeView file-treeView --></section>
+<section id="full-api">
+<h2>Full API<a class="headerlink" href="#full-api" title="Permalink to this headline"></a></h2>
+<section id="namespaces">
+<h3>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="namespace_sparsebase.html">Namespace sparsebase</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="namespace_sparsebase.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespace_sparsebase.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespace_sparsebase.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="namespace_std.html">Namespace std</a></li>
+</ul>
+</div>
+</section>
+<section id="classes-and-structs">
+<h3>Classes and Structs<a class="headerlink" href="#classes-and-structs" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html">Struct DegreeReorder::DegreeReorderParams</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html#nested-relationships">Nested Relationships</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.html#struct-documentation">Struct Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="structsparsebase_1_1FormatHash.html">Struct FormatHash</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1FormatHash.html#struct-documentation">Struct Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="structsparsebase_1_1FormatVectorHash.html">Struct FormatVectorHash</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1FormatVectorHash.html#struct-documentation">Struct Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html">Struct RCMReorder::RCMReorderParams</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html#nested-relationships">Nested Relationships</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1RCMReorder_1_1RCMReorderParams.html#struct-documentation">Struct Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="structsparsebase_1_1ReorderParams.html">Struct ReorderParams</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1ReorderParams.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="structsparsebase_1_1ReorderParams.html#derived-types">Derived Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="structsparsebase_1_1ReorderParams.html#struct-documentation">Struct Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1AbstractSparseFormat.html">Template Class AbstractSparseFormat</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1AbstractSparseFormat.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1AbstractSparseFormat.html#base-type">Base Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1AbstractSparseFormat.html#derived-types">Derived Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1AbstractSparseFormat.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1AbstractSparseObject.html">Template Class AbstractSparseObject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1AbstractSparseObject.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1AbstractSparseObject.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1AbstractSparseObject.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1ConversionFunctor.html">Template Class ConversionFunctor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ConversionFunctor.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ConversionFunctor.html#derived-types">Derived Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ConversionFunctor.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1COO.html">Template Class COO</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1COO.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1COO.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1COO.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1CooCsrFunctor.html">Template Class CooCsrFunctor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CooCsrFunctor.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1CooCsrFunctor.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CooCsrFunctor.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1CSF.html">Template Class CSF</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CSF.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1CSF.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CSF.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1CSR.html">Template Class CSR</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CSR.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1CSR.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CSR.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1CsrCooFunctor.html">Template Class CsrCooFunctor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CsrCooFunctor.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1CsrCooFunctor.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1CsrCooFunctor.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html">Template Class DegreeReorder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html#nested-relationships">Nested Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html#nested-types">Nested Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html#base-type">Base Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1DegreeReorder.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1DegreeReorderInstance.html">Template Class DegreeReorderInstance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1DegreeReorderInstance.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1DegreeReorderInstance.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1DegreeReorderInstance.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1FormatMatcherMixin.html">Template Class FormatMatcherMixin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1FormatMatcherMixin.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1FormatMatcherMixin.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1FormatMatcherMixin.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1GenericReorder.html">Template Class GenericReorder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1GenericReorder.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1GenericReorder.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1GenericReorder.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1Graph.html">Template Class Graph</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1Graph.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1Graph.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1Graph.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1InvalidDataMember.html">Class InvalidDataMember</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1InvalidDataMember.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1InvalidDataMember.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1InvalidDataMember.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1MapToFunctionMixin.html">Template Class MapToFunctionMixin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1MapToFunctionMixin.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1MapToFunctionMixin.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1MapToFunctionMixin.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1MTXReader.html">Template Class MTXReader</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1MTXReader.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1MTXReader.html#base-types">Base Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1MTXReader.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1PreprocessType.html">Class PreprocessType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1PreprocessType.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1PreprocessType.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1PreprocessType.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html">Template Class RCMReorder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html#nested-relationships">Nested Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html#nested-types">Nested Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html#base-type">Base Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1RCMReorder.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1RCMReorderInstance.html">Template Class RCMReorderInstance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1RCMReorderInstance.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1RCMReorderInstance.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1RCMReorderInstance.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1ReadsCOO.html">Template Class ReadsCOO</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReadsCOO.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ReadsCOO.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReadsCOO.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1ReadsCSR.html">Template Class ReadsCSR</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReadsCSR.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ReadsCSR.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReadsCSR.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1ReadsSparseFormat.html">Template Class ReadsSparseFormat</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReadsSparseFormat.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ReadsSparseFormat.html#derived-types">Derived Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReadsSparseFormat.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1ReorderInstance.html">Template Class ReorderInstance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReorderInstance.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ReorderInstance.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReorderInstance.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1ReorderPreprocessType.html">Template Class ReorderPreprocessType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReorderPreprocessType.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ReorderPreprocessType.html#base-type">Base Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1ReorderPreprocessType.html#derived-types">Derived Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1ReorderPreprocessType.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1SparseConverter.html">Template Class SparseConverter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseConverter.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1SparseConverterMixin.html">Template Class SparseConverterMixin</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseConverterMixin.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1SparseConverterMixin.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseConverterMixin.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1SparseFormat.html">Template Class SparseFormat</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseFormat.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1SparseFormat.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseFormat.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1SparseObject.html">Class SparseObject</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseObject.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1SparseObject.html#derived-types">Derived Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseObject.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1SparseReader.html">Template Class SparseReader</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseReader.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1SparseReaderException.html">Class SparseReaderException</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseReaderException.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1SparseReaderException.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1SparseReaderException.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1Transform.html">Template Class Transform</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1Transform.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1Transform.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1Transform.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1TransformInstance.html">Template Class TransformInstance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1TransformInstance.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1TransformInstance.html#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1TransformInstance.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1TransformPreprocessType.html">Template Class TransformPreprocessType</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1TransformPreprocessType.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1TransformPreprocessType.html#base-type">Base Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1TransformPreprocessType.html#derived-type">Derived Type</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1TransformPreprocessType.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="classsparsebase_1_1UedgelistReader.html">Template Class UedgelistReader</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1UedgelistReader.html#inheritance-relationships">Inheritance Relationships</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="classsparsebase_1_1UedgelistReader.html#base-types">Base Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="classsparsebase_1_1UedgelistReader.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="enums">
+<h3>Enums<a class="headerlink" href="#enums" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="enum_sparse__format_8h_1a905d26cba0eeff021f572be68aa4ee89.html">Enum Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="enum_sparse__format_8h_1a905d26cba0eeff021f572be68aa4ee89.html#enum-documentation">Enum Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_CMakeLists_8txt_1a9987f805d77740b579cfe1b2d67c8b8b.html">Function add_library(sparsebase ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_format.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_reader.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_object.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_converter.cc ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_preprocess.)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_CMakeLists_8txt_1a9987f805d77740b579cfe1b2d67c8b8b.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="function_CMakeLists_8txt_1a38c371107125da6c75e7989e41bbfa4d.html">Function add_library(sparsebase::sparsebase ALIAS)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function_CMakeLists_8txt_1a38c371107125da6c75e7989e41bbfa4d.html#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="typedefs">
+<h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline"></a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="typedef_sparse__converter_8h_1a2ff441af9fc648f2ab6e9c6f4fa691e2.html">Typedef sparsebase::ConversionSchema</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_sparse__converter_8h_1a2ff441af9fc648f2ab6e9c6f4fa691e2.html#typedef-documentation">Typedef Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9.html">Typedef sparsebase::ReorderFunction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9.html#typedef-documentation">Typedef Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="typedef_sparse__preprocess_8h_1a2a2bd769d60cb64a372a4680b15a68e6.html">Typedef sparsebase::TransformFunction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typedef_sparse__preprocess_8h_1a2a2bd769d60cb64a372a4680b15a68e6.html#typedef-documentation">Typedef Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../pages/how_to_guides/how_add_reordering.html" class="btn btn-neutral float-left" title="How to: add a new reordering algorithm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_sparsebase.html" class="btn btn-neutral float-right" title="Namespace sparsebase" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

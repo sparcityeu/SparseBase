@@ -1,0 +1,13 @@
+.. _exhale_typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9:
+
+Typedef sparsebase::ReorderFunction
+===================================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_preprocess.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::ReorderFunction

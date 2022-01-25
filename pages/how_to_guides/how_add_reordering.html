@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to: add a new reordering algorithm &mdash; SparseBase v0.1.4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Library API" href="../../api/library_root.html" />
+    <link rel="prev" title="How To Guides" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">How To Guides</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to: add a new reordering algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-new-class-for-the-ordering">1. Create a new class for the ordering</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-struct-containing-the-hyperparameters-you-need-and-initialize-them-in-the-constructor">2. Create a struct containing the hyperparameters you need, and initialize them in the constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add-implementations-for-optimal-reordering">3. Add implementations for optimal reordering</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#register-the-implementations-you-wrote-to-the-correct-formats">4. Register the implementations you wrote to the correct formats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add-explicit-template-instantiations">5. Add explicit template instantiations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">How To Guides</a> &raquo;</li>
+      <li>How to: add a new reordering algorithm</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/how_to_guides/how_add_reordering.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-add-a-new-reordering-algorithm">
+<h1>How to: add a new reordering algorithm<a class="headerlink" href="#how-to-add-a-new-reordering-algorithm" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>Adding new reordering algorithms to SparseBase is very simple. It consists of five steps:</p>
+<ol class="arabic simple">
+<li><p>create a new class for your ordering. It must inherit from the base <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> class.</p></li>
+<li><p>Inside the class, create a new struct that will contain the hyperparameters needed by your ordering, and initialize it in the constructor. Note: This step is only needed if your reordering requires hyperparameters.</p></li>
+<li><p>Add implementation functions that will carry out the reordering.</p></li>
+<li><p>Register the implementation functions in the constructor.</p></li>
+<li><p>Add explicit template instantiations of your class.</p></li>
+</ol>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>The following example demonstrates the process of creating a new reordering <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code>.</p>
+<ul class="simple">
+<li><p>This reordering requires two float hyperparameters for execution, <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code>.</p></li>
+<li><p>It has two implementations. One that operates on a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> format, and another that operates on a <code class="docutils literal notranslate"><span class="pre">COO</span></code> format.</p></li>
+</ul>
+<section id="create-a-new-class-for-the-ordering">
+<h3>1. Create a new class for the ordering<a class="headerlink" href="#create-a-new-class-for-the-ordering" title="Permalink to this headline"></a></h3>
+<p>In the header file <code class="docutils literal notranslate"><span class="pre">sparsebase/include/sparse_preprocess.hpp</span></code>, add the definition of your class. It must be templated on three types <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NumNonZerosType</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> which define the data types of the <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> objects it will reorder. Also, it must inherit from the class <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
+
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-struct-containing-the-hyperparameters-you-need-and-initialize-them-in-the-constructor">
+<h3>2. Create a struct containing the hyperparameters you need, and initialize them in the constructor<a class="headerlink" href="#create-a-struct-containing-the-hyperparameters-you-need-and-initialize-them-in-the-constructor" title="Permalink to this headline"></a></h3>
+<p>Inside the class, create a new struct inheriting from <code class="docutils literal notranslate"><span class="pre">ReorderParams</span></code>. Its members will be whichever hyperparameters that your reordering will require. We will call this struct <code class="docutils literal notranslate"><span class="pre">OptimalReorderParams</span></code>. We add <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> to it.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="nl">OptimalReorderParams</span> <span class="p">:</span> <span class="n">ReorderParams</span> <span class="p">{</span>
+		<span class="kt">float</span> <span class="n">alpha</span><span class="p">;</span>
+		<span class="kt">float</span> <span class="n">beta</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Inside the constructor, you will take the hyperparameters from the user, add them to an instance of the struct you just created, and set the data member <code class="docutils literal notranslate"><span class="pre">params_</span></code>, which your class inherited from <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code>, to the newly added struct.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">// ...</span>
+	<span class="n">OptimalReorder</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">){</span>
+		<span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span> <span class="o">=</span> <span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">OptimalReorderParams</span><span class="p">{</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">});</span>
+
+	<span class="c1">// ...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="add-implementations-for-optimal-reordering">
+<h3>3. Add implementations for optimal reordering<a class="headerlink" href="#add-implementations-for-optimal-reordering" title="Permalink to this headline"></a></h3>
+<p>Add implementation functions that will carry out the reordering to the file <code class="docutils literal notranslate"><span class="pre">sparsebase/src/sparse_preprocess.cc</span></code>. Each function will be specific for an input <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> Format. These functions should match the <code class="docutils literal notranslate"><span class="pre">ReorderFunction</span></code> signature:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">IDType</span><span class="o">*</span> <span class="n">FunctionName</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;*&gt;</span><span class="p">,</span> <span class="n">ReorderParams</span><span class="o">*</span><span class="p">)</span> 
+</pre></div>
+</div>
+<p>Not that the functions must also be <em>static</em>. This is required to enable the mechanism of choosing the correct implementation function for the input <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> object’s Format.</p>
+<p>The parameters that your function will take are:</p>
+<ol class="arabic simple">
+<li><p>A vector of pointers at <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> objects.</p></li>
+<li><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">ReorderParams</span></code> struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your ordering.</p></li>
+</ol>
+<p>For our example, we add two functions, <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCSR()</span></code> and <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCOO()</span></code>. Notice how we use the inputs to extract the <code class="docutils literal notranslate"><span class="pre">SparseFormat</span></code> object we will reorder, and the <code class="docutils literal notranslate"><span class="pre">OptimalReorderParams</span></code> object storing the user’s parameters:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">//.......</span>
+	<span class="k">static</span> <span class="n">IDType</span><span class="o">*</span> <span class="n">OptimallyOrderCSR</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;*&gt;</span> <span class="n">input_sf</span><span class="p">,</span> <span class="n">ReorderParams</span><span class="o">*</span> <span class="n">poly_params</span><span class="p">){</span>
+		<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+		<span class="n">OptimalReorderParams</span><span class="o">*</span> <span class="n">params</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span>
+		<span class="c1">// ... carry out the ordering logic</span>
+		<span class="k">return</span> <span class="n">order</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">static</span> <span class="n">IDType</span><span class="o">*</span> <span class="n">OptimallyOrderCOO</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;*&gt;</span> <span class="n">input_sf</span><span class="p">,</span> <span class="n">ReorderParams</span><span class="o">*</span> <span class="n">poly_params</span><span class="p">){</span>
+		<span class="k">auto</span> <span class="n">coo</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+		<span class="n">OptimalReorderParams</span><span class="o">*</span> <span class="n">params</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span>
+		<span class="c1">// ... carry out the ordering logic</span>
+		<span class="k">return</span> <span class="n">order</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// .......</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="register-the-implementations-you-wrote-to-the-correct-formats">
+<h3>4. Register the implementations you wrote to the correct formats<a class="headerlink" href="#register-the-implementations-you-wrote-to-the-correct-formats" title="Permalink to this headline"></a></h3>
+<p>Inside the constructor, register the functions you made to the correct <code class="docutils literal notranslate"><span class="pre">Format</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">// ...</span>
+	<span class="n">OptimalReorder</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">){</span>
+		<span class="c1">// ...</span>
+		<span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">({</span><span class="n">kCSRFormat</span><span class="p">},</span> <span class="n">optimally_order_csr</span><span class="p">);</span>
+		<span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">({</span><span class="n">kCOOFormat</span><span class="p">},</span> <span class="n">optimally_order_coo</span><span class="p">);</span>
+		<span class="c1">// ...</span>
+	<span class="c1">// ...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="add-explicit-template-instantiations">
+<h3>5. Add explicit template instantiations<a class="headerlink" href="#add-explicit-template-instantiations" title="Permalink to this headline"></a></h3>
+<p>Since this library is compiled, you must add explicit instantiations of your class depending on the data types you are going to use for <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NumNonZerosType</span></code>, and <code class="docutils literal notranslate"><span class="pre">ValueType</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="k">class</span> <span class="nc">OptimalReorder</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In addition, you must add explicit instantiations of the <code class="docutils literal notranslate"><span class="pre">ReorderInstance</span></code> class with your class as the template argument. This class is the access point of users to use reordering.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="k">class</span> <span class="nc">sparsebase</span><span class="o">::</span><span class="n">ReorderInstance</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="p">,</span> <span class="n">OptimalReorder</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Now, you can easily use your reordering like the following example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_preprocess.h&quot;</span><span class="cp"></span>
+ 
+<span class="kt">float</span> <span class="n">alpha</span><span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderInstance</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="p">,</span> <span class="n">OptimalReorder</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;&gt;</span> <span class="n">reorder</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">);</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">order</span> <span class="o">=</span> <span class="n">reorder</span><span class="p">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">some_sparseformat_object</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If the format of <code class="docutils literal notranslate"><span class="pre">some_sparseformat_object</span></code> is <code class="docutils literal notranslate"><span class="pre">kCSRFormat</span></code>, <code class="docutils literal notranslate"><span class="pre">kCOOFormat</span></code>, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="How To Guides" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../api/library_root.html" class="btn btn-neutral float-right" title="Library API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

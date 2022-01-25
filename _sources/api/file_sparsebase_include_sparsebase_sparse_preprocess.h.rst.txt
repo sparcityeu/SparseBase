@@ -1,0 +1,110 @@
+
+.. _file_sparsebase_include_sparsebase_sparse_preprocess.h:
+
+File sparse_preprocess.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase_include_sparsebase>` (``sparsebase/include/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``sparsebase/include/sparsebase/sparse_preprocess.h``)
+------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_sparsebase_include_sparsebase_sparse_preprocess.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``iostream``
+
+- ``memory``
+
+- ``sparse_converter.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_converter.h`)
+
+- ``sparse_format.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_format.h`)
+
+- ``unordered_map``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_sparsebase_src_sparse_preprocess.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1FormatVectorHash`
+
+- :ref:`exhale_struct_structsparsebase_1_1RCMReorder_1_1RCMReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1ReorderParams`
+
+- :ref:`exhale_class_classsparsebase_1_1DegreeReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1DegreeReorderInstance`
+
+- :ref:`exhale_class_classsparsebase_1_1FormatMatcherMixin`
+
+- :ref:`exhale_class_classsparsebase_1_1GenericReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1MapToFunctionMixin`
+
+- :ref:`exhale_class_classsparsebase_1_1PreprocessType`
+
+- :ref:`exhale_class_classsparsebase_1_1RCMReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1RCMReorderInstance`
+
+- :ref:`exhale_class_classsparsebase_1_1ReorderInstance`
+
+- :ref:`exhale_class_classsparsebase_1_1ReorderPreprocessType`
+
+- :ref:`exhale_class_classsparsebase_1_1SparseConverterMixin`
+
+- :ref:`exhale_class_classsparsebase_1_1Transform`
+
+- :ref:`exhale_class_classsparsebase_1_1TransformInstance`
+
+- :ref:`exhale_class_classsparsebase_1_1TransformPreprocessType`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9`
+
+- :ref:`exhale_typedef_sparse__preprocess_8h_1a2a2bd769d60cb64a372a4680b15a68e6`
+

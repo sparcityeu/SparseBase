@@ -1,0 +1,20 @@
+.. _dir_sparsebase_include:
+
+
+Directory include
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase>` (``sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``sparsebase/include``
+
+Subdirectories
+--------------
+
+- :ref:`dir_sparsebase_include_sparsebase`
+
+
+

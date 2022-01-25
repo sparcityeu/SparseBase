@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1SparseObject:
+
+Class SparseObject
+==================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_object.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::AbstractSparseObject< VertexID, NumEdges, Weight >`` (:ref:`exhale_class_classsparsebase_1_1AbstractSparseObject`)
+- ``public sparsebase::AbstractSparseObject< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1AbstractSparseObject`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::SparseObject
+   :members:
+   :protected-members:
+   :undoc-members:

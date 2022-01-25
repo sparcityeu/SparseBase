@@ -1,0 +1,18 @@
+
+File Hierarchy
+--------------
+
+
+.. raw:: html
+
+   <ul class="treeView" id="file-treeView">
+     <li>
+       <ul class="collapsibleList">
+         <li class="lastChild">Directory <a href="dir_sparsebase.html#dir-sparsebase">sparsebase</a><ul><li>Directory <a href="dir_sparsebase_include.html#dir-sparsebase-include">include</a><ul><li class="lastChild">Directory <a href="dir_sparsebase_include_sparsebase.html#dir-sparsebase-include-sparsebase">sparsebase</a><ul><li>File <a href="file_sparsebase_include_sparsebase_sparse_converter.h.html#file-sparsebase-include-sparsebase-sparse-converter.h">sparse_converter.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_exception.h.html#file-sparsebase-include-sparsebase-sparse-exception.h">sparse_exception.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_format.h.html#file-sparsebase-include-sparsebase-sparse-format.h">sparse_format.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_object.h.html#file-sparsebase-include-sparsebase-sparse-object.h">sparse_object.h</a></li><li>File <a href="file_sparsebase_include_sparsebase_sparse_preprocess.h.html#file-sparsebase-include-sparsebase-sparse-preprocess.h">sparse_preprocess.h</a></li><li class="lastChild">File <a href="file_sparsebase_include_sparsebase_sparse_reader.h.html#file-sparsebase-include-sparsebase-sparse-reader.h">sparse_reader.h</a></li></ul></li></ul></li><li>Directory <a href="dir_sparsebase_src.html#dir-sparsebase-src">src</a><ul><li>Directory <a href="dir_sparsebase_src_init.html#dir-sparsebase-src-init">init</a><ul><li>File <a href="file_sparsebase_src_init_sparse_converter.inc.html#file-sparsebase-src-init-sparse-converter.inc">sparse_converter.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_format.inc.html#file-sparsebase-src-init-sparse-format.inc">sparse_format.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_object.inc.html#file-sparsebase-src-init-sparse-object.inc">sparse_object.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_preprocess.inc.html#file-sparsebase-src-init-sparse-preprocess.inc">sparse_preprocess.inc</a></li><li>File <a href="file_sparsebase_src_init_sparse_preprocess_instance.inc.html#file-sparsebase-src-init-sparse-preprocess-instance.inc">sparse_preprocess_instance.inc</a></li><li class="lastChild">File <a href="file_sparsebase_src_init_sparse_reader.inc.html#file-sparsebase-src-init-sparse-reader.inc">sparse_reader.inc</a></li></ul></li><li>File <a href="file_sparsebase_src_sparse_converter.cc.html#file-sparsebase-src-sparse-converter.cc">sparse_converter.cc</a></li><li>File <a href="file_sparsebase_src_sparse_format.cc.html#file-sparsebase-src-sparse-format.cc">sparse_format.cc</a></li><li>File <a href="file_sparsebase_src_sparse_object.cc.html#file-sparsebase-src-sparse-object.cc">sparse_object.cc</a></li><li>File <a href="file_sparsebase_src_sparse_preprocess.cc.html#file-sparsebase-src-sparse-preprocess.cc">sparse_preprocess.cc</a></li><li class="lastChild">File <a href="file_sparsebase_src_sparse_reader.cc.html#file-sparsebase-src-sparse-reader.cc">sparse_reader.cc</a></li></ul></li><li class="lastChild">File <a href="file_sparsebase_CMakeLists.txt.html#file-sparsebase-CMakeLists.txt">CMakeLists.txt</a></li></ul></li>
+       </ul>
+     </li><!-- only tree view element -->
+   </ul><!-- /treeView file-treeView -->
+
+.. end raw html for treeView
+
+

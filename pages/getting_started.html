@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; SparseBase v0.1.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Explanations" href="explanations/index.html" />
+    <link rel="prev" title="Welcome to SparseBase’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-building">Installation &amp; Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling">Compiling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-sparsebase-through-cmake">Adding SparseBase through CMake</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linking-to-sparsebase-at-compile-time">Linking to SparseBase at compile time</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tests">Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formatting">Formatting</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-sparseformat-object">Creating a SparseFormat Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input">Input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#converting-formats">Converting Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-graphs">Working with Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ordering">Ordering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/getting_started.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline"></a></h1>
+<section id="installation-building">
+<h2>Installation &amp; Building<a class="headerlink" href="#installation-building" title="Permalink to this headline"></a></h2>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h3>
+<p>Compilers listed below are the ones we used during development and testing.
+Other compilers are not supported at the current release.
+Lowest versions are included based on the feature sets of the tools/compilers
+and not all of them are tested.
+We suggest using more recent versions when possible.</p>
+<ul class="simple">
+<li><p>Supported Compilers:</p>
+<ul>
+<li><p>clang++ (version 6 or above)</p></li>
+<li><p>g++ (version 7 or above)</p></li>
+</ul>
+</li>
+<li><p>Build tools:</p>
+<ul>
+<li><p>cmake (version 3.0 or above)</p></li>
+<li><p>GNU make (version 4.1 or above)</p></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<div><p>We had some trouble with g++ version 11 on GNU/Linux.
+For now, we suggest using clang++ or a different version of g++ on GNU/Linux.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="compiling">
+<h2>Compiling<a class="headerlink" href="#compiling" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+cmake -DCMAKE_BUILD_TYPE<span class="o">=</span>Release ..
+make
+</pre></div>
+</div>
+<p>This will generate the library as a static library. In addition, the example codes are compiled and their binaries are located in <code class="docutils literal notranslate"><span class="pre">build/examples</span></code>.</p>
+<p>Due to optimizations and templates, this process might take several minutes.</p>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h3>
+<p>To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
+cmake --install .
+</pre></div>
+</div>
+<p>To install the library to a custom directory, do the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
+cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> We suggest using <strong>absolute paths</strong> for prefixes as relative paths have been known to cause problems from time to time.</p>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h3>
+<p>SparseBase can be easily added to your project either through CMake’s <code class="docutils literal notranslate"><span class="pre">find_package()</span></code> command, or by directly linking it at compilation time.</p>
+<section id="adding-sparsebase-through-cmake">
+<h4>Adding SparseBase through CMake<a class="headerlink" href="#adding-sparsebase-through-cmake" title="Permalink to this headline"></a></h4>
+<p>If you installed SparseBase to the default system directory, use the following the command in your <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file to add the library to your project:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.4</span> <span class="s">REQUIRED</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, if you installed the library to a different path, say <code class="docutils literal notranslate"><span class="pre">/custom/location/</span></code>, you must specify that path in the command:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.4</span> <span class="s">REQUIRED</span> <span class="s">PATHS</span> <span class="s">/custom/location/</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After the library is added to your project, you can simply link your targets to <code class="docutils literal notranslate"><span class="pre">sparsebase::sparsebase</span></code>:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">your_target</span> <span class="s">sparsebase::sparsebase</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="linking-to-sparsebase-at-compile-time">
+<h4>Linking to SparseBase at compile time<a class="headerlink" href="#linking-to-sparsebase-at-compile-time" title="Permalink to this headline"></a></h4>
+<p>You can link SparseBase directly to your targets by passing the appropriate flag for your compiler. For example, for <code class="docutils literal notranslate"><span class="pre">g++</span></code>, add the <code class="docutils literal notranslate"><span class="pre">-lsparsebase</span></code> flag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ source.cpp -lsparsebase
+</pre></div>
+</div>
+<p>If the library was installed to a different location, say <code class="docutils literal notranslate"><span class="pre">/custom/location/</span></code>, then make sure to guide the compiler to the locations of the headers and the binary:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ source.cpp -I/custom/location/include -L/custom/location/lib -lsparsebase
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tests">
+<h3>Tests<a class="headerlink" href="#tests" title="Permalink to this headline"></a></h3>
+<p>Users can run unit tests easily after building the project. To do so, they must configure CMake to compile tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build <span class="c1"># if a build directory doesn&#39;t exist</span>
+<span class="nb">cd</span> build
+cmake -DRUN_TESTS ..
+</pre></div>
+</div>
+<p>Once its built, while in the build directory, do the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctest -V
+</pre></div>
+</div>
+</section>
+<section id="formatting">
+<h3>Formatting<a class="headerlink" href="#formatting" title="Permalink to this headline"></a></h3>
+<p>Source files can be automatically formatted using <code class="docutils literal notranslate"><span class="pre">clang-format</span></code>. After installing <code class="docutils literal notranslate"><span class="pre">clang-format</span></code>, generate the build system using CMake and build the target <code class="docutils literal notranslate"><span class="pre">format</span></code>. This example shows its usage with <code class="docutils literal notranslate"><span class="pre">make</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build
+<span class="nb">cd</span> build
+cmake ..
+make format
+</pre></div>
+</div>
+</section>
+</section>
+<section id="creating-a-sparseformat-object">
+<h2>Creating a SparseFormat Object<a class="headerlink" href="#creating-a-sparseformat-object" title="Permalink to this headline"></a></h2>
+<p>Currently two sparse data formats are supported:</p>
+<ul class="simple">
+<li><p>COO (Coordinate List)</p></li>
+<li><p>CSR (Compressed Sparse Row)</p></li>
+</ul>
+<p>In the code snippet below you can see the creation of a CSR type object
+which only contains connectivity information. As a result the value type and parameter
+are set as <code class="docutils literal notranslate"><span class="pre">void</span></code> and `nullptr respectively.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">row_ptr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">};</span>
+
+<span class="c1">// There are 3 template parameters for each sparse data format</span>
+<span class="c1">// First is IDType which is related to the size of the dimensions</span>
+<span class="c1">// Second is NumNonZerosType which is related to the number of non-zeros stored</span>
+<span class="c1">// Third is ValueType which determines the type of the stored values</span>
+<span class="c1">// In this example ValueType is set to void since we are not storing any values</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;</span> <span class="n">csr</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In the code snippet below you can see the creation of a COO type object which also contains value information.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">row</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">};</span>
+<span class="kt">int</span> <span class="n">col</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+<span class="kt">int</span> <span class="n">vals</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">};</span>
+
+<span class="c1">// Unlike the previous example we are storing integer type values here</span>
+<span class="k">auto</span> <span class="n">coo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">COO</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline"></a></h2>
+<p>Currently, we support two sparse data file formats:</p>
+<ul class="simple">
+<li><p>Matrix Market Files (.mtx)</p></li>
+<li><p>Undirected Edge List Files (.uedgelist)</p></li>
+</ul>
+<p>We can perform a read operation on these formats as shown below: (use <code class="docutils literal notranslate"><span class="pre">UedgeListReader</span></code> for .uedgelist files)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
+
+<span class="k">auto</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">ReadCOO</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>There are certain limitations to readers, which will be addressed in future releases:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">UedgeListReader</span></code> can only read to CSR format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MTXReader</span></code> can only read to COO format</p></li>
+<li><p>Reading multiple tensors, matrices or graphs from a single file is not supported.</p></li>
+</ul>
+</section>
+<section id="converting-formats">
+<h2>Converting Formats<a class="headerlink" href="#converting-formats" title="Permalink to this headline"></a></h2>
+<p>As explained in the previous section, readers will read to different formats.</p>
+<p>However, we can convert the data into the format we desire using <code class="docutils literal notranslate"><span class="pre">SparseConverter</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_converter.h&quot;</span><span class="cp"></span>
+
+<span class="k">auto</span> <span class="n">converter</span> <span class="o">=</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">SparseConverter</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="k">auto</span> <span class="n">converted</span> <span class="o">=</span> <span class="n">converter</span><span class="p">.</span><span class="n">Convert</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">kCSRFormat</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;*&gt;</span><span class="p">(</span><span class="n">converted</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-graphs">
+<h2>Working with Graphs<a class="headerlink" href="#working-with-graphs" title="Permalink to this headline"></a></h2>
+<p>Graphs can be created using any SparseFormat as the connectivity information of the graph.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_object.h&quot;</span><span class="cp"></span>
+
+<span class="k">auto</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">ReadCOO</span><span class="p">();</span>
+<span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">Graph</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Alternatively we can create a graph by directly passing the reader.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_object.h&quot;</span><span class="cp"></span>
+
+ <span class="n">sparsebase</span><span class="o">::</span><span class="n">Graph</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">g</span><span class="p">;</span>
+ <span class="n">g</span><span class="p">.</span><span class="n">read_connectivity_to_coo</span><span class="p">(</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.</p>
+</section>
+<section id="ordering">
+<h2>Ordering<a class="headerlink" href="#ordering" title="Permalink to this headline"></a></h2>
+<p>Ordering can be handled using the <code class="docutils literal notranslate"><span class="pre">ReorderInstance</span></code> class. Note that this class takes a <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> as a template parameter.
+As of the current version three such <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> classes exist <code class="docutils literal notranslate"><span class="pre">RCMReorder</span></code>, <code class="docutils literal notranslate"><span class="pre">DegreeReorder</span></code>, <code class="docutils literal notranslate"><span class="pre">GenericReorder</span></code>.</p>
+<p>Below you can see an example of an RCM reordering of a graph.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_preprocess.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.h&quot;</span><span class="cp"></span>
+
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderInstance</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">RCMReorder</span><span class="o">&gt;</span> <span class="n">orderer</span><span class="p">;</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">con</span> <span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="n">get_connectivity</span><span class="p">();</span>
+<span class="n">vertex_type</span> <span class="o">*</span> <span class="n">order</span> <span class="o">=</span> <span class="n">orderer</span><span class="p">.</span><span class="n">GetReorder</span><span class="p">(</span><span class="n">con</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>For these operations, we also support an alternative syntax (without the template parameter) using the <code class="docutils literal notranslate"><span class="pre">RCMReorderInstance</span></code> and <code class="docutils literal notranslate"><span class="pre">DegreeReorderInstance</span></code> wrapper classes.</p>
+<p>Below you can see this alternative syntax being used to reorder the same graph.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">RCMReorderInstance</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">orderer</span><span class="p">;</span>
+<span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">con</span> <span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="n">get_connectivity</span><span class="p">();</span>
+<span class="n">vertex_type</span> <span class="o">*</span> <span class="n">order</span> <span class="o">=</span> <span class="n">orderer</span><span class="p">.</span><span class="n">GetReorder</span><span class="p">(</span><span class="n">con</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
+So by default, reordering won’t actually mutate the graph. If the user wishes to do so, they can use the <code class="docutils literal notranslate"><span class="pre">TransformInstance</span></code> class</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_preprocess.h&quot;</span><span class="cp"></span>
+
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">TransformInstance</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">Transform</span><span class="o">&gt;</span> <span class="n">transformer</span><span class="p">;</span>
+<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">.</span><span class="n">GetTransformation</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to SparseBase’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="explanations/index.html" class="btn btn-neutral float-right" title="Explanations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

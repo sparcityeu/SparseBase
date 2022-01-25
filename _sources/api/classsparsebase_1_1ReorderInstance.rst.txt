@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1ReorderInstance:
+
+Template Class ReorderInstance
+==============================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::FormatMatcherMixin< IDType, NNZType, ValueType, ReorderImpl< IDType, NNZType, ValueType >, ReorderFunction< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1FormatMatcherMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::ReorderInstance
+   :members:
+   :protected-members:
+   :undoc-members:

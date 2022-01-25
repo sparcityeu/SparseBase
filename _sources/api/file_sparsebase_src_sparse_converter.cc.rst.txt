@@ -1,0 +1,52 @@
+
+.. _file_sparsebase_src_sparse_converter.cc:
+
+File sparse_converter.cc
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase_src>` (``sparsebase/src``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``sparsebase/src/sparse_converter.cc``)
+---------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_sparsebase_src_sparse_converter.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``iostream``
+
+- ``set``
+
+- ``sparsebase/sparse_converter.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_converter.h`)
+
+- ``sparsebase/sparse_format.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_format.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_std`
+

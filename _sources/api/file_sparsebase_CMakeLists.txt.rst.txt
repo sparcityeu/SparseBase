@@ -1,0 +1,40 @@
+
+.. _file_sparsebase_CMakeLists.txt:
+
+File CMakeLists.txt
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase>` (``sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``sparsebase/CMakeLists.txt``)
+------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_sparsebase_CMakeLists.txt.rst
+
+
+
+
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_CMakeLists_8txt_1a38c371107125da6c75e7989e41bbfa4d`
+
+- :ref:`exhale_function_CMakeLists_8txt_1a9987f805d77740b579cfe1b2d67c8b8b`
+

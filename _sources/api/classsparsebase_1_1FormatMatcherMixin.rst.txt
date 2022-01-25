@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1FormatMatcherMixin:
+
+Template Class FormatMatcherMixin
+=================================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public PreprocessingImpl``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::FormatMatcherMixin
+   :members:
+   :protected-members:
+   :undoc-members:

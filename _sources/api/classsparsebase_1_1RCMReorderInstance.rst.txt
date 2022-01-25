@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1RCMReorderInstance:
+
+Template Class RCMReorderInstance
+=================================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::FormatMatcherMixin< IDType, NNZType, ValueType, RCMReorder< IDType, NNZType, ValueType >, ReorderFunction< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1FormatMatcherMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::RCMReorderInstance
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,63 @@
+
+.. _file_sparsebase_include_sparsebase_sparse_exception.h:
+
+File sparse_exception.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase_include_sparsebase>` (``sparsebase/include/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``sparsebase/include/sparsebase/sparse_exception.h``)
+-----------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_sparsebase_include_sparsebase_sparse_exception.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``exception`` (:ref:`file_sparsebase_include_sparsebase_sparse_exception.h`)
+
+- ``iostream``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_sparsebase_src_sparse_format.cc`
+
+- :ref:`file_sparsebase_src_sparse_reader.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1InvalidDataMember`
+
+- :ref:`exhale_class_classsparsebase_1_1SparseReaderException`
+

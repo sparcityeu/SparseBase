@@ -1,0 +1,50 @@
+
+.. _file_sparsebase_src_sparse_object.cc:
+
+File sparse_object.cc
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase_src>` (``sparsebase/src``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``sparsebase/src/sparse_object.cc``)
+------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_sparsebase_src_sparse_object.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``iostream``
+
+- ``sparsebase/sparse_format.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_format.h`)
+
+- ``sparsebase/sparse_object.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_object.h`)
+
+- ``sparsebase/sparse_reader.h`` (:ref:`file_sparsebase_include_sparsebase_sparse_reader.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+

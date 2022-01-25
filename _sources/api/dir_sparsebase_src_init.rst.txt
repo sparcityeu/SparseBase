@@ -1,0 +1,25 @@
+.. _dir_sparsebase_src_init:
+
+
+Directory init
+==============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_sparsebase_src>` (``sparsebase/src``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``sparsebase/src/init``
+
+
+Files
+-----
+
+- :ref:`file_sparsebase_src_init_sparse_converter.inc`
+- :ref:`file_sparsebase_src_init_sparse_format.inc`
+- :ref:`file_sparsebase_src_init_sparse_object.inc`
+- :ref:`file_sparsebase_src_init_sparse_preprocess.inc`
+- :ref:`file_sparsebase_src_init_sparse_preprocess_instance.inc`
+- :ref:`file_sparsebase_src_init_sparse_reader.inc`
+
+

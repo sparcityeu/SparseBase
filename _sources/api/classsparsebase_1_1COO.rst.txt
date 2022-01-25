@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1COO:
+
+Template Class COO
+==================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_format.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::AbstractSparseFormat< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1AbstractSparseFormat`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::COO
+   :members:
+   :protected-members:
+   :undoc-members:

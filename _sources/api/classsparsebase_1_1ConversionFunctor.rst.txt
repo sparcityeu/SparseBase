@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1ConversionFunctor:
+
+Template Class ConversionFunctor
+================================
+
+- Defined in :ref:`file_sparsebase_include_sparsebase_sparse_converter.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::CooCsrFunctor< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1CooCsrFunctor`)
+- ``public sparsebase::CsrCooFunctor< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1CsrCooFunctor`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::ConversionFunctor
+   :members:
+   :protected-members:
+   :undoc-members:
