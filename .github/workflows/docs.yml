@@ -35,6 +35,9 @@ jobs:
         working-directory: docs/
         run: make html
         
+      - name: Bypass Jekyll
+        run: touch docs/_build/html/.nojekyll
+        
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.2.2
         with:
