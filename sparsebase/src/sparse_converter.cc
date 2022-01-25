@@ -43,7 +43,7 @@ SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueTy
   // if (csr->vals != nullptr)
   ValueType * vals = nullptr;
   if constexpr (!std::is_same_v<void, ValueType>) {
-    if (csr->vals_ != nullptr){
+    if (csr->get_vals() != nullptr){
       vals = new ValueType[nnz];
       auto csr_vals = csr->get_vals();
       for (NNZType i = 0; i < nnz; i++) {
