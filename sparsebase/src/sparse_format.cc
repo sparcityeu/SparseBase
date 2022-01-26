@@ -110,6 +110,30 @@ void AbstractSparseFormat<IDType, NNZType, ValueType>::set_ind(ValueType**, Owne
   throw InvalidDataMember(std::to_string(get_format()), std::string("ind"));
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+bool AbstractSparseFormat<IDType, NNZType, ValueType>::RowIsOwned() {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("row"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool AbstractSparseFormat<IDType, NNZType, ValueType>::ColIsOwned() {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("col"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool AbstractSparseFormat<IDType, NNZType, ValueType>::RowPtrIsOwned() {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("row_ptr"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool AbstractSparseFormat<IDType, NNZType, ValueType>::ValsIsOwned() {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("vals"));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool AbstractSparseFormat<IDType, NNZType, ValueType>::IndIsOwned() {
+  throw InvalidDataMember(std::to_string(get_format()), std::string("ind"));
+}
 //template <typename IDType, typename NNZType, typename ValueType>
 //COO<IDType, NNZType, ValueType>::COO() {
 //  this->order_ = 2;
@@ -225,6 +249,21 @@ void COO<IDType, NNZType, ValueType>::set_vals(ValueType* vals, Ownership own) {
   } else {
     this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
   }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool COO<IDType, NNZType, ValueType>::RowIsOwned() {
+  return (this->row_.get_deleter().target_type() != typeid(BlankDeleter<IDType>));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool COO<IDType, NNZType, ValueType>::ColIsOwned() {
+  return (this->col_.get_deleter().target_type() != typeid(BlankDeleter<IDType>));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool COO<IDType, NNZType, ValueType>::ValsIsOwned() {
+  return (this->vals_.get_deleter().target_type() != typeid(BlankDeleter<ValueType>));
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -345,6 +384,21 @@ void CSR<IDType, NNZType, ValueType>::set_vals(ValueType* vals, Ownership own) {
   } else {
     this->vals_  = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, BlankDeleter<ValueType>());
   }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool CSR<IDType, NNZType, ValueType>::RowPtrIsOwned() {
+  return (this->row_ptr_.get_deleter().target_type() != typeid(BlankDeleter<NNZType>));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool CSR<IDType, NNZType, ValueType>::ColIsOwned() {
+  return (this->col_.get_deleter().target_type() != typeid(BlankDeleter<IDType>));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+bool CSR<IDType, NNZType, ValueType>::ValsIsOwned() {
+  return (this->vals_.get_deleter().target_type() != typeid(BlankDeleter<ValueType>));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
