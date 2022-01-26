@@ -53,7 +53,7 @@ SparseFormat<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueTy
       vals = nullptr;
     }
   }  
-  COO<IDType, NNZType, ValueType> *coo = new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals);
+  COO<IDType, NNZType, ValueType> *coo = new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals, kOwned);
 
   return coo;
 }
@@ -121,7 +121,7 @@ SparseFormat<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueTy
     vals = nullptr;
   }
 
-  auto csr = new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals);
+  auto csr = new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
   return csr;
 }
 

@@ -10,6 +10,10 @@
 
 namespace sparsebase {
 
+enum Ownership {
+  kNotOwned = 0,
+  kOwned = 1,
+};
 //! Enum keeping formats
 enum Format {
   //! CSR Format
@@ -60,11 +64,11 @@ public:
   virtual IDType* release_row() = 0;
   virtual ValueType* release_vals() = 0;
   virtual ValueType ** release_ind() = 0;
-  virtual void set_row_ptr(NNZType*, bool own) = 0;
-  virtual void set_row(IDType*, bool own) = 0;
-  virtual void set_col(IDType*, bool own) = 0;
-  virtual void set_vals(ValueType*, bool own) = 0;
-  virtual void set_ind(ValueType**, bool own) = 0;
+  virtual void set_row_ptr(NNZType*, Ownership own = kNotOwned) = 0;
+  virtual void set_row(IDType*, Ownership own = kNotOwned) = 0;
+  virtual void set_col(IDType*, Ownership own = kNotOwned) = 0;
+  virtual void set_vals(ValueType*, Ownership own = kNotOwned) = 0;
+  virtual void set_ind(ValueType**, Ownership own = kNotOwned) = 0;
 };
 
 // abstract class
@@ -84,11 +88,11 @@ public:
   ValueType * get_vals() const override;
   ValueType **get_ind() const override;
 
-  void set_row_ptr(NNZType*, bool own) override;
-  void set_row(IDType*, bool own) override;
-  void set_col(IDType*, bool own) override;
-  void set_vals(ValueType*, bool own) override;
-  void set_ind(ValueType**, bool own) override;
+  void set_row_ptr(NNZType*, Ownership own = kNotOwned) override;
+  void set_row(IDType*, Ownership own = kNotOwned) override;
+  void set_col(IDType*, Ownership own = kNotOwned) override;
+  void set_vals(ValueType*, Ownership own = kNotOwned) override;
+  void set_ind(ValueType**, Ownership own = kNotOwned) override;
 
   NNZType* release_row_ptr() override;
   IDType* release_col() override;
@@ -107,7 +111,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class COO : public AbstractSparseFormat<IDType, NNZType, ValueType> {
 public:
   //COO();
-  COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col, ValueType *vals, bool own = false);
+  COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   COO(const COO<IDType, NNZType, ValueType>&);
   COO(COO<IDType, NNZType, ValueType>&&);
   virtual ~COO();
@@ -120,9 +124,9 @@ public:
   IDType* release_row() override;
   ValueType* release_vals() override;
 
-  void set_row(IDType*, bool own) override;
-  void set_col(IDType*, bool own) override;
-  void set_vals(ValueType*, bool own) override;
+  void set_row(IDType*, Ownership own = kNotOwned) override;
+  void set_col(IDType*, Ownership own = kNotOwned) override;
+  void set_vals(ValueType*, Ownership own = kNotOwned) override;
 
 protected:
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
@@ -133,7 +137,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class CSR : public AbstractSparseFormat<IDType, NNZType, ValueType> {
 public:
   //CSR();
-  CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals, bool own = false);
+  CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   CSR(const CSR<IDType, NNZType, ValueType>&);
   CSR(CSR<IDType, NNZType, ValueType>&&);
   Format get_format() const override;
@@ -146,9 +150,9 @@ public:
   IDType* release_col() override;
   ValueType* release_vals() override;
 
-  void set_row_ptr(NNZType*, bool own) override;
-  void set_col(IDType*, bool own) override;
-  void set_vals(ValueType*, bool own) override;
+  void set_row_ptr(NNZType*, Ownership own = kNotOwned) override;
+  void set_col(IDType*, Ownership own = kNotOwned) override;
+  void set_vals(ValueType*, Ownership own = kNotOwned) override;
   
 protected:
   std::unique_ptr<NNZType[], std::function<void(NNZType*)>> row_ptr_;

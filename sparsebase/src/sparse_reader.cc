@@ -84,7 +84,7 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::Re
       row_ptr[i] = row_ptr[i - 1];
     }
     row_ptr[0] = 0;
-    return new CSR<VertexID, NumEdges, Weight>(n, n, row_ptr, col, nullptr, true);
+    return new CSR<VertexID, NumEdges, Weight>(n, n, row_ptr, col, nullptr, kOwned);
   } else {
     throw std::invalid_argument("file does not exists!!");
   }
@@ -139,7 +139,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
         vals[l] = w;
       }
 
-      auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, true);
+      auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, kOwned);
       return coo;
     } else {
       // TODO: Add an exception class for this
@@ -154,7 +154,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
       col[l] = n - 1;
     }
 
-    auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, true);
+    auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, kOwned);
     return coo;
   }
 }
