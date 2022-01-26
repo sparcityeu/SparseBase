@@ -27,6 +27,7 @@ public:
   SparseFormat<IDType, NNZType, ValueType> *get_connectivity() const;
   SparseFormat<IDType, NNZType, ValueType> *release_connectivity();
   void set_connectivity(SparseFormat<IDType, NNZType, ValueType>*, bool);
+  bool ConnectivityIsOwned() const;
 
 };
 
