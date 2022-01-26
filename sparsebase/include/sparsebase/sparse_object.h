@@ -36,6 +36,9 @@ class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
 public:
   Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity);
   Graph();
+  Graph(const Graph<VertexID, NumEdges, Weight>&);
+  Graph(Graph<VertexID, NumEdges, Weight>&&);
+  Graph<VertexID, NumEdges, Weight>& operator=(const Graph<VertexID, NumEdges, Weight>&);
   void ReadConnectivityToCSR(const ReadsCSR<VertexID, NumEdges, Weight> &);
   void ReadConnectivityToCOO(const ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);

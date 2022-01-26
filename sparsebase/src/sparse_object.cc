@@ -54,6 +54,23 @@ void AbstractSparseObject<IDType, NNZType, ValueType>::set_connectivity(SparseFo
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
+Graph<VertexID, NumEdges, Weight>::Graph(Graph<VertexID, NumEdges, Weight>&& rhs) {
+  this->set_connectivity(rhs.release_connectivity(), true);
+  InitializeInfoFromConnection();
+  rhs.set_connectivity(nullptr, false);
+}
+template <typename VertexID, typename NumEdges, typename Weight>
+Graph<VertexID, NumEdges, Weight>::Graph(const Graph<VertexID, NumEdges, Weight>& rhs) {
+  this->set_connectivity(static_cast<SparseFormat<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
+  InitializeInfoFromConnection();
+}
+template <typename VertexID, typename NumEdges, typename Weight>
+Graph<VertexID, NumEdges, Weight>&Graph<VertexID, NumEdges, Weight>::operator=(const Graph<VertexID, NumEdges, Weight>& rhs) {
+  this->set_connectivity(static_cast<SparseFormat<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
+  InitializeInfoFromConnection();
+  return *this;
+}
+template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity) {
   //this->connectivity_ = connectivity;
   this->set_connectivity(connectivity, true);
