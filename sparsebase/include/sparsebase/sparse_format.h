@@ -64,6 +64,11 @@ public:
   virtual IDType* release_row() = 0;
   virtual ValueType* release_vals() = 0;
   virtual ValueType ** release_ind() = 0;
+  virtual bool RowIsOwned() = 0;
+  virtual bool ColIsOwned() = 0;
+  virtual bool RowPtrIsOwned() = 0;
+  virtual bool ValsIsOwned() = 0;
+  virtual bool IndIsOwned() = 0;
   virtual void set_row_ptr(NNZType*, Ownership own = kNotOwned) = 0;
   virtual void set_row(IDType*, Ownership own = kNotOwned) = 0;
   virtual void set_col(IDType*, Ownership own = kNotOwned) = 0;
@@ -100,6 +105,11 @@ public:
   ValueType* release_vals() override;
   ValueType ** release_ind() override;
 
+  virtual bool RowIsOwned() override;
+  virtual bool ColIsOwned() override;
+  virtual bool RowPtrIsOwned() override;
+  virtual bool ValsIsOwned() override;
+  virtual bool IndIsOwned() override;
 protected:
   Format format_;
   unsigned int order_;
@@ -128,6 +138,9 @@ public:
   void set_col(IDType*, Ownership own = kNotOwned) override;
   void set_vals(ValueType*, Ownership own = kNotOwned) override;
 
+  virtual bool RowIsOwned() override;
+  virtual bool ColIsOwned() override;
+  virtual bool ValsIsOwned() override;
 protected:
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> row_;
@@ -154,6 +167,9 @@ public:
   void set_col(IDType*, Ownership own = kNotOwned) override;
   void set_vals(ValueType*, Ownership own = kNotOwned) override;
   
+  virtual bool ColIsOwned() override;
+  virtual bool RowPtrIsOwned() override;
+  virtual bool ValsIsOwned() override;
 protected:
   std::unique_ptr<NNZType[], std::function<void(NNZType*)>> row_ptr_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
