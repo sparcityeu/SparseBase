@@ -34,6 +34,10 @@ AbstractSparseObject<IDType, NNZType, ValueType>::get_connectivity() const {
   return connectivity_.get();
 }
 template <typename IDType, typename NNZType, typename ValueType>
+bool AbstractSparseObject<IDType, NNZType, ValueType>::ConnectivityIsOwned() const {
+  return (connectivity_.get_deleter().target_type() != typeid(BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>));
+}
+template <typename IDType, typename NNZType, typename ValueType>
 SparseFormat<IDType, NNZType, ValueType> *
 AbstractSparseObject<IDType, NNZType, ValueType>::release_connectivity() {
   auto ptr = connectivity_.release();
