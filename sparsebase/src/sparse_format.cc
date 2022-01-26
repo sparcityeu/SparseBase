@@ -155,6 +155,29 @@ COO<IDType, NNZType, ValueType>::COO(COO<IDType, NNZType, ValueType> && rhs): co
   rhs.vals_ = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(nullptr, BlankDeleter<ValueType>());
 }
 template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType>& COO<IDType, NNZType, ValueType>::operator=(const COO<IDType, NNZType, ValueType> & rhs){
+  this->nnz_ = rhs.nnz_;
+  this->format_ = Format::kCOOFormat;
+  this->order_ = 2;
+  this->dimension_ = rhs.dimension_;
+  auto col = new IDType[rhs.get_num_nnz()];
+  std::copy(rhs.get_col(), rhs.get_col()+rhs.get_num_nnz(), col);
+  auto row = new IDType[rhs.get_num_nnz()];
+  std::copy(rhs.get_row(), rhs.get_row()+rhs.get_num_nnz(), row);
+  ValueType* vals = nullptr;
+  if (rhs.get_vals() != nullptr){
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals()+rhs.get_num_nnz(), vals);
+  }
+  this->col_ = std::unique_ptr<IDType[], std::function<void(IDType *)>>(
+      col, Deleter<IDType>());
+  this->row_ = std::unique_ptr<IDType[], std::function<void(IDType *)>>(
+      row, Deleter<IDType>());
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  return *this;
+}
+template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::COO(const COO<IDType, NNZType, ValueType> & rhs): col_(nullptr, BlankDeleter<IDType>()), row_(nullptr, BlankDeleter<IDType>()), vals_(nullptr, BlankDeleter<ValueType>()) {
   this->nnz_ = rhs.nnz_;
   this->format_ = Format::kCOOFormat;
@@ -288,6 +311,29 @@ CSR<IDType, NNZType, ValueType>::CSR(CSR<IDType, NNZType, ValueType> && rhs): co
   rhs.col_ = std::unique_ptr<IDType[], std::function<void (IDType*)>>(nullptr, BlankDeleter<IDType>());
   rhs.row_ptr_ = std::unique_ptr<NNZType[], std::function<void (NNZType*)>>(nullptr, BlankDeleter<NNZType>());
   rhs.vals_ = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(nullptr, BlankDeleter<ValueType>());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType>& CSR<IDType, NNZType, ValueType>::operator=(const CSR<IDType, NNZType, ValueType> & rhs){
+  this->nnz_ = rhs.nnz_;
+  this->format_ = Format::kCSRFormat;
+  this->order_ = 2;
+  this->dimension_ = rhs.dimension_;
+  auto col = new IDType[rhs.get_num_nnz()];
+  std::copy(rhs.get_col(), rhs.get_col()+rhs.get_num_nnz(), col);
+  auto row_ptr = new NNZType[rhs.get_num_nnz()];
+  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr()+rhs.get_num_nnz(), row_ptr);
+  ValueType* vals = nullptr;
+  if (rhs.get_vals() != nullptr){
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals()+rhs.get_num_nnz(), vals);
+  }
+  this->col_ = std::unique_ptr<IDType[], std::function<void(IDType *)>>(
+      col, Deleter<IDType>());
+  this->row_ptr_ = std::unique_ptr<NNZType[], std::function<void(NNZType *)>>(
+      row_ptr, Deleter<NNZType>());
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  return *this;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::CSR(const CSR<IDType, NNZType, ValueType> & rhs): col_(nullptr, BlankDeleter<IDType>()), row_ptr_(nullptr, BlankDeleter<NNZType>()), vals_(nullptr, BlankDeleter<ValueType>()) {

@@ -124,6 +124,7 @@ public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   COO(const COO<IDType, NNZType, ValueType>&);
   COO(COO<IDType, NNZType, ValueType>&&);
+  COO<IDType, NNZType, ValueType>& operator=(const COO<IDType, NNZType, ValueType>&);
   virtual ~COO();
   Format get_format() const override;
   IDType *get_col() const override;
@@ -153,6 +154,7 @@ public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   CSR(const CSR<IDType, NNZType, ValueType>&);
   CSR(CSR<IDType, NNZType, ValueType>&&);
+  CSR<IDType, NNZType, ValueType>& operator=(const CSR<IDType, NNZType, ValueType>&);
   Format get_format() const override;
   virtual ~CSR();
   NNZType * get_row_ptr() const override;
