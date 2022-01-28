@@ -6,6 +6,8 @@
 
 namespace sparsebase {
 
+namespace object {
+
 SparseObject::~SparseObject(){};
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -145,5 +147,7 @@ template class Graph<unsigned int, unsigned int, unsigned int>;
 //     NumEdges m;
 //     // ...
 // };
+
+} // namespace object
 
 } // namespace sparsebase

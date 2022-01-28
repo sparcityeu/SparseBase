@@ -10,10 +10,13 @@
 
 namespace sparsebase {
 
+namespace format {
+
 enum Ownership {
   kNotOwned = 0,
   kOwned = 1,
 };
+
 //! Enum keeping formats
 enum Format {
   //! CSR Format
@@ -179,18 +182,7 @@ protected:
   std::unique_ptr<ValueType[], std::function<void(ValueType*)>> vals_;
 };
 
-//template <typename IDType, typename NNZType, typename ValueType>
-//class CSF : public AbstractSparseFormat<IDType, NNZType, ValueType> {
-//public:
-//  CSF(unsigned int order);
-//  Format get_format() override;
-//  virtual ~CSF();
-//  IDType **get_ind() override;
-//  ValueType *get_vals() override;
-//
-//  NNZType **ind_;
-//  ValueType *vals_;
-//};
+} // namespace format
 
 } // namespace sparsebase
 #endif

@@ -7,6 +7,8 @@ using namespace std;
 
 namespace sparsebase {
 
+namespace utils {
+
 size_t FormatHash::operator()(Format f) const { return f; }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -236,4 +238,7 @@ template class SparseConverter<unsigned int, unsigned int, unsigned int>;
 template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
 template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
 #endif
+
+} // namespace utils
+
 } // namespace sparsebase
