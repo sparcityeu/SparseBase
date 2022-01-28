@@ -26,15 +26,15 @@ int main(){
     cout << "CSR" << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << csr2->vals_[i] << ",";
+        cout << csr2->get_vals()[i] << ",";
     cout << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << csr2->col_[i] << ",";
+        cout << csr2->get_col()[i] << ",";
     cout << endl;
     
     for(int i=0; i<n+1; i++)
-        cout << csr2->row_ptr_[i] << ",";
+        cout << csr2->get_row_ptr()[i] << ",";
     cout << endl;
     
     cout << endl;
@@ -46,15 +46,15 @@ int main(){
     cout << "COO" << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << coo3->vals_[i] << ",";
+        cout << coo3->get_vals()[i] << ",";
     cout << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << coo3->row_[i] << ",";
+        cout << coo3->get_row()[i] << ",";
     cout << endl;
     
     for(int i=0; i<nnz; i++)
-        cout << coo3->col_[i] << ",";
+        cout << coo3->get_col()[i] << ",";
     cout << endl;
 
     delete coo;

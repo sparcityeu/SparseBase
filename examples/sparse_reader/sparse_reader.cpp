@@ -6,7 +6,7 @@
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
-using value_type = void;
+using value_type = unsigned int;
 
 using namespace std;
 using namespace sparsebase;
