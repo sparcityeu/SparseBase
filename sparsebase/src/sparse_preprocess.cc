@@ -224,8 +224,10 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   std::cout << cast_params->hyperparameter;
   IDType n = csr->get_dimensions()[0];
   IDType *counts = new IDType[n]();
+  auto row_ptr = csr->get_row_ptr();
+  auto col = csr->get_col();
   for (IDType u = 0; u < n; u++) {
-    counts[csr->row_ptr_[u + 1] - csr->row_ptr_[u] + 1]++;
+    counts[row_ptr[u + 1] - row_ptr[u] + 1]++;
   }
   for (IDType u = 1; u < n; u++) {
     counts[u] += counts[u - 1];
@@ -234,7 +236,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   memset(sorted, -1, sizeof(IDType) * n);
   IDType *mr = new IDType[n]();
   for (IDType u = 0; u < n; u++) {
-    IDType ec = counts[csr->row_ptr_[u + 1] - csr->row_ptr_[u]];
+    IDType ec = counts[row_ptr[u + 1] - row_ptr[u]];
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
@@ -367,10 +369,14 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
   // Reverse
   for (IDType i = 0; i < n / 2; i++) {
-    IDType t = Q[i];
-    Q[i] = Q[n - i - 1];
-    Q[n - i - 1] = t;
+    Qp[i] = Q[n - i - 1];
+    Qp[n - i - 1] = Q[i];
   }
+  // Place it in the form that the transform function takes
+  for (IDType i = 0; i < n; i++) {
+    Q[Qp[i]] = i;
+  }
+
   delete[] Qp;
   delete[] distance;
   delete[] V;
@@ -419,7 +425,8 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
   IDType *nadj = new IDType[nnz]();
   ValueType *nvals = nullptr;
   if constexpr (!std::is_same_v<void, ValueType>) {
-    nvals = new ValueType[nnz]();
+    if (sp->get_vals()!=nullptr)
+      nvals = new ValueType[nnz]();
   }
 
   IDType *inverse_order = new IDType[n]();
@@ -432,7 +439,8 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
     for (NNZType v = xadj[u]; v < xadj[u + 1]; v++) {
       nadj[c] = order[adj[v]];
       if constexpr (!std::is_same_v<void, ValueType>) {
-        nvals[c] = vals[v];
+        if (sp->get_vals()!=nullptr)
+          nvals[c] = vals[v];
       }
       c++;
     }
@@ -456,14 +464,14 @@ TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
 #ifdef NDEBUG
 #include "init/sparse_preprocess.inc"
 #else
-template class ReorderPreprocessType<unsigned int, unsigned int, void>;
+template class ReorderPreprocessType<unsigned int, unsigned int, unsigned int>;
 
-template class DegreeReorder<unsigned int, unsigned int, void>;
-template class GenericReorder<unsigned int, unsigned int, void>;
-template class RCMReorder<unsigned int, unsigned int, void>;
+template class DegreeReorder<unsigned int, unsigned int, unsigned int>;
+template class GenericReorder<unsigned int, unsigned int, unsigned int>;
+template class RCMReorder<unsigned int, unsigned int, unsigned int>;
 
-template class TransformPreprocessType<unsigned int, unsigned int, void>;
-template class Transform<unsigned int, unsigned int, void>;
+template class TransformPreprocessType<unsigned int, unsigned int, unsigned int>;
+template class Transform<unsigned int, unsigned int, unsigned int>;
 #endif
 
 } // namespace preprocess
