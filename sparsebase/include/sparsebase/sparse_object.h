@@ -4,7 +4,11 @@
 #include "sparse_format.h"
 #include "sparse_reader.h"
 
+using namespace sparsebase::utils;
+
 namespace sparsebase {
+
+namespace object {
 
 class SparseObject {
 public:
@@ -57,6 +61,8 @@ public:
 //     NumEdges m;
 //     // ...
 // };
+
+} // namespace object
 
 } // namespace sparsebase
 

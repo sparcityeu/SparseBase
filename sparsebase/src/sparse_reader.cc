@@ -9,6 +9,9 @@
 #include <vector>
 
 namespace sparsebase {
+
+namespace utils {
+
 template <typename IDType, typename NNZType, typename ValueType>
 SparseReader<IDType, NNZType, ValueType>::~SparseReader(){};
 
@@ -169,5 +172,7 @@ template class MTXReader<unsigned int, unsigned int, unsigned int>;
 template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
 
 #endif
+
+} // namespace utils
 
 } // namespace sparsebase
