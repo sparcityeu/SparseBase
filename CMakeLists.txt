@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.0 )
 
-project( SparseBase_project VERSION 0.1.4 )
+project( SparseBase_project VERSION 0.1.5 )
 option(RUN_TESTS "Enable running tests" OFF)
 
 include( CheckCXXCompilerFlag )
