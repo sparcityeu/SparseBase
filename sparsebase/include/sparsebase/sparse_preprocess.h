@@ -8,6 +8,9 @@
 #include <vector>
 
 namespace sparsebase {
+
+namespace preprocess {
+
 struct FormatVectorHash {
   std::size_t operator()(std::vector<Format> vf) const;
 };
@@ -18,10 +21,10 @@ class SparseConverterMixin : public Parent {
   using Parent::Parent;
 
 protected:
-  SparseConverter<IDType, NNZType, ValueType> sc_;
+  utils::SparseConverter<IDType, NNZType, ValueType> sc_;
 
 public:
-  void SetConverter(const SparseConverter<IDType, NNZType, ValueType> &new_sc);
+  void SetConverter(const utils::SparseConverter<IDType, NNZType, ValueType> &new_sc);
   void ResetConverter();
 };
 
@@ -43,9 +46,9 @@ public:
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   std::unordered_map<Key, PreprocessFunction, KeyHash, KeyEqualTo> _map_to_function;
-  std::tuple<PreprocessFunction, ConversionSchema>
+  std::tuple<PreprocessFunction, utils::ConversionSchema>
   GetFunction(Key key, ConversionMap map,
-               SparseConverter<IDType, NNZType, ValueType>& sc);
+               utils::SparseConverter<IDType, NNZType, ValueType>& sc);
   template <typename F> std::vector<Format> PackFormats(F sf);
   template <typename F, typename... SF>
   std::vector<Format> PackFormats(F sf, SF... sfs);
@@ -55,7 +58,7 @@ protected:
   template <typename F, typename... SF>
   std::tuple<PreprocessFunction,
              std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-  Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
+  Execute(ConversionMap map, utils::SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
           SF... sfs);
 };
 
@@ -143,6 +146,8 @@ protected:
   TransformCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
                 IDType *order);
 };
+
+} // namespace preprocess
 
 } // namespace sparsebase
 

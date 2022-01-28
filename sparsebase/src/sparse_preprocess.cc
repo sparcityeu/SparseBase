@@ -10,6 +10,9 @@
 #include <vector>
 
 namespace sparsebase {
+
+namespace preprocess {
+
 std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const {
   int hash = 0;
   for (auto f : vf)
@@ -48,12 +51,12 @@ bool FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key,
 }
 template <class Parent, typename IDType, typename NNZType, typename ValueType>
 void SparseConverterMixin<Parent, IDType, NNZType, ValueType>::SetConverter(
-    const SparseConverter<IDType, NNZType, ValueType> &new_sc) {
+    const utils::SparseConverter<IDType, NNZType, ValueType> &new_sc) {
   sc_ = new_sc;
 }
 template <class Parent, typename IDType, typename NNZType, typename ValueType>
 void SparseConverterMixin<Parent, IDType, NNZType, ValueType>::ResetConverter() {
-  SparseConverter<IDType, NNZType, ValueType> new_sc;
+  utils::SparseConverter<IDType, NNZType, ValueType> new_sc;
   sc_ = new_sc;
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -63,12 +66,12 @@ template <typename IDType, typename NNZType, typename ValueType,
           class PreprocessingImpl, typename PreprocessFunction,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
-std::tuple<PreprocessFunction, ConversionSchema>
+std::tuple<PreprocessFunction, utils::ConversionSchema>
 FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(Key key, ConversionMap map,
-                 SparseConverter<IDType, NNZType, ValueType>& sc) {
-  ConversionSchema cs;
+                 utils::SparseConverter<IDType, NNZType, ValueType>& sc) {
+  utils::ConversionSchema cs;
   PreprocessFunction func = nullptr;
   if (map.find(key) != map.end()) {
     for (auto f : key) {
@@ -80,11 +83,11 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFu
     for (auto key_func : map) {
       all_keys.push_back(key_func.first);
     }
-    std::vector<std::tuple<unsigned int, ConversionSchema, Key>>
+    std::vector<std::tuple<unsigned int, utils::ConversionSchema, Key>>
         usable_keys;
     for (auto potential_key : all_keys) {
       if (potential_key.size() == key.size()) {
-        ConversionSchema temp_cs;
+        utils::ConversionSchema temp_cs;
         int conversions = 0;
         bool is_usable = true;
         for (int i = 0; i < potential_key.size(); i++) {
@@ -106,7 +109,7 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFu
     if (usable_keys.size() == 0) {
       throw 1; // TODO: add a custom exception type
     }
-    std::tuple<PreprocessFunction, ConversionSchema> best_conversion;
+    std::tuple<PreprocessFunction, utils::ConversionSchema> best_conversion;
     unsigned int num_conversions = (unsigned int)-1;
     for (auto potential_usable_key : usable_keys) {
       if (num_conversions > std::get<0>(potential_usable_key)) {
@@ -184,17 +187,17 @@ template <typename F, typename... SF>
 std::tuple<PreprocessFunction, std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
 FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
                    Key, KeyHash, KeyEqualTo>::
-    Execute(ConversionMap map, SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
+    Execute(ConversionMap map, utils::SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
             SF... sfs) {
   // pack the SFs into a vector
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs = PackSFS(sf, sfs...);
   // pack the SF formats into a vector
   std::vector<Format> formats = PackFormats(sf, sfs...);
   // get conversion schema
-  std::tuple<PreprocessFunction, ConversionSchema> ret =
+  std::tuple<PreprocessFunction, utils::ConversionSchema> ret =
       GetFunction(formats, map, sc);
   PreprocessFunction func = std::get<0>(ret);
-  ConversionSchema cs = std::get<1>(ret);
+  utils::ConversionSchema cs = std::get<1>(ret);
   // carry out conversion
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> converted =
       sc.ApplyConversionSchema(cs, packed_sfs);
@@ -470,4 +473,7 @@ template class RCMReorder<unsigned int, unsigned int, unsigned int>;
 template class TransformPreprocessType<unsigned int, unsigned int, unsigned int>;
 template class Transform<unsigned int, unsigned int, unsigned int>;
 #endif
+
+} // namespace preprocess
+
 } // namespace sparsebase
