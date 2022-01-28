@@ -11,7 +11,7 @@ using namespace sparsebase;
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
-using value_type = void;
+using value_type = unsigned int;
 
 int main(int argc, char * argv[]){
   if (argc < 2){

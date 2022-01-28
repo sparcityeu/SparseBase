@@ -6,18 +6,6 @@
 
 namespace sparsebase {
 
-template <typename T>
-struct BlankDeleter{
-  void operator()(T*){
-
-  }
-};
-template <typename T>
-struct Deleter{
-  void operator()(T*ptr){
-    if (ptr!=nullptr) delete ptr;
-  }
-};
 SparseObject::~SparseObject(){};
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -136,9 +124,7 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
 #include "init/sparse_object.inc"
 #else
 template class AbstractSparseObject<unsigned int, unsigned int, unsigned int>;
-template class AbstractSparseObject<unsigned int, unsigned int, void>;
 template class Graph<unsigned int, unsigned int, unsigned int>;
-template class Graph<unsigned int, unsigned int, void>;
 #endif
 // template<typename VertexID, typename NumEdges, typename t_t>
 // class TemporalGraph : public AbstractSparseObject<VertexID, NumEdges>{
