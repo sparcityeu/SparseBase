@@ -55,11 +55,11 @@ SparseBase can be easily added to your project either through CMake's `find_pack
 #### Adding SparseBase through CMake
 If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
 ```cmake
-find_package(sparsebase 0.1.4 REQUIRED)
+find_package(sparsebase 0.1.5 REQUIRED)
 ```
 However, if you installed the library to a different path, say `/custom/location/`, you must specify that path in the command:
 ```cmake
-find_package(sparsebase 0.1.4 REQUIRED PATHS /custom/location/)
+find_package(sparsebase 0.1.5 REQUIRED PATHS /custom/location/)
 ```
 After the library is added to your project, you can simply link your targets to `sparsebase::sparsebase`:
 
@@ -83,7 +83,7 @@ Users can run unit tests easily after building the project. To do so, they must 
 ```bash
 mkdir build # if a build directory doesn't exist
 cd build
-cmake -DRUN_TESTS ..
+cmake -DRUN_TESTS=ON ..
 ```
 Once its built, while in the build directory, do the following:
 ```bash
