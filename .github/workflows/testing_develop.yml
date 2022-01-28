@@ -1,0 +1,49 @@
+name: Testing Develop
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Copy Data
+      run: cp -r ${{github.workspace}}/examples/data ${{github.workspace}}/build/examples/
+
+    - name: Run Examples
+      working-directory: ${{github.workspace}}/build/examples
+      run: |
+        ./custom_order/custom_order ./data/com-dblp.uedgelist
+        ./degree_order/degree_order ./data/com-dblp.uedgelist
+        ./rcm_order/rcm_order ./data/com-dblp.uedgelist
+        ./format_conversion/example_conversion
+        ./sparse_format/csr_coo ./data/ash958.mtx
+        ./sparse_reader/sparse_reader ./data/ash958.mtx
+
+    - name: Run Tests
+      working-directory: ${{github.workspace}}/build
+      run: ctest -V
+      
