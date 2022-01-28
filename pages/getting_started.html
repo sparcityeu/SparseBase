@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; SparseBase v0.1.4 documentation</title>
+  <title>Getting Started &mdash; SparseBase v0.1.5 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -154,11 +154,11 @@ cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
 <section id="adding-sparsebase-through-cmake">
 <h4>Adding SparseBase through CMake<a class="headerlink" href="#adding-sparsebase-through-cmake" title="Permalink to this headline"></a></h4>
 <p>If you installed SparseBase to the default system directory, use the following the command in your <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file to add the library to your project:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.4</span> <span class="s">REQUIRED</span><span class="p">)</span>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.5</span> <span class="s">REQUIRED</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>However, if you installed the library to a different path, say <code class="docutils literal notranslate"><span class="pre">/custom/location/</span></code>, you must specify that path in the command:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.4</span> <span class="s">REQUIRED</span> <span class="s">PATHS</span> <span class="s">/custom/location/</span><span class="p">)</span>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.5</span> <span class="s">REQUIRED</span> <span class="s">PATHS</span> <span class="s">/custom/location/</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>After the library is added to your project, you can simply link your targets to <code class="docutils literal notranslate"><span class="pre">sparsebase::sparsebase</span></code>:</p>
@@ -183,7 +183,7 @@ cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
 <p>Users can run unit tests easily after building the project. To do so, they must configure CMake to compile tests:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build <span class="c1"># if a build directory doesn&#39;t exist</span>
 <span class="nb">cd</span> build
-cmake -DRUN_TESTS ..
+cmake -DRUN_TESTS<span class="o">=</span>ON ..
 </pre></div>
 </div>
 <p>Once its built, while in the build directory, do the following:</p>
