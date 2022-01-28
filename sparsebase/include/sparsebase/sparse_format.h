@@ -53,6 +53,7 @@ struct BlankDeleter{
 template <typename IDType, typename NNZType, typename ValueType> class SparseFormat {
 public:
   virtual ~SparseFormat(){};
+  virtual SparseFormat<IDType, NNZType, ValueType>* clone() const = 0;
   virtual unsigned int get_order() const = 0;
   virtual Format get_format() const = 0;
   virtual std::vector<IDType> get_dimensions() const = 0;
@@ -123,11 +124,11 @@ protected:
 template <typename IDType, typename NNZType, typename ValueType>
 class COO : public AbstractSparseFormat<IDType, NNZType, ValueType> {
 public:
-  //COO();
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   COO(const COO<IDType, NNZType, ValueType>&);
   COO(COO<IDType, NNZType, ValueType>&&);
   COO<IDType, NNZType, ValueType>& operator=(const COO<IDType, NNZType, ValueType>&);
+  SparseFormat<IDType, NNZType, ValueType>* clone() const override;
   virtual ~COO();
   Format get_format() const override;
   IDType *get_col() const override;
@@ -153,11 +154,11 @@ protected:
 template <typename IDType, typename NNZType, typename ValueType>
 class CSR : public AbstractSparseFormat<IDType, NNZType, ValueType> {
 public:
-  //CSR();
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   CSR(const CSR<IDType, NNZType, ValueType>&);
   CSR(CSR<IDType, NNZType, ValueType>&&);
   CSR<IDType, NNZType, ValueType>& operator=(const CSR<IDType, NNZType, ValueType>&);
+  SparseFormat<IDType, NNZType, ValueType>* clone() const override;
   Format get_format() const override;
   virtual ~CSR();
   NNZType * get_row_ptr() const override;

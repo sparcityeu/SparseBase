@@ -217,6 +217,10 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz, IDType *ro
   }
 }
 template <typename IDType, typename NNZType, typename ValueType>
+SparseFormat<IDType, NNZType, ValueType>* COO<IDType, NNZType, ValueType>::clone() const {
+  return new COO(*this);
+}
+template <typename IDType, typename NNZType, typename ValueType>
 Format COO<IDType, NNZType, ValueType>::get_format() const {
   return kCOOFormat;
 }
@@ -373,6 +377,11 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr, IDTyp
     this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, Deleter<IDType>());
     this->vals_ = std::unique_ptr<ValueType[], std::function<void (ValueType*)>>(vals, Deleter<ValueType>());
   }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+SparseFormat<IDType, NNZType, ValueType>* CSR<IDType, NNZType, ValueType>::clone() const {
+  return new CSR(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format CSR<IDType, NNZType, ValueType>::get_format() const {

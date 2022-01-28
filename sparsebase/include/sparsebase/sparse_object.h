@@ -1,6 +1,8 @@
 #ifndef _SPARSEOBJECT_HPP
 #define _SPARSEOBJECT_HPP
 
+#include <memory>
+#include <functional>
 #include "sparse_format.h"
 #include "sparse_reader.h"
 
@@ -19,11 +21,18 @@ public:
 template <typename IDType, typename NNZType, typename ValueType>
 class AbstractSparseObject : public SparseObject {
 protected:
-  SparseFormat<IDType, NNZType, ValueType> *connectivity_;
+  std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>> connectivity_;
 
 public:
   virtual ~AbstractSparseObject();
-  SparseFormat<IDType, NNZType, ValueType> *get_connectivity();
+  AbstractSparseObject();
+  AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>&);
+  AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&&);
+  SparseFormat<IDType, NNZType, ValueType> *get_connectivity() const;
+  SparseFormat<IDType, NNZType, ValueType> *release_connectivity();
+  void set_connectivity(SparseFormat<IDType, NNZType, ValueType>*, bool);
+  bool ConnectivityIsOwned() const;
+
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -31,6 +40,9 @@ class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
 public:
   Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity);
   Graph();
+  Graph(const Graph<VertexID, NumEdges, Weight>&);
+  Graph(Graph<VertexID, NumEdges, Weight>&&);
+  Graph<VertexID, NumEdges, Weight>& operator=(const Graph<VertexID, NumEdges, Weight>&);
   void ReadConnectivityToCSR(const ReadsCSR<VertexID, NumEdges, Weight> &);
   void ReadConnectivityToCOO(const ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
