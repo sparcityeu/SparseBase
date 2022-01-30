@@ -19,11 +19,11 @@ std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const {
     hash += f * 19381;
   return hash;
 }
-template <typename IDType, typename NNZType, typename ValueType, class Preprocess, typename Function, typename Key, typename KeyHash,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType, class Preprocess, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+bool FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
     RegisterFunctionNoOverride(const Key &key_of_function,
-                                  const Function &func_ptr) {
+                                  const PreprocessFunction &func_ptr) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
     return false; // function already exists for this Key
   } else {
@@ -32,15 +32,15 @@ bool FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key,
   }
 }
 
-template <typename IDType, typename NNZType, typename ValueType,class Preprocess, typename Function, typename Key, typename KeyHash,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType, class Preprocess, typename Key, typename KeyHash,
           typename KeyEqualTo>
-void FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
-    RegisterFunction(const Key &key_of_function, const Function &func_ptr) {
+void FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
+    RegisterFunction(const Key &key_of_function, const PreprocessFunction &func_ptr) {
   _map_to_function[key_of_function] = func_ptr;
 }
-template <typename IDType, typename NNZType, typename ValueType, class Preprocess, typename Function, typename Key, typename KeyHash,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType, class Preprocess, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool FunctionMatcherMixin<IDType, NNZType, ValueType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+bool FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
     UnregisterFunction(const Key &key_of_function) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
     return false; // function already exists for this Key
@@ -62,12 +62,12 @@ void SparseConverterMixin<Parent, IDType, NNZType, ValueType>::ResetConverter() 
 template <typename IDType, typename NNZType, typename ValueType>
 ReorderPreprocessType<IDType, NNZType, ValueType>::~ReorderPreprocessType(){};
 
-template <typename IDType, typename NNZType, typename ValueType,
-          class PreprocessingImpl, typename PreprocessFunction,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+          class PreprocessingImpl,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
-std::tuple<PreprocessFunction, utils::ConversionSchema>
-FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+std::tuple<ReturnType (*)(std::vector<SparseFormat<IDType, NNZType, ValueType> *>, PreprocessParams *), utils::ConversionSchema>
+FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(Key key, ConversionMap map,
                  utils::SparseConverter<IDType, NNZType, ValueType>& sc) {
@@ -121,26 +121,26 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFu
   }
   return std::make_tuple(func, cs);
 }
-template <typename IDType, typename NNZType, typename ValueType,
-          class PreprocessingImpl, typename PreprocessFunction,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+          class PreprocessingImpl,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F>
 std::vector<Format>
-FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                    Key, KeyHash,
                    KeyEqualTo>::PackFormats(F sf) {
   SparseFormat<IDType, NNZType, ValueType> *casted =
       static_cast<SparseFormat<IDType, NNZType, ValueType> *>(sf);
   return {casted->get_format()};
 }
-template <typename IDType, typename NNZType, typename ValueType,
-          class PreprocessingImpl, typename PreprocessFunction,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+          class PreprocessingImpl,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 std::vector<Format>
-FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                    Key, KeyHash,
                    KeyEqualTo>::PackFormats(F sf, SF... sfs) {
   SparseFormat<IDType, NNZType, ValueType> *casted =
@@ -152,24 +152,24 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFu
   }
   return f;
 }
-template <typename IDType, typename NNZType, typename ValueType,
-          class PreprocessingImpl, typename PreprocessFunction,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+          class PreprocessingImpl,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F>
 std::vector<F>
-FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                    Key, KeyHash,
                    KeyEqualTo>::PackSFS(F sf) {
   return {sf};
 }
-template <typename IDType, typename NNZType, typename ValueType,
-          class PreprocessingImpl, typename PreprocessFunction,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+          class PreprocessingImpl,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 std::vector<F>
-FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                    Key, KeyHash,
                    KeyEqualTo>::PackSFS(F sf, SF... sfs) {
   std::vector<F> f = {sf};
@@ -179,16 +179,17 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFu
   }
   return f;
 }
-template <typename IDType, typename NNZType, typename ValueType,
-          class PreprocessingImpl, typename PreprocessFunction,
+template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+          class PreprocessingImpl,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F, typename... SF>
-std::tuple<PreprocessFunction, std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFunction,
+ReturnType
+FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                    Key, KeyHash, KeyEqualTo>::
-    Execute(ConversionMap map, utils::SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
+    Execute(PreprocessParams * params, utils::SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
             SF... sfs) {
+  ConversionMap map = this->_map_to_function;
   // pack the SFs into a vector
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs = PackSFS(sf, sfs...);
   // pack the SF formats into a vector
@@ -202,22 +203,32 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, PreprocessingImpl, PreprocessFu
   std::vector<SparseFormat<IDType, NNZType, ValueType> *> converted =
       sc.ApplyConversionSchema(cs, packed_sfs);
   // carry out the correct call using the map
-  return std::make_tuple(func, converted);
+  //return std::make_tuple(func, converted);
+  return func(converted, params);
   // return std::get<0>(cs)(packed_sfs);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {}
 template <typename IDType, typename NNZType, typename ValueType>
 DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(int hyperparameter) {
-  // this->map[{kCSRFormat}]= calculate_order_csr;
   this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
   this->params_ = std::unique_ptr<DegreeReorderParams>(
       new DegreeReorderParams(hyperparameter));
 }
 template <typename IDType, typename NNZType, typename ValueType>
+IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(SparseFormat<IDType, NNZType, ValueType> * format){
+  return this->Execute(this->params_.get(), this->sc_, format);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(SparseFormat<IDType, NNZType, ValueType> * format, PreprocessParams* params){
+  return this->Execute(params, this->sc_, format);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
-    ReorderParams *params) {
+    PreprocessParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
       static_cast<CSR<IDType, NNZType, ValueType> *>(formats[0]);
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
@@ -248,26 +259,6 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   delete[] sorted;
   return inv_sorted;
 }
-//template <typename IDType, typename NNZType, typename ValueType>
-//IDType *RCMReorderInstance<IDType, NNZType, ValueType>::GetReorder(
-//    SparseFormat<IDType, NNZType, ValueType> *csr) {
-//  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
-//             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-//      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
-//  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
-//  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
-//  return func(sfs, this->params_.get());
-//}
-//template <typename IDType, typename NNZType, typename ValueType>
-//IDType *DegreeReorderInstance<IDType, NNZType, ValueType>::GetReorder(
-//    SparseFormat<IDType, NNZType, ValueType> *csr) {
-//  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
-//             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-//      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
-//  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
-//  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
-//  return func(sfs, this->params_.get());
-//}
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
   this->RegisterFunction({kCSRFormat}, GetReorderCSR);
@@ -315,7 +306,7 @@ IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj, IDType 
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
-    ReorderParams *params) {
+    PreprocessParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
       static_cast<CSR<IDType, NNZType, ValueType> *>(formats[0]);
   RCMReorderParams *params_ = static_cast<RCMReorderParams *>(params);
@@ -383,36 +374,38 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   return Q;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(
-    SparseFormat<IDType, NNZType, ValueType> *csr) {
-  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
-             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
-  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
-  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
-  return func(sfs, this->params_.get());
-}
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(
-    SparseFormat<IDType, NNZType, ValueType> *csr, ReorderParams *params) {
-  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
-             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
-  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
-  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
-  return func(sfs, params);
-}
+//template <typename IDType, typename NNZType, typename ValueType>
+//IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(
+//    SparseFormat<IDType, NNZType, ValueType> *csr) {
+//  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
+//             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+//      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
+//  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
+//  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
+//  return func(sfs, this->params_.get());
+//}
+//template <typename IDType, typename NNZType, typename ValueType>
+//IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(
+//    SparseFormat<IDType, NNZType, ValueType> *csr, ReorderParams *params) {
+//  std::tuple<ReorderFunction<IDType, NNZType, ValueType>,
+//             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+//      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
+//  ReorderFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
+//  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
+//  return func(sfs, params);
+//}
 
 template <typename IDType, typename NNZType, typename ValueType>
-Transform<IDType, NNZType, ValueType>::Transform(){
+Transform<IDType, NNZType, ValueType>::Transform(IDType* order){
   this->RegisterFunction({kCSRFormat}, TransformCSR);
+  this->params_ = std::unique_ptr<TransformParams>(new TransformParams(order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 TransformPreprocessType<IDType, NNZType, ValueType>::~TransformPreprocessType(){};
 template <typename IDType, typename NNZType, typename ValueType>
 SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>::TransformCSR(
-    std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats, IDType *order) {
+    std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats, PreprocessParams* params) {
+  IDType *order  = static_cast<TransformParams*>(params)->order;
   SparseFormat<IDType, NNZType, ValueType> *sp = formats[0];
   std::vector<IDType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
@@ -450,16 +443,75 @@ SparseFormat<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>:
   return csr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-SparseFormat<IDType, NNZType, ValueType> *
+SparseFormat<IDType, NNZType, ValueType>*
 TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
-    SparseFormat<IDType, NNZType, ValueType> *csr, IDType *ordr) {
-  std::tuple<TransformFunction<IDType, NNZType, ValueType>,
-             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
-      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
-  TransformFunction<IDType, NNZType, ValueType> func = std::get<0>(func_formats);
-  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
-  return func(sfs, ordr);
+    SparseFormat<IDType, NNZType, ValueType> *csr) {
+//  std::tuple<TransformFunction<IDType, NNZType, ValueType, ReturnType>,
+//             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+//      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
+//  TransformFunction<IDType, NNZType, ValueType, ReturnType> func = std::get<0>(func_formats);
+//  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
+//  return func(sfs, ordr);
+    return this->Execute(this->params_.get(), this->sc_, csr);
 }
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(){
+    this->RegisterFunction({kCSRFormat}, GetDegreeDistributionCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::~DegreeDistribution(){};
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistribution(SparseFormat<IDType, NNZType, ValueType> * format){
+    //std::tuple<DegreeDistributionFunction<IDType, NNZType, ValueType, FeatureType>,
+    //            std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+    //    func_formats = 
+    //DegreeDistributionFunction<IDType, NNZType, ValueType, FeatureType> func = std::get<0>(func_formats);
+    //std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
+    DegreeDistributionParams params;
+    return this->Execute(&params, this->sc_, format); //func(sfs, this->params_.get());
+}
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistribution(object::Graph<IDType, NNZType, ValueType> * obj){
+    //std::tuple<DegreeDistributionFunction<IDType, NNZType, ValueType, FeatureType>,
+    //            std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+    //    func_formats = 
+    //DegreeDistributionFunction<IDType, NNZType, ValueType, FeatureType> func = std::get<0>(func_formats);
+    //std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
+    DegreeDistributionParams params;
+    SparseFormat<IDType, NNZType, ValueType> * format = obj->get_connectivity();
+    return this->Execute(&params, this->sc_, format); //func(sfs, this->params_.get());
+}
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDegreeDistributionCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats, PreprocessParams * params){
+    auto csr = formats[0];
+    auto dims = csr->get_dimensions();
+    for(auto dim : dims){
+      std::cout << dim << std::endl;
+    }
+    IDType num_vertices = dims[0];
+    NNZType num_edges = csr->get_num_nnz();
+    FeatureType * dist = new FeatureType[num_vertices]();
+    auto * rows = csr->get_row_ptr();
+    for(int i = 0; i < num_vertices; i++){
+      dist[i] = (rows[i+1] - rows[i]) / (FeatureType)num_edges;
+      //std::cout<< dist[i] << std::endl;
+    }
+    return dist;
+}
+
+
+#ifdef NDEBUG
+#include "init/feature_extractor.inc"
+#else
+template class DegreeDistribution<unsigned int, unsigned int, unsigned int, float>;
+//template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*, std::__1::allocator<sparsebase::format::SparseFormat<unsigned int, unsigned int, unsigned int>*> >, sparsebase::preprocess::FeatureParams*)>;
+//template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*>, FeatureParams*)>;
+#endif
 
 #ifdef NDEBUG
 #include "init/sparse_preprocess.inc"
