@@ -8,7 +8,8 @@ namespace sparsebase {
 
 namespace object {
 
-SparseObject::~SparseObject(){};
+template <typename IDType, typename NNZType, typename ValueType>
+SparseObject<IDType, NNZType, ValueType>::~SparseObject(){};
 
 template <typename IDType, typename NNZType, typename ValueType>
 AbstractSparseObject<IDType, NNZType, ValueType>::~AbstractSparseObject(){};

@@ -12,6 +12,7 @@ namespace sparsebase {
 
 namespace object {
 
+template <typename IDType, typename NNZType, typename ValueType>
 class SparseObject {
 public:
   virtual ~SparseObject();
@@ -19,7 +20,7 @@ public:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class AbstractSparseObject : public SparseObject {
+class AbstractSparseObject : public SparseObject<IDType, NNZType, ValueType> {
 protected:
   std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>> connectivity_;
 
