@@ -45,33 +45,39 @@ struct BlankDeleter{
   }
 };
 
+
+template <typename IDType, typename NNZType, typename ValueType>
 class Format {
 public:
   virtual std::type_index get_format_id() = 0;
 
-  template<typename T>
-  T* As(){
-    if(this->get_format_id() == std::type_index(typeid(T))){
-      return static_cast<T*>(this);
+  virtual Format* clone() const = 0;
+  virtual std::vector<IDType> get_dimensions() const = 0;
+  virtual NNZType get_num_nnz() const = 0;
+  virtual unsigned int get_order() const = 0;
+
+  template <template <typename,typename,typename> class T>
+  T<IDType, NNZType, ValueType>* As(){
+    if(this->get_format_id() == std::type_index(typeid(T<IDType, NNZType, ValueType>))){
+      return static_cast<T<IDType, NNZType, ValueType>*>(this);
     }
-    throw utils::TypeException(get_format_id().name(), typeid(T).name());
+    throw utils::TypeException(get_format_id().name(), typeid(T<IDType, NNZType, ValueType>).name());
   }
 };
 
 template <typename IDType, typename NNZType, typename ValueType, template <typename,typename,typename> class FormatType>
-class FormatImpl : public Format{
+class FormatImpl : public Format<IDType, NNZType, ValueType>{
 public:
 
-    std::vector<IDType> get_dimensions() const{
+    std::vector<IDType> get_dimensions() const final{
         return dimension_;
     };
-    NNZType get_num_nnz() const {
+    NNZType get_num_nnz() const final {
         return nnz_ ;
     };
-    unsigned int get_order() const {
+    unsigned int get_order() const final {
         return order_;
     }
-    virtual Format* clone() const = 0;
 
     std::type_index get_format_id() final {
         return typeid(FormatType<IDType,NNZType,ValueType>);
@@ -82,7 +88,7 @@ public:
     }
 
     FormatType<IDType,NNZType,ValueType>* This(){
-        return this->As<FormatType<IDType,NNZType,ValueType>>();
+        return this->template As<FormatType>();
     }
 
 protected:
@@ -99,7 +105,7 @@ public:
   COO(const COO<IDType, NNZType, ValueType>&);
   COO(COO<IDType, NNZType, ValueType>&&);
   COO<IDType, NNZType, ValueType>& operator=(const COO<IDType, NNZType, ValueType>&);
-  Format* clone() const override;
+  Format<IDType, NNZType, ValueType> * clone() const override;
   virtual ~COO();
   IDType *get_col() const ;
   IDType * get_row() const ;
@@ -122,7 +128,6 @@ protected:
   std::unique_ptr<ValueType[], std::function<void (ValueType*)>> vals_;
 };
 
-
 template <typename IDType, typename NNZType, typename ValueType>
 class CSR : public FormatImpl<IDType, NNZType, ValueType, CSR> {
 public:
@@ -130,7 +135,7 @@ public:
   CSR(const CSR<IDType, NNZType, ValueType>&);
   CSR(CSR<IDType, NNZType, ValueType>&&);
   CSR<IDType, NNZType, ValueType>& operator=(const CSR<IDType, NNZType, ValueType>&);
-  Format* clone() const override;
+  Format<IDType, NNZType, ValueType>* clone() const override;
   virtual ~CSR();
   NNZType * get_row_ptr() const ;
   IDType *get_col() const ;

@@ -13,34 +13,34 @@ SparseObject::~SparseObject(){};
 template <typename IDType, typename NNZType, typename ValueType>
 AbstractSparseObject<IDType, NNZType, ValueType>::~AbstractSparseObject(){};
 template <typename IDType, typename NNZType, typename ValueType>
-AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(): connectivity_(nullptr, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>()){};
+AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(): connectivity_(nullptr, BlankDeleter<Format<IDType, NNZType, ValueType>>()){};
 template <typename IDType, typename NNZType, typename ValueType>
 AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&& rhs): connectivity_(std::move(rhs.connectivity_)){};
 template <typename IDType, typename NNZType, typename ValueType>
-AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>& rhs): connectivity_((SparseFormat<IDType, NNZType, ValueType>*)rhs.connectivity_->clone(), BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>()){};
+AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>& rhs): connectivity_((Format<IDType, NNZType, ValueType>*)rhs.connectivity_->clone(), BlankDeleter<Format<IDType, NNZType, ValueType>>()){};
 template <typename IDType, typename NNZType, typename ValueType>
-SparseFormat<IDType, NNZType, ValueType> *
+Format<IDType, NNZType, ValueType> *
 AbstractSparseObject<IDType, NNZType, ValueType>::get_connectivity() const {
   return connectivity_.get();
 }
 template <typename IDType, typename NNZType, typename ValueType>
 bool AbstractSparseObject<IDType, NNZType, ValueType>::ConnectivityIsOwned() const {
-  return (connectivity_.get_deleter().target_type() != typeid(BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>));
+  return (connectivity_.get_deleter().target_type() != typeid(BlankDeleter<Format<IDType, NNZType, ValueType>>));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-SparseFormat<IDType, NNZType, ValueType> *
+Format<IDType, NNZType, ValueType> *
 AbstractSparseObject<IDType, NNZType, ValueType>::release_connectivity() {
   auto ptr = connectivity_.release();
-  connectivity_ = std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>>(ptr, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>());
+  connectivity_ = std::unique_ptr<Format<IDType, NNZType, ValueType>, std::function<void (Format<IDType, NNZType, ValueType>*)>>(ptr, BlankDeleter<Format<IDType, NNZType, ValueType>>());
   return ptr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-void AbstractSparseObject<IDType, NNZType, ValueType>::set_connectivity(SparseFormat<IDType, NNZType, ValueType>*conn, bool own) {
+void AbstractSparseObject<IDType, NNZType, ValueType>::set_connectivity(Format<IDType, NNZType, ValueType>*conn, bool own) {
 
   if (own)
-    connectivity_ = std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>>(conn, Deleter<SparseFormat<IDType, NNZType, ValueType>>());
+    connectivity_ = std::unique_ptr<Format<IDType, NNZType, ValueType>, std::function<void (Format<IDType, NNZType, ValueType>*)>>(conn, Deleter<Format<IDType, NNZType, ValueType>>());
   else
-    connectivity_ = std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>>(conn, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>());
+    connectivity_ = std::unique_ptr<Format<IDType, NNZType, ValueType>, std::function<void (Format<IDType, NNZType, ValueType>*)>>(conn, BlankDeleter<Format<IDType, NNZType, ValueType>>());
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -51,17 +51,17 @@ Graph<VertexID, NumEdges, Weight>::Graph(Graph<VertexID, NumEdges, Weight>&& rhs
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph(const Graph<VertexID, NumEdges, Weight>& rhs) {
-  this->set_connectivity(static_cast<SparseFormat<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
+  this->set_connectivity(static_cast<Format<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
   InitializeInfoFromConnection();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>&Graph<VertexID, NumEdges, Weight>::operator=(const Graph<VertexID, NumEdges, Weight>& rhs) {
-  this->set_connectivity(static_cast<SparseFormat<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
+  this->set_connectivity(static_cast<Format<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
   InitializeInfoFromConnection();
   return *this;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-Graph<VertexID, NumEdges, Weight>::Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity) {
+Graph<VertexID, NumEdges, Weight>::Graph(Format<VertexID, NumEdges, Weight> *connectivity) {
   //this->connectivity_ = connectivity;
   this->set_connectivity(connectivity, true);
   this->VerifyStructure();

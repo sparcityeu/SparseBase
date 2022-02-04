@@ -78,7 +78,7 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz, IDType *ro
   }
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format* COO<IDType, NNZType, ValueType>::clone() const {
+Format<IDType, NNZType, ValueType>* COO<IDType, NNZType, ValueType>::clone() const {
   return new COO(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -233,7 +233,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr, IDTyp
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format* CSR<IDType, NNZType, ValueType>::clone() const {
+Format<IDType, NNZType, ValueType>* CSR<IDType, NNZType, ValueType>::clone() const {
   return new CSR(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>

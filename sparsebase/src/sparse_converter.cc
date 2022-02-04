@@ -9,9 +9,9 @@ namespace sparsebase::utils {
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
-    Format *source) {
-  auto *csr = source->As<CSR<IDType,NNZType,ValueType>>();
+Format<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
+        Format<IDType, NNZType, ValueType> *source) {
+  auto *csr = source->template As<CSR>();
 
   std::vector<IDType> dimensions = csr->get_dimensions();
   IDType n = dimensions[0];
@@ -64,9 +64,9 @@ Format *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
 // Bj -> col -> col
 // Bx -> nnz -> vals
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
-    Format *source) {
-  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
+    Format<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
+            Format<IDType, NNZType, ValueType> *source) {
+  auto *coo = source->template As<COO>();
 
   std::vector<IDType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];
@@ -163,8 +163,8 @@ void SparseConverter<IDType, NNZType, ValueType>::RegisterConversionFunction(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format *SparseConverter<IDType, NNZType, ValueType>::Convert(
-    Format *source, std::type_index to_format) {
+Format<IDType, NNZType, ValueType> *SparseConverter<IDType, NNZType, ValueType>::Convert(
+        Format<IDType, NNZType, ValueType> *source, std::type_index to_format) {
   if (to_format == source->get_format_id()) {
     return source;
   }
@@ -204,11 +204,11 @@ bool SparseConverter<IDType, NNZType, ValueType>::CanConvert(std::type_index fro
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::vector<Format *>
+std::vector<Format<IDType, NNZType, ValueType> *>
 SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
     ConversionSchema cs,
-    std::vector<Format *> packed_sfs) {
-  std::vector<Format *> ret;
+    std::vector<Format<IDType, NNZType, ValueType> *> packed_sfs) {
+  std::vector<Format<IDType, NNZType, ValueType> *> ret;
   for (int i = 0; i < cs.size(); i++) {
     auto conversion = cs[i];
     if (std::get<0>(conversion)) {
