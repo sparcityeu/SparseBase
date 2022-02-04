@@ -4,9 +4,7 @@
 #include "sparsebase/sparse_object.h"
 #include "sparsebase/sparse_reader.h"
 
-namespace sparsebase {
-
-namespace object {
+namespace sparsebase::object {
 
 SparseObject::~SparseObject(){};
 
@@ -147,7 +145,5 @@ template class Graph<unsigned int, unsigned int, unsigned int>;
 //     NumEdges m;
 //     // ...
 // };
-
-} // namespace object
 
 } // namespace sparsebase
