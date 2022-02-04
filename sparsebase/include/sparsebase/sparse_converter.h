@@ -11,16 +11,13 @@ namespace sparsebase {
 
 namespace utils {
 
-typedef std::vector<std::tuple<bool, Format>> ConversionSchema;
-struct FormatHash {
-  size_t operator()(Format f) const;
-};
+typedef std::vector<std::tuple<bool, std::type_index>> ConversionSchema;
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ConversionFunctor {
 public:
-  virtual SparseFormat<IDType, NNZType, ValueType> *
-  operator()(SparseFormat<IDType, NNZType, ValueType> *source) {
+  virtual Format *
+  operator()(Format *source) {
     return nullptr;
   }
 };
@@ -28,40 +25,38 @@ public:
 template <typename IDType, typename NNZType, typename ValueType>
 class CsrCooFunctor : public ConversionFunctor<IDType, NNZType, ValueType> {
 public:
-  SparseFormat<IDType, NNZType, ValueType> *
-  operator()(SparseFormat<IDType, NNZType, ValueType> *source);
+  Format *
+  operator()(Format *source);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CooCsrFunctor : public ConversionFunctor<IDType, NNZType, ValueType> {
 public:
-  SparseFormat<IDType, NNZType, ValueType> *
-  operator()(SparseFormat<IDType, NNZType, ValueType> *source);
+  Format *
+  operator()(Format *source);
 };
 
 template <typename IDType, typename NNZType, typename ValueType> class SparseConverter {
 private:
   std::unordered_map<
-      Format,
-      std::unordered_map<Format, ConversionFunctor<IDType, NNZType, ValueType> *,
-                         FormatHash>,
-      FormatHash>
+      std::type_index,
+      std::unordered_map<std::type_index, ConversionFunctor<IDType, NNZType, ValueType> *>>
       conversion_map_;
 
 public:
   SparseConverter();
   ~SparseConverter();
   void RegisterConversionFunction(
-      Format from_format, Format to_format,
+          std::type_index from_format, std::type_index to_format,
       ConversionFunctor<IDType, NNZType, ValueType> *conv_func);
   ConversionFunctor<IDType, NNZType, ValueType> *
-  GetConversionFunction(Format from_format, Format to_format);
-  SparseFormat<IDType, NNZType, ValueType> *
-  Convert(SparseFormat<IDType, NNZType, ValueType> *source, Format to_format);
-  bool CanConvert(Format from_format, Format to_format);
-  std::vector<SparseFormat<IDType, NNZType, ValueType> *> ApplyConversionSchema(
+  GetConversionFunction(std::type_index from_format, std::type_index to_format);
+  Format *
+  Convert(Format *source, std::type_index to_format);
+  bool CanConvert(std::type_index from_format, std::type_index to_format);
+  std::vector<Format *> ApplyConversionSchema(
       ConversionSchema cs,
-      std::vector<SparseFormat<IDType, NNZType, ValueType> *> packed_sfs);
+      std::vector<Format *> packed_sfs);
 };
 
 } // namespace utils

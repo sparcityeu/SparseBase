@@ -89,7 +89,7 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::Re
     row_ptr[0] = 0;
     return new CSR<VertexID, NumEdges, Weight>(n, n, row_ptr, col, nullptr, kOwned);
   } else {
-    throw std::invalid_argument("file does not exists!!");
+    throw ReaderException("file does not exists!!");
   }
 }
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -146,7 +146,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
       return coo;
     } else {
       // TODO: Add an exception class for this
-      throw SparseReaderException(
+      throw ReaderException(
           "Weight type for weighted graphs can not be void");
     }
   } else {
