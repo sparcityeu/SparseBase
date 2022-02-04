@@ -50,6 +50,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class Format {
 public:
   virtual std::type_index get_format_id() = 0;
+  virtual ~Format()= default;
 
   virtual Format* clone() const = 0;
   virtual std::vector<IDType> get_dimensions() const = 0;
