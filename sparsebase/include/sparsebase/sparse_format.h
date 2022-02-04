@@ -7,6 +7,9 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <typeindex>
+#include <typeinfo>
+#include "sparse_exception.h"
 
 namespace sparsebase {
 
@@ -17,14 +20,6 @@ enum Ownership {
   kOwned = 1,
 };
 
-//! Enum keeping formats
-enum Format {
-  //! CSR Format
-  kCSRFormat = 0,
-  //! COO Format
-  kCOOFormat = 1
-};
-// TENSORS
 
 template <typename T>
 struct Deleter{
@@ -50,132 +45,108 @@ struct BlankDeleter{
   }
 };
 
-template <typename IDType, typename NNZType, typename ValueType> class SparseFormat {
+class Format {
 public:
-  virtual ~SparseFormat(){};
-  virtual SparseFormat<IDType, NNZType, ValueType>* clone() const = 0;
-  virtual unsigned int get_order() const = 0;
-  virtual Format get_format() const = 0;
-  virtual std::vector<IDType> get_dimensions() const = 0;
-  virtual NNZType get_num_nnz() const = 0;
-  virtual NNZType * get_row_ptr() const = 0;
-  virtual IDType *get_col() const = 0;
-  virtual IDType * get_row() const = 0;
-  virtual ValueType * get_vals() const = 0;
-  virtual ValueType **get_ind() const = 0;
-  virtual NNZType* release_row_ptr() = 0;
-  virtual IDType* release_col() = 0;
-  virtual IDType* release_row() = 0;
-  virtual ValueType* release_vals() = 0;
-  virtual ValueType ** release_ind() = 0;
-  virtual bool RowIsOwned() = 0;
-  virtual bool ColIsOwned() = 0;
-  virtual bool RowPtrIsOwned() = 0;
-  virtual bool ValsIsOwned() = 0;
-  virtual bool IndIsOwned() = 0;
-  virtual void set_row_ptr(NNZType*, Ownership own = kNotOwned) = 0;
-  virtual void set_row(IDType*, Ownership own = kNotOwned) = 0;
-  virtual void set_col(IDType*, Ownership own = kNotOwned) = 0;
-  virtual void set_vals(ValueType*, Ownership own = kNotOwned) = 0;
-  virtual void set_ind(ValueType**, Ownership own = kNotOwned) = 0;
+  virtual std::type_index get_format_id() = 0;
+
+  template<typename T>
+  T* As(){
+    if(this->get_format_id() == std::type_index(typeid(T))){
+      return static_cast<T*>(this);
+    }
+    throw utils::TypeException(get_format_id().name(), typeid(T).name());
+  }
 };
 
-// abstract class
-template <typename IDType, typename NNZType, typename ValueType>
-class AbstractSparseFormat : public SparseFormat<IDType, NNZType, ValueType> {
+template <typename IDType, typename NNZType, typename ValueType, template <typename,typename,typename> class FormatType>
+class FormatImpl : public Format{
 public:
-  // initialize order in the constructor
-  AbstractSparseFormat();
-  virtual ~AbstractSparseFormat();
-  unsigned int get_order() const override;
-  virtual Format get_format() const override;
-  std::vector<IDType> get_dimensions() const override;
-  NNZType get_num_nnz() const override;
-  NNZType * get_row_ptr() const override;
-  IDType *get_col() const override;
-  IDType * get_row() const override;
-  ValueType * get_vals() const override;
-  ValueType **get_ind() const override;
 
-  void set_row_ptr(NNZType*, Ownership own = kNotOwned) override;
-  void set_row(IDType*, Ownership own = kNotOwned) override;
-  void set_col(IDType*, Ownership own = kNotOwned) override;
-  void set_vals(ValueType*, Ownership own = kNotOwned) override;
-  void set_ind(ValueType**, Ownership own = kNotOwned) override;
+    std::vector<IDType> get_dimensions() const{
+        return dimension_;
+    };
+    NNZType get_num_nnz() const {
+        return nnz_ ;
+    };
+    unsigned int get_order() const {
+        return order_;
+    }
+    virtual Format* clone() const = 0;
 
-  NNZType* release_row_ptr() override;
-  IDType* release_col() override;
-  IDType* release_row() override;
-  ValueType* release_vals() override;
-  ValueType ** release_ind() override;
+    std::type_index get_format_id() final {
+        return typeid(FormatType<IDType,NNZType,ValueType>);
+    }
 
-  virtual bool RowIsOwned() override;
-  virtual bool ColIsOwned() override;
-  virtual bool RowPtrIsOwned() override;
-  virtual bool ValsIsOwned() override;
-  virtual bool IndIsOwned() override;
+    static std::type_index get_format_id_static(){
+        return typeid(FormatType<IDType, NNZType, ValueType>);
+    }
+
+    FormatType<IDType,NNZType,ValueType>* This(){
+        return this->As<FormatType<IDType,NNZType,ValueType>>();
+    }
+
 protected:
-  Format format_;
-  unsigned int order_;
-  std::vector<IDType> dimension_;
-  NNZType nnz_;
+    unsigned int order_;
+    std::vector<IDType> dimension_;
+    NNZType nnz_;
+
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class COO : public AbstractSparseFormat<IDType, NNZType, ValueType> {
+class COO : public FormatImpl<IDType, NNZType, ValueType, COO> {
 public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   COO(const COO<IDType, NNZType, ValueType>&);
   COO(COO<IDType, NNZType, ValueType>&&);
   COO<IDType, NNZType, ValueType>& operator=(const COO<IDType, NNZType, ValueType>&);
-  SparseFormat<IDType, NNZType, ValueType>* clone() const override;
+  Format* clone() const override;
   virtual ~COO();
-  Format get_format() const override;
-  IDType *get_col() const override;
-  IDType * get_row() const override;
-  ValueType * get_vals() const override;
+  IDType *get_col() const ;
+  IDType * get_row() const ;
+  ValueType * get_vals() const ;
 
-  IDType* release_col() override;
-  IDType* release_row() override;
-  ValueType* release_vals() override;
+  IDType* release_col() ;
+  IDType* release_row() ;
+  ValueType* release_vals() ;
 
-  void set_row(IDType*, Ownership own = kNotOwned) override;
-  void set_col(IDType*, Ownership own = kNotOwned) override;
-  void set_vals(ValueType*, Ownership own = kNotOwned) override;
+  void set_row(IDType*, Ownership own = kNotOwned) ;
+  void set_col(IDType*, Ownership own = kNotOwned) ;
+  void set_vals(ValueType*, Ownership own = kNotOwned) ;
 
-  virtual bool RowIsOwned() override;
-  virtual bool ColIsOwned() override;
-  virtual bool ValsIsOwned() override;
+  virtual bool RowIsOwned() ;
+  virtual bool ColIsOwned() ;
+  virtual bool ValsIsOwned() ;
 protected:
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> row_;
   std::unique_ptr<ValueType[], std::function<void (ValueType*)>> vals_;
 };
+
+
 template <typename IDType, typename NNZType, typename ValueType>
-class CSR : public AbstractSparseFormat<IDType, NNZType, ValueType> {
+class CSR : public FormatImpl<IDType, NNZType, ValueType, CSR> {
 public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals, Ownership own = kNotOwned);
   CSR(const CSR<IDType, NNZType, ValueType>&);
   CSR(CSR<IDType, NNZType, ValueType>&&);
   CSR<IDType, NNZType, ValueType>& operator=(const CSR<IDType, NNZType, ValueType>&);
-  SparseFormat<IDType, NNZType, ValueType>* clone() const override;
-  Format get_format() const override;
+  Format* clone() const override;
   virtual ~CSR();
-  NNZType * get_row_ptr() const override;
-  IDType *get_col() const override;
-  ValueType * get_vals() const override;
+  NNZType * get_row_ptr() const ;
+  IDType *get_col() const ;
+  ValueType * get_vals() const ;
 
-  NNZType* release_row_ptr() override;
-  IDType* release_col() override;
-  ValueType* release_vals() override;
+  NNZType* release_row_ptr() ;
+  IDType* release_col() ;
+  ValueType* release_vals() ;
 
-  void set_row_ptr(NNZType*, Ownership own = kNotOwned) override;
-  void set_col(IDType*, Ownership own = kNotOwned) override;
-  void set_vals(ValueType*, Ownership own = kNotOwned) override;
+  void set_row_ptr(NNZType*, Ownership own = kNotOwned) ;
+  void set_col(IDType*, Ownership own = kNotOwned) ;
+  void set_vals(ValueType*, Ownership own = kNotOwned) ;
   
-  virtual bool ColIsOwned() override;
-  virtual bool RowPtrIsOwned() override;
-  virtual bool ValsIsOwned() override;
+  virtual bool ColIsOwned() ;
+  virtual bool RowPtrIsOwned() ;
+  virtual bool ValsIsOwned() ;
 protected:
   std::unique_ptr<NNZType[], std::function<void(NNZType*)>> row_ptr_;
   std::unique_ptr<IDType[], std::function<void(IDType*)>> col_;
