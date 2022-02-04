@@ -4,4 +4,4 @@ add_subdirectory(custom_order)
 add_subdirectory(format_conversion)
 add_subdirectory(rcm_order)
 add_subdirectory(sparse_reader)
-
+add_subdirectory(sparse_feature)
