@@ -6,13 +6,18 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <typeindex>
+#include <typeinfo>
 
 namespace sparsebase {
 
 namespace preprocess {
 
+//struct FormatVectorHash {
+//  std::size_t operator()(std::vector<Format> vf) const;
+//};
 struct FormatVectorHash {
-  std::size_t operator()(std::vector<Format> vf) const;
+  std::size_t operator()(std::vector<std::hash<std::type_index>> vf) const;
 };
 class PreprocessType {};
 
@@ -30,9 +35,9 @@ public:
 
 template <typename IDType, typename NNZType, typename ValueType,
           class PreprocessingImpl, typename PreprocessFunction,
-          typename Key = std::vector<Format>,
+          typename Key = std::vector<std::type_index>,
           typename KeyHash = FormatVectorHash,
-          typename KeyEqualTo = std::equal_to<std::vector<Format>>>
+          typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class FunctionMatcherMixin : public PreprocessingImpl {
   typedef std::unordered_map<Key, PreprocessFunction, KeyHash,
                              KeyEqualTo>
@@ -49,15 +54,15 @@ protected:
   std::tuple<PreprocessFunction, utils::ConversionSchema>
   GetFunction(Key key, ConversionMap map,
                utils::SparseConverter<IDType, NNZType, ValueType>& sc);
-  template <typename F> std::vector<Format> PackFormats(F sf);
+  template <typename F> std::vector<std::type_index> PackFormats(F sf);
   template <typename F, typename... SF>
-  std::vector<Format> PackFormats(F sf, SF... sfs);
+  std::vector<std::type_index> PackFormats(F sf, SF... sfs);
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF>
   std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
   std::tuple<PreprocessFunction,
-             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
+             std::vector<Format<IDType, NNZType, ValueType> *>>
   Execute(ConversionMap map, utils::SparseConverter<IDType, NNZType, ValueType>& sc, F sf,
           SF... sfs);
 };
@@ -65,7 +70,7 @@ protected:
 struct ReorderParams {};
 template <typename IDType, typename NNZType, typename ValueType>
 using ReorderFunction =
-    IDType *(*)(std::vector<SparseFormat<IDType, NNZType, ValueType> *>, ReorderParams *);
+    IDType *(*)(std::vector<Format<IDType, NNZType, ValueType> *>, ReorderParams *);
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
@@ -74,8 +79,8 @@ protected:
   std::unique_ptr<ReorderParams> params_;
 
 public:
-  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr);
-  IDType *GetReorder(SparseFormat<IDType, NNZType, ValueType> *csr,
+  IDType *GetReorder(Format<IDType, NNZType, ValueType> *csr);
+  IDType *GetReorder(Format<IDType, NNZType, ValueType> *csr,
                     ReorderParams *params);
   virtual ~ReorderPreprocessType();
 };
@@ -90,7 +95,7 @@ protected:
     DegreeReorderParams(int h) : hyperparameter(h) {}
   };
   static IDType *
-  CalculateReorderCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
+  CalculateReorderCSR(std::vector<Format<IDType, NNZType, ValueType> *> formats,
                         ReorderParams *params);
 };
 
@@ -116,14 +121,14 @@ protected:
   static IDType peripheral(NNZType *xadj, IDType *adj, IDType n, IDType start,
                          SignedID *distance, IDType *Q);
   static IDType *
-  GetReorderCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
+  GetReorderCSR(std::vector<Format<IDType, NNZType, ValueType> *> formats,
                   ReorderParams *);
 };
 
 // transform
 template <typename IDType, typename NNZType, typename ValueType>
-using TransformFunction = SparseFormat<IDType, NNZType, ValueType>
-    *(*)(std::vector<SparseFormat<IDType, NNZType, ValueType> *>, IDType *order);
+using TransformFunction = Format<IDType, NNZType, ValueType>
+    *(*)(std::vector<Format<IDType, NNZType, ValueType> *>, IDType *order);
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
@@ -131,8 +136,8 @@ class TransformPreprocessType
           SparseConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
           TransformFunction<IDType, NNZType, ValueType>> {
 public:
-  SparseFormat<IDType, NNZType, ValueType> *
-  GetTransformation(SparseFormat<IDType, NNZType, ValueType> *csr, IDType *order);
+  Format<IDType, NNZType, ValueType> *
+  GetTransformation(Format<IDType, NNZType, ValueType> *csr, IDType *order);
   virtual ~TransformPreprocessType();
 };
 
@@ -142,8 +147,8 @@ public:
   Transform();
 
 protected:
-  static SparseFormat<IDType, NNZType, ValueType> *
-  TransformCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats,
+  static Format<IDType, NNZType, ValueType> *
+  TransformCSR(std::vector<Format<IDType, NNZType, ValueType> *> formats,
                 IDType *order);
 };
 
