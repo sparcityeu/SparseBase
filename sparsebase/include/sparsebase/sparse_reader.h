@@ -20,7 +20,7 @@ public:
 
 template <class VertexID, typename NumEdges, typename Weight> class ReadsSparseFormat {
 public:
-  virtual SparseFormat<VertexID, NumEdges, Weight> *ReadSparseFormat() const = 0;
+  virtual Format<VertexID, NumEdges, Weight> *ReadSparseFormat() const = 0;
 };
 
 template <class VertexID, typename NumEdges, typename Weight> class ReadsCSR {
@@ -40,7 +40,7 @@ class UedgelistReader : public SparseReader<VertexID, NumEdges, Weight>,
 public:
   UedgelistReader(std::string filename, bool _weighted = false);
   CSR<VertexID, NumEdges, Weight> *ReadCSR() const;
-  SparseFormat<VertexID, NumEdges, Weight> *ReadSparseFormat() const;
+  Format<VertexID, NumEdges, Weight> *ReadSparseFormat() const;
   virtual ~UedgelistReader();
 
 private:
@@ -56,7 +56,7 @@ class MTXReader : public SparseReader<VertexID, NumEdges, Weight>,
 public:
   MTXReader(std::string filename, bool _weighted = false);
   COO<VertexID, NumEdges, Weight> *ReadCOO() const;
-  SparseFormat<VertexID, NumEdges, Weight> *ReadSparseFormat() const;
+  Format<VertexID, NumEdges, Weight> *ReadSparseFormat() const;
   virtual ~MTXReader();
 
 private:

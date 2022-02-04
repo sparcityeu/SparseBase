@@ -27,7 +27,7 @@ template <typename VertexID, typename NumEdges, typename Weight>
 UedgelistReader<VertexID, NumEdges, Weight>::UedgelistReader(std::string filename, bool weighted)
     : filename_(filename), weighted_(weighted) {}
 template <typename VertexID, typename NumEdges, typename Weight>
-SparseFormat<VertexID, NumEdges, Weight> *
+Format<VertexID, NumEdges, Weight> *
 UedgelistReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
   return this->ReadCSR();
 }
@@ -104,7 +104,7 @@ bool UedgelistReader<VertexID, NumEdges, Weight>::SortEdge(const std::pair<Verte
 template <typename VertexID, typename NumEdges, typename Weight>
 UedgelistReader<VertexID, NumEdges, Weight>::~UedgelistReader(){};
 template <typename VertexID, typename NumEdges, typename Weight>
-SparseFormat<VertexID, NumEdges, Weight> *
+Format<VertexID, NumEdges, Weight> *
 MTXReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
   return this->ReadCOO();
 }

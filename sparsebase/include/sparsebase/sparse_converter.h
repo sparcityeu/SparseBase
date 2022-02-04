@@ -16,8 +16,8 @@ typedef std::vector<std::tuple<bool, std::type_index>> ConversionSchema;
 template <typename IDType, typename NNZType, typename ValueType>
 class ConversionFunctor {
 public:
-  virtual Format *
-  operator()(Format *source) {
+  virtual Format<IDType, NNZType, ValueType> *
+  operator()(Format<IDType, NNZType, ValueType> *source) {
     return nullptr;
   }
 };
@@ -25,15 +25,15 @@ public:
 template <typename IDType, typename NNZType, typename ValueType>
 class CsrCooFunctor : public ConversionFunctor<IDType, NNZType, ValueType> {
 public:
-  Format *
-  operator()(Format *source);
+    Format<IDType, NNZType, ValueType> *
+  operator()(Format<IDType, NNZType, ValueType> *source);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CooCsrFunctor : public ConversionFunctor<IDType, NNZType, ValueType> {
 public:
-  Format *
-  operator()(Format *source);
+    Format<IDType, NNZType, ValueType> *
+  operator()(Format<IDType, NNZType, ValueType> *source);
 };
 
 template <typename IDType, typename NNZType, typename ValueType> class SparseConverter {
@@ -51,12 +51,12 @@ public:
       ConversionFunctor<IDType, NNZType, ValueType> *conv_func);
   ConversionFunctor<IDType, NNZType, ValueType> *
   GetConversionFunction(std::type_index from_format, std::type_index to_format);
-  Format *
-  Convert(Format *source, std::type_index to_format);
+    Format<IDType, NNZType, ValueType> *
+  Convert(Format<IDType, NNZType, ValueType> *source, std::type_index to_format);
   bool CanConvert(std::type_index from_format, std::type_index to_format);
-  std::vector<Format *> ApplyConversionSchema(
+  std::vector<Format<IDType, NNZType, ValueType> *> ApplyConversionSchema(
       ConversionSchema cs,
-      std::vector<Format *> packed_sfs);
+      std::vector<Format<IDType, NNZType, ValueType> *> packed_sfs);
 };
 
 } // namespace utils
