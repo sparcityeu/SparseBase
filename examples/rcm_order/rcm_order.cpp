@@ -37,8 +37,8 @@ int main(int argc, char * argv[]){
   preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer(1,4);
   format::Format<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.GetReorder(con);
-  auto xadj = con->template As<CSR>()->get_row_ptr();
-  auto adj = con->template As<CSR>()->get_col();
+  auto xadj = con->As<CSR>()->get_row_ptr();
+  auto adj = con->As<CSR>()->get_col();
   vertex_type n = con->get_dimensions()[0];
 
   cout << "********************************" << endl;
