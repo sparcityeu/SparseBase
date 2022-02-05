@@ -14,11 +14,11 @@ using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = unsigned int;
 
-struct customParam : preprocess::ReorderParams{
+struct customParam : preprocess::PreprocessParams{
   customParam(int h):hyperparameter(h){}
   int hyperparameter;
 };
-vertex_type* degree_reorder_csr(std::vector<format::SparseFormat<vertex_type, edge_type, value_type> *> formats, preprocess::ReorderParams *params)
+vertex_type* degree_reorder_csr(std::vector<format::SparseFormat<vertex_type, edge_type, value_type> *> formats, preprocess::PreprocessParams *params)
 {
   format::CSR<vertex_type, edge_type, value_type> *csr = static_cast<format::CSR<vertex_type, edge_type, value_type> *>(formats[0]);
   customParam  *cast_params = static_cast<customParam *>(params);
@@ -117,8 +117,8 @@ int main(int argc, char * argv[]){
     cout << "Order is correct." << endl;
   }
 
-  preprocess::Transform<vertex_type, edge_type, value_type> transformer;
-  SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
+  preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
+  SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con);
   auto * n_row_ptr = csr->get_row_ptr();
   auto * n_col = csr->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
