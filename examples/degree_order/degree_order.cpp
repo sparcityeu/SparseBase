@@ -36,11 +36,11 @@ int main(int argc, char * argv[]){
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
 
   preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
-  format::SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+  format::Format<vertex_type, edge_type, value_type> * con = g.get_connectivity();
   vertex_type * order = orderer.GetReorder(con);
   vertex_type n = con->get_dimensions()[0];
-  auto row_ptr = con->get_row_ptr();
-  auto col = con->get_col();
+  auto row_ptr = con->template As<CSR>()->get_row_ptr();
+  auto col = con->template As<CSR>()->get_col();
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << order[0] << ", Degree: " << row_ptr[order[0] + 1] - row_ptr[order[0]] << endl;
   cout << "Last vertex, ID: " << order[n-1] << ", Degree: " << row_ptr[order[n - 1] + 1] - row_ptr[order[n - 1]] << endl;
@@ -77,9 +77,9 @@ int main(int argc, char * argv[]){
   }
 
   preprocess::Transform<vertex_type, edge_type, value_type> transformer;
-  format::SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
-  auto * n_row_ptr = csr->get_row_ptr();
-  auto * n_col = csr->get_col();
+  format::Format<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
+  auto * n_row_ptr = csr->template As<CSR>()->get_row_ptr();
+  auto * n_col = csr->template As<CSR>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for(vertex_type i = 0; i < n-1 && transform_is_correct; i++){

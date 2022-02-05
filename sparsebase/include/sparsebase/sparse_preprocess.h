@@ -17,7 +17,7 @@ namespace preprocess {
 //  std::size_t operator()(std::vector<Format> vf) const;
 //};
 struct FormatVectorHash {
-  std::size_t operator()(std::vector<std::hash<std::type_index>> vf) const;
+  std::size_t operator()(const std::vector<std::type_index>& vf) const;
 };
 class PreprocessType {};
 

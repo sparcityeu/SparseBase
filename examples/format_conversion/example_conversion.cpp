@@ -15,8 +15,8 @@ int main(){
     format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
 
     auto converter = new utils::SparseConverter<int,int,int>();
-    auto csr = converter->Convert(coo,kCSRFormat);
-    auto csr2 = dynamic_cast<format::CSR<int,int,int>*>(csr);
+    auto csr = converter->Convert(coo,CSR<int, int, int>::get_format_id_static());
+    auto csr2 = csr-> template As<CSR>();
 
     auto dims = csr2->get_dimensions();
     int n = dims[0];
@@ -39,9 +39,9 @@ int main(){
     
     cout << endl;
 
-    auto coo2 = converter->Convert(csr,kCOOFormat);
+    auto coo2 = converter->Convert(csr,COO<int, int, int>::get_format_id_static());
 
-    auto coo3 = dynamic_cast<format::COO<int,int,int>*>(coo2);
+    auto coo3 = coo2-> template As<COO>();
 
     cout << "COO" << endl;
 

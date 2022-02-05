@@ -13,10 +13,10 @@ namespace sparsebase {
 
 namespace preprocess {
 
-std::size_t FormatVectorHash::operator()(std::vector<std::hash<std::type_index>> vf) const {
-  int hash = 0;
+std::size_t FormatVectorHash::operator()(const std::vector<std::type_index>& vf) const {
+  size_t hash = 0;
   for (auto f : vf)
-    hash += f * 19381;
+    hash += f.hash_code();
   return hash;
 }
 //std::size_t FormatVectorHash::operator()(std::vector<Format> vf) const {
