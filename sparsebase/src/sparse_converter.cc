@@ -11,7 +11,7 @@ namespace sparsebase::utils {
 template <typename IDType, typename NNZType, typename ValueType>
 Format<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
         Format<IDType, NNZType, ValueType> *source) {
-  auto *csr = source->template As<CSR>();
+  auto *csr = source->As<CSR>();
 
   std::vector<IDType> dimensions = csr->get_dimensions();
   IDType n = dimensions[0];
@@ -66,7 +66,7 @@ Format<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueType>::o
 template <typename IDType, typename NNZType, typename ValueType>
     Format<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
             Format<IDType, NNZType, ValueType> *source) {
-  auto *coo = source->template As<COO>();
+  auto *coo = source->As<COO>();
 
   std::vector<IDType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];

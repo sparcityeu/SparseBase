@@ -16,7 +16,7 @@ int main(){
 
     auto converter = new utils::SparseConverter<int,int,int>();
     auto csr = converter->Convert(coo,CSR<int, int, int>::get_format_id_static());
-    auto csr2 = csr-> template As<CSR>();
+    auto csr2 = csr->As<CSR>();
 
     auto dims = csr2->get_dimensions();
     int n = dims[0];
@@ -41,7 +41,7 @@ int main(){
 
     auto coo2 = converter->Convert(csr,COO<int, int, int>::get_format_id_static());
 
-    auto coo3 = coo2-> template As<COO>();
+    auto coo3 = coo2->As<COO>();
 
     cout << "COO" << endl;
 

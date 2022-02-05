@@ -229,7 +229,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     std::vector<Format<IDType, NNZType, ValueType> *> formats,
     ReorderParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]-> template As<CSR>();
+      formats[0]->As<CSR>();
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
   std::cout << cast_params->hyperparameter;
   IDType n = csr->get_dimensions()[0];
@@ -327,7 +327,7 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<Format<IDType, NNZType, ValueType> *> formats,
     ReorderParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]-> template As<CSR>();
+      formats[0]->As<CSR>();
   RCMReorderParams *params_ = static_cast<RCMReorderParams *>(params);
   std::cout << "using the parameters " << params_->alpha << " and "
             << params_->beta << std::endl;
@@ -423,7 +423,7 @@ TransformPreprocessType<IDType, NNZType, ValueType>::~TransformPreprocessType(){
 template <typename IDType, typename NNZType, typename ValueType>
 Format<IDType, NNZType, ValueType> *Transform<IDType, NNZType, ValueType>::TransformCSR(
     std::vector<Format<IDType, NNZType, ValueType> *> formats, IDType *order) {
-  auto *sp = formats[0]-> template As<CSR>();
+  auto *sp = formats[0]->As<CSR>();
   std::vector<IDType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];

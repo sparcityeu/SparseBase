@@ -89,7 +89,7 @@ public:
     }
 
     FormatType<IDType,NNZType,ValueType>* This(){
-        return this->template As<FormatType>();
+        return this->As<FormatType>();
     }
 
 protected:
