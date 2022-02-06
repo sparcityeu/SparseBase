@@ -62,14 +62,14 @@ protected:
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
-  std::tuple<PreprocessFunction, std::vector<Format *>>
+  std::tuple<PreprocessFunction, std::vector<format::Format *>>
   Execute(ConversionMap map, utils::Converter<IDType, NNZType, ValueType> &sc,
           F sf, SF... sfs);
 };
 
 struct ReorderParams {};
 template <typename IDType, typename NNZType, typename ValueType>
-using ReorderFunction = IDType *(*)(std::vector<Format *>, ReorderParams *);
+using ReorderFunction = IDType *(*)(std::vector<format::Format *>, ReorderParams *);
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
@@ -81,8 +81,8 @@ protected:
   std::unique_ptr<ReorderParams> params_;
 
 public:
-  IDType *GetReorder(Format *csr);
-  IDType *GetReorder(Format *csr, ReorderParams *params);
+  IDType *GetReorder(format::Format *csr);
+  IDType *GetReorder(format::Format *csr, ReorderParams *params);
   virtual ~ReorderPreprocessType();
 };
 
@@ -96,7 +96,7 @@ protected:
     int hyperparameter;
     DegreeReorderParams(int h) : hyperparameter(h) {}
   };
-  static IDType *CalculateReorderCSR(std::vector<Format *> formats,
+  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
                                      ReorderParams *params);
 };
 
@@ -122,12 +122,12 @@ protected:
   };
   static IDType peripheral(NNZType *xadj, IDType *adj, IDType n, IDType start,
                            SignedID *distance, IDType *Q);
-  static IDType *GetReorderCSR(std::vector<Format *> formats, ReorderParams *);
+  static IDType *GetReorderCSR(std::vector<format::Format *> formats, ReorderParams *);
 };
 
 // transform
 template <typename IDType, typename NNZType, typename ValueType>
-using TransformFunction = Format *(*)(std::vector<Format *>, IDType *order);
+using TransformFunction = format::Format *(*)(std::vector<format::Format *>, IDType *order);
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
@@ -136,7 +136,7 @@ class TransformPreprocessType
           ConverterMixin<PreprocessType, IDType, NNZType, ValueType>,
           TransformFunction<IDType, NNZType, ValueType>> {
 public:
-  Format *GetTransformation(Format *csr, IDType *order);
+  format::Format *GetTransformation(format::Format *csr, IDType *order);
   virtual ~TransformPreprocessType();
 };
 
@@ -146,7 +146,7 @@ public:
   Transform();
 
 protected:
-  static Format *TransformCSR(std::vector<Format *> formats, IDType *order);
+  static format::Format *TransformCSR(std::vector<format::Format *> formats, IDType *order);
 };
 
 } // namespace preprocess

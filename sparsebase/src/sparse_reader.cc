@@ -8,6 +8,8 @@
 #include <limits>
 #include <vector>
 
+using namespace sparsebase::format;
+
 namespace sparsebase {
 
 namespace utils {
@@ -175,7 +177,8 @@ MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 #else
 template class MTXReader<unsigned int, unsigned int, unsigned int>;
 template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
-
+template class MTXReader<int, int, int>;
+template class UedgelistReader<int, int, int>;
 #endif
 
 } // namespace utils

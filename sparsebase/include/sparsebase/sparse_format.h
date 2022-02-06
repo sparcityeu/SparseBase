@@ -62,10 +62,18 @@ public:
 
 template <typename FormatType> class FormatImplementation : public Format {
 public:
-  virtual std::vector<DimensionType> get_dimensions() const;
-  virtual DimensionType get_num_nnz() const;
-  virtual DimensionType get_order() const;
-  std::type_index get_format_id() final;
+  virtual std::vector<DimensionType> get_dimensions() const{
+    return dimension_;
+  }
+  virtual DimensionType get_num_nnz() const{
+    return nnz_;
+  }
+  virtual DimensionType get_order() const{
+    return order_;
+  }
+  std::type_index get_format_id() final {
+    return typeid(FormatType);
+  }
   static std::type_index get_format_id_static() { return typeid(FormatType); }
 
 protected:

@@ -5,7 +5,6 @@
 #include <tuple>
 #include <unordered_map>
 
-using namespace sparsebase::format;
 
 namespace sparsebase {
 
@@ -16,19 +15,19 @@ typedef std::vector<std::tuple<bool, std::type_index>> ConversionSchema;
 template <typename IDType, typename NNZType, typename ValueType>
 class ConversionFunctor {
 public:
-  virtual Format *operator()(Format *source) { return nullptr; }
+  virtual format::Format *operator()(format::Format *source) { return nullptr; }
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CsrCooFunctor : public ConversionFunctor<IDType, NNZType, ValueType> {
 public:
-  Format *operator()(Format *source);
+  format::Format *operator()(format::Format *source);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CooCsrFunctor : public ConversionFunctor<IDType, NNZType, ValueType> {
 public:
-  Format *operator()(Format *source);
+  format::Format *operator()(format::Format *source);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -48,14 +47,14 @@ public:
       ConversionFunctor<IDType, NNZType, ValueType> *conv_func);
   ConversionFunctor<IDType, NNZType, ValueType> *
   GetConversionFunction(std::type_index from_format, std::type_index to_format);
-  Format *Convert(Format *source, std::type_index to_format);
-  template <typename FormatType> FormatType *ConvertAs(Format *source) {
+  format::Format *Convert(format::Format *source, std::type_index to_format);
+  template <typename FormatType> FormatType *ConvertAs(format::Format *source) {
     auto *res = this->Convert(source, FormatType::get_format_id_static());
     return res->template As<FormatType>();
   }
   bool CanConvert(std::type_index from_format, std::type_index to_format);
-  std::vector<Format *> ApplyConversionSchema(ConversionSchema cs,
-                                              std::vector<Format *> packed_sfs);
+  std::vector<format::Format *> ApplyConversionSchema(ConversionSchema cs,
+                                              std::vector<format::Format *> packed_sfs);
 };
 
 } // namespace utils

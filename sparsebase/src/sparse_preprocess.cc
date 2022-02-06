@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+using namespace sparsebase::format;
+
 namespace sparsebase {
 
 namespace preprocess {
