@@ -11,7 +11,6 @@
 using namespace sparsebase::utils;
 
 namespace sparsebase::format {
-
 template <typename FormatType>
 std::vector<DimensionType> FormatImplementation<FormatType>::get_dimensions() const{
     return dimension_;
@@ -31,13 +30,6 @@ template <typename FormatType>
 std::type_index FormatImplementation<FormatType>::get_format_id() {
     return typeid(FormatType);
 }
-
-
-template <typename FormatType>
-void FormatImplementation<FormatType>::instantiate(){
-    this->As<FormatType>();
-}
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::COO(COO<IDType, NNZType, ValueType> && rhs): col_(std::move(rhs.col_)), row_(std::move(rhs.row_)), vals_(std::move(rhs.vals_)) {

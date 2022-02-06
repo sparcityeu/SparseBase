@@ -46,7 +46,7 @@ public:
 private:
   static bool SortEdge(const std::pair<VertexID, VertexID> &a, const std::pair<VertexID, VertexID> &b);
   std::string filename_;
-  bool weighted_;SparseConverterMixin
+  bool weighted_;
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
