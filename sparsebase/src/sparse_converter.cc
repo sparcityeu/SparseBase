@@ -181,7 +181,7 @@ Format *Converter<IDType, NNZType, ValueType>::Convert(
 
 /*template <typename IDType, typename NNZType, typename ValueType>
 template <typename FormatType>
-FormatType* SparseConverter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
+FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
     auto* res = this->Convert(source, FormatType::get_format_id_static());
     return res->template As<FormatType>();
 }*/

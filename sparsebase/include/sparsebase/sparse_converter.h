@@ -53,6 +53,11 @@ public:
   GetConversionFunction(std::type_index from_format, std::type_index to_format);
     Format *
   Convert(Format *source, std::type_index to_format);
+    template<typename FormatType>
+    FormatType* ConvertAs(Format* source){
+        auto* res = this->Convert(source, FormatType::get_format_id_static());
+        return res->template As<FormatType>();
+    }
   bool CanConvert(std::type_index from_format, std::type_index to_format);
   std::vector<Format *> ApplyConversionSchema(
       ConversionSchema cs,

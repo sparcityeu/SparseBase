@@ -78,15 +78,10 @@ public:
         return typeid(FormatType);
     }
 
-
 protected:
     DimensionType order_;
     std::vector<DimensionType> dimension_;
     DimensionType nnz_;
-
-private:
-    void instantiate();
-
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
