@@ -75,11 +75,10 @@ int main(int argc, char * argv[]){
   if(order_is_correct){
     cout << "Order is correct." << endl;
   }
-
-  preprocess::Transform<vertex_type, edge_type, value_type> transformer;
-  auto * csr = transformer.GetTransformation(con, order)->As<format::CSR<vertex_type, edge_type, value_type>>();
-  auto * n_row_ptr = csr->get_row_ptr();
-  auto * n_col = csr->get_col();
+  preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
+  format::Format * csr = transformer.GetTransformation(con);
+  auto * n_row_ptr = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto * n_col = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for(vertex_type i = 0; i < n-1 && transform_is_correct; i++){
