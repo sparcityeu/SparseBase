@@ -13,12 +13,14 @@ namespace sparsebase {
 
 namespace utils {
 
-template <typename IDType, typename NNZType, typename ValueType> class SparseReader {
+template <typename IDType, typename NNZType, typename ValueType>
+class SparseReader {
 public:
   virtual ~SparseReader();
 };
 
-template <class VertexID, typename NumEdges, typename Weight> class ReadsSparseFormat {
+template <class VertexID, typename NumEdges, typename Weight>
+class ReadsSparseFormat {
 public:
   virtual Format *ReadSparseFormat() const = 0;
 };
@@ -44,7 +46,8 @@ public:
   virtual ~UedgelistReader();
 
 private:
-  static bool SortEdge(const std::pair<VertexID, VertexID> &a, const std::pair<VertexID, VertexID> &b);
+  static bool SortEdge(const std::pair<VertexID, VertexID> &a,
+                       const std::pair<VertexID, VertexID> &b);
   std::string filename_;
   bool weighted_;
 };
