@@ -15,8 +15,8 @@ int main(){
     // Conversion Syntax 1
     format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
     auto converter = new utils::Converter<int,int,int>();
-    auto csr = converter->Convert(coo,CSR<int, int, int>::get_format_id_static());
-    auto csr2 = csr->As<CSR<int,int,int>>();
+    auto csr = converter->Convert(coo,format::CSR<int, int, int>::get_format_id_static());
+    auto csr2 = csr->As<format::CSR<int,int,int>>();
 
     auto dims = csr2->get_dimensions();
     int n = dims[0];
@@ -40,7 +40,7 @@ int main(){
     cout << endl;
 
     // Conversion Syntax 2
-    auto coo2 = converter->ConvertAs<COO<int,int,int>>(csr2);
+    auto coo2 = converter->ConvertAs<format::COO<int,int,int>>(csr2);
     cout << "COO" << endl;
 
     for(int i=0; i<nnz; i++)

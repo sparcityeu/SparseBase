@@ -35,10 +35,10 @@ int main(int argc, char * argv[]){
   cout << "Generating RCM ordering..." << endl;
 
   preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer(1,4);
-  format::Format<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+  auto * con = g.get_connectivity()->As<format::CSR<vertex_type,edge_type,value_type>>();
   vertex_type * order = orderer.GetReorder(con);
-  auto xadj = con->As<CSR>()->get_row_ptr();
-  auto adj = con->As<CSR>()->get_col();
+  auto xadj = con->get_row_ptr();
+  auto adj = con->get_col();
   vertex_type n = con->get_dimensions()[0];
 
   cout << "********************************" << endl;
