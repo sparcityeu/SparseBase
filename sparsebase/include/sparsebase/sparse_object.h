@@ -12,33 +12,33 @@ namespace sparsebase {
 
 namespace object {
 
-class SparseObject {
+class Object {
 public:
-  virtual ~SparseObject();
+  virtual ~Object();
   virtual void VerifyStructure() = 0;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class AbstractSparseObject : public SparseObject {
+class AbstractObject : public Object {
 protected:
-  std::unique_ptr<Format<IDType, NNZType, ValueType>, std::function<void (Format<IDType, NNZType, ValueType>*)>> connectivity_;
+  std::unique_ptr<Format, std::function<void (Format*)>> connectivity_;
 
 public:
-  virtual ~AbstractSparseObject();
-  AbstractSparseObject();
-  AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>&);
-  AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&&);
-    Format<IDType, NNZType, ValueType> *get_connectivity() const;
-    Format<IDType, NNZType, ValueType> *release_connectivity();
-  void set_connectivity(Format<IDType, NNZType, ValueType>*, bool);
+  virtual ~AbstractObject();
+  AbstractObject();
+  AbstractObject(const AbstractObject<IDType, NNZType, ValueType>&);
+  AbstractObject(AbstractObject<IDType, NNZType, ValueType>&&);
+    Format *get_connectivity() const;
+    Format *release_connectivity();
+  void set_connectivity(Format*, bool);
   bool ConnectivityIsOwned() const;
 
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
-class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
+class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
 public:
-  Graph(Format<VertexID, NumEdges, Weight> *connectivity);
+  Graph(Format *connectivity);
   Graph();
   Graph(const Graph<VertexID, NumEdges, Weight>&);
   Graph(Graph<VertexID, NumEdges, Weight>&&);

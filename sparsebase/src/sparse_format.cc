@@ -6,11 +6,37 @@
 
 #include "sparsebase/sparse_exception.h"
 #include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_converter.h"
 
 using namespace sparsebase::utils;
 
 namespace sparsebase::format {
 
+template <typename FormatType>
+std::vector<DimensionType> FormatImplementation<FormatType>::get_dimensions() const{
+    return dimension_;
+}
+
+template <typename FormatType>
+DimensionType FormatImplementation<FormatType>::get_num_nnz() const {
+    return nnz_ ;
+}
+
+template <typename FormatType>
+DimensionType FormatImplementation<FormatType>::get_order() const {
+    return order_;
+}
+
+template <typename FormatType>
+std::type_index FormatImplementation<FormatType>::get_format_id() {
+    return typeid(FormatType);
+}
+
+
+template <typename FormatType>
+void FormatImplementation<FormatType>::instantiate(){
+    this->As<FormatType>();
+}
 
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -70,7 +96,7 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz, IDType *ro
                              IDType *col, ValueType *vals, Ownership own): col_(col, BlankDeleter<IDType>()), row_(row, BlankDeleter<IDType>()), vals_(vals, BlankDeleter<ValueType>()) {
   this->nnz_ = nnz;
   this->order_ = 2;
-  this->dimension_ = {n, m};
+  this->dimension_ = {(DimensionType) n, (DimensionType) m};
   if (own == kOwned) {
     this->col_  = std::unique_ptr<IDType[], std::function<void (IDType*)>>(col, Deleter<IDType>());
     this->row_ = std::unique_ptr<IDType[], std::function<void (IDType*)>>(row, Deleter<IDType>());
@@ -78,7 +104,7 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz, IDType *ro
   }
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format<IDType, NNZType, ValueType>* COO<IDType, NNZType, ValueType>::clone() const {
+Format* COO<IDType, NNZType, ValueType>::clone() const {
   return new COO(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -223,7 +249,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col,
                              ValueType *vals, Ownership own): row_ptr_(row_ptr, BlankDeleter<NNZType>()), col_(col, BlankDeleter<IDType>()), vals_(vals, BlankDeleter<ValueType>()) {
   this->order_ = 2;
-  this->dimension_ = {n, m};
+  this->dimension_ = {(DimensionType) n, (DimensionType) m};
   this->nnz_ = this->row_ptr_[this->dimension_[0]];
   if (own == kOwned){
     this->row_ptr_ = std::unique_ptr<NNZType[], std::function<void(NNZType*)>>(row_ptr, Deleter<NNZType>());
@@ -233,7 +259,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr, IDTyp
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format<IDType, NNZType, ValueType>* CSR<IDType, NNZType, ValueType>::clone() const {
+Format* CSR<IDType, NNZType, ValueType>::clone() const {
   return new CSR(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
