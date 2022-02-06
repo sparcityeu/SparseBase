@@ -13,10 +13,7 @@ namespace sparsebase {
 
 namespace preprocess {
 
-// struct FormatVectorHash {
-//   std::size_t operator()(std::vector<Format> vf) const;
-// };
-struct FormatVectorHash {
+struct TypeIndexVectorHash {
   std::size_t operator()(const std::vector<std::type_index> &vf) const;
 };
 class PreprocessType {};
@@ -36,7 +33,7 @@ public:
 template <typename IDType, typename NNZType, typename ValueType,
           class PreprocessingImpl, typename PreprocessFunction,
           typename Key = std::vector<std::type_index>,
-          typename KeyHash = FormatVectorHash,
+          typename KeyHash = TypeIndexVectorHash,
           typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class FunctionMatcherMixin : public PreprocessingImpl {
   typedef std::unordered_map<Key, PreprocessFunction, KeyHash, KeyEqualTo>
