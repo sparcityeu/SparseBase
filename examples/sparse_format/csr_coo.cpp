@@ -19,7 +19,7 @@ int main(int argc, char * argv[]){
   unsigned int row_ptr[4] = {0, 2, 3, 4};
   unsigned int col[4] = {1, 2, 0, 0};
   {
-    CSR<unsigned int, unsigned int, unsigned int> csr(3, 3, row_ptr, col, nullptr);
+    format::CSR<unsigned int, unsigned int, unsigned int> csr(3, 3, row_ptr, col, nullptr);
     auto format = csr.get_format_id();
     auto dimensions = csr.get_dimensions();
     auto row_ptr2 = csr.get_row_ptr();
@@ -39,8 +39,8 @@ int main(int argc, char * argv[]){
 
   {
     string file_name = argv[1];
-    MTXReader<unsigned int, unsigned int, unsigned int> reader(file_name);
-    COO<unsigned int, unsigned int, unsigned int> * coo = reader.ReadCOO();
+    utils::MTXReader<unsigned int, unsigned int, unsigned int> reader(file_name);
+    format::COO<unsigned int, unsigned int, unsigned int> * coo = reader.ReadCOO();
     auto format = coo->get_format_id();
     auto dimensions = coo->get_dimensions();
     auto coo_col = coo->get_col();

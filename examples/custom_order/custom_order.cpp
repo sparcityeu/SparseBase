@@ -18,9 +18,9 @@ struct customParam : preprocess::ReorderParams{
   customParam(int h):hyperparameter(h){}
   int hyperparameter;
 };
-vertex_type* degree_reorder_csr(std::vector<format::Format<vertex_type, edge_type, value_type> *> formats, preprocess::ReorderParams *params)
+vertex_type* degree_reorder_csr(std::vector<format::Format *> formats, preprocess::ReorderParams *params)
 {
-  format::CSR<vertex_type, edge_type, value_type> *csr = formats[0]->As<CSR>();
+  format::CSR<vertex_type, edge_type, value_type> *csr = formats[0]->As<format::CSR<vertex_type,edge_type,value_type>>();
   customParam  *cast_params = static_cast<customParam *>(params);
   cout << "Custom hyperparameter: " << cast_params->hyperparameter << endl;
   vertex_type n = csr->get_dimensions()[0];
@@ -71,17 +71,17 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  format::Format<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+  format::Format * con = g.get_connectivity();
 
   //ReorderInstance<vertex_type, edge_type, value_type, GenericReorder> orderer;
   preprocess::GenericReorder<vertex_type, edge_type, value_type> orderer;
-  orderer.RegisterFunction({CSR<vertex_type, edge_type, value_type>::get_format_id_static()}, degree_reorder_csr);
+  orderer.RegisterFunction({format::CSR<vertex_type, edge_type, value_type>::get_format_id_static()}, degree_reorder_csr);
   customParam params{10};
   vertex_type * order = orderer.GetReorder(con, &params);
 
   vertex_type n = con->get_dimensions()[0];
-  auto xadj = con->As<CSR>()->get_row_ptr();
-  auto adj = con->As<CSR>()->get_col();
+  auto xadj = con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto adj = con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << order[0] << ", Degree: " << xadj[order[0]+1] - xadj[order[0]] << endl;
   cout << "Last vertex, ID: " << order[n-1] << ", Degree: " << xadj[order[n-1]+1] - xadj[order[n-1]] << endl;
@@ -118,9 +118,9 @@ int main(int argc, char * argv[]){
   }
 
   preprocess::Transform<vertex_type, edge_type, value_type> transformer;
-  Format<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
-  auto * n_row_ptr = csr->As<CSR>()->get_row_ptr();
-  auto * n_col = csr->As<CSR>()->get_col();
+  format::Format * csr = transformer.GetTransformation(con, order);
+  auto * n_row_ptr = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto * n_col = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for(vertex_type i = 0; i < n-1 && transform_is_correct; i++){
