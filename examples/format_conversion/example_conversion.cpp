@@ -12,11 +12,12 @@ int main(){
     int col[6] = {0, 1, 1, 2, 3, 3};
     int vals[6] = {10, 20, 30, 40, 50, 60};
 
+    // Conversion Syntax 1
     format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
-
-    auto converter = new utils::SparseConverter<int,int,int>();
+    auto converter = new utils::Converter<int,int,int>();
     auto csr = converter->Convert(coo,CSR<int, int, int>::get_format_id_static());
-    auto csr2 = csr->As<CSR>();
+    auto csr2 = csr->As<CSR<int,int,int>>();
+
 
     auto dims = csr2->get_dimensions();
     int n = dims[0];
@@ -41,7 +42,7 @@ int main(){
 
     auto coo2 = converter->Convert(csr,COO<int, int, int>::get_format_id_static());
 
-    auto coo3 = coo2->As<COO>();
+    auto coo3 = coo2->As<COO<int,int,int>>();
 
     cout << "COO" << endl;
 

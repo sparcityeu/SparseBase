@@ -9,11 +9,11 @@ namespace sparsebase::utils {
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
-        Format<IDType, NNZType, ValueType> *source) {
-  auto *csr = source->As<CSR>();
+Format *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(
+        Format *source) {
+  auto *csr = source->As<CSR<IDType,NNZType,ValueType>>();
 
-  std::vector<IDType> dimensions = csr->get_dimensions();
+  std::vector<DimensionType> dimensions = csr->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
   NNZType nnz = csr->get_num_nnz();
@@ -64,11 +64,11 @@ Format<IDType, NNZType, ValueType> *CsrCooFunctor<IDType, NNZType, ValueType>::o
 // Bj -> col -> col
 // Bx -> nnz -> vals
 template <typename IDType, typename NNZType, typename ValueType>
-    Format<IDType, NNZType, ValueType> *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
-            Format<IDType, NNZType, ValueType> *source) {
-  auto *coo = source->As<COO>();
+    Format *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(
+            Format *source) {
+  auto *coo = source->As<COO<IDType,NNZType,ValueType>>();
 
-  std::vector<IDType> dimensions = coo->get_dimensions();
+  std::vector<DimensionType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
   NNZType nnz = coo->get_num_nnz();
@@ -123,7 +123,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-SparseConverter<IDType, NNZType, ValueType>::SparseConverter() {
+Converter<IDType, NNZType, ValueType>::Converter() {
   this->RegisterConversionFunction(COO<IDType,NNZType,ValueType>::get_format_id_static(), CSR<IDType,NNZType,ValueType>::get_format_id_static(),
                                      new CooCsrFunctor<IDType, NNZType, ValueType>());
   this->RegisterConversionFunction(CSR<IDType,NNZType,ValueType>::get_format_id_static(), COO<IDType,NNZType,ValueType>::get_format_id_static(),
@@ -131,7 +131,7 @@ SparseConverter<IDType, NNZType, ValueType>::SparseConverter() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-SparseConverter<IDType, NNZType, ValueType>::~SparseConverter() {
+Converter<IDType, NNZType, ValueType>::~Converter() {
   set<uintptr_t> deleted_ptrs;
 
   for (auto x : conversion_map_) {
@@ -146,7 +146,7 @@ SparseConverter<IDType, NNZType, ValueType>::~SparseConverter() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-void SparseConverter<IDType, NNZType, ValueType>::RegisterConversionFunction(
+void Converter<IDType, NNZType, ValueType>::RegisterConversionFunction(
         std::type_index from_format, std::type_index to_format,
     ConversionFunctor<IDType, NNZType, ValueType> *conv_func) {
   if (conversion_map_.count(from_format) == 0) {
@@ -163,8 +163,8 @@ void SparseConverter<IDType, NNZType, ValueType>::RegisterConversionFunction(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format<IDType, NNZType, ValueType> *SparseConverter<IDType, NNZType, ValueType>::Convert(
-        Format<IDType, NNZType, ValueType> *source, std::type_index to_format) {
+Format *Converter<IDType, NNZType, ValueType>::Convert(
+        Format *source, std::type_index to_format) {
   if (to_format == source->get_format_id()) {
     return source;
   }
@@ -179,10 +179,17 @@ Format<IDType, NNZType, ValueType> *SparseConverter<IDType, NNZType, ValueType>:
   }
 }
 
+/*template <typename IDType, typename NNZType, typename ValueType>
+template <typename FormatType>
+FormatType* SparseConverter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
+    auto* res = this->Convert(source, FormatType::get_format_id_static());
+    return res->template As<FormatType>();
+}*/
+
 template <typename IDType, typename NNZType, typename ValueType>
 ConversionFunctor<IDType, NNZType, ValueType> *
-SparseConverter<IDType, NNZType, ValueType>::GetConversionFunction(std::type_index from_format,
-                                                                   std::type_index to_format) {
+Converter<IDType, NNZType, ValueType>::GetConversionFunction(std::type_index from_format,
+                                                             std::type_index to_format) {
   try {
     return conversion_map_[from_format][to_format];
   } catch (...) {
@@ -192,8 +199,8 @@ SparseConverter<IDType, NNZType, ValueType>::GetConversionFunction(std::type_ind
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-bool SparseConverter<IDType, NNZType, ValueType>::CanConvert(std::type_index from_format,
-                                                             std::type_index to_format) {
+bool Converter<IDType, NNZType, ValueType>::CanConvert(std::type_index from_format,
+                                                       std::type_index to_format) {
   if (conversion_map_.find(from_format) != conversion_map_.end()) {
     if (conversion_map_[from_format].find(to_format) !=
         conversion_map_[from_format].end()) {
@@ -204,11 +211,11 @@ bool SparseConverter<IDType, NNZType, ValueType>::CanConvert(std::type_index fro
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::vector<Format<IDType, NNZType, ValueType> *>
-SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
+std::vector<Format *>
+Converter<IDType, NNZType, ValueType>::ApplyConversionSchema(
     ConversionSchema cs,
-    std::vector<Format<IDType, NNZType, ValueType> *> packed_sfs) {
-  std::vector<Format<IDType, NNZType, ValueType> *> ret;
+    std::vector<Format *> packed_sfs) {
+  std::vector<Format *> ret;
   for (int i = 0; i < cs.size(); i++) {
     auto conversion = cs[i];
     if (std::get<0>(conversion)) {
@@ -224,11 +231,11 @@ SparseConverter<IDType, NNZType, ValueType>::ApplyConversionSchema(
 #ifdef NDEBUG
 #include "init/sparse_converter.inc"
 #else
-template class SparseConverter<int, int, int>;
+template class Converter<int, int, int>;
 template class CooCsrFunctor<int, int, int>;
 template class CsrCooFunctor<int, int, int>;
 
-template class SparseConverter<unsigned int, unsigned int, unsigned int>;
+template class Converter<unsigned int, unsigned int, unsigned int>;
 template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
 template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
 #endif
