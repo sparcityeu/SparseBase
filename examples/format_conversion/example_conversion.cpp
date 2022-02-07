@@ -40,7 +40,7 @@ int main(){
     cout << endl;
 
     // Conversion Syntax 2
-    auto coo2 = converter->ConvertAs<format::COO<int,int,int>>(csr2);
+    auto coo2 = converter->Convert<format::COO<int, int, int>>(csr2);
     cout << "COO" << endl;
 
     for(int i=0; i<nnz; i++)

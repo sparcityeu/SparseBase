@@ -86,6 +86,7 @@ namespace sparsebase::utils {
         // We need to ensure that they are sorted
         // Maybe add a sort check and then not do this if it is already sorted
         std::vector<std::pair<IDType, IDType>> edges;
+        edges.reserve(nnz);
         for (IDType i = 0; i < nnz; i++) {
             edges.emplace_back(coo_col[i], coo_row[i]);
         }
@@ -151,34 +152,34 @@ namespace sparsebase::utils {
 
     template<typename IDType, typename NNZType, typename ValueType>
     void Converter<IDType, NNZType, ValueType>::RegisterConversionFunction(
-            std::type_index from_format, std::type_index to_format,
+            std::type_index from_type, std::type_index to_type,
             ConversionFunctor<IDType, NNZType, ValueType> *conv_func) {
-        if (conversion_map_.count(from_format) == 0) {
+        if (conversion_map_.count(from_type) == 0) {
             conversion_map_.emplace(
-                    from_format,
+                    from_type,
                     std::unordered_map<std::type_index, ConversionFunctor<IDType, NNZType, ValueType> *>());
         }
 
-        if (conversion_map_[from_format].count(to_format) == 0) {
-            conversion_map_[from_format].emplace(to_format, conv_func);
+        if (conversion_map_[from_type].count(to_type) == 0) {
+            conversion_map_[from_type].emplace(to_type, conv_func);
         } else {
-            conversion_map_[from_format][to_format] = conv_func;
+            conversion_map_[from_type][to_type] = conv_func;
         }
     }
 
     template<typename IDType, typename NNZType, typename ValueType>
     Format *Converter<IDType, NNZType, ValueType>::Convert(
-            Format *source, std::type_index to_format) {
-        if (to_format == source->get_format_id()) {
+            Format *source, std::type_index to_type) {
+        if (to_type == source->get_format_id()) {
             return source;
         }
 
         try {
             ConversionFunctor<IDType, NNZType, ValueType> *conv_func =
-                    GetConversionFunction(source->get_format_id(), to_format);
+                    GetConversionFunction(source->get_format_id(), to_type);
             return (*conv_func)(source);
         } catch (...) {
-            throw ConversionException(source->get_format_id().name(), to_format.name());
+            throw ConversionException(source->get_format_id().name(), to_type.name());
             // mechanism
         }
     }
@@ -192,22 +193,22 @@ FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
 
     template<typename IDType, typename NNZType, typename ValueType>
     ConversionFunctor<IDType, NNZType, ValueType> *
-    Converter<IDType, NNZType, ValueType>::GetConversionFunction(std::type_index from_format,
-                                                                 std::type_index to_format) {
+    Converter<IDType, NNZType, ValueType>::GetConversionFunction(std::type_index from_type,
+                                                                 std::type_index to_type) {
         try {
-            return conversion_map_[from_format][to_format];
+            return conversion_map_[from_type][to_type];
         } catch (...) {
-            throw ConversionException(from_format.name(), to_format.name());
+            throw ConversionException(from_type.name(), to_type.name());
             // mechanism
         }
     }
 
     template<typename IDType, typename NNZType, typename ValueType>
-    bool Converter<IDType, NNZType, ValueType>::CanConvert(std::type_index from_format,
-                                                           std::type_index to_format) {
-        if (conversion_map_.find(from_format) != conversion_map_.end()) {
-            if (conversion_map_[from_format].find(to_format) !=
-                conversion_map_[from_format].end()) {
+    bool Converter<IDType, NNZType, ValueType>::CanConvert(std::type_index from_type,
+                                                           std::type_index to_type) {
+        if (conversion_map_.find(from_type) != conversion_map_.end()) {
+            if (conversion_map_[from_type].find(to_type) !=
+                conversion_map_[from_type].end()) {
                 return true;
             }
         }
