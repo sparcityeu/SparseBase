@@ -154,9 +154,9 @@ There are certain limitations to readers, which will be addressed in future rele
 
 As explained in the previous section, readers will read to different formats.
 
-However, we can convert the data into the format we desire using ``SparseConverter``:
+However, we can convert the data into the format we desire using ``Converter``:
 ```cpp
-auto converter = sparsebase::SparseConverter<vertex_type, edge_type, value_type>();
+auto converter = sparsebase::Converter<vertex_type, edge_type, value_type>();
 auto converted = converter.convert(result, CSR_f);
 auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>>(converted);
 ```

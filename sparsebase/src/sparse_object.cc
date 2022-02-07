@@ -4,66 +4,80 @@
 #include "sparsebase/sparse_object.h"
 #include "sparsebase/sparse_reader.h"
 
-namespace sparsebase {
+using namespace sparsebase::format;
+using namespace sparsebase::utils;
 
-namespace object {
+namespace sparsebase::object {
+
+Object::~Object(){};
 
 template <typename IDType, typename NNZType, typename ValueType>
-SparseObject<IDType, NNZType, ValueType>::~SparseObject(){};
-
+AbstractObject<IDType, NNZType, ValueType>::~AbstractObject(){};
 template <typename IDType, typename NNZType, typename ValueType>
-AbstractSparseObject<IDType, NNZType, ValueType>::~AbstractSparseObject(){};
+AbstractObject<IDType, NNZType, ValueType>::AbstractObject()
+    : connectivity_(nullptr, BlankDeleter<Format>()){};
 template <typename IDType, typename NNZType, typename ValueType>
-AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(): connectivity_(nullptr, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>()){};
+AbstractObject<IDType, NNZType, ValueType>::AbstractObject(
+    AbstractObject<IDType, NNZType, ValueType> &&rhs)
+    : connectivity_(std::move(rhs.connectivity_)){};
 template <typename IDType, typename NNZType, typename ValueType>
-AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&& rhs): connectivity_(std::move(rhs.connectivity_)){};
+AbstractObject<IDType, NNZType, ValueType>::AbstractObject(
+    const AbstractObject<IDType, NNZType, ValueType> &rhs)
+    : connectivity_((Format *)rhs.connectivity_->clone(),
+                    BlankDeleter<Format>()){};
 template <typename IDType, typename NNZType, typename ValueType>
-AbstractSparseObject<IDType, NNZType, ValueType>::AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>& rhs): connectivity_((SparseFormat<IDType, NNZType, ValueType>*)rhs.connectivity_->clone(), BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>()){};
-template <typename IDType, typename NNZType, typename ValueType>
-SparseFormat<IDType, NNZType, ValueType> *
-AbstractSparseObject<IDType, NNZType, ValueType>::get_connectivity() const {
+Format *AbstractObject<IDType, NNZType, ValueType>::get_connectivity() const {
   return connectivity_.get();
 }
 template <typename IDType, typename NNZType, typename ValueType>
-bool AbstractSparseObject<IDType, NNZType, ValueType>::ConnectivityIsOwned() const {
-  return (connectivity_.get_deleter().target_type() != typeid(BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>));
+bool AbstractObject<IDType, NNZType, ValueType>::ConnectivityIsOwned() const {
+  return (connectivity_.get_deleter().target_type() !=
+          typeid(BlankDeleter<Format>));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-SparseFormat<IDType, NNZType, ValueType> *
-AbstractSparseObject<IDType, NNZType, ValueType>::release_connectivity() {
+Format *AbstractObject<IDType, NNZType, ValueType>::release_connectivity() {
   auto ptr = connectivity_.release();
-  connectivity_ = std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>>(ptr, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>());
+  connectivity_ = std::unique_ptr<Format, std::function<void(Format *)>>(
+      ptr, BlankDeleter<Format>());
   return ptr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-void AbstractSparseObject<IDType, NNZType, ValueType>::set_connectivity(SparseFormat<IDType, NNZType, ValueType>*conn, bool own) {
+void AbstractObject<IDType, NNZType, ValueType>::set_connectivity(Format *conn,
+                                                                  bool own) {
 
   if (own)
-    connectivity_ = std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>>(conn, Deleter<SparseFormat<IDType, NNZType, ValueType>>());
+    connectivity_ = std::unique_ptr<Format, std::function<void(Format *)>>(
+        conn, Deleter<Format>());
   else
-    connectivity_ = std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>>(conn, BlankDeleter<SparseFormat<IDType, NNZType, ValueType>>());
+    connectivity_ = std::unique_ptr<Format, std::function<void(Format *)>>(
+        conn, BlankDeleter<Format>());
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
-Graph<VertexID, NumEdges, Weight>::Graph(Graph<VertexID, NumEdges, Weight>&& rhs) {
+Graph<VertexID, NumEdges, Weight>::Graph(
+    Graph<VertexID, NumEdges, Weight> &&rhs) {
   this->set_connectivity(rhs.release_connectivity(), true);
   InitializeInfoFromConnection();
   rhs.set_connectivity(nullptr, false);
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-Graph<VertexID, NumEdges, Weight>::Graph(const Graph<VertexID, NumEdges, Weight>& rhs) {
-  this->set_connectivity(static_cast<SparseFormat<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
+Graph<VertexID, NumEdges, Weight>::Graph(
+    const Graph<VertexID, NumEdges, Weight> &rhs) {
+  this->set_connectivity(static_cast<Format *>(rhs.connectivity_->clone()),
+                         true);
   InitializeInfoFromConnection();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-Graph<VertexID, NumEdges, Weight>&Graph<VertexID, NumEdges, Weight>::operator=(const Graph<VertexID, NumEdges, Weight>& rhs) {
-  this->set_connectivity(static_cast<SparseFormat<VertexID, NumEdges, Weight>*>(rhs.connectivity_->clone()), true);
+Graph<VertexID, NumEdges, Weight> &Graph<VertexID, NumEdges, Weight>::operator=(
+    const Graph<VertexID, NumEdges, Weight> &rhs) {
+  this->set_connectivity(static_cast<Format *>(rhs.connectivity_->clone()),
+                         true);
   InitializeInfoFromConnection();
   return *this;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-Graph<VertexID, NumEdges, Weight>::Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity) {
-  //this->connectivity_ = connectivity;
+Graph<VertexID, NumEdges, Weight>::Graph(Format *connectivity) {
+  // this->connectivity_ = connectivity;
   this->set_connectivity(connectivity, true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -97,7 +111,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
             << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(std::string filename) {
+void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(
+    std::string filename) {
   MTXReader<VertexID, NumEdges, Weight> reader(filename);
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
@@ -126,8 +141,10 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
 #ifdef NDEBUG
 #include "init/sparse_object.inc"
 #else
-template class AbstractSparseObject<unsigned int, unsigned int, unsigned int>;
+template class AbstractObject<unsigned int, unsigned int, unsigned int>;
+template class AbstractObject<int, int, int>;
 template class Graph<unsigned int, unsigned int, unsigned int>;
+template class Graph<int, int, int>;
 #endif
 // template<typename VertexID, typename NumEdges, typename t_t>
 // class TemporalGraph : public AbstractSparseObject<VertexID, NumEdges>{
@@ -149,6 +166,4 @@ template class Graph<unsigned int, unsigned int, unsigned int>;
 //     // ...
 // };
 
-} // namespace object
-
-} // namespace sparsebase
+} // namespace sparsebase::object

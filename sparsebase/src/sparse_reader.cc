@@ -8,6 +8,8 @@
 #include <limits>
 #include <vector>
 
+using namespace sparsebase::format;
+
 namespace sparsebase {
 
 namespace utils {
@@ -24,15 +26,16 @@ SparseReader<IDType, NNZType, ValueType>::~SparseReader(){};
   \return std::vector of formats
 */
 template <typename VertexID, typename NumEdges, typename Weight>
-UedgelistReader<VertexID, NumEdges, Weight>::UedgelistReader(std::string filename, bool weighted)
+UedgelistReader<VertexID, NumEdges, Weight>::UedgelistReader(
+    std::string filename, bool weighted)
     : filename_(filename), weighted_(weighted) {}
 template <typename VertexID, typename NumEdges, typename Weight>
-SparseFormat<VertexID, NumEdges, Weight> *
-UedgelistReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
+Format *UedgelistReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
   return this->ReadCSR();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::ReadCSR() const {
+CSR<VertexID, NumEdges, Weight> *
+UedgelistReader<VertexID, NumEdges, Weight>::ReadCSR() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
     VertexID u, v;
@@ -46,8 +49,8 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::Re
         edges.push_back(std::pair<VertexID, VertexID>(u, v));
         edges.push_back(std::pair<VertexID, VertexID>(v, u));
 
-        n =std::max(n, u);
-        n =std::max(n, v);
+        n = std::max(n, u);
+        n = std::max(n, v);
 
         edges_read++;
       }
@@ -87,14 +90,16 @@ CSR<VertexID, NumEdges, Weight> *UedgelistReader<VertexID, NumEdges, Weight>::Re
       row_ptr[i] = row_ptr[i - 1];
     }
     row_ptr[0] = 0;
-    return new CSR<VertexID, NumEdges, Weight>(n, n, row_ptr, col, nullptr, kOwned);
+    return new CSR<VertexID, NumEdges, Weight>(n, n, row_ptr, col, nullptr,
+                                               kOwned);
   } else {
-    throw std::invalid_argument("file does not exists!!");
+    throw ReaderException("file does not exists!!");
   }
 }
 template <typename VertexID, typename NumEdges, typename Weight>
-bool UedgelistReader<VertexID, NumEdges, Weight>::SortEdge(const std::pair<VertexID, VertexID> &a,
-                                              const std::pair<VertexID, VertexID> &b) {
+bool UedgelistReader<VertexID, NumEdges, Weight>::SortEdge(
+    const std::pair<VertexID, VertexID> &a,
+    const std::pair<VertexID, VertexID> &b) {
   if (a.first == b.first) {
     return (a.second < b.second);
   } else {
@@ -104,17 +109,18 @@ bool UedgelistReader<VertexID, NumEdges, Weight>::SortEdge(const std::pair<Verte
 template <typename VertexID, typename NumEdges, typename Weight>
 UedgelistReader<VertexID, NumEdges, Weight>::~UedgelistReader(){};
 template <typename VertexID, typename NumEdges, typename Weight>
-SparseFormat<VertexID, NumEdges, Weight> *
-MTXReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
+Format *MTXReader<VertexID, NumEdges, Weight>::ReadSparseFormat() const {
   return this->ReadCOO();
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
-MTXReader<VertexID, NumEdges, Weight>::MTXReader(std::string filename, bool weighted)
+MTXReader<VertexID, NumEdges, Weight>::MTXReader(std::string filename,
+                                                 bool weighted)
     : filename_(filename), weighted_(weighted) {}
 
 template <typename VertexID, typename NumEdges, typename Weight>
-COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
+COO<VertexID, NumEdges, Weight> *
+MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
@@ -129,7 +135,7 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
 
   VertexID *row = new VertexID[L];
   VertexID *col = new VertexID[L];
-  std::cout << "weighted " << weighted_ << std::endl; 
+  std::cout << "weighted " << weighted_ << std::endl;
   if (weighted_) {
     if constexpr (!std::is_same_v<void, Weight>) {
       Weight *vals = new Weight[L];
@@ -142,12 +148,12 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
         vals[l] = w;
       }
 
-      auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, kOwned);
+      auto coo =
+          new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, kOwned);
       return coo;
     } else {
       // TODO: Add an exception class for this
-      throw SparseReaderException(
-          "Weight type for weighted graphs can not be void");
+      throw ReaderException("Weight type for weighted graphs can not be void");
     }
   } else {
     for (NumEdges l = 0; l < L; l++) {
@@ -157,7 +163,8 @@ COO<VertexID, NumEdges, Weight> *MTXReader<VertexID, NumEdges, Weight>::ReadCOO(
       col[l] = n - 1;
     }
 
-    auto coo = new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, kOwned);
+    auto coo =
+        new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, kOwned);
     return coo;
   }
 }
@@ -170,7 +177,8 @@ MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 #else
 template class MTXReader<unsigned int, unsigned int, unsigned int>;
 template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
-
+template class MTXReader<int, int, int>;
+template class UedgelistReader<int, int, int>;
 #endif
 
 } // namespace utils
