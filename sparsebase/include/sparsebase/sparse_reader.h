@@ -7,30 +7,31 @@
 #include <fstream>
 #include <vector>
 
-using namespace sparsebase::format;
 
 namespace sparsebase {
 
 namespace utils {
 
-template <typename IDType, typename NNZType, typename ValueType> class SparseReader {
+template <typename IDType, typename NNZType, typename ValueType>
+class SparseReader {
 public:
   virtual ~SparseReader();
 };
 
-template <class VertexID, typename NumEdges, typename Weight> class ReadsSparseFormat {
+template <class VertexID, typename NumEdges, typename Weight>
+class ReadsSparseFormat {
 public:
-  virtual SparseFormat<VertexID, NumEdges, Weight> *ReadSparseFormat() const = 0;
+  virtual format::Format *ReadSparseFormat() const = 0;
 };
 
 template <class VertexID, typename NumEdges, typename Weight> class ReadsCSR {
 public:
-  virtual CSR<VertexID, NumEdges, Weight> *ReadCSR() const = 0;
+  virtual format::CSR<VertexID, NumEdges, Weight> *ReadCSR() const = 0;
 };
 
 template <class VertexID, typename NumEdges, typename Weight> class ReadsCOO {
 public:
-  virtual COO<VertexID, NumEdges, Weight> *ReadCOO() const = 0;
+  virtual format::COO<VertexID, NumEdges, Weight> *ReadCOO() const = 0;
 };
 // Add weighted option with contexpr
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -39,12 +40,13 @@ class UedgelistReader : public SparseReader<VertexID, NumEdges, Weight>,
                         public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
   UedgelistReader(std::string filename, bool _weighted = false);
-  CSR<VertexID, NumEdges, Weight> *ReadCSR() const;
-  SparseFormat<VertexID, NumEdges, Weight> *ReadSparseFormat() const;
+  format::CSR<VertexID, NumEdges, Weight> *ReadCSR() const;
+  format::Format *ReadSparseFormat() const;
   virtual ~UedgelistReader();
 
 private:
-  static bool SortEdge(const std::pair<VertexID, VertexID> &a, const std::pair<VertexID, VertexID> &b);
+  static bool SortEdge(const std::pair<VertexID, VertexID> &a,
+                       const std::pair<VertexID, VertexID> &b);
   std::string filename_;
   bool weighted_;
 };
@@ -55,8 +57,8 @@ class MTXReader : public SparseReader<VertexID, NumEdges, Weight>,
                   public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
   MTXReader(std::string filename, bool _weighted = false);
-  COO<VertexID, NumEdges, Weight> *ReadCOO() const;
-  SparseFormat<VertexID, NumEdges, Weight> *ReadSparseFormat() const;
+  format::COO<VertexID, NumEdges, Weight> *ReadCOO() const;
+  format::Format *ReadSparseFormat() const;
   virtual ~MTXReader();
 
 private:

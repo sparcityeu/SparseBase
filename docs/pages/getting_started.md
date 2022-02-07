@@ -155,12 +155,12 @@ There are certain limitations to readers, which will be addressed in future rele
 
 As explained in the previous section, readers will read to different formats.
 
-However, we can convert the data into the format we desire using ``SparseConverter``:
+However, we can convert the data into the format we desire using ``Converter``:
 ```cpp
 #include "sparsebase/sparse_format.h"
 #include "sparsebase/sparse_converter.h"
 
-auto converter = sparsebase::SparseConverter<vertex_type, edge_type, value_type>();
+auto converter = sparsebase::Converter<vertex_type, edge_type, value_type>();
 auto converted = converter.Convert(result, kCSRFormat);
 auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>*>(converted);
 ```

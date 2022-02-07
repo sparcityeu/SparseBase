@@ -12,11 +12,11 @@ int main(){
     int col[6] = {0, 1, 1, 2, 3, 3};
     int vals[6] = {10, 20, 30, 40, 50, 60};
 
+    // Conversion Syntax 1
     format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
-
-    auto converter = new utils::SparseConverter<int,int,int>();
-    auto csr = converter->Convert(coo,kCSRFormat);
-    auto csr2 = dynamic_cast<format::CSR<int,int,int>*>(csr);
+    auto converter = new utils::Converter<int,int,int>();
+    auto csr = converter->Convert(coo,format::CSR<int, int, int>::get_format_id_static());
+    auto csr2 = csr->As<format::CSR<int,int,int>>();
 
     auto dims = csr2->get_dimensions();
     int n = dims[0];
@@ -39,27 +39,24 @@ int main(){
     
     cout << endl;
 
-    auto coo2 = converter->Convert(csr,kCOOFormat);
-
-    auto coo3 = dynamic_cast<format::COO<int,int,int>*>(coo2);
-
+    // Conversion Syntax 2
+    auto coo2 = converter->Convert<format::COO<int, int, int>>(csr2);
     cout << "COO" << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << coo3->get_vals()[i] << ",";
+        cout << coo2->get_vals()[i] << ",";
     cout << endl;
 
     for(int i=0; i<nnz; i++)
-        cout << coo3->get_row()[i] << ",";
+        cout << coo2->get_row()[i] << ",";
     cout << endl;
     
     for(int i=0; i<nnz; i++)
-        cout << coo3->get_col()[i] << ",";
+        cout << coo2->get_col()[i] << ",";
     cout << endl;
 
     delete coo;
     delete converter;
     delete csr2;
-    delete coo3;
 }
 

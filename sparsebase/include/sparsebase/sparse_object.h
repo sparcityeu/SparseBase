@@ -1,51 +1,48 @@
 #ifndef _SPARSEOBJECT_HPP
 #define _SPARSEOBJECT_HPP
 
-#include <memory>
-#include <functional>
 #include "sparse_format.h"
 #include "sparse_reader.h"
-
-using namespace sparsebase::utils;
+#include <functional>
+#include <memory>
 
 namespace sparsebase {
 
 namespace object {
 
-template <typename IDType, typename NNZType, typename ValueType>
-class SparseObject {
+class Object {
 public:
-  virtual ~SparseObject();
+  virtual ~Object();
   virtual void VerifyStructure() = 0;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class AbstractSparseObject : public SparseObject<IDType, NNZType, ValueType> {
+class AbstractObject : public Object {
 protected:
-  std::unique_ptr<SparseFormat<IDType, NNZType, ValueType>, std::function<void (SparseFormat<IDType, NNZType, ValueType>*)>> connectivity_;
+  std::unique_ptr<format::Format, std::function<void(format::Format *)>> connectivity_;
 
 public:
-  virtual ~AbstractSparseObject();
-  AbstractSparseObject();
-  AbstractSparseObject(const AbstractSparseObject<IDType, NNZType, ValueType>&);
-  AbstractSparseObject(AbstractSparseObject<IDType, NNZType, ValueType>&&);
-  SparseFormat<IDType, NNZType, ValueType> *get_connectivity() const;
-  SparseFormat<IDType, NNZType, ValueType> *release_connectivity();
-  void set_connectivity(SparseFormat<IDType, NNZType, ValueType>*, bool);
+  virtual ~AbstractObject();
+  AbstractObject();
+  AbstractObject(const AbstractObject<IDType, NNZType, ValueType> &);
+  AbstractObject(AbstractObject<IDType, NNZType, ValueType> &&);
+  format::Format *get_connectivity() const;
+  format::Format *release_connectivity();
+  void set_connectivity(format::Format *, bool);
   bool ConnectivityIsOwned() const;
-
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
-class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
+class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
 public:
-  Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity);
+  Graph(format::Format *connectivity);
   Graph();
-  Graph(const Graph<VertexID, NumEdges, Weight>&);
-  Graph(Graph<VertexID, NumEdges, Weight>&&);
-  Graph<VertexID, NumEdges, Weight>& operator=(const Graph<VertexID, NumEdges, Weight>&);
-  void ReadConnectivityToCSR(const ReadsCSR<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCOO(const ReadsCOO<VertexID, NumEdges, Weight> &);
+  Graph(const Graph<VertexID, NumEdges, Weight> &);
+  Graph(Graph<VertexID, NumEdges, Weight> &&);
+  Graph<VertexID, NumEdges, Weight> &
+  operator=(const Graph<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCSR(const utils::ReadsCSR<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCOO(const utils::ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
   void ReadConnectivityFromEdgelistToCSR(std::string filename);
   void InitializeInfoFromConnection();
