@@ -153,6 +153,6 @@ protected:
 
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
-#include "../../src/sparse_format.cc"
+#include "sparse_format.cc"
 #endif
 #endif

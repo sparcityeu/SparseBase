@@ -63,7 +63,7 @@ public:
 } // namespace sparsebase
 
 #ifdef _HEADER_ONLY
-#include "../../src/sparse_converter.cc"
+#include "sparse_converter.cc"
 #endif
 
 #endif

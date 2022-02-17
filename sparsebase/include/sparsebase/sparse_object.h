@@ -78,6 +78,6 @@ public:
 } // namespace sparsebase
 
 #ifdef _HEADER_ONLY
-#include "../../src/sparse_object.cc"
+#include "sparse_object.cc"
 #endif
 #endif
