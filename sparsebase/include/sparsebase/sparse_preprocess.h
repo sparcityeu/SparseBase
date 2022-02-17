@@ -1,5 +1,6 @@
 #ifndef _Reorder_HPP
 #define _Reorder_HPP
+#include "config.h"
 #include "sparse_converter.h"
 #include "sparse_format.h"
 #include "sparse_object.h"
@@ -175,5 +176,8 @@ protected:
 } // namespace preprocess
 
 } // namespace sparsebase
+#ifdef _HEADER_ONLY
+#include "../../src/sparse_preprocess.cc"
+#endif
 
 #endif

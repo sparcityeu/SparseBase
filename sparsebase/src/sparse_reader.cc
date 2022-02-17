@@ -172,7 +172,7 @@ MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
 template <typename VertexID, typename NumEdges, typename Weight>
 MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 
-#ifdef NDEBUG
+#if defined(NDEBUG) && !defined(_HEADER_ONLY)
 #include "init/sparse_reader.inc"
 #else
 template class MTXReader<unsigned int, unsigned int, unsigned int>;

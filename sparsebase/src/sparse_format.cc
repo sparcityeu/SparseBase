@@ -374,7 +374,7 @@ bool CSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
 
-#ifdef NDEBUG
+#if defined(NDEBUG) && !defined(_HEADER_ONLY)
 #include "init/sparse_format.inc"
 #else
 template class COO<int, int, int>;
