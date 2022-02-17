@@ -2,6 +2,7 @@
 #define _SPARSECONVERTER_HPP
 
 #include "sparse_format.h"
+#include "config.h"
 #include <tuple>
 #include <unordered_map>
 
@@ -60,5 +61,9 @@ public:
 } // namespace utils
 
 } // namespace sparsebase
+
+#ifdef _HEADER_ONLY
+#include "../../src/sparse_converter.cc"
+#endif
 
 #endif

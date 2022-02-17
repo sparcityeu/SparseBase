@@ -2,6 +2,11 @@ cmake_minimum_required( VERSION 3.0 )
 
 project( SparseBase_project VERSION 0.1.5 )
 option(RUN_TESTS "Enable running tests" OFF)
+option(_HEADER_ONLY "Use the library as a header only library?" ON)
+configure_file(
+    "${PROJECT_SOURCE_DIR}/sparsebase/include/sparsebase/config.h.in"
+    "${PROJECT_BINARY_DIR}/sparsebase/include/sparsebase/config.h"
+)
 
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-std=c++11"   COMPILER_SUPPORTS_CXX11 )

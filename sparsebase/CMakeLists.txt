@@ -1,4 +1,5 @@
 # Creating the sparsebase library executable
+if(NOT ${_HEADER_ONLY})
 add_library(sparsebase
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_format.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_reader.cc
@@ -6,14 +7,25 @@ add_library(sparsebase
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_converter.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_preprocess.cc
         )
-target_compile_features(sparsebase PRIVATE cxx_std_17)
-
 # defining the include paths of the library
 target_include_directories(sparsebase PUBLIC
         # Location of the headers at build time
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/sparsebase>
         # Location of the headers at install time
         $<INSTALL_INTERFACE:include>)
+target_compile_features(sparsebase PRIVATE cxx_std_17)
+else()
+add_library(sparsebase INTERFACE)
+target_compile_features(sparsebase INTERFACE cxx_std_17)
+# defining the include paths of the library
+target_include_directories(sparsebase INTERFACE
+        # Location of the headers at build time
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/sparsebase>
+        # Location of the headers at install time
+        $<INSTALL_INTERFACE:include>)
+endif()
 
 # Creating an alias for the library when used through "find_package()"
 add_library(sparsebase::sparsebase ALIAS sparsebase)

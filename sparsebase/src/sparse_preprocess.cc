@@ -511,7 +511,7 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 }
 
 
-#ifdef NDEBUG
+#if defined(NDEBUG) && !defined(_HEADER_ONLY)
 #include "init/feature_extractor.inc"
 #else
 template class DegreeDistribution<unsigned int, unsigned int, unsigned int, float>;
@@ -519,7 +519,7 @@ template class DegreeDistribution<unsigned int, unsigned int, unsigned int, floa
 //template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*>, FeatureParams*)>;
 #endif
 
-#ifdef NDEBUG
+#if defined(NDEBUG) && !defined(_HEADER_ONLY)
 #include "init/sparse_preprocess.inc"
 #else
 template class ReorderPreprocessType<unsigned int, unsigned int, unsigned int>;
