@@ -72,6 +72,6 @@ private:
 } // namespace sparsebase
 
 #ifdef _HEADER_ONLY
-#include "../../src/sparse_reader.cc"
+#include "sparse_reader.cc"
 #endif
 #endif

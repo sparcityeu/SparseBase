@@ -177,7 +177,7 @@ protected:
 
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
-#include "../../src/sparse_preprocess.cc"
+#include "sparse_preprocess.cc"
 #endif
 
 #endif
