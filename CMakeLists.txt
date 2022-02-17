@@ -4,8 +4,8 @@ project( SparseBase_project VERSION 0.1.5 )
 option(RUN_TESTS "Enable running tests" OFF)
 option(_HEADER_ONLY "Use the library as a header only library?" ON)
 configure_file(
-    "${PROJECT_SOURCE_DIR}/sparsebase/include/sparsebase/config.h.in"
-    "${PROJECT_BINARY_DIR}/sparsebase/include/sparsebase/config.h"
+    "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
+    "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
 )
 
 include( CheckCXXCompilerFlag )
@@ -26,7 +26,7 @@ endif()
 if (MSVC)
     add_compile_options("/bigobj")
 endif()
-add_subdirectory(sparsebase)
+add_subdirectory(src)
 add_subdirectory(examples)
 
 add_custom_target(format
