@@ -511,16 +511,20 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 }
 
 
-#if defined(NDEBUG) && !defined(_HEADER_ONLY)
+#if defined(NDEBUG) 
+#if !defined(_HEADER_ONLY)
 #include "init/feature_extractor.inc"
+#endif
 #else
 template class DegreeDistribution<unsigned int, unsigned int, unsigned int, float>;
 //template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*, std::__1::allocator<sparsebase::format::SparseFormat<unsigned int, unsigned int, unsigned int>*> >, sparsebase::preprocess::FeatureParams*)>;
 //template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*>, FeatureParams*)>;
 #endif
 
-#if defined(NDEBUG) && !defined(_HEADER_ONLY)
+#if defined(NDEBUG) 
+#if !defined(_HEADER_ONLY)
 #include "init/sparse_preprocess.inc"
+#endif
 #else
 template class ReorderPreprocessType<unsigned int, unsigned int, unsigned int>;
 
