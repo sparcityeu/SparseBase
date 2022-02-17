@@ -138,8 +138,10 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
   // check dimensions
 }
 
-#if defined(NDEBUG) && !defined(_HEADER_ONLY)
+#if defined(NDEBUG) 
+#if !defined(_HEADER_ONLY)
 #include "init/sparse_object.inc"
+#endif
 #else
 template class AbstractObject<unsigned int, unsigned int, unsigned int>;
 template class AbstractObject<int, int, int>;
