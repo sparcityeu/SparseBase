@@ -2,7 +2,7 @@ cmake_minimum_required( VERSION 3.0 )
 
 project( SparseBase_project VERSION 0.1.5 )
 option(RUN_TESTS "Enable running tests" OFF)
-option(_HEADER_ONLY "Use the library as a header only library?" ON)
+option(_HEADER_ONLY "Use the library as a header only library?" OFF)
 configure_file(
     "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
     "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
