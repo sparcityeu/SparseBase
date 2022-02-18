@@ -34,8 +34,17 @@ This will generate the library as a static library. In addition, the example cod
 
 Due to optimizations and templates, this process might take several minutes.
 
+### Header-only
 
-### Installation
+Additionally, the library has a header-only setting, in which none of the classes of the library will be explicitly instantiated at library-build time. Building the library to be header-only can be done as shown:
+```
+mkdir build && cd build
+cmake -D_HEADE_ONLY=ON -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+
+This will prepare the library for installation and compile the example codes located in `build/examples`.
+## Installation
 
 To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:
 ```bash
@@ -50,9 +59,9 @@ cmake --install . --prefix "/custom/location"
 ```
 **Note:** We suggest using **absolute paths** for prefixes as relative paths have been known to cause problems from time to time.
 
-### Usage
+## Usage
 SparseBase can be easily added to your project either through CMake's `find_package()` command, or by directly linking it at compilation time.
-#### Adding SparseBase through CMake
+### Adding SparseBase through CMake
 If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
 ```cmake
 find_package(sparsebase 0.1.5 REQUIRED)
@@ -67,14 +76,23 @@ After the library is added to your project, you can simply link your targets to 
 target_link_libraries(your_target sparsebase::sparsebase)
 ```
 
-#### Linking to SparseBase at compile time
-You can link SparseBase directly to your targets by passing the appropriate flag for your compiler. For example, for `g++`, add the `-lsparsebase` flag:
+### Linking to SparseBase at compile time 
+If the library is not built in header-only mode, you must link it to your targets by passing the appropriate flag for your compiler. For example, for `g++`, add the `-lsparsebase` flag:
 ```bash
 g++ source.cpp -lsparsebase
 ```
-If the library was installed to a different location, say `/custom/location/`, then make sure to guide the compiler to the locations of the headers and the binary:
+If the library was installed to location other than the system-default, say `/custom/location/`, then make sure to guide the compiler to the locations of the headers and the binary:
 ```bash
 g++ source.cpp -I/custom/location/include -L/custom/location/lib -lsparsebase
+```
+
+On the other hand, if the library was compiled in header-only mode, then you do not need to provide a linking flag. For instance, instead of the two commands used above for compilation, you can simply use the following commands: 
+```bash
+g++ source.cpp
+```
+And if the library is not installed in the system-default location:
+```bash
+g++ source.cpp -I/custom/location/include -L/custom/location/lib
 ```
 
 ### Tests
