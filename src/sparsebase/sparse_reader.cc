@@ -174,7 +174,7 @@ MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 
 #if defined(NDEBUG) 
 #if !defined(_HEADER_ONLY)
-#include "init/sparse_reader.inc"
+#include "init/reader.inc"
 #endif
 #else
 template class MTXReader<unsigned int, unsigned int, unsigned int>;

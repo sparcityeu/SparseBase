@@ -140,7 +140,7 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
 
 #if defined(NDEBUG) 
 #if !defined(_HEADER_ONLY)
-#include "init/sparse_object.inc"
+#include "init/object.inc"
 #endif
 #else
 template class AbstractObject<unsigned int, unsigned int, unsigned int>;

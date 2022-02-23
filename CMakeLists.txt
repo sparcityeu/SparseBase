@@ -1,8 +1,13 @@
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.12 )
 
 project( SparseBase_project VERSION 0.1.5 )
 option(RUN_TESTS "Enable running tests" OFF)
 option(_HEADER_ONLY "Use the library as a header only library?" OFF)
+set(ID_TYPES "unsigned int" CACHE STRING "C++ data types used for variables storing IDs")
+set(NNZ_TYPES "unsigned int" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
+set(VALUE_TYPES "unsigned int" "float" "short" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(FLOAT_TYPES "double" "float" CACHE STRING "C++ data types used for variables storing floating point numbers")
+
 configure_file(
     "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
     "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
