@@ -235,7 +235,7 @@ FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
 
 #if defined(NDEBUG) 
 #if !defined(_HEADER_ONLY)
-#include "init/sparse_converter.inc"
+#include "init/converter.inc"
 #endif
 #else
 
