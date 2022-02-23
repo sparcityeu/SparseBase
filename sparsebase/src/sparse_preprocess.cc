@@ -399,6 +399,60 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 //  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
 //  return func(sfs, params);
 //}
+template <typename IDType, typename NNZType, typename ValueType>
+MoveTransform<IDType, NNZType, ValueType>::MoveTransform(IDType* order){
+  this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, MoveTransformCSR);
+  this->params_ = std::unique_ptr<TransformParams>(new TransformParams(order));
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *MoveTransform<IDType, NNZType, ValueType>::MoveTransformCSR(
+    std::vector<Format *> formats, PreprocessParams *params) {
+  auto *sp = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto order = static_cast<TransformParams*>(params)->order;
+  std::vector<DimensionType> dimensions = sp->get_dimensions();
+  IDType n = dimensions[0];
+  IDType m = dimensions[1];
+  NNZType nnz = sp->get_num_nnz();
+  NNZType *xadj = sp->get_row_ptr();
+  IDType *adj = sp->get_col();
+  ValueType *vals = sp->get_vals();
+  NNZType *nxadj = new NNZType[n + 1]();
+  IDType *nadj = new IDType[nnz]();
+  ValueType *nvals = nullptr;
+  if constexpr (!std::is_same_v<void, ValueType>) {
+    if (sp->get_vals() != nullptr)
+      nvals = new ValueType[nnz]();
+  }
+
+  IDType *inverse_order = new IDType[n]();
+  for (IDType i = 0; i < n; i++)
+    inverse_order[order[i]] = i;
+  NNZType c = 0;
+  for (IDType i = 0; i < n; i++) {
+    IDType u = inverse_order[i];
+    nxadj[i + 1] = nxadj[i] + (xadj[u + 1] - xadj[u]);
+    for (NNZType v = xadj[u]; v < xadj[u + 1]; v++) {
+      nadj[c] = order[adj[v]];
+      if constexpr (!std::is_same_v<void, ValueType>) {
+        if (sp->get_vals() != nullptr)
+          nvals[c] = vals[v];
+      }
+      c++;
+    }
+  }
+  delete[] inverse_order;
+  delete [] sp->release_row_ptr();
+  delete [] sp->release_col();
+  if (sp->get_vals() != nullptr)
+    delete [] sp->release_vals();
+
+  sp->set_row_ptr(nadj);
+  sp->set_col(nadj);
+  sp->set_vals(nvals);
+
+  CSR<IDType, NNZType, ValueType> *csr = new CSR(n, m, nxadj, nadj, nvals);
+  return csr;
+}
 
 template <typename IDType, typename NNZType, typename ValueType>
 Transform<IDType, NNZType, ValueType>::Transform(IDType* order){
@@ -531,6 +585,7 @@ template class RCMReorder<unsigned int, unsigned int, unsigned int>;
 template class TransformPreprocessType<unsigned int, unsigned int,
                                        unsigned int>;
 template class Transform<unsigned int, unsigned int, unsigned int>;
+template class MoveTransform<unsigned int, unsigned int, unsigned int>;
 #endif
 
 } // namespace preprocess

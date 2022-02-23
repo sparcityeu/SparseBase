@@ -140,6 +140,20 @@ public:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
+class MoveTransform : public TransformPreprocessType<IDType, NNZType, ValueType> {
+public:
+  MoveTransform(IDType*);
+  struct TransformParams : PreprocessParams {
+    IDType* order;
+    TransformParams(IDType* order):order(order){};
+  };
+
+protected:
+  static format::Format *
+  MoveTransformCSR(std::vector<format::Format *> formats,
+                PreprocessParams*);
+};
+template <typename IDType, typename NNZType, typename ValueType>
 class Transform : public TransformPreprocessType<IDType, NNZType, ValueType> {
 public:
   Transform(IDType*);
