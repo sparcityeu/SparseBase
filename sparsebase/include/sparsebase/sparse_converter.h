@@ -75,7 +75,7 @@ public:
                           bool is_move_conversion = false);
   template <typename FormatType>
   FormatType *Convert(format::Format *source, bool is_move_conversion = false) {
-    auto *res = this->Convert(source, FormatType::get_format_id_static());
+    auto *res = this->Convert(source, FormatType::get_format_id_static(), is_move_conversion);
     return res->template As<FormatType>();
   }
   bool CanConvert(std::type_index from_type, std::type_index to_type,
