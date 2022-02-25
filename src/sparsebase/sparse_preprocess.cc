@@ -512,21 +512,8 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 
 
 
-#if defined(NDEBUG) 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"
-#endif
-#else
-template class ReorderPreprocessType<unsigned int, unsigned int, unsigned int>;
-
-template class DegreeReorder<unsigned int, unsigned int, unsigned int>;
-template class GenericReorder<unsigned int, unsigned int, unsigned int>;
-template class RCMReorder<unsigned int, unsigned int, unsigned int>;
-
-template class TransformPreprocessType<unsigned int, unsigned int,
-                                       unsigned int>;
-template class Transform<unsigned int, unsigned int, unsigned int>;
-template class DegreeDistribution<unsigned int, unsigned int, unsigned int, float>;
 #endif
 
 } // namespace preprocess
