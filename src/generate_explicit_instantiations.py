@@ -1,7 +1,6 @@
 from sys import stdout
 import os
 import argparse
-from tkinter import W
 
 parser = argparse.ArgumentParser(description="Generate explicit instantiations of SparseBase template classes")
 parser.add_argument('--id-types', nargs='+', type=str, help= "C++ data types used for variables storing IDs")
