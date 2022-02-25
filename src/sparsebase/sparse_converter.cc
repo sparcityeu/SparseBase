@@ -233,30 +233,8 @@ FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
     }
 
 
-#if defined(NDEBUG) 
 #if !defined(_HEADER_ONLY)
 #include "init/converter.inc"
-#endif
-#else
-
-    template
-    class Converter<int, int, int>;
-
-    template
-    class CooCsrFunctor<int, int, int>;
-
-    template
-    class CsrCooFunctor<int, int, int>;
-
-    template
-    class Converter<unsigned int, unsigned int, unsigned int>;
-
-    template
-    class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
-
-    template
-    class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
-
 #endif
 
 } // namespace sparsebase

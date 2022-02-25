@@ -172,15 +172,8 @@ MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
 template <typename VertexID, typename NumEdges, typename Weight>
 MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 
-#if defined(NDEBUG) 
 #if !defined(_HEADER_ONLY)
 #include "init/reader.inc"
-#endif
-#else
-template class MTXReader<unsigned int, unsigned int, unsigned int>;
-template class UedgelistReader<unsigned int, unsigned int, unsigned int>;
-template class MTXReader<int, int, int>;
-template class UedgelistReader<int, int, int>;
 #endif
 
 } // namespace utils
