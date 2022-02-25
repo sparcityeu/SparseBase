@@ -1,6 +1,7 @@
 #ifndef _TENSOR_HPP
 #define _TENSOR_HPP
 
+#include "config.h"
 #include "sparse_exception.h"
 #include <algorithm>
 #include <cstring>
@@ -151,4 +152,7 @@ protected:
 } // namespace format
 
 } // namespace sparsebase
+#ifdef _HEADER_ONLY
+#include "sparse_format.cc"
+#endif
 #endif
