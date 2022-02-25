@@ -138,13 +138,8 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
   // check dimensions
 }
 
-#ifdef NDEBUG
-#include "init/sparse_object.inc"
-#else
-template class AbstractObject<unsigned int, unsigned int, unsigned int>;
-template class AbstractObject<int, int, int>;
-template class Graph<unsigned int, unsigned int, unsigned int>;
-template class Graph<int, int, int>;
+#if !defined(_HEADER_ONLY)
+#include "init/object.inc"
 #endif
 // template<typename VertexID, typename NumEdges, typename t_t>
 // class TemporalGraph : public AbstractSparseObject<VertexID, NumEdges>{

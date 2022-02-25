@@ -343,22 +343,8 @@ Converter<IDType, NNZType, ValueType>::ApplyConversionSchema(
   return ret;
 }
 
-#ifdef NDEBUG
-#include "init/sparse_converter.inc"
-#else
-
-template class Converter<int, int, int>;
-
-template class CooCsrFunctor<int, int, int>;
-
-template class CsrCooFunctor<int, int, int>;
-
-template class Converter<unsigned int, unsigned int, unsigned int>;
-
-template class CooCsrFunctor<unsigned int, unsigned int, unsigned int>;
-
-template class CsrCooFunctor<unsigned int, unsigned int, unsigned int>;
-
+#if !defined(_HEADER_ONLY)
+#include "init/converter.inc"
 #endif
 
 } // namespace sparsebase::utils

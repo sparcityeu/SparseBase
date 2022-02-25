@@ -374,13 +374,8 @@ bool CSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
 
-#ifdef NDEBUG
-#include "init/sparse_format.inc"
-#else
-template class COO<int, int, int>;
-template class COO<unsigned int, unsigned int, unsigned int>;
-template class CSR<unsigned int, unsigned int, unsigned int>;
-template class CSR<int, int, int>;
+#if !defined(_HEADER_ONLY)
+#include "init/format.inc"
 #endif
 
 }; // namespace sparsebase::format
