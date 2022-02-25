@@ -1,6 +1,7 @@
 #ifndef _SPARSEREADER_HPP
 #define _SPARSEREADER_HPP
 
+#include "config.h"
 #include "sparse_format.h"
 #include <algorithm>
 #include <cstring>
@@ -70,4 +71,7 @@ private:
 
 } // namespace sparsebase
 
+#ifdef _HEADER_ONLY
+#include "sparse_reader.cc"
+#endif
 #endif
