@@ -1,2 +1,2 @@
 #! /bin/bash
-find ${1}/sparsebase/ -iname *.hpp -o -iname *.cpp | xargs clang-format -i 
+find ${1}/sparsebase/ -iname *.h -o -iname *.cc | xargs clang-format -i 

@@ -516,26 +516,9 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 }
 
 
-#ifdef NDEBUG
-#include "init/feature_extractor.inc"
-#else
-template class DegreeDistribution<unsigned int, unsigned int, unsigned int, float>;
-//template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*, std::__1::allocator<sparsebase::format::SparseFormat<unsigned int, unsigned int, unsigned int>*> >, sparsebase::preprocess::FeatureParams*)>;
-//template class FunctionMatcherMixin<unsigned int, unsigned int, unsigned int, SparseConverterMixin<PreprocessType, unsigned int, unsigned int, unsigned int>, float* (*)(std::vector<SparseFormat<unsigned int, unsigned int, unsigned int>*>, FeatureParams*)>;
-#endif
 
-#ifdef NDEBUG
-#include "init/sparse_preprocess.inc"
-#else
-template class ReorderPreprocessType<unsigned int, unsigned int, unsigned int>;
-
-template class DegreeReorder<unsigned int, unsigned int, unsigned int>;
-template class GenericReorder<unsigned int, unsigned int, unsigned int>;
-template class RCMReorder<unsigned int, unsigned int, unsigned int>;
-
-template class TransformPreprocessType<unsigned int, unsigned int,
-                                       unsigned int>;
-template class Transform<unsigned int, unsigned int, unsigned int>;
+#if !defined(_HEADER_ONLY)
+#include "init/preprocess.inc"
 #endif
 
 } // namespace preprocess

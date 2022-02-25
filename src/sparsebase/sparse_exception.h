@@ -1,5 +1,7 @@
-#pragma once
+#ifndef _SPARSEEXC_HPP
+#define _SPARSEEXC_HPP
 
+#include "config.h"
 #include <exception>
 #include <iostream>
 
@@ -48,3 +50,5 @@ public:
 } // namespace utils
 
 } // namespace sparsebase
+
+#endif
