@@ -13,7 +13,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 std::unordered_map<
     std::type_index,
     std::unordered_map<std::type_index,
-                       ConversionFunctor<IDType, NNZType, ValueType> *>> *
+                       ConversionFunction>> *
 Converter<IDType, NNZType, ValueType>::get_conversion_map(
     bool is_move_conversion) {
   if (is_move_conversion)
@@ -22,7 +22,7 @@ Converter<IDType, NNZType, ValueType>::get_conversion_map(
     return &conversion_map_;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
+Format *CsrCooFunction(Format *source) {
   auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = csr->get_dimensions();
@@ -71,7 +71,7 @@ Format *CsrCooFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *
-CsrCooMoveFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
+CsrCooMoveFunction(Format *source) {
   auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
   auto col = csr->release_col();
   auto vals = csr->release_vals();
@@ -110,7 +110,7 @@ CsrCooMoveFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
 // Bj -> col -> col
 // Bx -> nnz -> vals
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
+Format *CooCsrFunction(Format *source) {
   auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = coo->get_dimensions();
@@ -171,7 +171,7 @@ Format *CooCsrFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *
-CooCsrMoveFunctor<IDType, NNZType, ValueType>::operator()(Format *source) {
+CooCsrMoveFunction(Format *source) {
   auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = coo->get_dimensions();
@@ -217,52 +217,35 @@ Converter<IDType, NNZType, ValueType>::Converter() {
   this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      new CooCsrFunctor<IDType, NNZType, ValueType>());
+      CooCsrFunction<IDType, NNZType, ValueType>);
   this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      new CsrCooFunctor<IDType, NNZType, ValueType>());
+      CsrCooFunction<IDType, NNZType, ValueType>);
   this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      new CsrCooMoveFunctor<IDType, NNZType, ValueType>(), true);
+      CsrCooMoveFunction<IDType, NNZType, ValueType>, true);
   this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      new CooCsrMoveFunctor<IDType, NNZType, ValueType>(),
-
-      true);
+      CooCsrMoveFunction<IDType, NNZType, ValueType>,true);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Converter<IDType, NNZType, ValueType>::~Converter() {
-  set<uintptr_t> deleted_ptrs;
-
-  auto maps = {conversion_map_, move_conversion_map_};
-  for (auto &w : maps) {
-    for (auto x : w) {
-      for (auto y : x.second) {
-        ConversionFunctor<IDType, NNZType, ValueType> *ptr = y.second;
-        if (deleted_ptrs.count((uintptr_t)ptr) == 0) {
-          deleted_ptrs.insert((uintptr_t)ptr);
-          delete ptr;
-        }
-      }
-    }
-  }
-}
+Converter<IDType, NNZType, ValueType>::~Converter() {}
 
 template <typename IDType, typename NNZType, typename ValueType>
 void Converter<IDType, NNZType, ValueType>::RegisterConversionFunction(
     std::type_index from_type, std::type_index to_type,
-    ConversionFunctor<IDType, NNZType, ValueType> *conv_func,
+    ConversionFunction conv_func,
     bool is_move_conversion) {
   auto map = get_conversion_map(is_move_conversion);
   if (map->count(from_type) == 0) {
     map->emplace(
         from_type,
         std::unordered_map<std::type_index,
-                           ConversionFunctor<IDType, NNZType, ValueType> *>());
+                           ConversionFunction>());
   }
 
   if ((*map)[from_type].count(to_type) == 0) {
@@ -280,10 +263,10 @@ Format *Converter<IDType, NNZType, ValueType>::Convert(
   }
 
   try {
-    ConversionFunctor<IDType, NNZType, ValueType> *conv_func =
+    ConversionFunction conv_func =
         GetConversionFunction(source->get_format_id(), to_type,
                               is_move_conversion);
-    return (*conv_func)(source);
+    return conv_func(source);
   } catch (...) {
     // TODO: add type here
     throw ConversionException(source->get_format_id().name(), to_type.name());
@@ -299,7 +282,7 @@ FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
 }*/
 
 template <typename IDType, typename NNZType, typename ValueType>
-ConversionFunctor<IDType, NNZType, ValueType> *
+ConversionFunction
 Converter<IDType, NNZType, ValueType>::GetConversionFunction(
     std::type_index from_type, std::type_index to_type,
     bool is_move_conversion) {
