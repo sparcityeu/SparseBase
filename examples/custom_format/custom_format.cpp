@@ -21,11 +21,9 @@ public:
   }
 };
 
-class COOToMyFormat: public utils::ConversionFunctor<int,int,int> {
-  Format* operator () (Format* source){
+Format* COOToMyFormat(Format* source){
     return new MyFormat;
-  }
-};
+}
 
 int main(int argc, char * argv[]){
   // Custom Format creation and casting
@@ -37,7 +35,7 @@ int main(int argc, char * argv[]){
 
   // Custom conversion using the custom format
   utils::Converter<int,int,int> converter;
-  converter.RegisterConversionFunction(COO<int,int,int>::get_format_id_static(), MyFormat::get_format_id_static(), new COOToMyFormat());
+  converter.RegisterConversionFunction(COO<int,int,int>::get_format_id_static(), MyFormat::get_format_id_static(), COOToMyFormat);
   int row[6] = {0, 0, 1, 1, 2, 2};
   int col[6] = {0, 1, 1, 2, 3, 3};
   int vals[6] = {10, 20, 30, 40, 50, 60};
