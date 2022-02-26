@@ -91,7 +91,7 @@ class converter_init(explicit_initialization):
     ## Prints explicit template instantiations for the converter file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['Converter', 'CsrCooFunctor', 'CooCsrFunctor'], self.out_stream)
+        print_implementations(['Converter'], self.out_stream)
 
 class object_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
