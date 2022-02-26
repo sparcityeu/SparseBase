@@ -1,6 +1,7 @@
 # Reordering a graph
 
-**Objective:** Read a graph from a file and reorder it. 
+## Objective
+Read a graph from a file and reorder it. 
 
 ## Overview
 
@@ -10,11 +11,14 @@ In this tutorial, you will use SparseBase to do the following:
 2. Reorder the vertices of the graph according to their degree.
 3. Restructure the graph according to the generated ordering .
 
+## Preliminaries
 Start by navigating to the directory `tutorials/001_reordering/start_here/`. Open the file `tutorial_001.cc` using a code editor and follow along with the tutorial. The file contains some boilerplate code that includes the appropriate headers, creates some type definitions, and uses the `sparsebase` namespace.
 
 The completed tutorial can be found in `tutorials/001_reordering/solved/solved.cc`. We will use the unordered edge list file `tutorials/001_reordering/chesapeake.edgelist`. 
 
-## 1. Read the graph from disk
+## Steps
+
+### 1. Read the graph from disk
 Begin your main program by reading the unordered edge list file into a `CSR` object using a `MtxReader` object. 
 
 ```c++
@@ -47,7 +51,7 @@ std::cout << "Degree of vertex 2: " << row_ptr[3]-row_ptr[2] << std::endl;
 std::cout << std::endl;
 ```
 
-## 2. Reorder the graph
+### 2. Reorder the graph
 Next, create a degree reordering of the graph:
 ```c++
 // Create a DegreeReorder object and tell it to sort in descending order
@@ -58,7 +62,7 @@ IDType* new_order = reorderer.GetReorder(csr);
 ```
 The array `new_order` is an array containing the inverse permutation of all the vertices of `csr`. In other words, `new_order[i] = j` indicates that the vertex `i` in `csr` at location `j` after reordering.
 
-## 3. Use the reordering to restructure the graph
+### 3. Use the reordering to restructure the graph
 Finally, use the reordering array `new_order` to restrucuture the graph and apply the new order to it.
 
 ```c++
@@ -86,7 +90,7 @@ std::cout << "Degree of vertex 1: " << row_ptr[2]-row_ptr[1] << std::endl;
 std::cout << "Degree of vertex 2: " << row_ptr[3]-row_ptr[2] << std::endl;
 ```
 
-## 4. Compile the program and execute it
+### 4. Compile the program and execute it
 Compile the code using `g++`. We assume SparseBase has already been installed in the compiled setting (as opposed to header-only installation).
 
 While in the directory `tutorials/001_reordering/start_here`, execute the following commands:
