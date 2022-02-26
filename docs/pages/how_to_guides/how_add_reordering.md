@@ -1,5 +1,7 @@
 # How to: add a new reordering algorithm
 
+## Objective
+This guide demonstrates how to add a new reordering algorithm to the library.
 ## Overview
 
 Adding new reordering algorithms to SparseBase is very simple. It consists of five steps:
@@ -23,7 +25,7 @@ In the header file `sparsebase/include/sparse_preprocess.hpp`, add the definitio
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NNZType, ValueType> {
+class OptimalReorder : sparsebase::preprocess::ReorderPreprocessType<IDType, NNZType, ValueType> {
 
 };
 ```
@@ -34,7 +36,7 @@ Inside the class, create a new struct inheriting from `PreprocessParams`. Its me
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NNZType, ValueType> {
+class OptimalReorder : sparsebase::preprocess::ReorderPreprocessType<IDType, NNZType, ValueType> {
 	struct OptimalReorderParams : PreprocessParams {
 		float alpha;
 		float beta;
@@ -46,7 +48,7 @@ Inside the constructor, you will take the hyperparameters from the user, add the
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NNZType, ValueType> {
+class OptimalReorder : sparsebase::preprocess::ReorderPreprocessType<IDType, NNZType, ValueType> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		this->params_ = unique_ptr<OptimalReorderParams>(new OptimalReorderParams{alpha, beta});
@@ -55,7 +57,7 @@ class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NNZType, ValueT
 };
 ```
 
-### 3. Add implementations for optimal reordering
+### 3. Add implementation functions
 
 Add implementation functions that will carry out the reordering to the class. Each function will be specific for an input `Format` format type. These functions should match the `ReorderFunction` signature:
 
@@ -73,7 +75,7 @@ For our example, we add two functions, `OptimallyOrderCSR()` and `OptimallyOrder
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NNZType, ValueType> {
+class OptimalReorder : sparsebase::preprocess::ReorderPreprocessType<IDType, NNZType, ValueType> {
 	//.......
 	static IDType* OptimallyOrderCSR(std::vector<Format<IDType, NNZType, ValueType>*> input_sf, ReorderParams* poly_params){
 		auto csr = input_sf[0]->As<sparsebase::CSR<IDType, NNZType, ValueType>>();
@@ -98,7 +100,7 @@ Inside the constructor, register the functions you made to the correct `Format`.
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : sparsebase::ReorderPreprocessType<IDType, NNZType, ValueType> {
+class OptimalReorder : sparsebase::preprocess::ReorderPreprocessType<IDType, NNZType, ValueType> {
 	// ...
 	OptimalReorder(float alpha, float beta){
 		// ...
