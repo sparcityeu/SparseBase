@@ -39,12 +39,12 @@ int main(int argc, char * argv[]){
     unsigned int col[4] = {1, 2, 0, 0};
     float val[4] = {1.0, 2.0, 3.0, 4.0};
     CSR<unsigned int, unsigned int, float> * csr = new CSR<unsigned int, unsigned int, float>(3, 3, row_ptr, col, val);
-    auto format = csr->get_format();
+    auto format = csr->get_format_id();
     auto dimensions = csr->get_dimensions();
     auto row_ptr2 = csr->get_row_ptr();
     auto col2 = csr->get_col();
     auto vals = csr->get_vals();
-    cout << "Format: " << format << endl;
+    cout << "Format: " << format.name() << endl;
     cout << "# of dimensions: " << dimensions.size() << endl;
     for(int i = 0; i < dimensions.size(); i++){
       cout << "Dim " << i << " size " << dimensions[i] << endl; 

@@ -67,7 +67,7 @@ public:
   }
   virtual ~FeatureFunctor() {
   }
-  virtual void Extract(SparseFormat<IDType, NNZType, ValueType> *source) {
+  virtual void Extract(format::Format *source) {
   }
   virtual FeatureValue<IDType>* GetFeature(Feature feature) {
     if (features_.find(feature) != features_.end()) {
@@ -107,7 +107,7 @@ public:
   }
   virtual ~BasicFeatureFunctor() {
   }
-  virtual void Extract(SparseFormat<IDType, NNZType, ValueType> *source) {
+  virtual void Extract(format::Format *source) {
     *(this->GetFeature(sfNRNZ)->Value()) = 0.0;
   }
 };
@@ -145,7 +145,7 @@ public:
       extractors_.push_back(feature_extractor);
     }
   }
-  void Extract(SparseFormat<IDType, NNZType, ValueType> *source) {
+  void Extract(format::Format *source) {
     for(auto extractor : extractors_) {
       extractor->Extract(source);
     }
