@@ -1,19 +1,36 @@
 #include "sparsebase/sparse_feature.h"
-#include <set>
+#include "sparsebase/sparse_preprocess.h"
+#include <vector>
 
-using namespace std;
+namespace sparsebase::feature {
 
-namespace sparsebase {
+template<typename ClassType, typename Key, typename KeyHash, typename KeyEqualTo>
+void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::
+    RegisterClass(const std::vector<std::type_index> instants, ClassType val){
+    this->map_[instants] = val;
+}
 
-size_t FeatureHash::operator()(Feature f) const { return f; }
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+Extractor<IDType, NNZType, ValueType, FeatureType>::Extractor(){
+   std::vector<std::type_index> temp;
+   auto lol = new preprocess::DegreeDistribution<IDType, NNZType, ValueType, FeatureType>();
+   temp.push_back(std::type_index(typeid(lol)));
+   this->RegisterClass(temp, lol);
+}
 
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::any> Extractor<IDType, NNZType, ValueType, FeatureType>::Extract(std::vector<Feature<FeatureType>> & fs,
+                                                                                   format::Format * format) {
+    // match and get classes for feature extraction
+    std::vector<std::any> res;
+    for(auto & f : fs){
+      res.push_back(f->Extract(format));
+    }
+    return res;
+}
 
-#ifdef NDEBUG
-#include "init/sparse_feature.inc"
-#else
-template class FeatureValue<unsigned int>;
-template class FeatureFunctor<unsigned int, unsigned int, float>;
-template class BasicFeatureFunctor<unsigned int, unsigned int, float>;
-template class SparseFeature<unsigned int, unsigned int, float>;
+#if !defined(_HEADER_ONLY)
+#include "init/feature.inc"
 #endif
+
 } // namespace sparsebase

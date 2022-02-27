@@ -14,6 +14,11 @@ using namespace std;
 using namespace sparsebase;
 using namespace format;
 
+using vertex_type = unsigned int;
+using edge_type = unsigned int;
+using value_type = float;
+//using feature_type = float;
+using feature_type = double;
 
 template<typename ... Args>
 std::string string_format( const std::string& format, Args ... args )
@@ -38,33 +43,44 @@ int main(int argc, char * argv[]){
     unsigned int row_ptr[4] = {0, 2, 3, 4};
     unsigned int col[4] = {1, 2, 0, 0};
     float val[4] = {1.0, 2.0, 3.0, 4.0};
-    CSR<unsigned int, unsigned int, float> * csr = new CSR<unsigned int, unsigned int, float>(3, 3, row_ptr, col, val);
-    auto format = csr->get_format();
+    CSR<vertex_type, edge_type, value_type> * csr = new CSR<vertex_type, edge_type, value_type>(3, 3, row_ptr, col, val);
+    auto format = csr->get_format_id();
     auto dimensions = csr->get_dimensions();
     auto row_ptr2 = csr->get_row_ptr();
     auto col2 = csr->get_col();
     auto vals = csr->get_vals();
-    cout << "Format: " << format << endl;
+    cout << "Format: " << format.name() << endl;
     cout << "# of dimensions: " << dimensions.size() << endl;
     for(int i = 0; i < dimensions.size(); i++){
       cout << "Dim " << i << " size " << dimensions[i] << endl; 
     }
 
-    SparseFeature<unsigned int, unsigned int, float> * sparse_feature = new SparseFeature<unsigned int, unsigned int, float>();
-    sparse_feature->Extract(csr);
-    std::vector<Feature> features = sparse_feature->ListFeatures();
-    cout << "Sparse Features: " << endl;
-    for (auto feature : features) {
-      std::string name = sparse_feature->GetFeatureName(feature);
-      unsigned int order = sparse_feature->GetFeature(feature)->GetOrder();
-      std::vector<unsigned int> dimensions = sparse_feature->GetFeature(feature)->GetDimension();
-      std::string dimensions_str;
-      for (auto dimension : dimensions) {
-        dimensions_str += string_format("%u", dimension);
-      }
-      std::any value = *(sparse_feature->GetFeature(feature)->Value());
-      cout << "  " << name  << " " << "{" << order << "}" << "["<< dimensions_str << "]" << " = " << (value.has_value() ? string_format("%f", std::any_cast<float>(value)) : "?") << endl;
-    }
+    std::vector<sparsebase::feature::Feature<feature_type>> features;
+    features.push_back(sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type, value_type, feature_type>{});
+    features.push_back(sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type, value_type, float>{});
+    //feature::Feature f(sparsebase::preprocess::DegreeDistribution<unsigned int, unsigned int, float, float>{});
+
+    std::vector<std::unique_ptr<sparsebase::preprocess::FType>> lol;
+    lol.push_back(std::make_unique<sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type, value_type, feature_type>>());
+    feature::Extractor extractor = feature::Extractor<vertex_type, edge_type, value_type, feature_type>();
+    vector<std::any> raws = extractor.Extract(features, csr);
+    feature_type * o = std::any_cast<feature_type*>(raws[0]);
+    float * t = std::any_cast<float*>(raws[1]);
+    cout << o[0] << endl;
+    cout << t[0] << endl;
+    //std::vector<Feature> features = sparse_feature->ListFeatures();
+    //cout << "Sparse Features: " << endl;
+    //for (auto feature : features) {
+    //  std::string name = sparse_feature->GetFeatureName(feature);
+    //  unsigned int order = sparse_feature->GetFeature(feature)->GetOrder();
+    //  std::vector<unsigned int> dimensions = sparse_feature->GetFeature(feature)->GetDimension();
+    //  std::string dimensions_str;
+    //  for (auto dimension : dimensions) {
+    //    dimensions_str += string_format("%u", dimension);
+    //  }
+    //  std::any value = *(sparse_feature->GetFeature(feature)->Value());
+    //  cout << "  " << name  << " " << "{" << order << "}" << "["<< dimensions_str << "]" << " = " << (value.has_value() ? string_format("%f", std::any_cast<float>(value)) : "?") << endl;
+    //}
   }
 
   cout << endl;

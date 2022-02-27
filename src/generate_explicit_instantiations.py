@@ -74,8 +74,9 @@ class preprocess_init(explicit_initialization):
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
-                    for preprocess_return_type in [vertex_type+'*', 'Format*']: 
-                        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">>;\n")
+                    for preprocess_return_type in [vertex_type+'*', 'Format*']:
+                        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">, FeatureFunction>;\n")
+                        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">, PreprocessFunction<"+preprocess_return_type+">>;\n")
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
@@ -120,6 +121,19 @@ class reader_init(explicit_initialization):
         self.out_stream.write('// '+self.source_filename+'\n')
         print_implementations(['MTXReader', 'UedgelistReader'], self.out_stream)
 
+class feature_init(explicit_initialization):
+    def __init__(self, folder, dry_run=False):
+        self.source_filename = 'feature.inc'
+        super().__init__(os.path.join(folder, self.source_filename), dry_run)
+    ## Prints explicit template instantiations for the reader file
+    def run(self):
+        self.out_stream.write('// '+self.source_filename+'\n')
+        for vertex_type in vertex_types:
+            for nnz_type in nnz_types:
+                for value_type in value_types:
+                    for dist_type in float_types:
+                        self.out_stream.write(PREFIX+"Extractor<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
+
 ## Create the output folder if it doesn't already exist
 if not os.path.isdir(output_folder):
     os.mkdir(output_folder)
@@ -130,6 +144,7 @@ inits.append(format_init(output_folder, dry_run))
 inits.append(converter_init(output_folder, dry_run))
 inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
+inits.append(feature_init(output_folder, dry_run))
 ## Create temporary files containing the explicit instantiations
 for init_object in inits:
     init_object.run()
