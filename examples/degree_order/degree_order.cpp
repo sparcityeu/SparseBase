@@ -5,6 +5,7 @@
 #include "sparsebase/sparse_reader.h"
 #include "sparsebase/sparse_preprocess.h"
 
+
 #include <set>
 
 using namespace std;
@@ -12,7 +13,7 @@ using namespace sparsebase;
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
-using value_type = void;
+using value_type = unsigned int;
 
 int main(int argc, char * argv[]){
   if (argc < 2){
@@ -26,7 +27,7 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Reading graph from " << file_name << "..." << endl;
-  Graph<vertex_type, edge_type, value_type> g;
+  object::Graph<vertex_type, edge_type, value_type> g;
   g.ReadConnectivityFromEdgelistToCSR(file_name);
   cout << "Number of vertices: " << g.n_ << endl; 
   cout << "Number of edges: " << g.m_ << endl; 
@@ -34,14 +35,13 @@ int main(int argc, char * argv[]){
   cout << "********************************" << endl;
 
   cout << "Sorting the vertices according to degree (degree ordering)..." << endl;
-  DegreeReorderInstance<vertex_type, edge_type, value_type> orderer(1);
-  //ReorderInstance<vertex_type, edge_type, value_type, DegreeReorder<vertex_type, edge_type, value_type>> orderer(1);
-  //ExecutableOrdering<vertex_type, edge_type, DegreeOrder<vertex_type, edge_type, value_type>> orderer(1);
-  SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+
+  preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
+  format::Format * con = g.get_connectivity();
   vertex_type * order = orderer.GetReorder(con);
   vertex_type n = con->get_dimensions()[0];
-  auto row_ptr = con->get_row_ptr();
-  auto col = con->get_col();
+  auto row_ptr = con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto col = con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << order[0] << ", Degree: " << row_ptr[order[0] + 1] - row_ptr[order[0]] << endl;
   cout << "Last vertex, ID: " << order[n-1] << ", Degree: " << row_ptr[order[n - 1] + 1] - row_ptr[order[n - 1]] << endl;
@@ -76,11 +76,10 @@ int main(int argc, char * argv[]){
   if(order_is_correct){
     cout << "Order is correct." << endl;
   }
-
-  TransformInstance<vertex_type, edge_type, value_type, Transform> transformer;
-  SparseFormat<vertex_type, edge_type, value_type> * csr = transformer.GetTransformation(con, order);
-  auto * n_row_ptr = csr->get_row_ptr();
-  auto * n_col = csr->get_col();
+  preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
+  format::Format * csr = transformer.GetTransformation(con);
+  auto * n_row_ptr = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto * n_col = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for(vertex_type i = 0; i < n-1 && transform_is_correct; i++){

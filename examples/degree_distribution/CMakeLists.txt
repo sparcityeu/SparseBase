@@ -1,0 +1,2 @@
+add_executable(degree_dist ${CMAKE_CURRENT_SOURCE_DIR}/degree_distribution.cpp)
+target_link_libraries(degree_dist sparsebase)

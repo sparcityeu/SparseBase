@@ -40,6 +40,32 @@ This will generate the library as a static library. In addition, the example cod
 
 Due to optimizations and templates, this process might take several minutes.
 
+### Specifying explicit instantiation types
+Most classes in the library are templated over four template parameter types:
+
+1. `IDType`: data type that will contain IDs of element in a format object.
+2. `NNZType`: data type that will contain numbers of non-zeros in a format object. 
+3. `ValueType`: data type that will contain values stored inside format objects.
+4. `FloatType`: data type that will contain floating point values (e.g., degree distributions).
+
+When generating the build system, you can specify a list of data types for each one of these template parameters. Explicit instantiations of all the classes in the library will be created to satisfy the power set of all the types you passed. You can specify the data types using CMake cache variables that you pass as semi-colon-seperated, quotation-enclosed lists. For example, the following command:
+```bash
+cmake -DID_TYPES="usigned int; unsigned long long" -DNNZ_TYPES="unsigned long long; short" -DVALUE_TYPES="float" -DFLOAT_TYPES="double; float" ..
+```
+specifies the data types to be used with each of the four template parameter types stated above. 
+
+Alternatively, you can edit the `CMakeCache.txt` file located in the build directory. Note that this file is generated after creating the build system (after executing `cmake`).
+
+### Header-only
+
+Additionally, the library has a header-only setting, in which none of the classes of the library will be explicitly instantiated at library-build time. Building the library to be header-only can be done as shown:
+```
+mkdir build && cd build
+cmake -D_HEADE_ONLY=ON -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+
+This will prepare the library for installation and compile the example codes located in `build/examples`.
 ## Installation
 
 To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:
@@ -73,13 +99,22 @@ target_link_libraries(your_target sparsebase::sparsebase)
 ```
 
 ### Linking to SparseBase at compile time 
-You can link SparseBase directly to your targets by passing the appropriate flag for your compiler. For example, for `g++`, add the `-lsparsebase` flag:
+If the library is not built in header-only mode, you must link it to your targets by passing the appropriate flag for your compiler. For example, for `g++`, add the `-lsparsebase` flag:
 ```bash
 g++ source.cpp -lsparsebase
 ```
-If the library was installed to a different location, say `/custom/location/`, then make sure to guide the compiler to the locations of the headers and the binary:
+If the library was installed to location other than the system-default, say `/custom/location/`, then make sure to guide the compiler to the locations of the headers and the binary:
 ```bash
 g++ source.cpp -I/custom/location/include -L/custom/location/lib -lsparsebase
+```
+
+On the other hand, if the library was compiled in header-only mode, then you do not need to provide a linking flag. For instance, instead of the two commands used above for compilation, you can simply use the following commands: 
+```bash
+g++ source.cpp
+```
+And if the library is not installed in the system-default location:
+```bash
+g++ source.cpp -I/custom/location/include -L/custom/location/lib
 ```
 
 ## Tests
@@ -154,9 +189,9 @@ There are certain limitations to readers, which will be addressed in future rele
 
 As explained in the previous section, readers will read to different formats.
 
-However, we can convert the data into the format we desire using ``SparseConverter``:
+However, we can convert the data into the format we desire using ``Converter``:
 ```cpp
-auto converter = sparsebase::SparseConverter<vertex_type, edge_type, value_type>();
+auto converter = sparsebase::Converter<vertex_type, edge_type, value_type>();
 auto converted = converter.convert(result, CSR_f);
 auto csr = dynamic_cast<sparsebase::CSR<vertex_type, edge_type, value_type>>(converted);
 ```

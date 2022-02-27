@@ -1,34 +1,49 @@
 #ifndef _SPARSEOBJECT_HPP
 #define _SPARSEOBJECT_HPP
 
+#include "config.h"
 #include "sparse_format.h"
 #include "sparse_reader.h"
+#include <functional>
+#include <memory>
 
 namespace sparsebase {
 
-class SparseObject {
+namespace object {
+
+class Object {
 public:
-  virtual ~SparseObject();
+  virtual ~Object();
   virtual void VerifyStructure() = 0;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class AbstractSparseObject : public SparseObject {
+class AbstractObject : public Object {
 protected:
-  SparseFormat<IDType, NNZType, ValueType> *connectivity_;
+  std::unique_ptr<format::Format, std::function<void(format::Format *)>> connectivity_;
 
 public:
-  virtual ~AbstractSparseObject();
-  SparseFormat<IDType, NNZType, ValueType> *get_connectivity();
+  virtual ~AbstractObject();
+  AbstractObject();
+  AbstractObject(const AbstractObject<IDType, NNZType, ValueType> &);
+  AbstractObject(AbstractObject<IDType, NNZType, ValueType> &&);
+  format::Format *get_connectivity() const;
+  format::Format *release_connectivity();
+  void set_connectivity(format::Format *, bool);
+  bool ConnectivityIsOwned() const;
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
-class Graph : public AbstractSparseObject<VertexID, NumEdges, Weight> {
+class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
 public:
-  Graph(SparseFormat<VertexID, NumEdges, Weight> *connectivity);
+  Graph(format::Format *connectivity);
   Graph();
-  void ReadConnectivityToCSR(const ReadsCSR<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCOO(const ReadsCOO<VertexID, NumEdges, Weight> &);
+  Graph(const Graph<VertexID, NumEdges, Weight> &);
+  Graph(Graph<VertexID, NumEdges, Weight> &&);
+  Graph<VertexID, NumEdges, Weight> &
+  operator=(const Graph<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCSR(const utils::ReadsCSR<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCOO(const utils::ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
   void ReadConnectivityFromEdgelistToCSR(std::string filename);
   void InitializeInfoFromConnection();
@@ -58,6 +73,11 @@ public:
 //     // ...
 // };
 
+} // namespace object
+
 } // namespace sparsebase
 
+#ifdef _HEADER_ONLY
+#include "sparse_object.cc"
+#endif
 #endif

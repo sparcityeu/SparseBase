@@ -6,9 +6,10 @@
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
-using value_type = void;
+using value_type = unsigned int;
 
 using namespace std;
+using namespace sparsebase;
 
 int main(int argc, char * argv[]){
   if (argc < 2){
@@ -20,14 +21,14 @@ int main(int argc, char * argv[]){
 
     // Reading the mtx into a graph object
     //auto reader = new sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name);
-    sparsebase::Graph<vertex_type, edge_type, value_type> g;
-    g.ReadConnectivityToCOO(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
+    object::Graph<vertex_type, edge_type, value_type> g;
+    g.ReadConnectivityToCOO(sparsebase::utils::MTXReader<vertex_type, edge_type, value_type>(file_name));
 
     cout << "Number of vertices: " << g.n_ << endl;
     cout << "Number of edges: " << g.m_ << endl;
 
     // Extracting connectivity information from a graph and casting it
-    auto coo = dynamic_cast<sparsebase::COO<vertex_type,edge_type,value_type>*>(g.get_connectivity());
+    auto coo = g.get_connectivity()->As<format::COO<vertex_type,edge_type,value_type>>();
 
     vertex_type nnz = coo->get_num_nnz();
     vertex_type * col = coo->get_col();
