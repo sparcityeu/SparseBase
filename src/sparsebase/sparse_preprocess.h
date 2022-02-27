@@ -10,6 +10,7 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
+#include <any>
 
 namespace sparsebase {
 
@@ -24,6 +25,14 @@ class PreprocessType {
   std::unique_ptr<PreprocessParams> params_;
 };
 
+class FType {
+public:
+  virtual std::any Extract(format::Format *format) = 0;
+  virtual ~FType() {};
+//protected:
+//  std::unique_ptr<PreprocessParams> params_;
+};
+
 template <class Parent, typename IDType, typename NNZType, typename ValueType>
 class ConverterMixin : public Parent {
   using Parent::Parent;
@@ -36,31 +45,37 @@ public:
   void ResetConverter();
 };
 
+template<typename ReturnType>
+using PreprocessFunction =
+ReturnType (*)(std::vector<format::Format *>, PreprocessParams *);
+
+using FeatureFunction =
+std::any (*)(std::vector<format::Format *>, PreprocessParams *);
+
 template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
           class PreprocessingImpl,
+          typename Function = PreprocessFunction<ReturnType>,
           typename Key = std::vector<std::type_index>,
           typename KeyHash = TypeIndexVectorHash,
           typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class FunctionMatcherMixin : public PreprocessingImpl {
 
-  using PreprocessFunction =
-      ReturnType (*)(std::vector<format::Format *>, PreprocessParams *);
-  
-  typedef std::unordered_map<Key, PreprocessFunction, KeyHash,
+
+  typedef std::unordered_map<Key, Function, KeyHash,
                              KeyEqualTo>
       ConversionMap;
 
 public:
   bool RegisterFunctionNoOverride(const Key &key_of_function,
-                                  const PreprocessFunction &func_ptr);
+                                  const Function &func_ptr);
   void RegisterFunction(const Key &key_of_function,
-                        const PreprocessFunction &func_ptr);
+                        const Function &func_ptr);
   bool UnregisterFunction(const Key &key_of_function);
 
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   ConversionMap _map_to_function;
-  std::tuple<PreprocessFunction, utils::ConversionSchema>
+  std::tuple<Function, utils::ConversionSchema>
   GetFunction(Key key, ConversionMap map,
               utils::Converter<IDType, NNZType, ValueType> &sc);
   template <typename F> std::vector<std::type_index> PackFormats(F sf);
@@ -69,7 +84,7 @@ protected:
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
-  ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
+  std::tuple<Function, std::vector<format::Format*>> Execute(utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
           SF... sfs);
 };
 
@@ -155,18 +170,25 @@ protected:
                 PreprocessParams*);
 };
 
+template< typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class FeaturePreprocessType : 
+    public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType, ConverterMixin<FType,
+        IDType, NNZType, ValueType>, FeatureFunction>{
+public:
+~FeaturePreprocessType();
+};
+
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class DegreeDistribution : 
-    public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType*, ConverterMixin<PreprocessType,
-        IDType, NNZType, ValueType>> {
+class DegreeDistribution : public FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
     struct DegreeDistributionParams : PreprocessParams{};
 
 public:
     DegreeDistribution();
-    FeatureType * GetDistribution(format::Format *format);
-    FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object);
+    std::any Extract(format::Format * format);
+    std::any GetDistribution(format::Format *format);
+    std::any GetDistribution(object::Graph<IDType, NNZType, ValueType> *object);
     //FeatureType * GetDistribution(SparseObject<IDType, NNZType, ValueType> *object);
-    static FeatureType * GetDegreeDistributionCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
+    static std::any GetDegreeDistributionCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
     ~DegreeDistribution();
 
 protected:
