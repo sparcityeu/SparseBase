@@ -155,10 +155,15 @@ protected:
                 PreprocessParams*);
 };
 
-template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class DegreeDistribution : 
+template< typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class FeaturePreprocessType : 
     public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType*, ConverterMixin<PreprocessType,
-        IDType, NNZType, ValueType>> {
+        IDType, NNZType, ValueType>>{
+
+}
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class DegreeDistribution : public FeatureProcessType<typename IDType, typename NNZType, typename ValueType, typename FeatureType> {
     struct DegreeDistributionParams : PreprocessParams{};
 
 public:
