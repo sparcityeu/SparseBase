@@ -467,6 +467,14 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
 }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType>::~FeaturePreprocessType(){};
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::extract(format::Format * format){
+  return  GetDistribution(format);
+};
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::~DegreeDistribution(){};
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>

@@ -159,15 +159,18 @@ template< typename IDType, typename NNZType, typename ValueType, typename Featur
 class FeaturePreprocessType : 
     public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType*, ConverterMixin<PreprocessType,
         IDType, NNZType, ValueType>>{
-
-}
+public:
+virtual FeatureType * extract(format::Format *format) = 0;
+~FeaturePreprocessType();
+};
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class DegreeDistribution : public FeatureProcessType<typename IDType, typename NNZType, typename ValueType, typename FeatureType> {
+class DegreeDistribution : public FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
     struct DegreeDistributionParams : PreprocessParams{};
 
 public:
     DegreeDistribution();
+    virtual FeatureType * extract(format::Format * format);
     FeatureType * GetDistribution(format::Format *format);
     FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object);
     //FeatureType * GetDistribution(SparseObject<IDType, NNZType, ValueType> *object);

@@ -39,6 +39,10 @@ int main(int argc, char * argv[]){
   cout << degree_distribution[0] << endl;
   cout << degree_distribution2[0] << endl;
 
+  feature_type * dd = extractor.extract(g.get_connectivity());
+
+  cout << dd[0] << endl;
+  cout << dd[0] << endl;
 
   return 0;
 }

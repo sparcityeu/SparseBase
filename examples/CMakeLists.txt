@@ -7,4 +7,5 @@ add_subdirectory(sparse_reader)
 add_subdirectory(sparse_feature)
 add_subdirectory(custom_format)
 add_subdirectory(custom_converter)
+add_subdirectory(degree_distribution)
 
