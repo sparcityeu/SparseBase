@@ -67,6 +67,21 @@ private:
   bool weighted_;
 };
 
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+class BinaryReader: public SparseReader<IDType, NNZType, ValueType>,
+  public ReadsCSR<IDType, NNZType, ValueType>,
+  public ReadsCOO<IDType, NNZType, ValueType> {
+public:
+  BinaryReader(std::string filename);
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+
+private:
+  std::string filename_;
+};
+
 } // namespace utils
 
 } // namespace sparsebase

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#include "sparsebase/sparse_file_format.h"
 
 using namespace sparsebase::format;
 
@@ -171,6 +172,63 @@ MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
 
 template <typename VertexID, typename NumEdges, typename Weight>
 MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
+
+template <typename IDType, typename NNZType, typename ValueType>
+BinaryReader<IDType, NNZType, ValueType>::BinaryReader(std::string filename) : filename_(filename) {}
+
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType> *
+BinaryReader<IDType, NNZType, ValueType>::ReadCSR() const {
+  auto sbff = SbffObject::Read(filename_);
+
+  if(sbff.get_name() != "csr"){
+    throw utils::ReaderException("SBFF file is not in CSR format");
+  }
+
+  NNZType* row_ptr;
+  IDType* col;
+  ValueType* vals = nullptr;
+
+  size_t row_ptr_size = sbff.template GetArray("row_ptr", row_ptr);
+  size_t col_size = sbff.template GetArray("col", col);
+
+  if(sbff.get_array_count() == 3){
+    sbff.template GetArray("vals", vals);
+  }
+
+  return new CSR<IDType, NNZType, ValueType>(row_ptr_size-1, col_size, row_ptr, col, vals, kOwned);
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType> *
+BinaryReader<IDType, NNZType, ValueType>::ReadCOO() const {
+  auto sbff = SbffObject::Read(filename_);
+
+  if(sbff.get_name() != "coo"){
+    throw utils::ReaderException("SBFF file is not in COO format");
+  }
+
+  IDType* row;
+  IDType* col;
+  ValueType* vals = nullptr;
+
+  size_t row_size = sbff.template GetArray("row", row);
+  size_t col_size = sbff.template GetArray("col", col);
+
+  if(sbff.get_array_count() == 3){
+    sbff.template GetArray("vals", vals);
+  }
+
+  // TODO: Maybe use a different approach for this
+  IDType max1 = std::max_element(row, row+row_size);
+  IDType max2 = std::max_element(col, col+col_size);
+  IDType max = std::max(max1,max2);
+
+  return new COO(max, row_size, row_size, row, col, vals, kOwned);
+}
 
 #if !defined(_HEADER_ONLY)
 #include "init/reader.inc"
