@@ -60,7 +60,9 @@ install(FILES
           sparsebase/sparse_converter.h 
           sparsebase/sparse_reader.h
           sparsebase/sparse_writer.h
-        sparsebase/sparse_file_format.h
+          sparsebase/sparse_file_format.h
+          sparsebase/external/pigo/pigo.hpp
+          sparsebase/external/json/json.hpp
         DESTINATION include/sparsebase)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION include/sparsebase)
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/init DESTINATION include/sparsebase)
