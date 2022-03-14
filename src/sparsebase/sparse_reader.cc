@@ -191,14 +191,16 @@ BinaryReader<IDType, NNZType, ValueType>::ReadCSR() const {
   IDType* col;
   ValueType* vals = nullptr;
 
-  size_t row_ptr_size = sbff.template GetArray("row_ptr", row_ptr);
-  size_t col_size = sbff.template GetArray("col", col);
+  auto dimensions = sbff.get_dimensions();
+
+  sbff.template GetArray("row_ptr", row_ptr);
+  sbff.template GetArray("col", col);
 
   if(sbff.get_array_count() == 3){
     sbff.template GetArray("vals", vals);
   }
 
-  return new CSR<IDType, NNZType, ValueType>(row_ptr_size-1, col_size, row_ptr, col, vals, kOwned);
+  return new CSR<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], row_ptr, col, vals, kOwned);
 }
 
 
@@ -215,19 +217,16 @@ BinaryReader<IDType, NNZType, ValueType>::ReadCOO() const {
   IDType* col;
   ValueType* vals = nullptr;
 
-  size_t row_size = sbff.template GetArray("row", row);
-  size_t col_size = sbff.template GetArray("col", col);
+  auto dimensions = sbff.get_dimensions();
+
+  sbff.template GetArray("row", row);
+  sbff.template GetArray("col", col);
 
   if(sbff.get_array_count() == 3){
     sbff.template GetArray("vals", vals);
   }
 
-  // TODO: Maybe use a different approach for this
-  IDType max1 = std::max_element(row, row+row_size);
-  IDType max2 = std::max_element(col, col+col_size);
-  IDType max = std::max(max1,max2);
-
-  return new COO(max, row_size, row_size, row, col, vals, kOwned);
+  return new COO(dimensions[0], dimensions[1], dimensions[1], row, col, vals, kOwned);
 }
 
 #if !defined(_HEADER_ONLY)
