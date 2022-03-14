@@ -56,8 +56,9 @@ install(FILES
           sparsebase/sparse_object.h 
           sparsebase/sparse_preprocess.h 
           sparsebase/sparse_converter.h 
-          sparsebase/sparse_reader.h 
-          DESTINATION include/sparsebase)
+          sparsebase/sparse_reader.h
+          sparsebase/external/pigo/pigo.hpp
+        DESTINATION include/sparsebase)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION include/sparsebase)
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/init DESTINATION include/sparsebase)
 include(GNUInstallDirs)
