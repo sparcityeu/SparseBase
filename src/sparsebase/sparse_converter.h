@@ -28,6 +28,11 @@ private:
   std::unordered_map<
       std::type_index,
       std::unordered_map<std::type_index,
+                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>>
+      conditional_move_map_;
+  std::unordered_map<
+      std::type_index,
+      std::unordered_map<std::type_index,
                          ConversionFunction>>
       conversion_map_;
   std::unordered_map<
@@ -41,6 +46,11 @@ private:
       std::unordered_map<std::type_index,
                          ConversionFunction>> *
   get_conversion_map(bool is_move_conversion);
+  std::unordered_map<
+      std::type_index,
+      std::unordered_map<std::type_index,
+                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>> *
+  get_conditional_conversion_map(bool is_move_conversion);
 
 public:
   Converter();
