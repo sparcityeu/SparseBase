@@ -23,18 +23,6 @@ Converter<IDType, NNZType, ValueType>::get_conditional_conversion_map(
     return &conditional_map_;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-std::unordered_map<
-    std::type_index,
-    std::unordered_map<std::type_index,
-                       ConversionFunction>> *
-Converter<IDType, NNZType, ValueType>::get_conversion_map(
-    bool is_move_conversion) {
-  if (is_move_conversion)
-    return &move_conversion_map_;
-  else
-    return &conversion_map_;
-}
-template <typename IDType, typename NNZType, typename ValueType>
 Format *CsrCooFunctionConditional(Format *source, context::Context* context) {
   auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
 
@@ -123,6 +111,38 @@ Format *CsrCooFunction(Format *source) {
       vals = nullptr;
     }
   }
+  auto *coo =
+      new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals, kOwned);
+
+  return coo;
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *
+CsrCooMoveConditionalFunction(Format *source, context::Context*) {
+  auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
+  auto col = csr->release_col();
+  auto vals = csr->release_vals();
+  std::vector<DimensionType> dimensions = csr->get_dimensions();
+  IDType n = dimensions[0];
+  IDType m = dimensions[1];
+  NNZType nnz = csr->get_num_nnz();
+
+  auto row = new IDType[nnz];
+  auto csr_row_ptr = csr->get_row_ptr();
+  auto csr_col = csr->get_col();
+
+  IDType count = 0;
+  for (IDType i = 0; i < n; i++) {
+    IDType start = csr_row_ptr[i];
+    IDType end = csr_row_ptr[i + 1];
+
+    for (IDType j = start; j < end; j++) {
+      row[count] = i;
+      count++;
+    }
+  }
+
+  // if (csr->vals != nullptr)
   auto *coo =
       new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals, kOwned);
 
@@ -287,6 +307,48 @@ Format *CooCsrFunction(Format *source) {
       new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
   return csr;
 }
+template <typename IDType, typename NNZType, typename ValueType>
+Format *
+CooCsrMoveConditionalFunction(Format *source, context::Context*) {
+  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
+
+  std::vector<DimensionType> dimensions = coo->get_dimensions();
+  IDType n = dimensions[0];
+  IDType m = dimensions[1];
+  NNZType nnz = coo->get_num_nnz();
+  auto coo_row = coo->get_row();
+  NNZType *row_ptr = new NNZType[n + 1];
+  IDType *col = coo->release_col();
+  ValueType *vals = coo->release_vals();
+
+  fill(row_ptr, row_ptr + n + 1, 0);
+
+  // We need to ensure that they are sorted
+  // Maybe add a sort check and then not do this if it is already sorted
+  std::vector<std::pair<IDType, IDType>> edges;
+  edges.reserve(nnz);
+  for (IDType i = 0; i < nnz; i++) {
+    edges.emplace_back(col[i], coo_row[i]);
+  }
+  sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
+
+  for (IDType i = 0; i < m; i++) {
+    row_ptr[edges[i].first]++;
+  }
+
+  for (IDType i = 1; i <= n; i++) {
+    row_ptr[i] += row_ptr[i - 1];
+  }
+
+  for (IDType i = n; i > 0; i--) {
+    row_ptr[i] = row_ptr[i - 1];
+  }
+  row_ptr[0] = 0;
+
+  auto csr =
+      new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
+  return csr;
+}
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *
@@ -333,23 +395,6 @@ CooCsrMoveFunction(Format *source) {
 
 template <typename IDType, typename NNZType, typename ValueType>
 Converter<IDType, NNZType, ValueType>::Converter() {
-  this->RegisterConversionFunction(
-      COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CooCsrFunction<IDType, NNZType, ValueType>);
-  this->RegisterConversionFunction(
-      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CsrCooFunction<IDType, NNZType, ValueType>);
-  this->RegisterConversionFunction(
-      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CsrCooMoveFunction<IDType, NNZType, ValueType>, true);
-  this->RegisterConversionFunction(
-      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CooCsrMoveFunction<IDType, NNZType, ValueType>,true);
-
   this->RegisterConditionalConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
@@ -364,20 +409,20 @@ Converter<IDType, NNZType, ValueType>::Converter() {
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
-  //this->RegisterConditionalConversionFunction(
-  //    CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-  //    COO<IDType, NNZType, ValueType>::get_format_id_static(),
-  //    [](context::Context*, context::Context*) -> bool {
-  //      return true;
-  //    },
-  //    CsrCooMoveFunction<IDType, NNZType, ValueType>, true);
-  //this->RegisterConditionalConversionFunction(
-  //    CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-  //    COO<IDType, NNZType, ValueType>::get_format_id_static(),
-  //    [](context::Context*, context::Context*) -> bool {
-  //      return true;
-  //    },
-  //    CooCsrMoveFunction<IDType, NNZType, ValueType>,true);
+  this->RegisterConditionalConversionFunction(
+      COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CooCsrFunctionConditional<IDType, NNZType, ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      }, true);
+  this->RegisterConditionalConversionFunction(
+      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      CsrCooFunctionConditional<IDType, NNZType, ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      }, true);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -407,26 +452,6 @@ void Converter<IDType, NNZType, ValueType>::RegisterConditionalConversionFunctio
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-void Converter<IDType, NNZType, ValueType>::RegisterConversionFunction(
-    std::type_index from_type, std::type_index to_type,
-    ConversionFunction conv_func,
-    bool is_move_conversion) {
-  auto map = get_conversion_map(is_move_conversion);
-  if (map->count(from_type) == 0) {
-    map->emplace(
-        from_type,
-        std::unordered_map<std::type_index,
-                           ConversionFunction>());
-  }
-
-  if ((*map)[from_type].count(to_type) == 0) {
-    (*map)[from_type].emplace(to_type, conv_func);
-  } else {
-    (*map)[from_type][to_type] = conv_func;
-  }
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
 Format *Converter<IDType, NNZType, ValueType>::ConvertConditional(
     Format *source, std::type_index to_type, context::Context* to_context, bool is_move_conversion) {
   if (to_type == source->get_format_id()) {
@@ -438,24 +463,6 @@ Format *Converter<IDType, NNZType, ValueType>::ConvertConditional(
         GetConditionalConversionFunction(source->get_format_id(), source->get_context(), to_type, to_context,
                               is_move_conversion);
     return conv_func(source, to_context);
-  } catch (...) {
-    // TODO: add type here
-    throw ConversionException(source->get_format_id().name(), to_type.name());
-    // mechanism
-  }
-}
-template <typename IDType, typename NNZType, typename ValueType>
-Format *Converter<IDType, NNZType, ValueType>::Convert(
-    Format *source, std::type_index to_type, bool is_move_conversion) {
-  if (to_type == source->get_format_id()) {
-    return source;
-  }
-
-  try {
-    ConversionFunction conv_func =
-        GetConversionFunction(source->get_format_id(), to_type,
-                              is_move_conversion);
-    return conv_func(source);
   } catch (...) {
     // TODO: add type here
     throw ConversionException(source->get_format_id().name(), to_type.name());
@@ -491,19 +498,23 @@ std::type_index from_type, context::Context* from_context,
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-ConversionFunction
-Converter<IDType, NNZType, ValueType>::GetConversionFunction(
-    std::type_index from_type, std::type_index to_type,
-    bool is_move_conversion) {
-  try {
-    auto map = get_conversion_map(is_move_conversion);
-    return (*map)[from_type][to_type];
-  } catch (...) {
-    throw ConversionException(from_type.name(), to_type.name());
-    // mechanism
+std::tuple<bool, context::Context*> Converter<IDType, NNZType, ValueType>::CanConvertConditional(
+std::type_index from_type, context::Context* from_context, std::type_index to_type, std::vector<context::Context*> to_contexts,
+                  bool is_move_conversion) {
+  auto map = get_conditional_conversion_map(is_move_conversion);
+  if (map->find(from_type) != map->end()) {
+    if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
+      for (auto condition_function_pair : (*map)[from_type][to_type]){
+        for (auto to_context : to_contexts) {
+          if (get<0>(condition_function_pair)(from_context, to_context)) {
+            return make_tuple<bool, context::Context*>(true, std::forward<context::Context*>(to_context));
+          }
+        }
+      }
+    }
   }
+  return make_tuple<bool, context::Context*>(false, nullptr);
 }
-
 template <typename IDType, typename NNZType, typename ValueType>
 bool Converter<IDType, NNZType, ValueType>::CanConvertConditional(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
@@ -516,18 +527,6 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
           return true;
         }
       }
-    }
-  }
-  return false;
-}
-template <typename IDType, typename NNZType, typename ValueType>
-bool Converter<IDType, NNZType, ValueType>::CanConvert(
-    std::type_index from_type, std::type_index to_type,
-    bool is_move_conversion) {
-  auto map = get_conversion_map(is_move_conversion);
-  if (map->find(from_type) != map->end()) {
-    if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
-      return true;
     }
   }
   return false;
@@ -550,23 +549,6 @@ Converter<IDType, NNZType, ValueType>::ApplyConversionSchemaConditional(
   return ret;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-std::vector<Format *>
-Converter<IDType, NNZType, ValueType>::ApplyConversionSchema(
-    ConversionSchema cs, std::vector<Format *> packed_sfs,
-    bool is_move_conversion) {
-  std::vector<Format *> ret;
-  for (int i = 0; i < cs.size(); i++) {
-    auto conversion = cs[i];
-    if (std::get<0>(conversion)) {
-      ret.push_back(this->Convert(packed_sfs[i], std::get<1>(conversion),
-                                  is_move_conversion));
-    } else {
-      ret.push_back(packed_sfs[i]);
-    }
-  }
-  return ret;
-}
 
 #if !defined(_HEADER_ONLY)
 #include "init/converter.inc"
