@@ -60,8 +60,8 @@ public:
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   ConversionMap _map_to_function;
-  std::tuple<PreprocessFunction, utils::ConversionSchema>
-  GetFunction(Key key, ConversionMap map,
+  std::tuple<PreprocessFunction, utils::ConversionSchemaConditional>
+  GetFunction(std::vector<format::Format *>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*>,
               utils::Converter<IDType, NNZType, ValueType> &sc);
   template <typename F> std::vector<std::type_index> PackFormats(F sf);
   template <typename F, typename... SF>
@@ -69,7 +69,7 @@ protected:
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
-  ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
+  ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, std::vector<context::Context*> contexts, F sf,
           SF... sfs);
 };
 
@@ -80,8 +80,8 @@ class ReorderPreprocessType
 protected:
 
 public:
-  IDType *GetReorder(format::Format *csr);
-  IDType *GetReorder(format::Format *csr, PreprocessParams  *params);
+  IDType *GetReorder(format::Format *csr, std::vector<context::Context*>);
+  IDType *GetReorder(format::Format *csr, PreprocessParams  *params, std::vector<context::Context*>);
   virtual ~ReorderPreprocessType();
 };
 
@@ -136,7 +136,7 @@ class TransformPreprocessType
           ConverterMixin<PreprocessType, IDType, NNZType, ValueType>> {
 public:
   format::Format *
-  GetTransformation(format::Format *csr);
+  GetTransformation(format::Format *csr, std::vector<context::Context*>);
   virtual ~TransformPreprocessType();
 };
 
@@ -163,8 +163,8 @@ class DegreeDistribution :
 
 public:
     DegreeDistribution();
-    FeatureType * GetDistribution(format::Format *format);
-    FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object);
+    FeatureType * GetDistribution(format::Format *format, std::vector<context::Context*>);
+    FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object, std::vector<context::Context*>);
     //FeatureType * GetDistribution(SparseObject<IDType, NNZType, ValueType> *object);
     static FeatureType * GetDegreeDistributionCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
     ~DegreeDistribution();
