@@ -14,6 +14,15 @@
 
 namespace sparsebase {
 
+namespace context {
+  struct Context{};
+
+  struct CPUContext : Context{};
+
+  struct CUDAContext : Context{};
+
+};
+
 namespace format {
 
 enum Ownership {
@@ -52,6 +61,7 @@ public:
   virtual std::vector<DimensionType> get_dimensions() const = 0;
   virtual DimensionType get_num_nnz() const = 0;
   virtual DimensionType get_order() const = 0;
+  virtual context::Context* get_context() const = 0;
 
   template <typename T> T *As() {
     if (this->get_format_id() == std::type_index(typeid(T))) {
@@ -72,6 +82,9 @@ public:
   virtual DimensionType get_order() const{
     return order_;
   }
+  virtual context::Context* get_context() const{
+    return context_.get();
+  }
   std::type_index get_format_id() final {
     return typeid(FormatType);
   }
@@ -81,6 +94,7 @@ protected:
   DimensionType order_;
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
+  std::unique_ptr<sparsebase::context::Context> context_;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
