@@ -75,14 +75,15 @@ class preprocess_init(explicit_initialization):
             for nnz_type in nnz_types:
                 for value_type in value_types:
                     for preprocess_return_type in [vertex_type+'*', 'Format*']:
-                        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">, FeatureFunction>;\n")
+                        #self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">, FeatureFunction>;\n")
                         self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">, PreprocessFunction<"+preprocess_return_type+">>;\n")
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
                     for dist_type in float_types:
                         self.out_stream.write(PREFIX+"DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-        print_implementations(['ReorderPreprocessType', 'GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform'], self.out_stream)
+                        self.out_stream.write(PREFIX+"Degrees_DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
+        print_implementations(['ReorderPreprocessType', 'GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform', 'Degrees'], self.out_stream)
 
 class converter_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
