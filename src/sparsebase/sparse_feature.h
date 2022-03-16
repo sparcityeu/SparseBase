@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <tuple>
 #include <vector>
+#include <set>
 #include <any>
 
 namespace sparsebase::feature {
@@ -14,11 +15,26 @@ template<typename Interface>
 struct Implementation
 {
 public:
+  Implementation() = default;
   template<typename ConcreteType>
-  Implementation(ConcreteType&& object)
+  explicit Implementation(ConcreteType&& object)
       : storage{std::forward<ConcreteType>(object)}
         , getter{ [](std::any &storage) -> Interface& { return std::any_cast<ConcreteType&>(storage); } }
   {}
+  Implementation(const Implementation& object)
+      : storage{object.storage}
+      , getter{ object.getter }
+  {}
+  Implementation(Implementation&& object)
+      : storage{std::move(object.storage)}
+      , getter{ std::move(object.getter) }
+  {}
+  Implementation& operator=(Implementation other)
+  {
+    storage = other.storage;
+    getter = other.getter;
+    return *this;
+  }
 
   Interface *operator->() { return &getter(storage); }
 
@@ -27,9 +43,7 @@ private:
   Interface& (*getter)(std::any&);
 };
 
-template<typename FeatureType>
 using Feature = Implementation<preprocess::FType>;
-//using FeatureType = Implementation<std::common_type>;
 
 template<class ClassType,
           typename Key = std::vector<std::type_index>,
@@ -43,7 +57,9 @@ protected:
                      KeyHash,
                      KeyEqualTo> map_;
   void RegisterClass(std::vector<std::type_index> instants, ClassType);
-
+  std::tuple<ClassType, std::vector<std::type_index>> MatchClass(std::unordered_map<std::type_index, ClassType> & source, std::vector<std::type_index> & ordered, unsigned int K);
+  void GetClassesHelper(std::unordered_map<std::type_index, ClassType> & source, std::vector<std::type_index> & ordered, std::vector<ClassType> & res);
+  std::vector<ClassType> GetClasses(std::unordered_map<std::type_index, ClassType> & source);
 };
 
 
@@ -51,8 +67,16 @@ template<typename IDType, typename NNZType, typename ValueType, typename Feature
 class Extractor: public ClassMatcherMixin<preprocess::FType*> {
 public:
   Extractor();
-  std::vector<std::any> Extract(std::vector<Feature<FeatureType>> & features,
+  ~Extractor();
+  std::unordered_map<std::type_index, std::any> Extract(std::vector<Feature> & features,
                                      format::Format * format);
+  std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
+  void Add(Feature f);
+  void Sub(Feature f);
+  std::vector<std::type_index> GetList();
+  void PrintFuncList();
+private:
+  std::unordered_map<std::type_index, preprocess::FType*> in_;
 };
 
 } // namespace sparsebase::feature

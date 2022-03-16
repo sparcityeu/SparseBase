@@ -47,6 +47,20 @@ public:
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
+class FeatureException : public Exception {
+  std::string msg_;
+public:
+  FeatureException(const std::string feature, const std::string extractor) : msg_("ERROR! " + feature + " is not registered in " + extractor + "!"){}
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
+class FeatureParamsException : public Exception {
+  std::string msg_;
+public:
+  FeatureParamsException(const std::string feature, const std::string type) : msg_("ERROR! " + feature + " do not store params for " + type + "!"){}
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
 } // namespace utils
 
 } // namespace sparsebase
