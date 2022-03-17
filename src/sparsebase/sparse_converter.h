@@ -6,6 +6,9 @@
 #include <tuple>
 #include <unordered_map>
 #include <functional>
+#ifdef CUDA
+#include "cuda.cuh"
+#endif
 
 namespace sparsebase {
 

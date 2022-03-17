@@ -69,6 +69,48 @@ Format *CsrCooFunctionConditional(Format *source, context::Context* context) {
 
   return coo;
 }
+#ifdef CUDA
+template <typename IDType, typename NNZType, typename ValueType>
+Format *
+CsrCUDACsrConditionalFunction(Format *source, context::Context*context) {
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(context);
+  auto csr = source->As<CSR<IDType, NNZType, ValueType>>();
+  cudaSetDevice(gpu_context->device_id);
+  NNZType * row_ptr;
+  IDType * col;
+  ValueType * vals = nullptr; 
+  cudaMalloc(&row_ptr, csr->get_dimensions()[0]*sizeof(NNZType));
+  cudaMemcpy(row_ptr, csr->get_row_ptr(), csr->get_dimensions()[0]*sizeof(NNZType), cudaMemcpyHostToDevice);
+  cudaMalloc(&col, csr->get_num_nnz()*sizeof(IDType));
+  cudaMemcpy(col, csr->get_col(), csr->get_num_nnz()*sizeof(IDType), cudaMemcpyHostToDevice);
+  if (csr->get_vals()!=nullptr){
+    cudaMalloc(&vals, csr->get_num_nnz() * sizeof(ValueType));
+    cudaMemcpy(vals, csr->get_vals(), csr->get_num_nnz() * sizeof(ValueType),
+               cudaMemcpyHostToDevice);
+  }
+  return new CUDACSR<IDType, NNZType, ValueType>(csr->get_dimensions()[0], csr->get_dimensions()[0], csr->get_num_nnz(), row_ptr, col, vals, *gpu_context);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *
+CUDACsrCsrConditionalFunction(Format *source, context::Context*context) {
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(source->get_context());
+  auto cuda_csr = source->As<CUDACSR<IDType, NNZType, ValueType>>();
+  cudaSetDevice(gpu_context->device_id);
+  int n = cuda_csr->get_dimensions()[0];
+  int nnz = cuda_csr->get_num_nnz();
+  NNZType * row_ptr = new NNZType[nnz];
+  IDType * col = new IDType[n];
+  ValueType * vals = nullptr; 
+  cudaMemcpy(row_ptr, cuda_csr->get_row_ptr(), n*sizeof(NNZType), cudaMemcpyDeviceToHost);
+  cudaMemcpy(col, cuda_csr->get_col(), nnz*sizeof(IDType), cudaMemcpyDeviceToHost);
+  if (cuda_csr->get_vals()!=nullptr){
+    vals = new ValueType[nnz];
+    cudaMemcpy(vals, cuda_csr->get_vals(), nnz * sizeof(ValueType),
+               cudaMemcpyDeviceToHost);
+  }
+  return new CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
+}
+#endif
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CsrCooFunction(Format *source) {
   auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
@@ -409,6 +451,22 @@ Converter<IDType, NNZType, ValueType>::Converter() {
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
+  #ifdef CUDA
+  this->RegisterConditionalConversionFunction(
+      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      });
+  this->RegisterConditionalConversionFunction(
+      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CUDACsrCsrConditionalFunction<IDType, NNZType, ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      });
+  #endif
   this->RegisterConditionalConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),

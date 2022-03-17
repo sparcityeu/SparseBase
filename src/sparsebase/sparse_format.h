@@ -19,7 +19,10 @@ namespace context {
 
   struct CPUContext : Context{};
 
-  struct CUDAContext : Context{};
+  struct CUDAContext : Context{
+    int device_id;
+    CUDAContext(int did): device_id(did){}
+  };
 
 };
 
