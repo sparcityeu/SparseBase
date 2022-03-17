@@ -155,6 +155,24 @@ protected:
                 PreprocessParams*);
 };
 
+template<typename IDType, typename NNZType, typename FeatureType>
+__global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType* xadj, const IDType* adj, NNZType n, FeatureType* emetrics, IDType SM_FAC);
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class JaccardWeights : 
+    public FunctionMatcherMixin<IDType, NNZType, ValueType, format::Format*, ConverterMixin<PreprocessType,
+        IDType, NNZType, ValueType>> {
+    struct JaccardParams : PreprocessParams{};
+
+public:
+    JaccardWeights ();
+    format::Format * GetJaccardWeights(format::Format *format, std::vector<context::Context*>);
+    static format::Format* GetJaccardWeightCUDACSR(std::vector<format::Format *> formats, PreprocessParams  * params);
+    ~JaccardWeights ();
+
+protected:
+    //GetDegreeDistributionCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats, FeatureParams *);
+    //static float * GetDegreeDistributionCSR(SparseObject<IDtype, NNZType, ValueType> * obj);
+};
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class DegreeDistribution : 
     public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType*, ConverterMixin<PreprocessType,

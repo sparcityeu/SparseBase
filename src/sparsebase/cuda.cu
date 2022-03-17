@@ -33,8 +33,8 @@ CUDACSR<IDType, NNZType, ValueType> &CUDACSR<IDType, NNZType, ValueType>::operat
   cudaSetDevice(gpu_context->device_id);
   cudaMalloc(&col, rhs.get_num_nnz()*sizeof(IDType));
   cudaMemcpy(col, rhs.get_col(), rhs.get_num_nnz()*sizeof(IDType), cudaMemcpyDeviceToDevice);
-  cudaMalloc(&row_ptr, rhs.get_dimensions()[0]*sizeof(NNZType));
-  cudaMemcpy(row_ptr, rhs.get_row_ptr(), rhs.get_dimensions()[0]*sizeof(NNZType), cudaMemcpyDeviceToDevice);
+  cudaMalloc(&row_ptr, (rhs.get_dimensions()[0]+1)*sizeof(NNZType));
+  cudaMemcpy(row_ptr, rhs.get_row_ptr(), (rhs.get_dimensions()[0]+1)*sizeof(NNZType), cudaMemcpyDeviceToDevice);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
     cudaMalloc(&vals, rhs.get_num_nnz()*sizeof(ValueType));
@@ -63,7 +63,7 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(const CUDACSR<IDType, NNZType, Valu
   cudaMalloc(&col, rhs.get_num_nnz()*sizeof(IDType));
   cudaMemcpy(col, rhs.get_col(), rhs.get_num_nnz()*sizeof(IDType), cudaMemcpyDeviceToDevice);
   cudaMalloc(&row_ptr, rhs.get_dimensions()[0]*sizeof(NNZType));
-  cudaMemcpy(row_ptr, rhs.get_row_ptr(), rhs.get_dimensions()[0]*sizeof(NNZType), cudaMemcpyDeviceToDevice);
+  cudaMemcpy(row_ptr, rhs.get_row_ptr(), (rhs.get_dimensions()[0]+1)*sizeof(NNZType), cudaMemcpyDeviceToDevice);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
     cudaMalloc(&vals, rhs.get_num_nnz()*sizeof(ValueType));
@@ -291,15 +291,21 @@ bool CUDAArray<ValueType>::ValsIsOwned() {
 template <typename ValueType>
 CUDAArray<ValueType>::~CUDAArray() {}
 // format.inc
+
 template class CUDACSR<unsigned int, unsigned int, unsigned int>;
-template class CUDACSR<unsigned int, unsigned int,  int>;
-template class CUDACSR<unsigned int,  int, unsigned int>;
-template class CUDACSR<unsigned int,  int,  int>;
-template class CUDACSR< int, unsigned int, unsigned int>;
-template class CUDACSR< int, unsigned int,  int>;
-template class CUDACSR< int,  int, unsigned int>;
-template class CUDACSR< int,  int,  int>;
+template class CUDACSR<unsigned int, unsigned int, int>;
+template class CUDACSR<unsigned int, unsigned int, float>;
+template class CUDACSR<unsigned int, int, unsigned int>;
+template class CUDACSR<unsigned int, int, int>;
+template class CUDACSR<unsigned int, int, float>;
+template class CUDACSR<int, unsigned int, unsigned int>;
+template class CUDACSR<int, unsigned int, int>;
+template class CUDACSR<int, unsigned int, float>;
+template class CUDACSR<int, int, unsigned int>;
+template class CUDACSR<int, int, int>;
+template class CUDACSR<int, int, float>;
 template class CUDAArray<int>;
 template class CUDAArray<unsigned int>;
+template class CUDAArray<float>;
 };
 };
