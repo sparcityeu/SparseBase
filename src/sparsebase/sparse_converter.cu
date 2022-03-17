@@ -92,6 +92,28 @@ CsrCUDACsrConditionalFunction(Format *source, context::Context*context) {
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format *
+CUDACsrCUDACsrConditionalFunction(Format *source, context::Context*context) {
+  context::CUDAContext* dest_gpu_context = static_cast<context::CUDAContext*>(context);
+  auto cuda_csr = source->As<CUDACSR<IDType, NNZType, ValueType>>();
+  context::CUDAContext* source_gpu_context = static_cast<context::CUDAContext*>(cuda_csr->get_context());
+  cudaSetDevice(dest_gpu_context->device_id);
+  cudaDeviceEnablePeerAccess(source_gpu_context->device_id,0);
+  NNZType * row_ptr;
+  IDType * col;
+  ValueType * vals = nullptr; 
+  cudaMalloc(&row_ptr, cuda_csr->get_dimensions()[0]*sizeof(NNZType));
+  cudaMemcpy(row_ptr, cuda_csr->get_row_ptr(), cuda_csr->get_dimensions()[0]*sizeof(NNZType), cudaMemcpyDeviceToDevice);
+  cudaMalloc(&col, cuda_csr->get_num_nnz()*sizeof(IDType));
+  cudaMemcpy(col, cuda_csr->get_col(), cuda_csr->get_num_nnz()*sizeof(IDType), cudaMemcpyDeviceToDevice);
+  if (cuda_csr->get_vals()!=nullptr){
+    cudaMalloc(&vals, cuda_csr->get_num_nnz() * sizeof(ValueType));
+    cudaMemcpy(vals, cuda_csr->get_vals(), cuda_csr->get_num_nnz() * sizeof(ValueType),
+               cudaMemcpyDeviceToDevice);
+  }
+  return new CUDACSR<IDType, NNZType, ValueType>(cuda_csr->get_dimensions()[0], cuda_csr->get_dimensions()[0], cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *
 CUDACsrCsrConditionalFunction(Format *source, context::Context*context) {
   context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(source->get_context());
   auto cuda_csr = source->As<CUDACSR<IDType, NNZType, ValueType>>();
@@ -392,6 +414,16 @@ CooCsrMoveConditionalFunction(Format *source, context::Context*) {
   return csr;
 }
 
+#ifdef CUDA
+bool CUDAPeerToPeer(context::Context* from, context::Context* to){
+  auto from_gpu = static_cast<context::CUDAContext*>(from);
+  auto to_gpu = static_cast<context::CUDAContext*>(to);
+  int can_access;
+  cudaDeviceCanAccessPeer(&can_access, from_gpu->device_id, to_gpu->device_id);
+  return can_access;
+}
+#endif
+
 template <typename IDType, typename NNZType, typename ValueType>
 Format *
 CooCsrMoveFunction(Format *source) {
@@ -452,6 +484,11 @@ Converter<IDType, NNZType, ValueType>::Converter() {
         return true;
       });
   #ifdef CUDA
+  this->RegisterConditionalConversionFunction(
+      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CUDACsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
+      CUDAPeerToPeer);
   this->RegisterConditionalConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
