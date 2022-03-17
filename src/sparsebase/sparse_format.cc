@@ -380,6 +380,98 @@ bool CSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
 
+template <typename ValueType>
+Array<ValueType>::Array(Array<ValueType> &&rhs):
+      vals_(std::move(rhs.vals_)) {
+  this->nnz_ = rhs.get_num_nnz();
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  rhs.vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      nullptr, BlankDeleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+template <typename ValueType>
+Array<ValueType> &Array<ValueType>::operator=(
+    const Array<ValueType> &rhs) {
+  this->nnz_ = rhs.nnz_;
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  ValueType *vals = nullptr;
+  if (rhs.get_vals() != nullptr) {
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+  }
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  return *this;
+}
+template <typename ValueType>
+Array<ValueType>::Array(const Array<ValueType> &rhs)
+    : vals_(nullptr, BlankDeleter<ValueType>()) {
+  this->nnz_ = rhs.nnz_;
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  ValueType *vals = nullptr;
+  if (rhs.get_vals() != nullptr) {
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+  }
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+template <typename ValueType>
+Array<ValueType>::Array(DimensionType nnz, ValueType* vals, Ownership own)
+    :  vals_(vals, BlankDeleter<ValueType>()) {
+  this->order_ = 1;
+  this->dimension_ = {(DimensionType)nnz};
+  this->nnz_ = nnz;
+  if (own == kOwned) {
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, Deleter<ValueType>());
+  }
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+
+template <typename ValueType>
+Format *Array<ValueType>::clone() const {
+  return new Array(*this);
+}
+template <typename ValueType>
+ValueType *Array<ValueType>::get_vals() const {
+  return vals_.get();
+}
+template <typename ValueType>
+ValueType *Array<ValueType>::release_vals() {
+  auto vals = vals_.release();
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, BlankDeleter<ValueType>());
+  return vals;
+}
+
+template <typename ValueType>
+void Array<ValueType>::set_vals(ValueType *vals, Ownership own) {
+  if (own == kOwned) {
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, Deleter<ValueType>());
+  } else {
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, BlankDeleter<ValueType>());
+  }
+}
+
+template <typename ValueType>
+bool Array<ValueType>::ValsIsOwned() {
+  return (this->vals_.get_deleter().target_type() !=
+          typeid(BlankDeleter<ValueType>));
+}
+template <typename ValueType>
+Array<ValueType>::~Array() {}
+template class Array<int>;
+template class Array<unsigned int>;
 #if !defined(_HEADER_ONLY)
 #include "init/format.inc"
 #endif

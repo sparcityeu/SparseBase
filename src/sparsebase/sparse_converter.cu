@@ -70,6 +70,34 @@ Format *CsrCooFunctionConditional(Format *source, context::Context* context) {
   return coo;
 }
 #ifdef CUDA
+template <typename ValueType>
+Format *
+CUDAArrayArrayConditionalFunction(Format *source, context::Context*context) {
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(source->get_context());
+  auto cuda_array = source->As<CUDAArray<ValueType>>();
+  cudaSetDevice(gpu_context->device_id);
+  ValueType * vals = nullptr; 
+  if (cuda_array->get_vals()!=nullptr){
+    vals = new ValueType[cuda_array->get_num_nnz()];
+    cudaMemcpy(vals, cuda_array->get_vals(), cuda_array->get_num_nnz() * sizeof(ValueType),
+               cudaMemcpyDeviceToHost);
+  }
+  return new Array<ValueType>(cuda_array->get_num_nnz(), vals);
+}
+template <typename ValueType>
+Format *
+ArrayCUDAArrayConditionalFunction(Format *source, context::Context*context) {
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(context);
+  auto array = source->As<Array<ValueType>>();
+  cudaSetDevice(gpu_context->device_id);
+  ValueType * vals = nullptr; 
+  if (array->get_vals()!=nullptr){
+    cudaMalloc(&vals, array->get_num_nnz() * sizeof(ValueType));
+    cudaMemcpy(vals, array->get_vals(), array->get_num_nnz() * sizeof(ValueType),
+               cudaMemcpyHostToDevice);
+  }
+  return new CUDAArray<ValueType>(array->get_num_nnz(), vals, *gpu_context);
+}
 template <typename IDType, typename NNZType, typename ValueType>
 Format *
 CsrCUDACsrConditionalFunction(Format *source, context::Context*context) {
@@ -489,6 +517,20 @@ Converter<IDType, NNZType, ValueType>::Converter() {
       CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CUDACsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
       CUDAPeerToPeer);
+  this->RegisterConditionalConversionFunction(
+      Array<ValueType>::get_format_id_static(),
+      CUDAArray<ValueType>::get_format_id_static(),
+      ArrayCUDAArrayConditionalFunction<ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      });
+  this->RegisterConditionalConversionFunction(
+      CUDAArray<ValueType>::get_format_id_static(),
+      Array<ValueType>::get_format_id_static(),
+      CUDAArrayArrayConditionalFunction<ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      });
   this->RegisterConditionalConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),

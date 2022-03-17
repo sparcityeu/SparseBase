@@ -27,14 +27,18 @@ CUDACSR<IDType, NNZType, ValueType> &CUDACSR<IDType, NNZType, ValueType>::operat
   this->nnz_ = rhs.nnz_;
   this->order_ = 2;
   this->dimension_ = rhs.dimension_;
-  auto col = new IDType[rhs.get_num_nnz()];
-  std::copy(rhs.get_col(), rhs.get_col() + rhs.get_num_nnz(), col);
-  auto row_ptr = new NNZType[rhs.get_num_nnz()];
-  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + rhs.get_num_nnz(), row_ptr);
+  IDType * col;
+  NNZType * row_ptr;
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(this->get_cuda_context());
+  cudaSetDevice(gpu_context->device_id);
+  cudaMalloc(&col, rhs.get_num_nnz()*sizeof(IDType));
+  cudaMemcpy(col, rhs.get_col(), rhs.get_num_nnz()*sizeof(IDType), cudaMemcpyDeviceToDevice);
+  cudaMalloc(&row_ptr, rhs.get_dimensions()[0]*sizeof(NNZType));
+  cudaMemcpy(row_ptr, rhs.get_row_ptr(), rhs.get_dimensions()[0]*sizeof(NNZType), cudaMemcpyDeviceToDevice);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
-    vals = new ValueType[rhs.get_num_nnz()];
-    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+    cudaMalloc(&vals, rhs.get_num_nnz()*sizeof(ValueType));
+    cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz()*sizeof(ValueType), cudaMemcpyDeviceToDevice);
   }
   this->col_ = std::unique_ptr<IDType, std::function<void(IDType *)>>(
       col, CUDADeleter<IDType>());
@@ -52,14 +56,18 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(const CUDACSR<IDType, NNZType, Valu
   this->nnz_ = rhs.nnz_;
   this->order_ = 2;
   this->dimension_ = rhs.dimension_;
-  auto col = new IDType[rhs.get_num_nnz()];
-  std::copy(rhs.get_col(), rhs.get_col() + rhs.get_num_nnz(), col);
-  auto row_ptr = new NNZType[rhs.get_num_nnz()];
-  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + rhs.get_num_nnz(), row_ptr);
+  IDType * col;
+  NNZType * row_ptr;
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(this->get_context());
+  cudaSetDevice(gpu_context->device_id);
+  cudaMalloc(&col, rhs.get_num_nnz()*sizeof(IDType));
+  cudaMemcpy(col, rhs.get_col(), rhs.get_num_nnz()*sizeof(IDType), cudaMemcpyDeviceToDevice);
+  cudaMalloc(&row_ptr, rhs.get_dimensions()[0]*sizeof(NNZType));
+  cudaMemcpy(row_ptr, rhs.get_row_ptr(), rhs.get_dimensions()[0]*sizeof(NNZType), cudaMemcpyDeviceToDevice);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
-    vals = new ValueType[rhs.get_num_nnz()];
-    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+    cudaMalloc(&vals, rhs.get_num_nnz()*sizeof(ValueType));
+    cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz()*sizeof(ValueType), cudaMemcpyDeviceToDevice);
   }
   this->col_ = std::unique_ptr<IDType, std::function<void(IDType *)>>(
       col, CUDADeleter<IDType>());
@@ -67,7 +75,6 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(const CUDACSR<IDType, NNZType, Valu
       row_ptr, CUDADeleter<NNZType>());
   this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
       vals, CUDADeleter<ValueType>());
-  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext(rhs.get_cuda_context()->device_id));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr,
@@ -188,6 +195,101 @@ bool CUDACSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType>::~CUDACSR() {}
+
+template <typename ValueType>
+CUDAArray<ValueType>::CUDAArray(CUDAArray<ValueType> &&rhs):
+      vals_(std::move(rhs.vals_)) {
+  this->nnz_ = rhs.get_num_nnz();
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  rhs.vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+      nullptr, BlankDeleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+template <typename ValueType>
+CUDAArray<ValueType> &CUDAArray<ValueType>::operator=(
+    const CUDAArray<ValueType> &rhs) {
+  this->nnz_ = rhs.nnz_;
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  ValueType *vals = nullptr;
+  context::CUDAContext* gpu_context = static_cast<context::CUDAContext*>(this->get_context());
+  if (rhs.get_vals() != nullptr) {
+    cudaSetDevice(gpu_context->device_id);
+    cudaMalloc(&vals, rhs.get_num_nnz()*sizeof(ValueType));
+    cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz()*sizeof(ValueType), cudaMemcpyDeviceToDevice);
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+  }
+  this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+      vals, CUDADeleter<ValueType>());
+  return *this;
+}
+template <typename ValueType>
+CUDAArray<ValueType>::CUDAArray(const CUDAArray<ValueType> &rhs)
+    : vals_(nullptr, BlankDeleter<ValueType>()) {
+  this->nnz_ = rhs.nnz_;
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  ValueType *vals = nullptr;
+  if (rhs.get_vals() != nullptr) {
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+  }
+  this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+template <typename ValueType>
+CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType* vals, context::CUDAContext context, Ownership own)
+    :  vals_(vals, BlankDeleter<ValueType>()) {
+  this->order_ = 1;
+  this->dimension_ = {(DimensionType)nnz};
+  this->nnz_ = nnz;
+  if (own == kOwned) {
+    this->vals_ =
+        std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+            vals, CUDADeleter<ValueType>());
+  }
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext(context));
+}
+
+template <typename ValueType>
+Format *CUDAArray<ValueType>::clone() const {
+  return new CUDAArray(*this);
+}
+template <typename ValueType>
+ValueType *CUDAArray<ValueType>::get_vals() const {
+  return vals_.get();
+}
+template <typename ValueType>
+ValueType *CUDAArray<ValueType>::release_vals() {
+  auto vals = vals_.release();
+  this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+      vals, BlankDeleter<ValueType>());
+  return vals;
+}
+
+template <typename ValueType>
+void CUDAArray<ValueType>::set_vals(ValueType *vals, Ownership own) {
+  if (own == kOwned) {
+    this->vals_ =
+        std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+            vals, Deleter<ValueType>());
+  } else {
+    this->vals_ =
+        std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
+            vals, BlankDeleter<ValueType>());
+  }
+}
+
+template <typename ValueType>
+bool CUDAArray<ValueType>::ValsIsOwned() {
+  return (this->vals_.get_deleter().target_type() !=
+          typeid(BlankDeleter<ValueType>));
+}
+template <typename ValueType>
+CUDAArray<ValueType>::~CUDAArray() {}
 // format.inc
 template class CUDACSR<unsigned int, unsigned int, unsigned int>;
 template class CUDACSR<unsigned int, unsigned int,  int>;
@@ -197,5 +299,7 @@ template class CUDACSR< int, unsigned int, unsigned int>;
 template class CUDACSR< int, unsigned int,  int>;
 template class CUDACSR< int,  int, unsigned int>;
 template class CUDACSR< int,  int,  int>;
+template class CUDAArray<int>;
+template class CUDAArray<unsigned int>;
 };
 };

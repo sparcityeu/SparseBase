@@ -133,6 +133,28 @@ protected:
   std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
 };
 
+template <typename ValueType>
+class Array : public FormatImplementation<Array<ValueType>> {
+public:
+  Array(DimensionType nnz, ValueType *row_ptr, Ownership own = kNotOwned);
+  Array(const Array<ValueType> &);
+  Array(Array<ValueType> &&);
+  Array<ValueType> &
+  operator=(const Array<ValueType> &);
+  Format *clone() const override;
+  virtual ~Array();
+  ValueType *get_vals() const;
+
+  ValueType *release_vals();
+
+  void set_vals(ValueType *, Ownership own = kNotOwned);
+
+  virtual bool ValsIsOwned();
+
+protected:
+  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+};
+
 template <typename IDType, typename NNZType, typename ValueType>
 class CSR : public FormatImplementation<CSR<IDType, NNZType, ValueType>> {
 public:

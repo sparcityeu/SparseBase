@@ -48,6 +48,28 @@ namespace format {
 
   };
 
+  template <typename ValueType>
+  class CUDAArray : public FormatImplementation<CUDAArray<ValueType>> {
+  public:
+    CUDAArray(DimensionType nnz, ValueType *row_ptr, context::CUDAContext context, Ownership own = kNotOwned);
+    CUDAArray(const CUDAArray<ValueType> &);
+    CUDAArray(CUDAArray<ValueType> &&);
+    CUDAArray<ValueType> &
+    operator=(const CUDAArray<ValueType> &);
+    Format *clone() const override;
+    virtual ~CUDAArray();
+    ValueType *get_vals() const;
+
+    ValueType *release_vals();
+
+    void set_vals(ValueType *, Ownership own = kNotOwned);
+
+    virtual bool ValsIsOwned();
+
+  protected:
+    std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
+  };
+
 };
 namespace utils {
 
