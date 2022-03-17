@@ -224,8 +224,8 @@ CSR<IDType, NNZType, ValueType> &CSR<IDType, NNZType, ValueType>::operator=(
   this->dimension_ = rhs.dimension_;
   auto col = new IDType[rhs.get_num_nnz()];
   std::copy(rhs.get_col(), rhs.get_col() + rhs.get_num_nnz(), col);
-  auto row_ptr = new NNZType[rhs.get_num_nnz()];
-  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + rhs.get_num_nnz(), row_ptr);
+  auto row_ptr = new NNZType[(rhs.get_dimensions()[0]+1)];
+  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + (rhs.get_dimensions()[0]+1), row_ptr);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
     vals = new ValueType[rhs.get_num_nnz()];
@@ -249,8 +249,8 @@ CSR<IDType, NNZType, ValueType>::CSR(const CSR<IDType, NNZType, ValueType> &rhs)
   this->dimension_ = rhs.dimension_;
   auto col = new IDType[rhs.get_num_nnz()];
   std::copy(rhs.get_col(), rhs.get_col() + rhs.get_num_nnz(), col);
-  auto row_ptr = new NNZType[rhs.get_num_nnz()];
-  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + rhs.get_num_nnz(), row_ptr);
+  auto row_ptr = new NNZType[(rhs.get_dimensions()[0]+1)];
+  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + (rhs.get_dimensions()[0]+1), row_ptr);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
     vals = new ValueType[rhs.get_num_nnz()];
@@ -472,6 +472,7 @@ template <typename ValueType>
 Array<ValueType>::~Array() {}
 template class Array<int>;
 template class Array<unsigned int>;
+template class Array<float>;
 #if !defined(_HEADER_ONLY)
 #include "init/format.inc"
 #endif
