@@ -1,48 +1,10 @@
 #include <iostream>
 #include "sparse_format.h"
+#include "cuda.cuh"
 
 namespace sparsebase {
 
 namespace format {
-  template <typename T> struct CUDADeleter {
-    void operator()(T *obj) {
-      cudaFree(obj);
-    }
-  };
-
-  template <typename IDType, typename NNZType, typename ValueType>
-  class CUDACSR : public FormatImplementation<CUDACSR<IDType, NNZType, ValueType>> {
-    CUDACSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals, context::CUDAContext context,
-        Ownership own = kNotOwned);
-    CUDACSR(const CUDACSR<IDType, NNZType, ValueType> &);
-    CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&);
-    CUDACSR<IDType, NNZType, ValueType> &
-    operator=(const CUDACSR<IDType, NNZType, ValueType> &);
-    Format *clone() const override;
-    virtual ~CUDACSR();
-    NNZType *get_row_ptr() const;
-    IDType *get_col() const;
-    ValueType *get_vals() const;
-
-    NNZType *release_row_ptr();
-    IDType *release_col();
-    ValueType *release_vals();
-
-    void set_row_ptr(NNZType *, context::CUDAContext context, Ownership own = kNotOwned);
-    void set_col(IDType *, context::CUDAContext context, Ownership own = kNotOwned);
-    void set_vals(ValueType *, context::CUDAContext context, Ownership own = kNotOwned);
-
-    virtual bool ColIsOwned();
-    virtual bool RowPtrIsOwned();
-    virtual bool ValsIsOwned();
-
-  protected:
-    std::unique_ptr<NNZType, std::function<void(NNZType *)>> row_ptr_;
-    std::unique_ptr<IDType, std::function<void(IDType *)>> col_;
-    std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
-
-  };
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType>::CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&rhs)
@@ -57,7 +19,7 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(CUDACSR<IDType, NNZType, ValueType>
       nullptr, BlankDeleter<NNZType>());
   rhs.vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
       nullptr, BlankDeleter<ValueType>());
-  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext);
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext(rhs.get_cuda_context()->device_id));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType> &CUDACSR<IDType, NNZType, ValueType>::operator=(
@@ -105,10 +67,10 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(const CUDACSR<IDType, NNZType, Valu
       row_ptr, CUDADeleter<NNZType>());
   this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
       vals, CUDADeleter<ValueType>());
-  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext);
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext(rhs.get_cuda_context()->device_id));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType *row_ptr,
+CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr,
                                      IDType *col, ValueType *vals, context::CUDAContext context,
                                      Ownership own)
     : row_ptr_(row_ptr, BlankDeleter<NNZType>()),
@@ -116,7 +78,7 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType *row_pt
       vals_(vals, BlankDeleter<ValueType>()) {
   this->order_ = 2;
   this->dimension_ = {(DimensionType)n, (DimensionType)m};
-  this->nnz_ = this->row_ptr_[this->dimension_[0]];
+  this->nnz_ = nnz;
   if (own == kOwned) {
     this->row_ptr_ = std::unique_ptr<NNZType, std::function<void(NNZType *)>>(
         row_ptr, CUDADeleter<NNZType>());
@@ -126,9 +88,13 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType *row_pt
         std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
             vals, CUDADeleter<ValueType>());
   }
-  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext);
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CUDAContext(context));
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+context::CUDAContext* CUDACSR<IDType, NNZType, ValueType>::get_cuda_context() const{
+  return static_cast<context::CUDAContext*>(this->get_context());
+}
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CUDACSR<IDType, NNZType, ValueType>::clone() const {
   return new CUDACSR(*this);
@@ -222,9 +188,14 @@ bool CUDACSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType>::~CUDACSR() {}
-
-};
-namespace utils {
-
+// format.inc
+template class CUDACSR<unsigned int, unsigned int, unsigned int>;
+template class CUDACSR<unsigned int, unsigned int,  int>;
+template class CUDACSR<unsigned int,  int, unsigned int>;
+template class CUDACSR<unsigned int,  int,  int>;
+template class CUDACSR< int, unsigned int, unsigned int>;
+template class CUDACSR< int, unsigned int,  int>;
+template class CUDACSR< int,  int, unsigned int>;
+template class CUDACSR< int,  int,  int>;
 };
 };

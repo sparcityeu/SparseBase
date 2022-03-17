@@ -16,7 +16,7 @@ set(LIB_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_reader.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_object.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_converter.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_converter.cu
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_preprocess.cc
 )
 if (${CUDA})

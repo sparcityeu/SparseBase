@@ -6,4 +6,6 @@ add_subdirectory(rcm_order)
 add_subdirectory(sparse_reader)
 add_subdirectory(custom_format)
 add_subdirectory(custom_converter)
-
+if (${CUDA})
+    add_subdirectory(cuda_example)
+endif()
