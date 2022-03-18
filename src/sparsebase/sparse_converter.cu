@@ -15,7 +15,7 @@ std::unordered_map<
     std::unordered_map<std::type_index,
                        std::vector<std::tuple<
                            EdgeConditional, ConditionalConversionFunction>>>> *
-Converter<IDType, NNZType, ValueType>::get_conditional_conversion_map(
+Converter<IDType, NNZType, ValueType>::getl_conversion_map(
     bool is_move_conversion) {
   if (is_move_conversion)
     return &conditional_move_map_;
@@ -572,7 +572,7 @@ void Converter<IDType, NNZType, ValueType>::RegisterConditionalConversionFunctio
       ConditionalConversionFunction conv_func,
       EdgeConditional edge_condition,
       bool is_move_conversion){
-  auto map = get_conditional_conversion_map(is_move_conversion);
+  auto map = getl_conversion_map(is_move_conversion);
   if (map->count(from_type) == 0) {
     map->emplace(
         from_type,
@@ -589,15 +589,15 @@ void Converter<IDType, NNZType, ValueType>::RegisterConditionalConversionFunctio
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format *Converter<IDType, NNZType, ValueType>::ConvertConditional(
+Format *Converter<IDType, NNZType, ValueType>::Convert(
     Format *source, std::type_index to_type, context::Context* to_context, bool is_move_conversion) {
-  if (to_type == source->get_format_id()) {
+  if (to_type == source->get_format_id() && source->get_context()->IsEquivalent(to_context)) {
     return source;
   }
 
   try {
     ConditionalConversionFunction conv_func =
-        GetConditionalConversionFunction(source->get_format_id(), source->get_context(), to_type, to_context,
+        GetConversionFunction(source->get_format_id(), source->get_context(), to_type, to_context,
                               is_move_conversion);
     return conv_func(source, to_context);
   } catch (...) {
@@ -615,12 +615,12 @@ FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
 }*/
 template <typename IDType, typename NNZType, typename ValueType>
 ConditionalConversionFunction
-Converter<IDType, NNZType, ValueType>::GetConditionalConversionFunction(
+Converter<IDType, NNZType, ValueType>::GetConversionFunction(
 std::type_index from_type, context::Context* from_context, 
                         std::type_index to_type, context::Context* to_context, 
                         bool is_move_conversion) {
   try {
-  auto map = get_conditional_conversion_map(is_move_conversion);
+  auto map = getl_conversion_map(is_move_conversion);
     for (auto conditional_function_tuple : (*map)[from_type][to_type]){
       auto conditional = get<0>(conditional_function_tuple);
       if (conditional(from_context, to_context)){
@@ -635,10 +635,10 @@ std::type_index from_type, context::Context* from_context,
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<bool, context::Context*> Converter<IDType, NNZType, ValueType>::CanConvertConditional(
+std::tuple<bool, context::Context*> Converter<IDType, NNZType, ValueType>::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, std::vector<context::Context*> to_contexts,
                   bool is_move_conversion) {
-  auto map = get_conditional_conversion_map(is_move_conversion);
+  auto map = getl_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
@@ -653,10 +653,10 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
   return make_tuple<bool, context::Context*>(false, nullptr);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-bool Converter<IDType, NNZType, ValueType>::CanConvertConditional(
+bool Converter<IDType, NNZType, ValueType>::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
                   bool is_move_conversion) {
-  auto map = get_conditional_conversion_map(is_move_conversion);
+  auto map = getl_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
@@ -670,14 +670,14 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
 }
 template <typename IDType, typename NNZType, typename ValueType>
 std::vector<Format *>
-Converter<IDType, NNZType, ValueType>::ApplyConversionSchemaConditional(
+Converter<IDType, NNZType, ValueType>::ApplyConversionSchema(
     ConversionSchemaConditional cs, std::vector<Format *> packed_sfs,
     bool is_move_conversion) {
   std::vector<Format *> ret;
   for (int i = 0; i < cs.size(); i++) {
     auto conversion = cs[i];
     if (std::get<0>(conversion)) {
-      ret.push_back(this->ConvertConditional(packed_sfs[i], std::get<1>(conversion), std::get<2>(conversion),
+      ret.push_back(this->Convert(packed_sfs[i], std::get<1>(conversion), std::get<2>(conversion),
                                   is_move_conversion));
     } else {
       ret.push_back(packed_sfs[i]);

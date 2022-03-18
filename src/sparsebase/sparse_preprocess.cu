@@ -65,6 +65,31 @@ void ConverterMixin<Parent, IDType, NNZType, ValueType>::ResetConverter() {
 template <typename IDType, typename NNZType, typename ValueType>
 ReorderPreprocessType<IDType, NNZType, ValueType>::~ReorderPreprocessType(){};
 
+template <typename IDType, typename NNZType, typename ValueType,
+          typename ReturnType, class PreprocessingImpl, typename Key,
+          typename KeyHash, typename KeyEqualTo>
+bool FunctionMatcherMixin<
+    IDType, NNZType, ValueType, ReturnType, PreprocessingImpl, Key, KeyHash,
+    KeyEqualTo>::CheckIfKeyMatches(ConversionMap map, Key key,
+                                   std::vector<format::Format *> packed_sfs,
+                                   std::vector<context::Context *> contexts) {
+  bool match = true;
+  if (map.find(key) != map.end()) {
+    for (auto sf : packed_sfs) {
+      bool found_context = false;
+      for (auto context : contexts){
+        if (sf->get_context()->IsEquivalent(context)){
+          found_context = true;
+        }
+      }
+      if (!found_context) match = false;
+    }
+  } else {
+    match = false;
+  }
+  std::cout << "Match :" << match << std::endl;
+  return match;
+}
   //! Return the correct function for the operation and a conversion schema to convert the input formats
   /*!
    * \param key defines the types of input objects (default is vector of format types)
@@ -83,7 +108,7 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
                 utils::Converter<IDType, NNZType, ValueType> &sc) {
   utils::ConversionSchemaConditional cs;
   PreprocessFunction func = nullptr;
-  if (map.find(key) != map.end()) {
+  if (CheckIfKeyMatches(map, key, packed_sfs, contexts)) {
     for (auto f : key) {
       cs.push_back(std::make_tuple(false, f, nullptr));
     }
@@ -105,7 +130,7 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
           if (key[i] == potential_key[i]) {
             temp_cs.push_back(std::make_tuple(false, potential_key[i], nullptr));
           } else {//  if (sc.CanConvert(key[i], potential_key[i])) {
-            auto convertable = sc.CanConvertConditional(key[i], packed_sfs[i]->get_context(), potential_key[i], contexts);    
+            auto convertable = sc.CanConvert(key[i], packed_sfs[i]->get_context(), potential_key[i], contexts);    
             if (std::get<0>(convertable)){
               temp_cs.push_back(std::make_tuple(true, potential_key[i], std::get<1>(convertable)));
               conversions++;
@@ -210,7 +235,7 @@ FunctionMatcherMixin<IDType, NNZType, ValueType, ReturnType, PreprocessingImpl,
   PreprocessFunction func = std::get<0>(ret);
   utils::ConversionSchemaConditional cs = std::get<1>(ret);
   // carry out conversion
-  std::vector<Format *> converted = sc.ApplyConversionSchemaConditional(cs, packed_sfs);
+  std::vector<Format *> converted = sc.ApplyConversionSchema(cs, packed_sfs);
   // carry out the correct call using the map
   //return std::make_tuple(func, converted);
   return func(converted, params);

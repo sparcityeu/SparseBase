@@ -61,16 +61,16 @@ int main(){
 
     preprocess::JaccardWeights<int, int, int, float> jac;
     auto cuda_array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context});
-    auto cpu_array = converter2->ConvertConditional<format::Array<float>>(cuda_array, &cpu_context);
+    auto cpu_array = converter2->Convert<format::Array<float>>(cuda_array, &cpu_context);
 
     print_array(cpu_array->get_vals(), cpu_array->get_num_nnz());
 
-    auto cuda_csr = converter->ConvertConditional<format::CUDACSR<int, int, int>>(csr, &gpu_context);
+    auto cuda_csr = converter->Convert<format::CUDACSR<int, int, int>>(csr, &gpu_context);
 
     print_csr_cuda<<<1,1>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(), cuda_csr->get_dimensions()[0]);
     cudaDeviceSynchronize();
 
-    auto cpu_csr = converter->ConvertConditional<format::CSR<int, int, int>>(cuda_csr, &cpu_context);
+    auto cpu_csr = converter->Convert<format::CSR<int, int, int>>(cuda_csr, &cpu_context);
 
     print_csr(cpu_csr->get_row_ptr(), cpu_csr->get_col(), cuda_csr->get_dimensions()[0]);
 

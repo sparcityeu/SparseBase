@@ -28,7 +28,7 @@ int main(){
         MyFunction<int, int, int>,
         [](context::Context *, context::Context *) -> bool { return true; });
 
-    auto csr = converter->ConvertConditional(coo, format::CSR<int,int, int>::get_format_id_static(), &cpu_context);
+    auto csr = converter->Convert(coo, format::CSR<int,int, int>::get_format_id_static(), &cpu_context);
     cout << csr << endl;
 
     delete coo;

@@ -15,13 +15,18 @@
 namespace sparsebase {
 
 namespace context {
-  struct Context{};
+  struct Context{
+    virtual bool IsEquivalent(Context*) = 0;
+  };
 
-  struct CPUContext : Context{};
+  struct CPUContext : Context{
+    virtual bool IsEquivalent(Context *);
+  };
 
   struct CUDAContext : Context{
     int device_id;
     CUDAContext(int did): device_id(did){}
+    virtual bool IsEquivalent(Context *);
   };
 
 };

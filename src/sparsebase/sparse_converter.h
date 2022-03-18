@@ -35,7 +35,7 @@ private:
       std::type_index,
       std::unordered_map<std::type_index,
                          std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>> *
-  get_conditional_conversion_map(bool is_move_conversion);
+  getl_conversion_map(bool is_move_conversion);
 
 public:
   Converter();
@@ -47,23 +47,23 @@ public:
       EdgeConditional edge_condition,
       bool is_move_conversion = false);
   ConditionalConversionFunction
-  GetConditionalConversionFunction(std::type_index from_type, context::Context* from_context, 
+  GetConversionFunction(std::type_index from_type, context::Context* from_context, 
                         std::type_index to_type, context::Context* to_context, 
                         bool is_move_conversion = false);
-  format::Format *ConvertConditional(format::Format *source, std::type_index to_type, context::Context* to_context,
+  format::Format *Convert(format::Format *source, std::type_index to_type, context::Context* to_context,
                           bool is_move_conversion = false);
   template <typename FormatType>
-  FormatType *ConvertConditional(format::Format *source, context::Context* to_context, bool is_move_conversion = false) {
-    auto *res = this->ConvertConditional(source, FormatType::get_format_id_static(), to_context, is_move_conversion);
+  FormatType *Convert(format::Format *source, context::Context* to_context, bool is_move_conversion = false) {
+    auto *res = this->Convert(source, FormatType::get_format_id_static(), to_context, is_move_conversion);
     return res->template As<FormatType>();
   }
-  std::tuple<bool, context::Context*> CanConvertConditional(std::type_index from_type, context::Context* from_context, std::type_index to_type, 
+  std::tuple<bool, context::Context*> CanConvert(std::type_index from_type, context::Context* from_context, std::type_index to_type, 
                   std::vector<context::Context*> to_contexts,
                   bool is_move_conversion = false);
-  bool CanConvertConditional(std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
+  bool CanConvert(std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
                   bool is_move_conversion = false);
   std::vector<format::Format *>
-  ApplyConversionSchemaConditional(ConversionSchemaConditional cs,
+  ApplyConversionSchema(ConversionSchemaConditional cs,
                         std::vector<format::Format *> packed_sfs,
                         bool is_move_conversion = false);
 };
