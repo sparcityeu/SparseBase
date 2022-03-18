@@ -63,6 +63,7 @@ protected:
   std::tuple<PreprocessFunction, utils::ConversionSchemaConditional>
   GetFunction(std::vector<format::Format *>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*>,
               utils::Converter<IDType, NNZType, ValueType> &sc);
+  bool CheckIfKeyMatches(ConversionMap map, Key key, std::vector<format::Format*> packed_sfs, std::vector<context::Context*> contexts);
   template <typename F> std::vector<std::type_index> PackFormats(F sf);
   template <typename F, typename... SF>
   std::vector<std::type_index> PackFormats(F sf, SF... sfs);

@@ -10,6 +10,22 @@
 
 using namespace sparsebase::utils;
 
+namespace sparsebase::context{
+  bool CPUContext::IsEquivalent(Context * rhs){
+    if (dynamic_cast<CPUContext*>(rhs)!= nullptr){
+      return true;
+    } else {
+      return false;
+    }
+  }
+  bool CUDAContext::IsEquivalent(Context * rhs){
+    if (dynamic_cast<CUDAContext*>(rhs)!= nullptr){
+      if (dynamic_cast<CUDAContext*>(rhs)->device_id== this->device_id)
+        return true;
+    } 
+    return false;
+  }
+}
 namespace sparsebase::format {
 
 template <typename IDType, typename NNZType, typename ValueType>

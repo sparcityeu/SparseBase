@@ -32,12 +32,12 @@ int main(){
 
     auto converter = new utils::Converter<int,int,int>();
 
-    auto cuda_array = converter->ConvertConditional<format::CUDAArray<int>>(array, &gpu_context);
+    auto cuda_array = converter->Convert<format::CUDAArray<int>>(array, &gpu_context);
 
     print_array_cuda<<<1,1>>>(cuda_array->get_vals(), cuda_array->get_dimensions()[0]);
     cudaDeviceSynchronize();
 
-    auto cpu_array = converter->ConvertConditional<format::Array<int>>(cuda_array, &cpu_context);
+    auto cpu_array = converter->Convert<format::Array<int>>(cuda_array, &cpu_context);
 
     print_array(cpu_array->get_vals(), cuda_array->get_dimensions()[0]);
 

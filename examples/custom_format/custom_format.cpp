@@ -43,5 +43,5 @@ int main(int argc, char * argv[]){
   int vals[6] = {10, 20, 30, 40, 50, 60};
   context::CPUContext cpu_context;
   COO<int,int,int>* coo = new COO<int,int,int>(6,6,6, row, col, vals);
-  MyFormat* my_format2 = converter.ConvertConditional<MyFormat>(coo, &cpu_context);
+  MyFormat* my_format2 = converter.Convert<MyFormat>(coo, &cpu_context);
 }
