@@ -56,6 +56,15 @@ else()
                 sparsebase/sparse_converter.cc 
                 sparsebase/sparse_reader.cc 
                 DESTINATION include/sparsebase)
+        if(${CUDA})
+                install(FILES
+                        sparsebase/cuda/format.cu
+                        sparsebase/cuda/converter.cu
+                        sparsebase/cuda/preprocess.cu
+                        DESTINATION include/sparsebase/cuda
+                )
+        endif()
+
 endif()
 
 # Creating an alias for the library when used through "find_package()"

@@ -12,7 +12,7 @@ option(_HEADER_ONLY "Use the library as a header only library?" OFF)
 option(CUDA "Enable CUDA" OFF)
 set(ID_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing IDs")
 set(NNZ_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
-set(VALUE_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(VALUE_TYPES "unsigned int" "int" "float" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
 if(${CUDA})

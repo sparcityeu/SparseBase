@@ -197,6 +197,9 @@ protected:
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparse_preprocess.cc"
+#ifdef CUDA
+#include "cuda/preprocess.cu"
+#endif
 #endif
 
 #endif
