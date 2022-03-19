@@ -34,12 +34,6 @@ namespace context {
     virtual bool IsEquivalent(Context *) const;
   };
 
-  struct CUDAContext : ContextImplementation<CUDAContext>{
-    int device_id;
-    CUDAContext(int did);
-    virtual bool IsEquivalent(Context *) const;
-  };
-
 };
 
 namespace format {

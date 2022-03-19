@@ -3,7 +3,7 @@
 #include "sparsebase/sparse_format.h"
 #include "sparsebase/sparse_converter.h"
 #include "sparsebase/sparse_preprocess.h"
-#include "sparsebase/cuda.cuh"
+#include "sparsebase/cuda/format.cuh"
 
 using namespace std;
 using namespace sparsebase;

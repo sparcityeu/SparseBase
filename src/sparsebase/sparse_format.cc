@@ -18,20 +18,6 @@ namespace sparsebase::context{
       return false;
     }
   }
-  CUDAContext::CUDAContext(int did): device_id(did){
-    int device_count;
-    cudaGetDeviceCount(&device_count);
-    if (device_id >= device_count){
-      throw CUDADeviceException(device_count, device_id);
-    }
-  }
-  bool CUDAContext::IsEquivalent(Context * rhs) const {
-    if (dynamic_cast<CUDAContext*>(rhs)!= nullptr){
-      if (dynamic_cast<CUDAContext*>(rhs)->device_id== this->device_id)
-        return true;
-    } 
-    return false;
-  }
 }
 namespace sparsebase::format {
 
