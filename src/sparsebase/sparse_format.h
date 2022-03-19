@@ -16,17 +16,28 @@ namespace sparsebase {
 
 namespace context {
   struct Context{
-    virtual bool IsEquivalent(Context*) = 0;
+    virtual bool IsEquivalent(Context*) const = 0;
+    virtual std::type_index get_context_type_member() const = 0;
   };
 
-  struct CPUContext : Context{
-    virtual bool IsEquivalent(Context *);
+  template <typename ContextType> 
+  struct ContextImplementation : public Context {
+    virtual std::type_index get_context_type_member() const {
+      return typeid(ContextType);
+    }
+    static std::type_index get_context_type() {
+      return typeid(ContextType);
+    }
   };
 
-  struct CUDAContext : Context{
+  struct CPUContext : ContextImplementation<CPUContext>{
+    virtual bool IsEquivalent(Context *) const;
+  };
+
+  struct CUDAContext : ContextImplementation<CUDAContext>{
     int device_id;
     CUDAContext(int did);
-    virtual bool IsEquivalent(Context *);
+    virtual bool IsEquivalent(Context *) const;
   };
 
 };
@@ -70,6 +81,7 @@ public:
   virtual DimensionType get_num_nnz() const = 0;
   virtual DimensionType get_order() const = 0;
   virtual context::Context* get_context() const = 0;
+  virtual std::type_index get_context_type() const = 0;
 
   template <typename T> T *As() {
     if (this->get_format_id() == std::type_index(typeid(T))) {
@@ -97,6 +109,10 @@ public:
     return typeid(FormatType);
   }
   static std::type_index get_format_id_static() { return typeid(FormatType); }
+
+  virtual std::type_index get_context_type() const {
+    return this->context_->get_context_type_member();
+  }
 
 protected:
   DimensionType order_;
