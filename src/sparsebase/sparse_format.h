@@ -208,5 +208,8 @@ protected:
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparse_format.cc"
+#ifdef CUDA
+#include "cuda/format.cu"
+#endif
 #endif
 #endif

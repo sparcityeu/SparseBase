@@ -75,6 +75,9 @@ public:
 
 #ifdef _HEADER_ONLY
 #include "sparse_converter.cc"
+#ifdef CUDA
+#include "cuda/converter.cu"
+#endif
 #endif
 
 #endif
