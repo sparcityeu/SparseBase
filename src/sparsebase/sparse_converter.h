@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <functional>
 #ifdef CUDA
-#include "cuda.cuh"
+#include "cuda/format.cuh"
+#include "cuda/converter.cuh"
 #endif
 
 namespace sparsebase {

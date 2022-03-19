@@ -19,6 +19,7 @@ nnz_types = ' '.join(args.nnz_types).split(',')
 value_types = ' '.join(args.value_types).split(',')
 float_types = ' '.join(args.float_types).split(',')
 output_folder = args.output_folder
+cuda_output_folder = os.path.join(output_folder, 'cuda')
 dry_run = args.dry_run
 
 PREFIX = "template class "
@@ -62,6 +63,43 @@ class explicit_initialization:
     def close(self):
         if not dry_run:
             self.out_stream.close()
+
+class converter_cuda_init(explicit_initialization):
+    def __init__(self, folder, dry_run=False):
+        self.source_filename = 'converter.inc'
+        super().__init__(os.path.join(folder, self.source_filename), dry_run)
+
+    ## Prints explicit template instantiations for the preprocess file
+    def run(self):
+        self.out_stream.write('// '+self.source_filename+'\n')
+        order_two_functions = ['CsrCUDACsrConditionalFunction', 'CUDACsrCsrConditionalFunction', 'CUDACsrCUDACsrConditionalFunction']
+        order_one_functions = ['CUDAArrayArrayConditionalFunction', 'ArrayCUDAArrayConditionalFunction']
+        for vertex_type in vertex_types:
+            for nnz_type in nnz_types:
+                for value_type in value_types:
+                    for function in order_two_functions: 
+                        self.out_stream.write("template sparsebase::format::Format * "+function+"<"+vertex_type+", "+nnz_type+", "+value_type+">(sparsebase::format::Format *source, sparsebase::context::Context*context);\n")
+        for value_type in value_types:
+            for function in order_one_functions: 
+                self.out_stream.write("template sparsebase::format::Format * "+function+"<"+value_type+">(sparsebase::format::Format *source, sparsebase::context::Context*context);\n")
+
+class preprocess_cuda_init(explicit_initialization):
+    def __init__(self, folder, dry_run=False):
+        self.source_filename = 'preprocess.inc'
+        super().__init__(os.path.join(folder, self.source_filename), dry_run)
+
+    ## Prints explicit template instantiations for the preprocess file
+    def run(self):
+        self.out_stream.write('// '+self.source_filename+'\n')
+        order_two_functions = [('JaccardWeights', ['GetJaccardWeightCUDACSR'])]
+        for vertex_type in vertex_types:
+            for nnz_type in nnz_types:
+                for value_type in value_types:
+                    for float_type in float_types:
+                        for prep_class, funcs in order_two_functions: 
+                            for function in funcs:
+                                types = "<"+vertex_type+", "+nnz_type+", "+value_type+", "+float_type+">"
+                                self.out_stream.write("template sparsebase::format::Format * preprocess::"+prep_class+types+'::'+function+"(std::vector<sparsebase::format::Format *> formats, sparsebase::preprocess::PreprocessParams * params);\n")
 
 class preprocess_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
@@ -123,6 +161,8 @@ class reader_init(explicit_initialization):
 ## Create the output folder if it doesn't already exist
 if not os.path.isdir(output_folder):
     os.mkdir(output_folder)
+if not os.path.isdir(cuda_output_folder):
+    os.mkdir(cuda_output_folder)
 
 inits = []
 inits.append(reader_init(output_folder, dry_run))
@@ -130,6 +170,9 @@ inits.append(format_init(output_folder, dry_run))
 inits.append(converter_init(output_folder, dry_run))
 inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
+inits.append(converter_cuda_init(cuda_output_folder, dry_run))
+inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
+
 ## Create temporary files containing the explicit instantiations
 for init_object in inits:
     init_object.run()

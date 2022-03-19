@@ -1,9 +1,16 @@
 #ifndef _CUDA_H_FILE
 #define _CUDA_H_FILE
-#include <iostream>
-#include "sparse_format.h"
+#include "sparsebase/sparse_format.h"
 
 namespace sparsebase {
+
+namespace context {
+  struct CUDAContext : ContextImplementation<CUDAContext>{
+    int device_id;
+    CUDAContext(int did);
+    virtual bool IsEquivalent(Context *) const;
+  };
+}
 
 namespace format {
   template <typename T> struct CUDADeleter {
@@ -71,8 +78,6 @@ namespace format {
   };
 
 };
-namespace utils {
 
-};
-};
+}
 #endif
