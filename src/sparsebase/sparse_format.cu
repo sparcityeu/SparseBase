@@ -11,7 +11,7 @@
 using namespace sparsebase::utils;
 
 namespace sparsebase::context{
-  bool CPUContext::IsEquivalent(Context * rhs){
+  bool CPUContext::IsEquivalent(Context * rhs) const {
     if (dynamic_cast<CPUContext*>(rhs)!= nullptr){
       return true;
     } else {
@@ -25,7 +25,7 @@ namespace sparsebase::context{
       throw CUDADeviceException(device_count, device_id);
     }
   }
-  bool CUDAContext::IsEquivalent(Context * rhs){
+  bool CUDAContext::IsEquivalent(Context * rhs) const {
     if (dynamic_cast<CUDAContext*>(rhs)!= nullptr){
       if (dynamic_cast<CUDAContext*>(rhs)->device_id== this->device_id)
         return true;

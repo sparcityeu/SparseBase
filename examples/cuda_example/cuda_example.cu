@@ -60,10 +60,17 @@ int main(){
 
 
     preprocess::JaccardWeights<int, int, int, float> jac;
-    auto cuda_array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context});
-    auto cpu_array = converter2->Convert<format::Array<float>>(cuda_array, &cpu_context);
+    auto array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context});
 
-    print_array(cpu_array->get_vals(), cpu_array->get_num_nnz());
+    if (array->get_context_type() == context::CPUContext::get_context_type()){
+        auto cpu_array = converter2->Convert<format::Array<float>>(array, &cpu_context);
+        print_array(cpu_array->get_vals(), cpu_array->get_num_nnz());
+    }
+    if (array->get_context_type() == context::CUDAContext::get_context_type()){
+        auto gpu_array = converter2->Convert<format::CUDAArray<float>>(array, &gpu_context);
+        print_array_cuda<<<1,1>>>(gpu_array->get_vals(), gpu_array->get_num_nnz());
+    }
+
 
     auto cuda_csr = converter->Convert<format::CUDACSR<int, int, int>>(csr, &gpu_context);
 
