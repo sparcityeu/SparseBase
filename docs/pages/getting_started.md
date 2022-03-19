@@ -26,9 +26,10 @@ We suggest using more recent versions when possible.
 ## Compiling
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCUDA={$CUDA} ..
 make
 ```
+Where `${CUDA}` is `ON` if CUDA support is needed and `OFF` otherwise.
 
 This will generate the library as a static library. In addition, the example codes are compiled and their binaries are located in `build/examples`.
 
@@ -55,9 +56,12 @@ Alternatively, you can edit the `CMakeCache.txt` file located in the build direc
 Additionally, the library has a header-only setting, in which none of the classes of the library will be explicitly instantiated at library-build time. Building the library to be header-only can be done as shown:
 ```
 mkdir build && cd build
-cmake -D_HEADE_ONLY=ON -DCMAKE_BUILD_TYPE=Release ..
+cmake -D_HEADE_ONLY=ON -DCMAKE_BUILD_TYPE=Release -DCUDA=${CUDA} ..
 make
 ```
+Where `${CUDA}` is `ON` if CUDA support is needed and `OFF` otherwise.
+
+> Note: if the library is installed with `${CUDA}=ON`, the user code must be compiled using `nvcc`.
 
 This will prepare the library for installation and compile the example codes located in `build/examples`.
 ## Installation
