@@ -13,7 +13,7 @@ execute_process(COMMAND ${Python_EXECUTABLE}
                 --float-types ${FLOAT_TYPES_JOINED}
                 --output-folder ${PROJECT_BINARY_DIR}/init)
 set(LIB_FILES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cu
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_reader.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_object.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_converter.cu

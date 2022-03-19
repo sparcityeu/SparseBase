@@ -25,7 +25,7 @@ namespace context {
 
   struct CUDAContext : Context{
     int device_id;
-    CUDAContext(int did): device_id(did){}
+    CUDAContext(int did);
     virtual bool IsEquivalent(Context *);
   };
 
