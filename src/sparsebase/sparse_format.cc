@@ -479,9 +479,6 @@ bool Array<ValueType>::ValsIsOwned() {
 }
 template <typename ValueType>
 Array<ValueType>::~Array() {}
-template class Array<int>;
-template class Array<unsigned int>;
-template class Array<float>;
 #if !defined(_HEADER_ONLY)
 #include "init/format.inc"
 #endif

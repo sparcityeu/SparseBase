@@ -101,6 +101,19 @@ class preprocess_cuda_init(explicit_initialization):
                                 types = "<"+vertex_type+", "+nnz_type+", "+value_type+", "+float_type+">"
                                 self.out_stream.write("template sparsebase::format::Format * preprocess::"+prep_class+types+'::'+function+"(std::vector<sparsebase::format::Format *> formats, sparsebase::preprocess::PreprocessParams * params);\n")
 
+class format_cuda_init(explicit_initialization):
+    def __init__(self, folder, dry_run=False):
+        self.source_filename = 'format.inc'
+        super().__init__(os.path.join(folder, self.source_filename), dry_run)
+    ## Prints explicit template instantiations for the format file
+    def run(self):
+        self.out_stream.write('// '+self.source_filename+'\n')
+        single_order_classes = ['CUDAArray']
+        for value_type in value_types:
+            for c in single_order_classes:
+                self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
+        self.out_stream.write('\n\n')
+        print_implementations(['CUDACSR'], self.out_stream)
 class preprocess_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
         self.source_filename = 'preprocess.inc'
@@ -147,6 +160,11 @@ class format_init(explicit_initialization):
     ## Prints explicit template instantiations for the format file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
+        single_order_classes = ['Array']
+        for value_type in value_types:
+            for c in single_order_classes:
+                self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
+        self.out_stream.write('\n\n')
         print_implementations(['CSR', 'COO'], self.out_stream)
 
 class reader_init(explicit_initialization):
@@ -172,6 +190,7 @@ inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
 inits.append(converter_cuda_init(cuda_output_folder, dry_run))
 inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
+inits.append(format_cuda_init(cuda_output_folder, dry_run))
 
 ## Create temporary files containing the explicit instantiations
 for init_object in inits:

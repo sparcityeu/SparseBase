@@ -310,20 +310,8 @@ template <typename ValueType>
 CUDAArray<ValueType>::~CUDAArray() {}
 // format.inc
 
-template class CUDACSR<unsigned int, unsigned int, unsigned int>;
-template class CUDACSR<unsigned int, unsigned int, int>;
-template class CUDACSR<unsigned int, unsigned int, float>;
-template class CUDACSR<unsigned int, int, unsigned int>;
-template class CUDACSR<unsigned int, int, int>;
-template class CUDACSR<unsigned int, int, float>;
-template class CUDACSR<int, unsigned int, unsigned int>;
-template class CUDACSR<int, unsigned int, int>;
-template class CUDACSR<int, unsigned int, float>;
-template class CUDACSR<int, int, unsigned int>;
-template class CUDACSR<int, int, int>;
-template class CUDACSR<int, int, float>;
-template class CUDAArray<int>;
-template class CUDAArray<unsigned int>;
-template class CUDAArray<float>;
+#if !defined(_HEADER_ONLY)
+#include "init/cuda/format.inc"
+#endif
 };
 };
