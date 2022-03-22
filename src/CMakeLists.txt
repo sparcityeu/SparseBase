@@ -11,7 +11,8 @@ if(NOT ${_HEADER_ONLY})
                         --nnz-types ${NNZ_TYPES_JOINED} 
                         --value-types ${VALUE_TYPES_JOINED} 
                         --float-types ${FLOAT_TYPES_JOINED}
-                        --output-folder ${PROJECT_BINARY_DIR}/init)
+                        --output-folder ${PROJECT_BINARY_DIR}/init
+                        --cuda ${CUDA})
         set(LIB_FILES 
                 ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_reader.cc
