@@ -118,7 +118,7 @@ class reader_init(explicit_initialization):
     ## Prints explicit template instantiations for the reader file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['MTXReader', 'UedgelistReader', 'PigoMtxReader', 'PigoEdgeListReader'], self.out_stream)
+        print_implementations(['MTXReader', 'UedgelistReader', 'PigoMTXReader', 'PigoEdgeListReader'], self.out_stream)
 
 ## Create the output folder if it doesn't already exist
 if not os.path.isdir(output_folder):
