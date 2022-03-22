@@ -1,3 +1,7 @@
+find_package(OpenMP REQUIRED)
+if(NOT OpenMP_CXX_FOUND)
+        message(ABORT "OpenMP is required for SparseBase")
+endif()
 # Creating the sparsebase library executable
 if(NOT ${_HEADER_ONLY})
 find_package (Python COMPONENTS Interpreter)
@@ -28,6 +32,7 @@ target_include_directories(sparsebase PUBLIC
         # Location of the headers at install time
         $<INSTALL_INTERFACE:include>)
 target_compile_features(sparsebase PRIVATE cxx_std_17)
+target_link_libraries(sparsebase OpenMP::OpenMP_CXX)
 else()
 add_library(sparsebase INTERFACE)
 target_compile_features(sparsebase INTERFACE cxx_std_17)
