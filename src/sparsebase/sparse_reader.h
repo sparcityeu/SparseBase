@@ -67,6 +67,7 @@ private:
   bool weighted_;
 };
 
+#ifdef USE_PIGO
 template <typename IDType, typename NNZType, typename ValueType>
 class PigoMTXReader : public Reader<IDType, NNZType, ValueType>,
                   public ReadsCOO<IDType, NNZType, ValueType>,
@@ -102,6 +103,8 @@ private:
   std::string filename_;
   bool weighted_;
 };
+
+#endif
 
 } // namespace utils
 

@@ -7,7 +7,9 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#ifdef USE_PIGO
 #include "external/pigo/pigo.hpp"
+#endif
 
 using namespace sparsebase::format;
 
@@ -174,6 +176,7 @@ template <typename VertexID, typename NumEdges, typename Weight>
 MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
 
 
+#ifdef USE_PIGO
 template <typename IDType, typename NNZType, typename ValueType>
 PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader
     (std::string filename, bool weighted, bool _convert_to_zero_index)
@@ -259,6 +262,10 @@ template <typename IDType, typename NNZType, typename ValueType>
 Format *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
   return this->ReadCOO();
 }
+#if !defined(_HEADER_ONLY)
+#include "init/external/pigo.inc"
+#endif
+#endif
 
 
 #if !defined(_HEADER_ONLY)
