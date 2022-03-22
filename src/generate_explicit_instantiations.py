@@ -9,6 +9,8 @@ parser.add_argument('--value-types', nargs='+', type=str, help= "C++ data types 
 parser.add_argument('--float-types', nargs='+', type=str, help= "C++ data types used for variables storing floating point numbers")
 parser.add_argument('--output-folder', type=str, help= "Path to output folder to store resultant files")
 parser.add_argument('--dry-run', action='store_true', help= "Will not write the files to disk, and will write them to stdout instead")
+
+parser.add_argument('--cuda', type=str, help= "Use CUDA")
 args = parser.parse_args()
 
 '''
@@ -19,6 +21,8 @@ nnz_types = ' '.join(args.nnz_types).split(',')
 value_types = ' '.join(args.value_types).split(',')
 float_types = ' '.join(args.float_types).split(',')
 output_folder = args.output_folder
+
+use_cuda = True if args.cuda == 'ON' else False
 cuda_output_folder = os.path.join(output_folder, 'cuda')
 dry_run = args.dry_run
 
@@ -179,8 +183,9 @@ class reader_init(explicit_initialization):
 ## Create the output folder if it doesn't already exist
 if not os.path.isdir(output_folder):
     os.mkdir(output_folder)
-if not os.path.isdir(cuda_output_folder):
-    os.mkdir(cuda_output_folder)
+if use_cuda:
+    if not os.path.isdir(cuda_output_folder):
+        os.mkdir(cuda_output_folder)
 
 inits = []
 inits.append(reader_init(output_folder, dry_run))
@@ -188,9 +193,10 @@ inits.append(format_init(output_folder, dry_run))
 inits.append(converter_init(output_folder, dry_run))
 inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
-inits.append(converter_cuda_init(cuda_output_folder, dry_run))
-inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
-inits.append(format_cuda_init(cuda_output_folder, dry_run))
+if use_cuda:
+    inits.append(converter_cuda_init(cuda_output_folder, dry_run))
+    inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
+    inits.append(format_cuda_init(cuda_output_folder, dry_run))
 
 ## Create temporary files containing the explicit instantiations
 for init_object in inits:
