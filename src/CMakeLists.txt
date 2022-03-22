@@ -1,3 +1,5 @@
+set (CMAKE_CXX_STANDARD 17)
+
 # Creating the sparsebase library executable
 if(NOT ${_HEADER_ONLY})
 find_package (Python COMPONENTS Interpreter)

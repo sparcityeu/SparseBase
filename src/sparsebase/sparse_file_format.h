@@ -1,8 +1,10 @@
-#ifndef _SPARSEFILEFORMAT_HPP
-#define _SPARSEFILEFORMAT_HPP
+#ifndef _SPARSEFILEFORMAT_H
+#define _SPARSEFILEFORMAT_H
 
-
+#ifdef _PIGO
 #include "external/pigo/pigo.hpp"
+#endif
+
 #include "external/json/json.hpp"
 #include <iostream>
 #include <string>
@@ -10,6 +12,71 @@
 #include <type_traits>
 
 namespace sparsebase::utils {
+
+#ifdef _PIGO
+
+class SbffWriteFile {
+private:
+  pigo::WFile file;
+
+public:
+
+  SbffWriteFile(std::string filename, size_t size): file(filename, size){}
+
+  void Write(char* data, size_t size){
+    file.parallel_write(data, size);
+  }
+};
+
+class SbffReadOnlyFile {
+private:
+  pigo::ROFile file;
+
+public:
+  explicit SbffReadOnlyFile(std::string filename): file(filename){}
+
+  void Read(char* buffer, size_t size){
+    file.parallel_read(buffer, size);
+  }
+};
+
+#else
+
+class SbffWriteFile {
+private:
+  std::ofstream ofs;
+
+public:
+
+  SbffWriteFile(std::string filename, size_t size){
+    ofs.open(filename, std::ios::out | std::ios::binary);
+  }
+  ~SbffWriteFile(){
+    ofs.close();
+  }
+  void Write(char* data, size_t size){
+    ofs.write(data, size);
+  }
+};
+
+class SbffReadOnlyFile {
+private:
+  std::ifstream ifs;
+
+public:
+  explicit SbffReadOnlyFile(std::string filename){
+    ifs.open(filename,  std::ios::in | std::ios::binary);
+  }
+  ~SbffReadOnlyFile(){
+    ifs.close();
+  }
+  void Read(char* buffer, size_t size){
+    ifs.read(buffer, size);
+  }
+};
+
+#endif
+
 // Thanks StackOverflow
 // This will fail if sizeof(int) == 1
 // which might be the case on some embedded systems
@@ -38,9 +105,9 @@ template <typename T> T SwapEndian(T u) {
   return dest.u;
 }
 
-nlohmann::json ReadHeader(pigo::ROFile &file) {
+nlohmann::json ReadHeader(SbffReadOnlyFile &file) {
   char header_bytes[1024];
-  file.parallel_read((char *)&header_bytes, 1024);
+  file.Read((char *)&header_bytes, 1024);
   nlohmann::json header = nlohmann::json::parse(header_bytes);
   return header;
 }
@@ -61,6 +128,8 @@ std::vector<char> HeaderToBytes(nlohmann::json &header) {
 
   return header_bytes;
 }
+
+
 
 class SbffArray {
 private:
@@ -100,7 +169,7 @@ public:
     return sbas_arr;
   }
 
-  static SbffArray Read(pigo::ROFile &file, std::string endian) {
+  static SbffArray Read(SbffReadOnlyFile &file, std::string endian) {
     try {
       auto header = ReadHeader(file);
 
@@ -112,7 +181,7 @@ public:
       sbas_arr.endian = endian;
 
       sbas_arr.data = new char[sbas_arr.array_size * sbas_arr.type_size];
-      file.parallel_read((char *)sbas_arr.data,
+      file.Read((char *)sbas_arr.data,
                          sbas_arr.array_size * sbas_arr.type_size);
 
       return sbas_arr;
@@ -124,7 +193,7 @@ public:
     }
   }
 
-  void Write(pigo::WFile &file) {
+  void Write(SbffWriteFile &file) {
 
     nlohmann::json header;
     header["name"] = name;
@@ -132,8 +201,8 @@ public:
     header["type_size"] = type_size;
     header["array_size"] = array_size;
 
-    file.parallel_write((char *)HeaderToBytes(header).data(), 1024);
-    file.parallel_write((char *)data, array_size * type_size);
+    file.Write((char *)HeaderToBytes(header).data(), 1024);
+    file.Write((char *)data, array_size * type_size);
   }
 };
 
@@ -209,25 +278,25 @@ public:
 
 
   void Write(std::string filename) {
-    pigo::WFile file(filename, total_size);
+    SbffWriteFile file(filename, total_size);
     Write(file);
   }
 
-  void Write(pigo::WFile &file) {
+  void Write(SbffWriteFile &file) {
     nlohmann::json header;
     header["name"] = name;
     header["array_count"] = arrays.size();
     header["dimensions"] = dimensions;
     header["endian"] = GetEndian();
 
-    file.parallel_write((char *)HeaderToBytes(header).data(), 1024);
+    file.Write((char *)HeaderToBytes(header).data(), 1024);
 
     for (auto arr : arrays) {
       arr.second.Write(file);
     }
   }
 
-  static SbffObject Read(pigo::ROFile &file) {
+  static SbffObject Read(SbffReadOnlyFile &file) {
     try {
       auto header = ReadHeader(file);
 
@@ -251,7 +320,7 @@ public:
   }
 
   static SbffObject Read(std::string filename) {
-    pigo::ROFile file(filename);
+    SbffReadOnlyFile file(filename);
     return Read(file);
   }
 

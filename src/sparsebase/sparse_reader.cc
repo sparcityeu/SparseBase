@@ -226,7 +226,7 @@ BinaryReader<IDType, NNZType, ValueType>::ReadCOO() const {
     sbff.template GetArray("vals", vals);
   }
 
-  return new COO(dimensions[0], dimensions[1], dimensions[1], row, col, vals, kOwned);
+  return new COO<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], dimensions[1], row, col, vals, kOwned);
 }
 
 #if !defined(_HEADER_ONLY)
