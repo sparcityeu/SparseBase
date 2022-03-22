@@ -15,6 +15,7 @@ execute_process(COMMAND ${Python_EXECUTABLE}
                 --nnz-types ${NNZ_TYPES_JOINED} 
                 --value-types ${VALUE_TYPES_JOINED} 
                 --float-types ${FLOAT_TYPES_JOINED}
+                --pigo ${USE_PIGO}
                 --output-folder ${PROJECT_BINARY_DIR}/init)
 add_library(sparsebase
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cc
@@ -62,8 +63,11 @@ install(FILES
           sparsebase/sparse_preprocess.h 
           sparsebase/sparse_converter.h 
           sparsebase/sparse_reader.h
-          sparsebase/external/pigo/pigo.hpp
         DESTINATION include/sparsebase)
+if(USE_PIGO)
+        install(FILES sparsebase/external/pigo/pigo.hpp
+                DESTINATION include/sparsebase/external/pigo)
+endif()
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION include/sparsebase)
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/init DESTINATION include/sparsebase)
 include(GNUInstallDirs)
