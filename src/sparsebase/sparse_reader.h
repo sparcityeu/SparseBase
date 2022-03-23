@@ -67,6 +67,45 @@ private:
   bool weighted_;
 };
 
+#ifdef USE_PIGO
+template <typename IDType, typename NNZType, typename ValueType>
+class PigoMTXReader : public Reader<IDType, NNZType, ValueType>,
+                  public ReadsCOO<IDType, NNZType, ValueType>,
+                      public ReadsCSR<IDType, NNZType, ValueType>,
+                  public ReadsSparseFormat<IDType, NNZType, ValueType> {
+public:
+  PigoMTXReader(std::string filename, bool _weighted = false, bool _convert_to_zero_index = false);
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::Format *ReadSparseFormat() const;
+  virtual ~PigoMTXReader() = default;
+
+private:
+  std::string filename_;
+  bool weighted_;
+  bool convert_to_zero_index_;
+};
+
+// Add weighted option with contexpr
+template <typename IDType, typename NNZType, typename ValueType>
+class PigoEdgeListReader : public Reader<IDType, NNZType, ValueType>,
+                        public ReadsCSR<IDType, NNZType, ValueType>,
+                           public ReadsCOO<IDType, NNZType, ValueType>,
+                        public ReadsSparseFormat<IDType, NNZType, ValueType> {
+public:
+  PigoEdgeListReader(std::string filename, bool _weighted = false);
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::Format *ReadSparseFormat() const;
+  virtual ~PigoEdgeListReader() = default;
+
+private:
+  std::string filename_;
+  bool weighted_;
+};
+
+#endif
+
 
 
 template <typename IDType, typename NNZType, typename ValueType>
