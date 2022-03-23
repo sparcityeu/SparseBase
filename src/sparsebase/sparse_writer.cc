@@ -20,7 +20,7 @@ void BinaryWriter<IDType, NNZType, ValueType>::WriteCOO(
   if(coo->get_vals() != nullptr)
     sbff.AddArray("vals", coo->get_vals(), coo->get_num_nnz());
 
-  sbff.Write(filename_);
+  sbff.WriteObject(filename_);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -40,6 +40,6 @@ void BinaryWriter<IDType, NNZType, ValueType>::WriteCSR(
   if(csr->get_vals() != nullptr)
     sbff.AddArray("vals", csr->get_vals(), m);
 
-  sbff.Write(filename_);
+  sbff.WriteObject(filename_);
 }
 }

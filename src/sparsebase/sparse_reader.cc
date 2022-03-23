@@ -277,7 +277,7 @@ BinaryReader<IDType, NNZType, ValueType>::BinaryReader(std::string filename) : f
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType> *
 BinaryReader<IDType, NNZType, ValueType>::ReadCSR() const {
-  auto sbff = SbffObject::Read(filename_);
+  auto sbff = SbffObject::ReadObject(filename_);
 
   if(sbff.get_name() != "csr"){
     throw utils::ReaderException("SBFF file is not in CSR format");
@@ -303,7 +303,7 @@ BinaryReader<IDType, NNZType, ValueType>::ReadCSR() const {
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType> *
 BinaryReader<IDType, NNZType, ValueType>::ReadCOO() const {
-  auto sbff = SbffObject::Read(filename_);
+  auto sbff = SbffObject::ReadObject(filename_);
 
   if(sbff.get_name() != "coo"){
     throw utils::ReaderException("SBFF file is not in COO format");
