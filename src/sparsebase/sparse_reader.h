@@ -14,9 +14,9 @@ namespace sparsebase {
 namespace utils {
 
 template <typename IDType, typename NNZType, typename ValueType>
-class SparseReader {
+class Reader {
 public:
-  virtual ~SparseReader();
+  virtual ~Reader();
 };
 
 template <class VertexID, typename NumEdges, typename Weight>
@@ -36,7 +36,7 @@ public:
 };
 // Add weighted option with contexpr
 template <typename VertexID, typename NumEdges, typename Weight>
-class UedgelistReader : public SparseReader<VertexID, NumEdges, Weight>,
+class UedgelistReader : public Reader<VertexID, NumEdges, Weight>,
                         public ReadsCSR<VertexID, NumEdges, Weight>,
                         public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
@@ -53,7 +53,7 @@ private:
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
-class MTXReader : public SparseReader<VertexID, NumEdges, Weight>,
+class MTXReader : public Reader<VertexID, NumEdges, Weight>,
                   public ReadsCOO<VertexID, NumEdges, Weight>,
                   public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
@@ -109,7 +109,7 @@ private:
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-class BinaryReader: public SparseReader<IDType, NNZType, ValueType>,
+class BinaryReader: public Reader<IDType, NNZType, ValueType>,
   public ReadsCSR<IDType, NNZType, ValueType>,
   public ReadsCOO<IDType, NNZType, ValueType> {
 public:

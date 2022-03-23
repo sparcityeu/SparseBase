@@ -4,7 +4,6 @@
 #include "sparsebase/sparse_converter.h"
 #include <algorithm>
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <vector>
@@ -20,7 +19,7 @@ namespace sparsebase {
 namespace utils {
 
 template <typename IDType, typename NNZType, typename ValueType>
-SparseReader<IDType, NNZType, ValueType>::~SparseReader(){};
+Reader<IDType, NNZType, ValueType>::~Reader(){};
 
 // Add weighted option with contexpr
 //! Brief description
