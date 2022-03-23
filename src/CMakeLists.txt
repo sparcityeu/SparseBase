@@ -1,3 +1,5 @@
+find_package(OpenMP REQUIRED)
+set (CMAKE_CXX_STANDARD 17)
 # Creating the sparsebase library executable
 if(NOT ${_HEADER_ONLY})
 find_package (Python COMPONENTS Interpreter)
@@ -11,6 +13,7 @@ execute_process(COMMAND ${Python_EXECUTABLE}
                 --nnz-types ${NNZ_TYPES_JOINED} 
                 --value-types ${VALUE_TYPES_JOINED} 
                 --float-types ${FLOAT_TYPES_JOINED}
+                --pigo ${USE_PIGO}
                 --output-folder ${PROJECT_BINARY_DIR}/init)
 add_library(sparsebase
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cc
@@ -18,6 +21,7 @@ add_library(sparsebase
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_object.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_converter.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_preprocess.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_writer.cc
         )
 # defining the include paths of the library
 target_include_directories(sparsebase PUBLIC
@@ -28,6 +32,7 @@ target_include_directories(sparsebase PUBLIC
         # Location of the headers at install time
         $<INSTALL_INTERFACE:include>)
 target_compile_features(sparsebase PRIVATE cxx_std_17)
+target_link_libraries(sparsebase OpenMP::OpenMP_CXX)
 else()
 add_library(sparsebase INTERFACE)
 target_compile_features(sparsebase INTERFACE cxx_std_17)
@@ -43,7 +48,8 @@ install(FILES
           sparsebase/sparse_object.cc 
           sparsebase/sparse_preprocess.cc 
           sparsebase/sparse_converter.cc 
-          sparsebase/sparse_reader.cc 
+          sparsebase/sparse_reader.cc
+          sparsebase/sparse_writer.cc
           DESTINATION include/sparsebase)
 endif()
 
@@ -56,8 +62,15 @@ install(FILES
           sparsebase/sparse_object.h 
           sparsebase/sparse_preprocess.h 
           sparsebase/sparse_converter.h 
-          sparsebase/sparse_reader.h 
-          DESTINATION include/sparsebase)
+          sparsebase/sparse_reader.h
+          sparsebase/sparse_writer.h
+          sparsebase/sparse_file_format.h
+          sparsebase/external/json/json.hpp
+        DESTINATION include/sparsebase)
+if(USE_PIGO)
+    install(FILES sparsebase/external/pigo/pigo.hpp
+            DESTINATION include/sparsebase/external/pigo)
+endif()
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION include/sparsebase)
 #install(DIRECTORY ${CMAKE_BINARY_DIR}/init DESTINATION include/sparsebase)
 include(GNUInstallDirs)
