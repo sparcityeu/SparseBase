@@ -83,8 +83,10 @@ install(FILES
           sparsebase/sparse_reader.h
           sparsebase/sparse_writer.h
           sparsebase/sparse_file_format.h
-          sparsebase/external/json/json.hpp
         DESTINATION include/sparsebase)
+install(FILES 
+          sparsebase/external/json/json.hpp
+        DESTINATION include/sparsebase/external/json/)
 if(${CUDA})
         install(FILES
                 sparsebase/cuda/format.cuh

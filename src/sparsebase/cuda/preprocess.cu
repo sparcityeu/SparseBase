@@ -128,5 +128,5 @@ __global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType* xadj, const
 
 }
 #if !defined(_HEADER_ONLY)
-#include "init/cuda/preprocess.inc"
+#include "init/external/cuda/preprocess.inc"
 #endif
