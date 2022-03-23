@@ -1,7 +1,7 @@
 #ifndef _SPARSEFILEFORMAT_H
 #define _SPARSEFILEFORMAT_H
 
-#ifdef _PIGO
+#ifdef USE_PIGO
 #include "external/pigo/pigo.hpp"
 #endif
 
@@ -13,7 +13,7 @@
 
 namespace sparsebase::utils {
 
-#ifdef _PIGO
+#ifdef USE_PIGO
 
 class SbffWriteFile {
 private:
