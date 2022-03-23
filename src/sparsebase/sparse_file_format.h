@@ -169,7 +169,7 @@ public:
     return sbas_arr;
   }
 
-  static SbffArray Read(SbffReadOnlyFile &file, std::string endian) {
+  static SbffArray ReadArray(SbffReadOnlyFile &file, std::string endian) {
     try {
       auto header = ReadHeader(file);
 
@@ -189,11 +189,11 @@ public:
     } catch (sparsebase::utils::ReaderException &e) {
       throw sparsebase::utils::ReaderException(e.what());
     } catch (...) {
-      throw sparsebase::utils::ReaderException("Unknown SBFF Read Error");
+      throw sparsebase::utils::ReaderException("Unknown SBFF ReadArray Error");
     }
   }
 
-  void Write(SbffWriteFile &file) {
+  void WriteArray(SbffWriteFile &file) {
 
     nlohmann::json header;
     header["name"] = name;
@@ -214,7 +214,7 @@ private:
   size_t total_size = 1024;
 
 public:
-  SbffObject(std::string name) : name(name) {}
+  explicit SbffObject(std::string name) : name(name) {}
 
   void AddDimensions(const std::vector<int> & dims){
     dimensions.insert(dimensions.end(), dims.begin(), dims.end());
@@ -271,18 +271,18 @@ public:
     } catch (sparsebase::utils::ReaderException &e) {
       throw sparsebase::utils::ReaderException(e.what());
     } catch (...) {
-      throw sparsebase::utils::ReaderException("Unknown SBFF Read Error");
+      throw sparsebase::utils::ReaderException("Unknown SBFF ReadArray Error");
     }
   }
 
 
 
-  void Write(std::string filename) {
+  void WriteObject(std::string filename) {
     SbffWriteFile file(filename, total_size);
-    Write(file);
+    WriteObject(file);
   }
 
-  void Write(SbffWriteFile &file) {
+  void WriteObject(SbffWriteFile &file) {
     nlohmann::json header;
     header["name"] = name;
     header["array_count"] = arrays.size();
@@ -292,11 +292,11 @@ public:
     file.Write((char *)HeaderToBytes(header).data(), 1024);
 
     for (auto arr : arrays) {
-      arr.second.Write(file);
+      arr.second.WriteArray(file);
     }
   }
 
-  static SbffObject Read(SbffReadOnlyFile &file) {
+  static SbffObject ReadObject(SbffReadOnlyFile &file) {
     try {
       auto header = ReadHeader(file);
 
@@ -308,20 +308,20 @@ public:
       obj.dimensions.insert(obj.dimensions.end(), dims.begin(), dims.end());
 
       for (size_t i = 0; i < array_count; i++)
-        obj.AddArray(SbffArray::Read(file, endian));
+        obj.AddArray(SbffArray::ReadArray(file, endian));
 
       return obj;
 
     } catch (sparsebase::utils::ReaderException &e) {
       throw sparsebase::utils::ReaderException(e.what());
     } catch (...) {
-      throw sparsebase::utils::ReaderException("Unknown SBFF Read Error");
+      throw sparsebase::utils::ReaderException("Unknown SBFF ReadArray Error");
     }
   }
 
-  static SbffObject Read(std::string filename) {
+  static SbffObject ReadObject(std::string filename) {
     SbffReadOnlyFile file(filename);
-    return Read(file);
+    return ReadObject(file);
   }
 
 
