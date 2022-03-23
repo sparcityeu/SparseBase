@@ -27,6 +27,7 @@ use_pigo = True if args.pigo == 'ON' else False
 
 use_cuda = True if args.cuda == 'ON' else False
 cuda_output_folder = os.path.join(external_output_folder, 'cuda')
+
 dry_run = args.dry_run
 
 PREFIX = "template class "
