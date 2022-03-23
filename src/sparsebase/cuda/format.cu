@@ -311,7 +311,7 @@ CUDAArray<ValueType>::~CUDAArray() {}
 // format.inc
 
 #if !defined(_HEADER_ONLY)
-#include "init/cuda/format.inc"
+#include "init/external/cuda/format.inc"
 #endif
 };
 };
