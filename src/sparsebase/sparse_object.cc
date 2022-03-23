@@ -147,7 +147,7 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
 //     TemporalGraph(SparseFormat<VertexID, NumEdges, t_t> * _connectivity){
 //       // init temporal graph
 //     }
-//     TemporalGraph(SparseReader<VertexID, NumEdges, t_t> * r){
+//     TemporalGraph(Reader<VertexID, NumEdges, t_t> * r){
 //       // init temporal graph from file
 //     }
 //     virtual ~TemporalGraph(){};
