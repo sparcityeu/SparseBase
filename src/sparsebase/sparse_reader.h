@@ -14,9 +14,9 @@ namespace sparsebase {
 namespace utils {
 
 template <typename IDType, typename NNZType, typename ValueType>
-class SparseReader {
+class Reader {
 public:
-  virtual ~SparseReader();
+  virtual ~Reader();
 };
 
 template <class VertexID, typename NumEdges, typename Weight>
@@ -36,7 +36,7 @@ public:
 };
 // Add weighted option with contexpr
 template <typename VertexID, typename NumEdges, typename Weight>
-class UedgelistReader : public SparseReader<VertexID, NumEdges, Weight>,
+class UedgelistReader : public Reader<VertexID, NumEdges, Weight>,
                         public ReadsCSR<VertexID, NumEdges, Weight>,
                         public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
@@ -53,7 +53,7 @@ private:
 };
 
 template <typename VertexID, typename NumEdges, typename Weight>
-class MTXReader : public SparseReader<VertexID, NumEdges, Weight>,
+class MTXReader : public Reader<VertexID, NumEdges, Weight>,
                   public ReadsCOO<VertexID, NumEdges, Weight>,
                   public ReadsSparseFormat<VertexID, NumEdges, Weight> {
 public:
@@ -65,6 +65,60 @@ public:
 private:
   std::string filename_;
   bool weighted_;
+};
+
+#ifdef USE_PIGO
+template <typename IDType, typename NNZType, typename ValueType>
+class PigoMTXReader : public Reader<IDType, NNZType, ValueType>,
+                  public ReadsCOO<IDType, NNZType, ValueType>,
+                      public ReadsCSR<IDType, NNZType, ValueType>,
+                  public ReadsSparseFormat<IDType, NNZType, ValueType> {
+public:
+  PigoMTXReader(std::string filename, bool _weighted = false, bool _convert_to_zero_index = false);
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::Format *ReadSparseFormat() const;
+  virtual ~PigoMTXReader() = default;
+
+private:
+  std::string filename_;
+  bool weighted_;
+  bool convert_to_zero_index_;
+};
+
+// Add weighted option with contexpr
+template <typename IDType, typename NNZType, typename ValueType>
+class PigoEdgeListReader : public Reader<IDType, NNZType, ValueType>,
+                        public ReadsCSR<IDType, NNZType, ValueType>,
+                           public ReadsCOO<IDType, NNZType, ValueType>,
+                        public ReadsSparseFormat<IDType, NNZType, ValueType> {
+public:
+  PigoEdgeListReader(std::string filename, bool _weighted = false);
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::Format *ReadSparseFormat() const;
+  virtual ~PigoEdgeListReader() = default;
+
+private:
+  std::string filename_;
+  bool weighted_;
+};
+
+#endif
+
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+class BinaryReader: public Reader<IDType, NNZType, ValueType>,
+  public ReadsCSR<IDType, NNZType, ValueType>,
+  public ReadsCOO<IDType, NNZType, ValueType> {
+public:
+  BinaryReader(std::string filename);
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+
+private:
+  std::string filename_;
 };
 
 } // namespace utils

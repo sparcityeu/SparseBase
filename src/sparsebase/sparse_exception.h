@@ -29,6 +29,14 @@ public:
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
+class WriterException : public Exception {
+  std::string msg_;
+
+public:
+  WriterException(const std::string &msg) : msg_(msg) {}
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
 class TypeException : public Exception {
   std::string msg_;
 

@@ -1,1 +1,2 @@
 #cmakedefine _HEADER_ONLY
+#cmakedefine USE_PIGO
