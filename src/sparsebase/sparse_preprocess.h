@@ -71,6 +71,8 @@ protected:
   template <typename F, typename... SF>
   ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
           SF... sfs);
+  template <typename F, typename... SF>
+  std::tuple<std::vector<format::Format*>, ReturnType> CachedExecute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
