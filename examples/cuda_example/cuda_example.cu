@@ -55,29 +55,29 @@ int main(){
 
     format::CSR<int,int,int>* csr = new format::CSR<int,int,int>(5, 5, row_ptr, col, vals);
 
-    auto converter = new utils::Converter<int,int,int>();
-    auto converter2 = new utils::Converter<int,int,float>();
+    auto graph_converter = new utils::OrderTwoConverter<int,int,int>();
+    auto array_converter = new utils::OrderOneConverter<float>();
 
 
     preprocess::JaccardWeights<int, int, int, float> jac;
     auto array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context});
 
     if (array->get_context_type() == context::CPUContext::get_context_type()){
-        auto cpu_array = converter2->Convert<format::Array<float>>(array, &cpu_context);
+        auto cpu_array = array_converter->Convert<format::Array<float>>(array, &cpu_context);
         print_array(cpu_array->get_vals(), cpu_array->get_num_nnz());
     }
     if (array->get_context_type() == context::CUDAContext::get_context_type()){
-        auto gpu_array = converter2->Convert<format::CUDAArray<float>>(array, &gpu_context);
+        auto gpu_array = array_converter->Convert<format::CUDAArray<float>>(array, &gpu_context);
         print_array_cuda<<<1,1>>>(gpu_array->get_vals(), gpu_array->get_num_nnz());
     }
 
 
-    auto cuda_csr = converter->Convert<format::CUDACSR<int, int, int>>(csr, &gpu_context);
+    auto cuda_csr = graph_converter->Convert<format::CUDACSR<int, int, int>>(csr, &gpu_context);
 
     print_csr_cuda<<<1,1>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(), cuda_csr->get_dimensions()[0]);
     cudaDeviceSynchronize();
 
-    auto cpu_csr = converter->Convert<format::CSR<int, int, int>>(cuda_csr, &cpu_context);
+    auto cpu_csr = graph_converter->Convert<format::CSR<int, int, int>>(cuda_csr, &cpu_context);
 
     print_csr(cpu_csr->get_row_ptr(), cpu_csr->get_col(), cuda_csr->get_dimensions()[0]);
 
