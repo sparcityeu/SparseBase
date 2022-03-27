@@ -37,7 +37,7 @@ public:
 };
 
 template <typename ReturnType,
-          class PreprocessingImpl,
+          class PreprocessingImpl = ConverterMixin<PreprocessType>,
           typename Key = std::vector<std::type_index>,
           typename KeyHash = TypeIndexVectorHash,
           typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
@@ -76,7 +76,7 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
-    : public FunctionMatcherMixin<IDType*, ConverterMixin<PreprocessType>> {
+    : public FunctionMatcherMixin<IDType*> {
 protected:
 
 public:
@@ -132,8 +132,7 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
-    : public FunctionMatcherMixin<format::Format*,
-          ConverterMixin<PreprocessType>> {
+    : public FunctionMatcherMixin<format::Format*> {
 public:
   format::Format *
   GetTransformation(format::Format *csr, std::vector<context::Context*>);
@@ -157,7 +156,7 @@ protected:
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class JaccardWeights : 
-    public FunctionMatcherMixin<format::Format*, ConverterMixin<PreprocessType>> {
+    public FunctionMatcherMixin<format::Format*> {
     struct JaccardParams : PreprocessParams{};
 
 public:
@@ -174,7 +173,7 @@ protected:
 };
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class DegreeDistribution : 
-    public FunctionMatcherMixin<FeatureType*, ConverterMixin<PreprocessType>> {
+    public FunctionMatcherMixin<FeatureType*> {
     struct DegreeDistributionParams : PreprocessParams{};
 
 public:
