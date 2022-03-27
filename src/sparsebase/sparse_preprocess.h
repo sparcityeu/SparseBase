@@ -84,7 +84,9 @@ protected:
 
 public:
   IDType *GetReorder(format::Format *csr);
+  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr);
   IDType *GetReorder(format::Format *csr, PreprocessParams  *params);
+  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr, PreprocessParams  *params);
   virtual ~ReorderPreprocessType();
 };
 
@@ -140,6 +142,8 @@ class TransformPreprocessType
 public:
   format::Format *
   GetTransformation(format::Format *csr);
+  std::tuple<std::vector<format::Format*>, format::Format*>
+  GetTransformationCached(format::Format *csr);
   virtual ~TransformPreprocessType();
 };
 
@@ -167,6 +171,7 @@ class DegreeDistribution :
 public:
     DegreeDistribution();
     FeatureType * GetDistribution(format::Format *format);
+    std::tuple<std::vector<format::Format*>, FeatureType*> GetDistributionCached(format::Format *format);
     FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object);
     //FeatureType * GetDistribution(SparseObject<IDType, NNZType, ValueType> *object);
     static FeatureType * GetDegreeDistributionCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
