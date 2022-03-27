@@ -24,19 +24,19 @@ class PreprocessType {
   std::unique_ptr<PreprocessParams> params_;
 };
 
-template <class Parent, typename IDType, typename NNZType, typename ValueType>
+template <class Parent>
 class ConverterMixin : public Parent {
   using Parent::Parent;
 
 protected:
-  utils::Converter<IDType, NNZType, ValueType> sc_;
+  std::unique_ptr<utils::Converter> sc_;
 
 public:
-  void SetConverter(const utils::Converter<IDType, NNZType, ValueType> &new_sc);
+  void SetConverter(const utils::Converter &new_sc);
   void ResetConverter();
 };
 
-template <typename IDType, typename NNZType, typename ValueType, typename ReturnType,
+template <typename ReturnType,
           class PreprocessingImpl,
           typename Key = std::vector<std::type_index>,
           typename KeyHash = TypeIndexVectorHash,
@@ -62,7 +62,7 @@ protected:
   ConversionMap _map_to_function;
   std::tuple<PreprocessFunction, utils::ConversionSchemaConditional>
   GetFunction(std::vector<format::Format *>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*>,
-              utils::Converter<IDType, NNZType, ValueType> &sc);
+              utils::Converter &sc);
   bool CheckIfKeyMatches(ConversionMap map, Key key, std::vector<format::Format*> packed_sfs, std::vector<context::Context*> contexts);
   template <typename F> std::vector<std::type_index> PackFormats(F sf);
   template <typename F, typename... SF>
@@ -70,14 +70,13 @@ protected:
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
-  ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, std::vector<context::Context*> contexts, F sf,
+  ReturnType Execute(PreprocessParams *params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
           SF... sfs);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class ReorderPreprocessType
-    : public FunctionMatcherMixin<IDType, NNZType, ValueType, IDType*, ConverterMixin<PreprocessType,
-        IDType, NNZType, ValueType>> {
+    : public FunctionMatcherMixin<IDType*, ConverterMixin<PreprocessType>> {
 protected:
 
 public:
@@ -133,8 +132,8 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType
-    : public FunctionMatcherMixin< IDType, NNZType, ValueType, format::Format*,
-          ConverterMixin<PreprocessType, IDType, NNZType, ValueType>> {
+    : public FunctionMatcherMixin<format::Format*,
+          ConverterMixin<PreprocessType>> {
 public:
   format::Format *
   GetTransformation(format::Format *csr, std::vector<context::Context*>);
@@ -158,8 +157,7 @@ protected:
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class JaccardWeights : 
-    public FunctionMatcherMixin<IDType, NNZType, ValueType, format::Format*, ConverterMixin<PreprocessType,
-        IDType, NNZType, ValueType>> {
+    public FunctionMatcherMixin<format::Format*, ConverterMixin<PreprocessType>> {
     struct JaccardParams : PreprocessParams{};
 
 public:
@@ -176,8 +174,7 @@ protected:
 };
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class DegreeDistribution : 
-    public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType*, ConverterMixin<PreprocessType,
-        IDType, NNZType, ValueType>> {
+    public FunctionMatcherMixin<FeatureType*, ConverterMixin<PreprocessType>> {
     struct DegreeDistributionParams : PreprocessParams{};
 
 public:

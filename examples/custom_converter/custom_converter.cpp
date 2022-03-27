@@ -20,7 +20,7 @@ int main(){
     format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
     context::CPUContext cpu_context;
 
-    auto converter = new utils::Converter<int,int,int>();
+    auto converter = new utils::OrderTwoConverter<int,int,int>();
 
     converter->RegisterConditionalConversionFunction(
         format::COO<int, int, int>::get_format_id_static(),
