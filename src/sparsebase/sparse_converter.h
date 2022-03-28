@@ -86,7 +86,7 @@ public:
 };
 
 template <typename ValueType>
-class OrderOneConverter : ConverterImpl<OrderOneConverter<ValueType>>{
+class OrderOneConverter : public ConverterImpl<OrderOneConverter<ValueType>>{
 public:
   OrderOneConverter();
   virtual utils::Converter* Clone() const;

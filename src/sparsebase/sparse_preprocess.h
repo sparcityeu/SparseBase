@@ -72,6 +72,9 @@ protected:
   template <typename F, typename... SF>
   ReturnType Execute(PreprocessParams *params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
           SF... sfs);
+  template <typename F, typename... SF>
+  std::tuple<std::vector<format::Format*>, ReturnType> CachedExecute(PreprocessParams *params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
+                                                                       SF... sfs);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -82,6 +85,8 @@ protected:
 public:
   IDType *GetReorder(format::Format *csr, std::vector<context::Context*>);
   IDType *GetReorder(format::Format *csr, PreprocessParams  *params, std::vector<context::Context*>);
+  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr, std::vector<context::Context*>);
+  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr, PreprocessParams  *params, std::vector<context::Context*>);
   virtual ~ReorderPreprocessType();
 };
 
@@ -136,6 +141,8 @@ class TransformPreprocessType
 public:
   format::Format *
   GetTransformation(format::Format *csr, std::vector<context::Context*>);
+  std::tuple<std::vector<format::Format*>, format::Format*>
+  GetTransformationCached(format::Format *csr, std::vector<context::Context*>);
   virtual ~TransformPreprocessType();
 };
 
@@ -180,6 +187,7 @@ public:
     DegreeDistribution();
     FeatureType * GetDistribution(format::Format *format, std::vector<context::Context*>);
     FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object, std::vector<context::Context*>);
+    std::tuple<std::vector<format::Format*>, FeatureType*> GetDistributionCached(format::Format *format, std::vector<context::Context*>);
     //FeatureType * GetDistribution(SparseObject<IDType, NNZType, ValueType> *object);
     static FeatureType * GetDegreeDistributionCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
     ~DegreeDistribution();
