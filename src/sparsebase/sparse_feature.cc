@@ -119,10 +119,10 @@ std::unordered_map<std::type_index, std::any> Extractor<IDType, NNZType, ValueTy
   if(in_.size() == 0)
     return {};
   // match and get classes for feature extraction
-  std::vector<preprocess::FType*> cs = this->GetClasses(in_);
+  std::vector<preprocess::ExtractableType*> cs = this->GetClasses(in_);
   std::unordered_map<std::type_index, std::any> res;
   std::cout << std::endl << "Classes used:" << std::endl;
-  for(std::vector<preprocess::FType*>::iterator it = cs.begin(); it != cs.end(); it++){
+  for(std::vector<preprocess::ExtractableType*>::iterator it = cs.begin(); it != cs.end(); it++){
     std::cout << (*it)->get_feature_id().name() << std::endl;
     res.merge((*it)->Extract(f));
   }
@@ -147,7 +147,7 @@ void Extractor<IDType, NNZType, ValueType, FeatureType>::Add(Feature f){
 }
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-void Extractor<IDType, NNZType, ValueType, FeatureType>::Sub(Feature f){
+void Extractor<IDType, NNZType, ValueType, FeatureType>::Substract(Feature f){
   for(auto id : f->get_sub_ids()){
     if(in_.find(id) != in_.end()){
       delete in_[id];
