@@ -26,16 +26,19 @@ class PreprocessType {
   std::unique_ptr<PreprocessParams> params_;
 };
 
-class FType {
+class ExtractableType {
 public:
   virtual std::unordered_map<std::type_index, std::any> Extract(format::Format *format) = 0;
   virtual std::type_index get_feature_id() = 0;
   virtual std::vector<std::type_index> get_sub_ids() = 0;
-  virtual std::vector<FType*> get_subs() = 0;
-  virtual PreprocessParams get_params() = 0;
-  virtual PreprocessParams get_params(std::type_index) = 0;
-  virtual void set_params(std::type_index, PreprocessParams) = 0;
-  virtual ~FType() = default;
+  virtual std::vector<ExtractableType*> get_subs() = 0;
+  virtual std::shared_ptr<PreprocessParams> get_params() = 0;
+  virtual std::shared_ptr<PreprocessParams> get_params(std::type_index) = 0;
+  virtual void set_params(std::type_index, std::shared_ptr<PreprocessParams>) = 0;
+  virtual ~ExtractableType() = default;
+protected:
+  std::shared_ptr<PreprocessParams> params_;
+  std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
 };
 
 template <class Parent, typename IDType, typename NNZType, typename ValueType>
@@ -174,10 +177,14 @@ protected:
 
 template< typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class FeaturePreprocessType : 
-    public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType, ConverterMixin<FType,
+    public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType, ConverterMixin<ExtractableType,
         IDType, NNZType, ValueType>>{
 public:
-~FeaturePreprocessType();
+  virtual std::shared_ptr<PreprocessParams> get_params();
+  virtual std::shared_ptr<PreprocessParams> get_params(std::type_index);
+  virtual void set_params(std::type_index, std::shared_ptr<PreprocessParams>);
+  virtual std::type_index get_feature_id();
+  ~FeaturePreprocessType();
 };
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
@@ -187,14 +194,10 @@ class DegreeDistribution : public FeaturePreprocessType<IDType, NNZType, ValueTy
 public:
     DegreeDistribution();
     DegreeDistribution(const DegreeDistribution &);
-    DegreeDistribution(const DegreeDistributionParams);
+    DegreeDistribution(const std::shared_ptr<DegreeDistributionParams>);
     virtual std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
-    virtual PreprocessParams get_params();
-    virtual PreprocessParams get_params(std::type_index);
-    virtual void set_params(std::type_index, PreprocessParams);
-    virtual std::type_index get_feature_id();
     virtual std::vector<std::type_index> get_sub_ids();
-    virtual std::vector<FType*> get_subs();
+    virtual std::vector<ExtractableType*> get_subs();
     static std::type_index get_feature_id_static();
 
     FeatureType * GetDistribution(format::Format *format);
@@ -204,8 +207,6 @@ public:
 
 protected:
     void Register();
-    DegreeDistributionParams params_;
-    std::unordered_map<std::type_index, PreprocessParams> pmap_;
 };
 
 template<typename IDType, typename NNZType, typename ValueType>
@@ -215,24 +216,18 @@ class Degrees : public FeaturePreprocessType<IDType, NNZType, ValueType, IDType*
 public:
   Degrees();
   Degrees(const Degrees<IDType, NNZType, ValueType> & d);
-  Degrees(const DegreesParams);
+  Degrees(const std::shared_ptr<DegreesParams>);
   virtual std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
-  virtual PreprocessParams get_params();
-  virtual PreprocessParams get_params(std::type_index);
-  virtual void set_params(std::type_index, PreprocessParams);
-  virtual std::type_index get_feature_id();
   virtual std::vector<std::type_index> get_sub_ids();
-  virtual std::vector<FType*> get_subs();
+  virtual std::vector<ExtractableType*> get_subs();
   static std::type_index get_feature_id_static();
 
   IDType * GetDegrees(format::Format *format);
-  static IDType * GetDegreesCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
+  static IDType * GetDegreesCSR(std::vector<format::Format *> formats, PreprocessParams * params);
   ~Degrees();
 
 protected:
   void Register();
-  DegreesParams params_;
-  std::unordered_map<std::type_index, PreprocessParams> pmap_;
 };
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
@@ -241,20 +236,14 @@ class Degrees_DegreeDistribution : public FeaturePreprocessType<IDType, NNZType,
 public:
   Degrees_DegreeDistribution();
   virtual std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
-  virtual PreprocessParams get_params();
-  virtual PreprocessParams get_params(std::type_index);
-  virtual void set_params(std::type_index, PreprocessParams);
   virtual std::vector<std::type_index> get_sub_ids();
-  virtual std::vector<FType*> get_subs();
-  virtual std::type_index get_feature_id();
+  virtual std::vector<ExtractableType*> get_subs();
   static std::type_index get_feature_id_static();
 
   std::unordered_map<std::type_index, std::any> Get(format::Format *format);
-  static std::unordered_map<std::type_index, std::any> GetCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
+  static std::unordered_map<std::type_index, std::any> GetCSR(std::vector<format::Format *> formats, PreprocessParams * params);
   ~Degrees_DegreeDistribution();
 protected:
-  Params params_;
-  std::unordered_map<std::type_index, PreprocessParams> pmap_;
 };
 
 } // namespace preprocess

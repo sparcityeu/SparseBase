@@ -31,7 +31,7 @@ int main(int argc, char * argv[]){
     sparsebase::feature::Extractor<vertex_type, edge_type, value_type, feature_type> engine;
     engine.PrintFuncList();
     engine.Add(feature::Feature(degrees{}));
-    engine.Sub(feature::Feature(degrees{}));
+    engine.Substract(feature::Feature(degrees{}));
     try{
       engine.Add(feature::Feature(sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type, value_type, float>{}));
     }

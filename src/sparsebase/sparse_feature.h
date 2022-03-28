@@ -43,7 +43,7 @@ private:
   Interface& (*getter)(std::any&);
 };
 
-using Feature = Implementation<preprocess::FType>;
+using Feature = Implementation<preprocess::ExtractableType>;
 
 template<class ClassType,
           typename Key = std::vector<std::type_index>,
@@ -64,7 +64,7 @@ protected:
 
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class Extractor: public ClassMatcherMixin<preprocess::FType*> {
+class Extractor: public ClassMatcherMixin<preprocess::ExtractableType*> {
 public:
   Extractor();
   ~Extractor();
@@ -72,11 +72,11 @@ public:
                                      format::Format * format);
   std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
   void Add(Feature f);
-  void Sub(Feature f);
+  void Substract(Feature f);
   std::vector<std::type_index> GetList();
   void PrintFuncList();
 private:
-  std::unordered_map<std::type_index, preprocess::FType*> in_;
+  std::unordered_map<std::type_index, preprocess::ExtractableType*> in_;
 };
 
 } // namespace sparsebase::feature

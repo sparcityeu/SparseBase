@@ -476,9 +476,48 @@ TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType>::~FeaturePreprocessType()= default;
 
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+std::shared_ptr<PreprocessParams>
+FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType>::get_params() {
+  return this->params_;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::shared_ptr<PreprocessParams>
+FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType>::get_params(
+    std::type_index t) {
+  if(this->pmap_.find(t) != this->pmap_.end()){
+    return this->pmap_[t];
+  }
+  else{
+    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
+  }
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType>::set_params(
+    std::type_index t, std::shared_ptr<PreprocessParams> p) {
+  auto ids = this->get_sub_ids();
+  if(std::find(ids.begin(), ids.end(), t) != ids.end()){
+    this->pmap_[t] = p;
+  }
+  else{
+    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
+  }
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::type_index FeaturePreprocessType<IDType, NNZType, ValueType,
+                                      FeatureType>::get_feature_id() {
+  return typeid(*this);
+}
+
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(){
     Register();
+    this->params_ = std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
+    this->pmap_.insert({get_feature_id_static(), this->params_});
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -486,17 +525,17 @@ template <typename IDType, typename NNZType, typename ValueType,
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
     const DegreeDistribution & d) {
     Register();
-    params_ = d.params_;
-    pmap_ = d.pmap_;
+    this->params_ = d.params_;
+    this->pmap_ = d.pmap_;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
     typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
-    const DegreeDistributionParams p) {
+    const std::shared_ptr<DegreeDistributionParams> p) {
   Register();
-  params_ = p;
-  pmap_[get_feature_id_static()] = p;
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -507,43 +546,14 @@ void DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Register() {
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 std::unordered_map<std::type_index, std::any> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(format::Format * format){
-  return {{get_feature_id(), std::forward<FeatureType*>(GetDistribution(format))}};
+  return {{this->get_feature_id(), std::forward<FeatureType*>(GetDistribution(format))}};
 };
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-PreprocessParams DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_params(){
-  return params_;
-};
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-PreprocessParams DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_params(std::type_index t){
-  if(pmap_.find(t) != pmap_.end()){
-    return pmap_[t];
-  }
-  else{
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
-  }
-};
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-void DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::set_params(std::type_index t, PreprocessParams p){
-  auto ids = get_sub_ids();
-  if(std::find(ids.begin(), ids.end(), t) != ids.end()){
-    pmap_[t] = p;
-  }
-  else{
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
-  }
-}
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-std::type_index DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id() { return typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>); }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 std::vector<std::type_index> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() { return {typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>)}; }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-std::vector<FType*> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs(){ return {new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>(*this)}; }
+std::vector<ExtractableType*> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs(){ return {new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>(*this)}; }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 std::type_index DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() { return typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>); }
@@ -604,20 +614,22 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 template<typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(){
   Register();
+  this->params_ = std::shared_ptr<DegreesParams>(new DegreesParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(const Degrees<IDType, NNZType, ValueType> & d) {
   Register();
-  params_ = d.params_;
-  pmap_ = d.pmap_;
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Degrees<IDType, NNZType, ValueType>::Degrees(const DegreesParams r) {
+Degrees<IDType, NNZType, ValueType>::Degrees(const std::shared_ptr<DegreesParams> r) {
   Register();
-  params_ = r;
-  pmap_[get_feature_id_static()] = r;
+  this->params_ = r;
+  this->pmap_[get_feature_id_static()] = r;
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -629,46 +641,17 @@ void Degrees<IDType, NNZType, ValueType>::Register() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-PreprocessParams Degrees<IDType, NNZType, ValueType>::get_params(){
-  return params_;
-};
-
-template <typename IDType, typename NNZType, typename ValueType>
-PreprocessParams Degrees<IDType, NNZType, ValueType>::get_params(std::type_index t){
-  if(pmap_.find(t) != pmap_.end()){
-    return pmap_[t];
-  }
-  else{
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
-  }
-};
-
-template <typename IDType, typename NNZType, typename ValueType>
-void Degrees<IDType, NNZType, ValueType>::set_params(std::type_index t, PreprocessParams p){
-  auto ids = get_sub_ids();
-  if(std::find(ids.begin(), ids.end(), t) != ids.end()){
-    pmap_[t] = p;
-  }
-  else{
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
-  }
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-std::type_index Degrees<IDType, NNZType, ValueType>::get_feature_id() { return typeid(Degrees<IDType, NNZType, ValueType>); }
-
-template <typename IDType, typename NNZType, typename ValueType>
 std::vector<std::type_index> Degrees<IDType, NNZType, ValueType>::get_sub_ids() { return {typeid(Degrees<IDType, NNZType, ValueType>)}; }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::vector<FType*> Degrees<IDType, NNZType, ValueType>::get_subs(){ return {new Degrees<IDType, NNZType, ValueType>(*this)}; }
+std::vector<ExtractableType*> Degrees<IDType, NNZType, ValueType>::get_subs(){ return {new Degrees<IDType, NNZType, ValueType>(*this)}; }
 
 template <typename IDType, typename NNZType, typename ValueType>
 std::type_index Degrees<IDType, NNZType, ValueType>::get_feature_id_static() { return typeid(Degrees<IDType, NNZType, ValueType>); }
 
 template <typename IDType, typename NNZType, typename ValueType>
 std::unordered_map<std::type_index, std::any> Degrees<IDType, NNZType, ValueType>::Extract(format::Format * format){
-  return {{get_feature_id(), std::forward<IDType*>(GetDegrees(format))}};
+  return {{this->get_feature_id(), std::forward<IDType*>(GetDegrees(format))}};
 };
 
 template<typename IDType, typename NNZType, typename ValueType>
@@ -700,37 +683,12 @@ IDType * Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(std::vector<Format *
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Degrees_DegreeDistribution(){
   this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+  this->params_ = std::shared_ptr<Params>(new Params());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
 }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::~Degrees_DegreeDistribution()=default;
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-PreprocessParams Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_params(){
-  //some logic to merge params
-  return params_;
-};
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-PreprocessParams Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_params(std::type_index t){
-  if(pmap_.find(t) != pmap_.end()){
-    return pmap_[t];
-  }
-  else{
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
-  }
-};
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-void Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::set_params(std::type_index t, PreprocessParams p){
-  auto ids = get_sub_ids();
-  if(std::find(ids.begin(), ids.end(), t) != ids.end()){
-    pmap_[t] = p;
-  }
-  else{
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
-  }
-}
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 std::vector<std::type_index> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
@@ -740,21 +698,18 @@ std::vector<std::type_index> Degrees_DegreeDistribution<IDType, NNZType, ValueTy
 }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-std::vector<FType*> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs(){
+std::vector<ExtractableType*> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs(){
   auto * f1 = new Degrees<IDType, NNZType, ValueType>();
-  if(pmap_.find(Degrees<IDType, NNZType, ValueType>::get_feature_id_static()) != pmap_.end()){
-    f1->set_params(Degrees<IDType, NNZType, ValueType>::get_feature_id_static(), pmap_[Degrees<IDType, NNZType, ValueType>::get_feature_id_static()]);
+  if(this->pmap_.find(Degrees<IDType, NNZType, ValueType>::get_feature_id_static()) != this->pmap_.end()){
+    f1->set_params(Degrees<IDType, NNZType, ValueType>::get_feature_id_static(), this->pmap_[Degrees<IDType, NNZType, ValueType>::get_feature_id_static()]);
   }
 
   auto * f2 = new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>();
-  if(pmap_.find(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()) != pmap_.end()){
-    f1->set_params(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static(), pmap_[DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()]);
+  if(this->pmap_.find(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()) != this->pmap_.end()){
+    f1->set_params(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static(), this->pmap_[DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()]);
   }
   return {f1, f2};
 }
-
-template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-std::type_index Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id() { return typeid(Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>); }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 std::type_index Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() { return typeid(Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>); }
