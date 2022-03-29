@@ -59,6 +59,7 @@ int main(int argc, char * argv[]){
   }
   cout << "F t re  s sp r e!" << endl;
   string file_name = argv[1];
+  context::CPUContext cpu_context;
 
   cout << "********************************" << endl;
 
@@ -77,7 +78,7 @@ int main(int argc, char * argv[]){
   preprocess::GenericReorder<vertex_type, edge_type, value_type> orderer;
   orderer.RegisterFunction({format::CSR<vertex_type, edge_type, value_type>::get_format_id_static()}, degree_reorder_csr);
   customParam params{10};
-  vertex_type * order = orderer.GetReorder(con, &params);
+  vertex_type * order = orderer.GetReorder(con, &params, {&cpu_context});
 
   vertex_type n = con->get_dimensions()[0];
   auto xadj = con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
@@ -118,7 +119,7 @@ int main(int argc, char * argv[]){
   }
 
   preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
-  format::Format * csr = transformer.GetTransformation(con);
+  format::Format * csr = transformer.GetTransformation(con, {&cpu_context});
   auto * n_row_ptr = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto * n_col = csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;

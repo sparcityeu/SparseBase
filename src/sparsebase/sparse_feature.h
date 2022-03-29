@@ -26,7 +26,7 @@ public:
       , getter{ object.getter }
   {}
   Implementation(Implementation&& object)
-      : storage{std::move(object.storage)}
+ noexcept       : storage{std::move(object.storage)}
       , getter{ std::move(object.getter) }
   {}
   Implementation& operator=(Implementation other)
@@ -65,9 +65,9 @@ protected:
 class Extractor: public ClassMatcherMixin<preprocess::ExtractableType*> {
 public:
   ~Extractor();
-  std::unordered_map<std::type_index, std::any> Extract(std::vector<Feature> & features,
-                                                        format::Format * format);
-  std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
+  static std::unordered_map<std::type_index, std::any> Extract(std::vector<Feature> & features,
+                                                        format::Format * format, const std::vector<context::Context*> &);
+  std::unordered_map<std::type_index, std::any> Extract(format::Format * format, const std::vector<context::Context*> &);
   void Add(Feature f);
   void Subtract(Feature f);
   std::vector<std::type_index> GetList();

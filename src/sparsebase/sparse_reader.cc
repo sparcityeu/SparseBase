@@ -1,12 +1,16 @@
 #include "sparsebase/sparse_reader.h"
 #include "sparsebase/sparse_exception.h"
 #include "sparsebase/sparse_format.h"
+#include "sparsebase/sparse_converter.h"
 #include <algorithm>
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <vector>
+#include "sparsebase/sparse_file_format.h"
+#ifdef USE_PIGO
+#include "external/pigo/pigo.hpp"
+#endif
 
 using namespace sparsebase::format;
 
@@ -15,7 +19,7 @@ namespace sparsebase {
 namespace utils {
 
 template <typename IDType, typename NNZType, typename ValueType>
-SparseReader<IDType, NNZType, ValueType>::~SparseReader(){};
+Reader<IDType, NNZType, ValueType>::~Reader(){};
 
 // Add weighted option with contexpr
 //! Brief description
@@ -174,6 +178,155 @@ MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
 
 template <typename VertexID, typename NumEdges, typename Weight>
 MTXReader<VertexID, NumEdges, Weight>::~MTXReader(){};
+
+
+#ifdef USE_PIGO
+template <typename IDType, typename NNZType, typename ValueType>
+PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader
+    (std::string filename, bool weighted, bool _convert_to_zero_index)
+    : filename_(filename), weighted_(weighted), convert_to_zero_index_(_convert_to_zero_index) {}
+
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType> *
+PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+
+  COO<IDType, NNZType, ValueType> * coo;
+
+  if(weighted_){
+    pigo::COO<IDType, IDType, IDType*, false, false, false, true, ValueType, ValueType*>
+        pigo_coo(filename_, pigo::MATRIX_MARKET);
+    coo = new COO<IDType, NNZType, ValueType>(pigo_coo.n(), pigo_coo.m(),
+                                              pigo_coo.m(), pigo_coo.x(),
+                                              pigo_coo.y(), pigo_coo.w(), kOwned);
+  }
+  else {
+    pigo::COO<IDType, IDType, IDType*, false, false, false, false, ValueType, ValueType*>
+        pigo_coo(filename_, pigo::MATRIX_MARKET);
+    coo = new COO<IDType, NNZType, ValueType>(pigo_coo.n(), pigo_coo.m(),
+                                              pigo_coo.m(), pigo_coo.x(),
+                                              pigo_coo.y(), pigo_coo.w(), kOwned);
+  }
+
+  if(convert_to_zero_index_){
+    auto col = coo->get_col();
+    auto row = coo->get_row();
+#pragma omp parallel for shared(col,row,coo)
+    for (IDType i = 0; i < coo->get_num_nnz(); ++i) {
+      col[i]--;
+      row[i]--;
+    }
+  }
+
+  return coo;
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType> *
+PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
+  COO<IDType, NNZType, ValueType>* coo = ReadCOO();
+  utils::OrderTwoConverter<IDType,NNZType,ValueType> converter;
+  return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Format *PigoMTXReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
+  return this->ReadCOO();
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType> *
+PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
+  COO<IDType, NNZType, ValueType>* coo = ReadCOO();
+  utils::OrderTwoConverter<IDType,NNZType,ValueType> converter;
+  return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType> *
+PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
+  if(weighted_){
+    pigo::COO<IDType, IDType, IDType*, false, false, false, true, ValueType, ValueType*> coo(filename_, pigo::EDGE_LIST);
+    return new COO<IDType, NNZType, ValueType>(coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), kOwned);
+  }
+  else {
+    pigo::COO<IDType, IDType, IDType*, false, false, false, false, ValueType, ValueType*> coo(filename_, pigo::EDGE_LIST);
+    return new COO<IDType, NNZType, ValueType>(coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), kOwned);
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+PigoEdgeListReader<IDType, NNZType, ValueType>::PigoEdgeListReader(
+    std::string filename, bool weighted)
+    : filename_(filename), weighted_(weighted) {}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+Format *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
+  return this->ReadCOO();
+}
+#if !defined(_HEADER_ONLY)
+#include "init/external/pigo.inc"
+#endif
+#endif
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+BinaryReader<IDType, NNZType, ValueType>::BinaryReader(std::string filename) : filename_(filename) {}
+
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+CSR<IDType, NNZType, ValueType> *
+BinaryReader<IDType, NNZType, ValueType>::ReadCSR() const {
+  auto sbff = SbffObject::ReadObject(filename_);
+
+  if(sbff.get_name() != "csr"){
+    throw utils::ReaderException("SBFF file is not in CSR format");
+  }
+
+  NNZType* row_ptr;
+  IDType* col;
+  ValueType* vals = nullptr;
+
+  auto dimensions = sbff.get_dimensions();
+
+  sbff.template GetArray("row_ptr", row_ptr);
+  sbff.template GetArray("col", col);
+
+  if(sbff.get_array_count() == 3){
+    sbff.template GetArray("vals", vals);
+  }
+
+  return new CSR<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], row_ptr, col, vals, kOwned);
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+COO<IDType, NNZType, ValueType> *
+BinaryReader<IDType, NNZType, ValueType>::ReadCOO() const {
+  auto sbff = SbffObject::ReadObject(filename_);
+
+  if(sbff.get_name() != "coo"){
+    throw utils::ReaderException("SBFF file is not in COO format");
+  }
+
+  IDType* row;
+  IDType* col;
+  ValueType* vals = nullptr;
+
+  auto dimensions = sbff.get_dimensions();
+
+  sbff.template GetArray("row", row);
+  sbff.template GetArray("col", col);
+
+  if(sbff.get_array_count() == 3){
+    sbff.template GetArray("vals", vals);
+  }
+
+  return new COO<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], dimensions[1], row, col, vals, kOwned);
+}
 
 #if !defined(_HEADER_ONLY)
 #include "init/reader.inc"
