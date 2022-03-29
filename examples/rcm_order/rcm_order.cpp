@@ -21,6 +21,7 @@ int main(int argc, char * argv[]){
   }
   cout << "F t re  s sp r e!" << endl;
   string file_name = argv[1];
+  context::CPUContext cpu_context;
 
   cout << "********************************" << endl;
 
@@ -36,7 +37,7 @@ int main(int argc, char * argv[]){
 
   preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer(1,4);
   auto * con = g.get_connectivity()->As<format::CSR<vertex_type,edge_type,value_type>>();
-  vertex_type * order = orderer.GetReorder(con);
+  vertex_type * order = orderer.GetReorder(con, {&cpu_context});
   auto xadj = con->get_row_ptr();
   auto adj = con->get_col();
   vertex_type n = con->get_dimensions()[0];

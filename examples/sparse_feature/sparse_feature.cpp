@@ -26,6 +26,7 @@ int main(int argc, char * argv[]){
   string file_name = argv[1];
   sparsebase::utils::MTXReader<vertex_type, edge_type, value_type> reader(file_name);
   COO<vertex_type, edge_type, value_type> * coo = reader.ReadCOO();
+  context::CPUContext cpu_context;
 
   {
     sparsebase::feature::Extractor engine = sparsebase::feature::FeatureExtractor<vertex_type, edge_type, value_type, feature_type>();
@@ -50,7 +51,7 @@ int main(int argc, char * argv[]){
     cout << endl;
 
     // extract features
-    auto raws = engine.Extract(coo);
+    auto raws = engine.Extract(coo, {&cpu_context});
     cout << "#features extracted: " << raws.size() << endl;
     auto dgrs = std::any_cast<vertex_type*>(raws[degrees::get_feature_id_static()]);
     auto dst = std::any_cast<feature_type*>(raws[degree_dist::get_feature_id_static()]);

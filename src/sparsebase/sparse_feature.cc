@@ -49,7 +49,7 @@ std::tuple<ClassType, std::vector<std::type_index>> ClassMatcherMixin<ClassType,
 template<typename ClassType, typename Key, typename KeyHash, typename KeyEqualTo>
 void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::
     GetClassesHelper(std::unordered_map<std::type_index, ClassType> & source, std::vector<std::type_index> & ordered, std::vector<ClassType> & res){
-    if(ordered.size() == 0){
+    if(ordered.empty()){
       return;
     }
     bool found = false;
@@ -69,7 +69,7 @@ std::vector<ClassType> ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::
     GetClasses(std::unordered_map<std::type_index, ClassType> & source){
   std::vector<ClassType> res;
   std::vector<std::type_index> ordered;
-  for(auto el: source){
+  for(auto & el: source){
     ordered.push_back(std::get<0>(el));
   }
   std::sort(ordered.begin(), ordered.end());
@@ -90,25 +90,25 @@ void Extractor::PrintFuncList() {
 }
 
 std::unordered_map<std::type_index, std::any>Extractor::Extract(std::vector<Feature> & fs,
-                                                                                   format::Format * format) {
+                                                                                   format::Format * format, const std::vector<context::Context*> & c) {
     std::unordered_map<std::type_index, std::any> res;
     for(auto & el : fs){
-      auto t = el->Extract(format);
+      auto t = el->Extract(format, c);
       res.merge(t);
     }
     return res;
 }
 
-std::unordered_map<std::type_index, std::any>Extractor::Extract(format::Format * format){
-  if(in_.size() == 0)
+std::unordered_map<std::type_index, std::any>Extractor::Extract(format::Format * format, const std::vector<context::Context*> & c){
+  if(in_.empty())
     return {};
   // match and get classes for feature extraction
   std::vector<preprocess::ExtractableType*> cs = this->GetClasses(in_);
   std::unordered_map<std::type_index, std::any> res;
   std::cout << std::endl << "Classes used:" << std::endl;
-  for(std::vector<preprocess::ExtractableType*>::iterator it = cs.begin(); it != cs.end(); it++){
-    std::cout << (*it)->get_feature_id().name() << std::endl;
-    res.merge((*it)->Extract(format));
+  for(auto & el : cs){
+    std::cout << el->get_feature_id().name() << std::endl;
+    res.merge(el->Extract(format, c));
   }
   std::cout << std::endl;
   return res;
