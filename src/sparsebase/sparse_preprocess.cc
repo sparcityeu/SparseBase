@@ -553,7 +553,8 @@ template<typename IDType, typename NNZType, typename ValueType, typename Feature
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights(){
   this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
   #ifdef CUDA
-    this->RegisterFunction({CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetJaccardWeightCUDACSR);
+    std::vector<std::type_index> formats ={CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()}; 
+    this->RegisterFunction(formats, GetJaccardWeightCUDACSR);
   #endif
 }
 
@@ -630,13 +631,6 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
     }
     return dist;
 }
-
-
-
-
-//template __global__ void jac_binning_gpu_u_per_grid_bst_kernel<int, int, float>(const int* xadj, const int* adj, int n, float* emetrics, int SM_FAC);
-template class JaccardWeights<int, int, int, float>;
-//template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"
