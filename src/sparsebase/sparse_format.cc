@@ -105,7 +105,7 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
   this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *COO<IDType, NNZType, ValueType>::clone() const {
+Format *COO<IDType, NNZType, ValueType>::Clone() const {
   return new COO(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -296,7 +296,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CSR<IDType, NNZType, ValueType>::clone() const {
+Format *CSR<IDType, NNZType, ValueType>::Clone() const {
   return new CSR(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -444,7 +444,7 @@ Array<ValueType>::Array(DimensionType nnz, ValueType* vals, Ownership own)
 }
 
 template <typename ValueType>
-Format *Array<ValueType>::clone() const {
+Format *Array<ValueType>::Clone() const {
   return new Array(*this);
 }
 template <typename ValueType>

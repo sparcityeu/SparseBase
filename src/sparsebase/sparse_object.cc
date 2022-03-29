@@ -23,7 +23,7 @@ AbstractObject<IDType, NNZType, ValueType>::AbstractObject(
 template <typename IDType, typename NNZType, typename ValueType>
 AbstractObject<IDType, NNZType, ValueType>::AbstractObject(
     const AbstractObject<IDType, NNZType, ValueType> &rhs)
-    : connectivity_((Format *)rhs.connectivity_->clone(),
+    : connectivity_((Format *)rhs.connectivity_->Clone(),
                     BlankDeleter<Format>()){};
 template <typename IDType, typename NNZType, typename ValueType>
 Format *AbstractObject<IDType, NNZType, ValueType>::get_connectivity() const {
@@ -63,14 +63,14 @@ Graph<VertexID, NumEdges, Weight>::Graph(
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph(
     const Graph<VertexID, NumEdges, Weight> &rhs) {
-  this->set_connectivity(static_cast<Format *>(rhs.connectivity_->clone()),
+  this->set_connectivity(static_cast<Format *>(rhs.connectivity_->Clone()),
                          true);
   InitializeInfoFromConnection();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight> &Graph<VertexID, NumEdges, Weight>::operator=(
     const Graph<VertexID, NumEdges, Weight> &rhs) {
-  this->set_connectivity(static_cast<Format *>(rhs.connectivity_->clone()),
+  this->set_connectivity(static_cast<Format *>(rhs.connectivity_->Clone()),
                          true);
   InitializeInfoFromConnection();
   return *this;
