@@ -60,19 +60,20 @@ public:
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   ConversionMap _map_to_function;
-  std::tuple<PreprocessFunction, utils::ConversionSchema>
-  GetFunction(Key key, ConversionMap map,
+  std::tuple<PreprocessFunction, utils::ConversionSchemaConditional>
+  GetFunction(std::vector<format::Format *>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*>,
               utils::Converter<IDType, NNZType, ValueType> &sc);
+  bool CheckIfKeyMatches(ConversionMap map, Key key, std::vector<format::Format*> packed_sfs, std::vector<context::Context*> contexts);
   template <typename F> std::vector<std::type_index> PackFormats(F sf);
   template <typename F, typename... SF>
   std::vector<std::type_index> PackFormats(F sf, SF... sfs);
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
-  ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
+  ReturnType Execute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, std::vector<context::Context*> contexts, F sf,
           SF... sfs);
   template <typename F, typename... SF>
-  std::tuple<std::vector<format::Format*>, ReturnType> CachedExecute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, F sf,
+  std::tuple<std::vector<format::Format*>, ReturnType> CachedExecute(PreprocessParams *params, utils::Converter<IDType, NNZType, ValueType>& sc, std::vector<context::Context*> contexts, F sf,
                                                                        SF... sfs);
 };
 
@@ -83,10 +84,10 @@ class ReorderPreprocessType
 protected:
 
 public:
-  IDType *GetReorder(format::Format *csr);
-  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr);
-  IDType *GetReorder(format::Format *csr, PreprocessParams  *params);
-  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr, PreprocessParams  *params);
+  IDType *GetReorder(format::Format *csr, std::vector<context::Context*>);
+  IDType *GetReorder(format::Format *csr, PreprocessParams  *params, std::vector<context::Context*>);
+  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr, std::vector<context::Context*>);
+  std::tuple<std::vector<format::Format*>,IDType *>GetReorderCached(format::Format *csr, PreprocessParams  *params, std::vector<context::Context*>);
   virtual ~ReorderPreprocessType();
 };
 
@@ -141,9 +142,9 @@ class TransformPreprocessType
           ConverterMixin<PreprocessType, IDType, NNZType, ValueType>> {
 public:
   format::Format *
-  GetTransformation(format::Format *csr);
+  GetTransformation(format::Format *csr, std::vector<context::Context*>);
   std::tuple<std::vector<format::Format*>, format::Format*>
-  GetTransformationCached(format::Format *csr);
+  GetTransformationCached(format::Format *csr, std::vector<context::Context*>);
   virtual ~TransformPreprocessType();
 };
 
@@ -163,6 +164,24 @@ protected:
 };
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class JaccardWeights : 
+    public FunctionMatcherMixin<IDType, NNZType, ValueType, format::Format*, ConverterMixin<PreprocessType,
+        IDType, NNZType, ValueType>> {
+    struct JaccardParams : PreprocessParams{};
+
+public:
+    JaccardWeights ();
+    format::Format * GetJaccardWeights(format::Format *format, std::vector<context::Context*>);
+    #ifdef CUDA
+    static format::Format* GetJaccardWeightCUDACSR(std::vector<format::Format *> formats, PreprocessParams  * params);
+    #endif
+    ~JaccardWeights ();
+
+protected:
+    //GetDegreeDistributionCSR(std::vector<SparseFormat<IDType, NNZType, ValueType> *> formats, FeatureParams *);
+    //static float * GetDegreeDistributionCSR(SparseObject<IDtype, NNZType, ValueType> * obj);
+};
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class DegreeDistribution : 
     public FunctionMatcherMixin<IDType, NNZType, ValueType, FeatureType*, ConverterMixin<PreprocessType,
         IDType, NNZType, ValueType>> {
@@ -170,9 +189,9 @@ class DegreeDistribution :
 
 public:
     DegreeDistribution();
-    FeatureType * GetDistribution(format::Format *format);
-    std::tuple<std::vector<format::Format*>, FeatureType*> GetDistributionCached(format::Format *format);
-    FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object);
+    FeatureType * GetDistribution(format::Format *format, std::vector<context::Context*>);
+    FeatureType * GetDistribution(object::Graph<IDType, NNZType, ValueType> *object, std::vector<context::Context*>);
+    std::tuple<std::vector<format::Format*>, FeatureType*> GetDistributionCached(format::Format *format, std::vector<context::Context*>);
     //FeatureType * GetDistribution(SparseObject<IDType, NNZType, ValueType> *object);
     static FeatureType * GetDegreeDistributionCSR(std::vector<format::Format *> formats, PreprocessParams  * params);
     ~DegreeDistribution();
@@ -186,6 +205,9 @@ protected:
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparse_preprocess.cc"
+#ifdef CUDA
+#include "cuda/preprocess.cu"
+#endif
 #endif
 
 #endif

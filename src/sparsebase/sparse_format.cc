@@ -10,6 +10,15 @@
 
 using namespace sparsebase::utils;
 
+namespace sparsebase::context{
+  bool CPUContext::IsEquivalent(Context * rhs) const {
+    if (dynamic_cast<CPUContext*>(rhs)!= nullptr){
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
 namespace sparsebase::format {
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -25,6 +34,7 @@ COO<IDType, NNZType, ValueType>::COO(COO<IDType, NNZType, ValueType> &&rhs)
       nullptr, BlankDeleter<IDType>());
   rhs.vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
       nullptr, BlankDeleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType> &COO<IDType, NNZType, ValueType>::operator=(
@@ -72,6 +82,7 @@ COO<IDType, NNZType, ValueType>::COO(const COO<IDType, NNZType, ValueType> &rhs)
       row, Deleter<IDType>());
   this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
       vals, Deleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
@@ -91,6 +102,7 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
         std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
             vals, Deleter<ValueType>());
   }
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format *COO<IDType, NNZType, ValueType>::clone() const {
@@ -211,6 +223,7 @@ CSR<IDType, NNZType, ValueType>::CSR(CSR<IDType, NNZType, ValueType> &&rhs)
       nullptr, BlankDeleter<NNZType>());
   rhs.vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
       nullptr, BlankDeleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType> &CSR<IDType, NNZType, ValueType>::operator=(
@@ -220,8 +233,8 @@ CSR<IDType, NNZType, ValueType> &CSR<IDType, NNZType, ValueType>::operator=(
   this->dimension_ = rhs.dimension_;
   auto col = new IDType[rhs.get_num_nnz()];
   std::copy(rhs.get_col(), rhs.get_col() + rhs.get_num_nnz(), col);
-  auto row_ptr = new NNZType[rhs.get_num_nnz()];
-  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + rhs.get_num_nnz(), row_ptr);
+  auto row_ptr = new NNZType[(rhs.get_dimensions()[0]+1)];
+  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + (rhs.get_dimensions()[0]+1), row_ptr);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
     vals = new ValueType[rhs.get_num_nnz()];
@@ -245,8 +258,8 @@ CSR<IDType, NNZType, ValueType>::CSR(const CSR<IDType, NNZType, ValueType> &rhs)
   this->dimension_ = rhs.dimension_;
   auto col = new IDType[rhs.get_num_nnz()];
   std::copy(rhs.get_col(), rhs.get_col() + rhs.get_num_nnz(), col);
-  auto row_ptr = new NNZType[rhs.get_num_nnz()];
-  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + rhs.get_num_nnz(), row_ptr);
+  auto row_ptr = new NNZType[(rhs.get_dimensions()[0]+1)];
+  std::copy(rhs.get_row_ptr(), rhs.get_row_ptr() + (rhs.get_dimensions()[0]+1), row_ptr);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
     vals = new ValueType[rhs.get_num_nnz()];
@@ -258,6 +271,7 @@ CSR<IDType, NNZType, ValueType>::CSR(const CSR<IDType, NNZType, ValueType> &rhs)
       row_ptr, Deleter<NNZType>());
   this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
       vals, Deleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
@@ -278,6 +292,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
         std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
             vals, Deleter<ValueType>());
   }
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -374,6 +389,96 @@ bool CSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
 
+template <typename ValueType>
+Array<ValueType>::Array(Array<ValueType> &&rhs):
+      vals_(std::move(rhs.vals_)) {
+  this->nnz_ = rhs.get_num_nnz();
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  rhs.vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      nullptr, BlankDeleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+template <typename ValueType>
+Array<ValueType> &Array<ValueType>::operator=(
+    const Array<ValueType> &rhs) {
+  this->nnz_ = rhs.nnz_;
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  ValueType *vals = nullptr;
+  if (rhs.get_vals() != nullptr) {
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+  }
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  return *this;
+}
+template <typename ValueType>
+Array<ValueType>::Array(const Array<ValueType> &rhs)
+    : vals_(nullptr, BlankDeleter<ValueType>()) {
+  this->nnz_ = rhs.nnz_;
+  this->order_ = 1;
+  this->dimension_ = rhs.dimension_;
+  ValueType *vals = nullptr;
+  if (rhs.get_vals() != nullptr) {
+    vals = new ValueType[rhs.get_num_nnz()];
+    std::copy(rhs.get_vals(), rhs.get_vals() + rhs.get_num_nnz(), vals);
+  }
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, Deleter<ValueType>());
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+template <typename ValueType>
+Array<ValueType>::Array(DimensionType nnz, ValueType* vals, Ownership own)
+    :  vals_(vals, BlankDeleter<ValueType>()) {
+  this->order_ = 1;
+  this->dimension_ = {(DimensionType)nnz};
+  this->nnz_ = nnz;
+  if (own == kOwned) {
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, Deleter<ValueType>());
+  }
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(new sparsebase::context::CPUContext);
+}
+
+template <typename ValueType>
+Format *Array<ValueType>::clone() const {
+  return new Array(*this);
+}
+template <typename ValueType>
+ValueType *Array<ValueType>::get_vals() const {
+  return vals_.get();
+}
+template <typename ValueType>
+ValueType *Array<ValueType>::release_vals() {
+  auto vals = vals_.release();
+  this->vals_ = std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+      vals, BlankDeleter<ValueType>());
+  return vals;
+}
+
+template <typename ValueType>
+void Array<ValueType>::set_vals(ValueType *vals, Ownership own) {
+  if (own == kOwned) {
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, Deleter<ValueType>());
+  } else {
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, BlankDeleter<ValueType>());
+  }
+}
+
+template <typename ValueType>
+bool Array<ValueType>::ValsIsOwned() {
+  return (this->vals_.get_deleter().target_type() !=
+          typeid(BlankDeleter<ValueType>));
+}
+template <typename ValueType>
+Array<ValueType>::~Array() {}
 #if !defined(_HEADER_ONLY)
 #include "init/format.inc"
 #endif
