@@ -16,7 +16,7 @@ public:
     order_ = 2;
     dimension_ = {4,4};
   }
-  virtual Format *clone() const override{
+  virtual Format *Clone() const override{
     return nullptr;
   }
 };
