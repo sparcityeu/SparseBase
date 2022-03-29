@@ -41,8 +41,8 @@ CsrCUDACsrConditionalFunction(Format *source, context::Context*context) {
   NNZType * row_ptr;
   IDType * col;
   ValueType * vals = nullptr; 
-  cudaMalloc(&row_ptr, csr->get_dimensions()[0]*sizeof(NNZType));
-  cudaMemcpy(row_ptr, csr->get_row_ptr(), csr->get_dimensions()[0]*sizeof(NNZType), cudaMemcpyHostToDevice);
+  cudaMalloc(&row_ptr, (1+csr->get_dimensions()[0])*sizeof(NNZType));
+  cudaMemcpy(row_ptr, csr->get_row_ptr(), (1+csr->get_dimensions()[0])*sizeof(NNZType), cudaMemcpyHostToDevice);
   cudaMalloc(&col, csr->get_num_nnz()*sizeof(IDType));
   cudaMemcpy(col, csr->get_col(), csr->get_num_nnz()*sizeof(IDType), cudaMemcpyHostToDevice);
   if (csr->get_vals()!=nullptr){
@@ -64,7 +64,7 @@ CUDACsrCUDACsrConditionalFunction(Format *source, context::Context*context) {
   IDType * col;
   ValueType * vals = nullptr; 
   cudaMalloc(&row_ptr, cuda_csr->get_dimensions()[0]*sizeof(NNZType));
-  cudaMemcpy(row_ptr, cuda_csr->get_row_ptr(), cuda_csr->get_dimensions()[0]*sizeof(NNZType), cudaMemcpyDeviceToDevice);
+  cudaMemcpy(row_ptr, cuda_csr->get_row_ptr(), (1+cuda_csr->get_dimensions()[0])*sizeof(NNZType), cudaMemcpyDeviceToDevice);
   cudaMalloc(&col, cuda_csr->get_num_nnz()*sizeof(IDType));
   cudaMemcpy(col, cuda_csr->get_col(), cuda_csr->get_num_nnz()*sizeof(IDType), cudaMemcpyDeviceToDevice);
   if (cuda_csr->get_vals()!=nullptr){
@@ -82,10 +82,10 @@ CUDACsrCsrConditionalFunction(Format *source, context::Context*context) {
   cudaSetDevice(gpu_context->device_id);
   int n = cuda_csr->get_dimensions()[0];
   int nnz = cuda_csr->get_num_nnz();
-  NNZType * row_ptr = new NNZType[nnz];
-  IDType * col = new IDType[n];
+  NNZType * row_ptr = new NNZType[n+1];
+  IDType * col = new IDType[nnz];
   ValueType * vals = nullptr; 
-  cudaMemcpy(row_ptr, cuda_csr->get_row_ptr(), n*sizeof(NNZType), cudaMemcpyDeviceToHost);
+  cudaMemcpy(row_ptr, cuda_csr->get_row_ptr(), (n+1)*sizeof(NNZType), cudaMemcpyDeviceToHost);
   cudaMemcpy(col, cuda_csr->get_col(), nnz*sizeof(IDType), cudaMemcpyDeviceToHost);
   if (cuda_csr->get_vals()!=nullptr){
     vals = new ValueType[nnz];
