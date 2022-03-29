@@ -133,7 +133,7 @@ class feature_init(explicit_initialization):
             for nnz_type in nnz_types:
                 for value_type in value_types:
                     for dist_type in float_types:
-                        self.out_stream.write(PREFIX+"Extractor<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
+                        self.out_stream.write(PREFIX+"FeatureExtractor<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
 
 ## Create the output folder if it doesn't already exist
 if not os.path.isdir(output_folder):

@@ -62,21 +62,26 @@ protected:
   std::vector<ClassType> GetClasses(std::unordered_map<std::type_index, ClassType> & source);
 };
 
-
-template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class Extractor: public ClassMatcherMixin<preprocess::ExtractableType*> {
 public:
-  Extractor();
   ~Extractor();
   std::unordered_map<std::type_index, std::any> Extract(std::vector<Feature> & features,
-                                     format::Format * format);
+                                                        format::Format * format);
   std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
   void Add(Feature f);
-  void Substract(Feature f);
+  void Subtract(Feature f);
   std::vector<std::type_index> GetList();
   void PrintFuncList();
+protected:
+  Extractor() noexcept = default;
 private:
   std::unordered_map<std::type_index, preprocess::ExtractableType*> in_;
+};
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class FeatureExtractor: public Extractor {
+public:
+  FeatureExtractor();
 };
 
 } // namespace sparsebase::feature

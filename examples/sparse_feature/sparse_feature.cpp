@@ -28,10 +28,10 @@ int main(int argc, char * argv[]){
   COO<vertex_type, edge_type, value_type> * coo = reader.ReadCOO();
 
   {
-    sparsebase::feature::Extractor<vertex_type, edge_type, value_type, feature_type> engine;
+    sparsebase::feature::Extractor engine = sparsebase::feature::FeatureExtractor<vertex_type, edge_type, value_type, feature_type>();
     engine.PrintFuncList();
     engine.Add(feature::Feature(degrees{}));
-    engine.Substract(feature::Feature(degrees{}));
+    engine.Subtract(feature::Feature(degrees{}));
     try{
       engine.Add(feature::Feature(sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type, value_type, float>{}));
     }
