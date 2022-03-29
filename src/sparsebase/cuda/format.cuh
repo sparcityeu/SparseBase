@@ -28,7 +28,7 @@ namespace format {
     CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&);
     CUDACSR<IDType, NNZType, ValueType> &
     operator=(const CUDACSR<IDType, NNZType, ValueType> &);
-    Format *clone() const override;
+    Format *Clone() const override;
     virtual ~CUDACSR();
     NNZType *get_row_ptr() const;
     IDType *get_col() const;
@@ -63,7 +63,7 @@ namespace format {
     CUDAArray(CUDAArray<ValueType> &&);
     CUDAArray<ValueType> &
     operator=(const CUDAArray<ValueType> &);
-    Format *clone() const override;
+    Format *Clone() const override;
     virtual ~CUDAArray();
     ValueType *get_vals() const;
 

@@ -130,11 +130,10 @@ class preprocess_init(explicit_initialization):
     ## Prints explicit template instantiations for the preprocess file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
+        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+ 'Format*'+", "+"ConverterMixin<PreprocessType>>;\n")
         for vertex_type in vertex_types:
-            for nnz_type in nnz_types:
-                for value_type in value_types:
-                    for preprocess_return_type in [vertex_type+'*', 'Format*']: 
-                        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+vertex_type+", "+nnz_type+", "+value_type+", "+preprocess_return_type+", "+"ConverterMixin<PreprocessType, "+vertex_type+", "+nnz_type+", "+value_type+">>;\n")
+            for preprocess_return_type in [vertex_type+'*']:
+                self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<PreprocessType>>;\n")
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
@@ -150,7 +149,11 @@ class converter_init(explicit_initialization):
     ## Prints explicit template instantiations for the converter file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['Converter'], self.out_stream)
+        single_order_classes = ['OrderOneConverter']
+        for value_type in value_types:
+            for c in single_order_classes:
+                self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
+        print_implementations(['OrderTwoConverter'], self.out_stream)
 
 class object_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
