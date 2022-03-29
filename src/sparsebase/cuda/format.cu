@@ -121,7 +121,7 @@ context::CUDAContext* CUDACSR<IDType, NNZType, ValueType>::get_cuda_context() co
   return static_cast<context::CUDAContext*>(this->get_context());
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CUDACSR<IDType, NNZType, ValueType>::clone() const {
+Format *CUDACSR<IDType, NNZType, ValueType>::Clone() const {
   return new CUDACSR(*this);
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -273,7 +273,7 @@ CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType* vals, context::CUD
 }
 
 template <typename ValueType>
-Format *CUDAArray<ValueType>::clone() const {
+Format *CUDAArray<ValueType>::Clone() const {
   return new CUDAArray(*this);
 }
 template <typename ValueType>

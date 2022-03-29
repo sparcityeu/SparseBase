@@ -34,8 +34,7 @@ private:
   std::unordered_map<
       std::type_index,
       std::unordered_map<std::type_index,
-                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>> *
-  getl_conversion_map(bool is_move_conversion);
+                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>> *get_conversion_map(bool is_move_conversion);
 
 public:
   void RegisterConditionalConversionFunction(

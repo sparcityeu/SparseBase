@@ -14,7 +14,7 @@ std::unordered_map<
     std::unordered_map<std::type_index,
                        std::vector<std::tuple<
                            EdgeConditional, ConditionalConversionFunction>>>> *
-Converter::getl_conversion_map(
+Converter::get_conversion_map(
     bool is_move_conversion) {
   if (is_move_conversion)
     return &conditional_move_map_;
@@ -495,7 +495,7 @@ void Converter::RegisterConditionalConversionFunction(
       ConditionalConversionFunction conv_func,
       EdgeConditional edge_condition,
       bool is_move_conversion){
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
   if (map->count(from_type) == 0) {
     map->emplace(
         from_type,
@@ -541,7 +541,7 @@ std::type_index from_type, context::Context* from_context,
                         std::type_index to_type, context::Context* to_context, 
                         bool is_move_conversion) {
   try {
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
     for (auto conditional_function_tuple : (*map)[from_type][to_type]){
       auto conditional = get<0>(conditional_function_tuple);
       if (conditional(from_context, to_context)){
@@ -558,7 +558,7 @@ std::type_index from_type, context::Context* from_context,
 std::tuple<bool, context::Context*> Converter::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, std::vector<context::Context*> to_contexts,
                   bool is_move_conversion) {
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
@@ -575,7 +575,7 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
 bool Converter::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
                   bool is_move_conversion) {
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
