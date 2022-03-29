@@ -1,2 +1,3 @@
 #cmakedefine _HEADER_ONLY
+#cmakedefine CUDA
 #cmakedefine USE_PIGO

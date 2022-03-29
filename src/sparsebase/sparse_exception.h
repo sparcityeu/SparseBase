@@ -55,6 +55,17 @@ public:
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
+class CUDADeviceException : public Exception {
+  std::string msg_;
+
+  public:
+  CUDADeviceException(const int available_devices, const int requested_device) {
+    msg_ = "Attempting to use CUDA device " + std::to_string(requested_device) +
+           " when only " + std::to_string(available_devices) +
+           " CUDA devices are available\n";
+  }
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
 } // namespace utils
 
 } // namespace sparsebase

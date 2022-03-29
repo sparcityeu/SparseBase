@@ -14,6 +14,28 @@
 
 namespace sparsebase {
 
+namespace context {
+  struct Context{
+    virtual bool IsEquivalent(Context*) const = 0;
+    virtual std::type_index get_context_type_member() const = 0;
+  };
+
+  template <typename ContextType> 
+  struct ContextImplementation : public Context {
+    virtual std::type_index get_context_type_member() const {
+      return typeid(ContextType);
+    }
+    static std::type_index get_context_type() {
+      return typeid(ContextType);
+    }
+  };
+
+  struct CPUContext : ContextImplementation<CPUContext>{
+    virtual bool IsEquivalent(Context *) const;
+  };
+
+};
+
 namespace format {
 
 enum Ownership {
@@ -52,6 +74,8 @@ public:
   virtual std::vector<DimensionType> get_dimensions() const = 0;
   virtual DimensionType get_num_nnz() const = 0;
   virtual DimensionType get_order() const = 0;
+  virtual context::Context* get_context() const = 0;
+  virtual std::type_index get_context_type() const = 0;
 
   template <typename T> T *As() {
     if (this->get_format_id() == std::type_index(typeid(T))) {
@@ -72,15 +96,23 @@ public:
   virtual DimensionType get_order() const{
     return order_;
   }
+  virtual context::Context* get_context() const{
+    return context_.get();
+  }
   std::type_index get_format_id() final {
     return typeid(FormatType);
   }
   static std::type_index get_format_id_static() { return typeid(FormatType); }
 
+  virtual std::type_index get_context_type() const {
+    return this->context_->get_context_type_member();
+  }
+
 protected:
   DimensionType order_;
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
+  std::unique_ptr<sparsebase::context::Context> context_;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -113,6 +145,28 @@ public:
 protected:
   std::unique_ptr<IDType[], std::function<void(IDType *)>> col_;
   std::unique_ptr<IDType[], std::function<void(IDType *)>> row_;
+  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+};
+
+template <typename ValueType>
+class Array : public FormatImplementation<Array<ValueType>> {
+public:
+  Array(DimensionType nnz, ValueType *row_ptr, Ownership own = kNotOwned);
+  Array(const Array<ValueType> &);
+  Array(Array<ValueType> &&);
+  Array<ValueType> &
+  operator=(const Array<ValueType> &);
+  Format *clone() const override;
+  virtual ~Array();
+  ValueType *get_vals() const;
+
+  ValueType *release_vals();
+
+  void set_vals(ValueType *, Ownership own = kNotOwned);
+
+  virtual bool ValsIsOwned();
+
+protected:
   std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
 };
 
@@ -154,5 +208,8 @@ protected:
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparse_format.cc"
+#ifdef CUDA
+#include "cuda/format.cu"
+#endif
 #endif
 #endif

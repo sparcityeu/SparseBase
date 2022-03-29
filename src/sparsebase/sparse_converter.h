@@ -6,56 +6,65 @@
 #include <tuple>
 #include <unordered_map>
 #include <functional>
+#ifdef CUDA
+#include "cuda/format.cuh"
+#include "cuda/converter.cuh"
+#endif
 
 namespace sparsebase {
 
 namespace utils {
 
-typedef std::vector<std::tuple<bool, std::type_index>> ConversionSchema;
+typedef std::vector<std::tuple<bool, std::type_index, context::Context*>> ConversionSchemaConditional;
 
-using ConversionFunction = std::function<format::Format*(format::Format*)>;
-
+using ConditionalConversionFunction = std::function<format::Format*(format::Format*, context::Context*)>;
+using EdgeConditional = std::function<bool(context::Context*, context::Context*)>;
 template <typename IDType, typename NNZType, typename ValueType>
 class Converter {
 private:
   std::unordered_map<
       std::type_index,
       std::unordered_map<std::type_index,
-                         ConversionFunction>>
-      conversion_map_;
+                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>>
+      conditional_map_;
   std::unordered_map<
       std::type_index,
       std::unordered_map<std::type_index,
-                         ConversionFunction>>
-      move_conversion_map_;
-
+                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>>
+      conditional_move_map_;
   std::unordered_map<
       std::type_index,
       std::unordered_map<std::type_index,
-                         ConversionFunction>> *
-  get_conversion_map(bool is_move_conversion);
+                         std::vector<std::tuple<EdgeConditional, ConditionalConversionFunction>>>> *
+  getl_conversion_map(bool is_move_conversion);
 
 public:
   Converter();
   ~Converter();
-  void RegisterConversionFunction(
-      std::type_index from_type, std::type_index to_type,
-      ConversionFunction conv_func,
+  void RegisterConditionalConversionFunction(
+      std::type_index from_type, 
+      std::type_index to_type,
+      ConditionalConversionFunction conv_func,
+      EdgeConditional edge_condition,
       bool is_move_conversion = false);
-  ConversionFunction
-  GetConversionFunction(std::type_index from_type, std::type_index to_type,
+  ConditionalConversionFunction
+  GetConversionFunction(std::type_index from_type, context::Context* from_context, 
+                        std::type_index to_type, context::Context* to_context, 
                         bool is_move_conversion = false);
-  format::Format *Convert(format::Format *source, std::type_index to_type,
+  format::Format *Convert(format::Format *source, std::type_index to_type, context::Context* to_context,
                           bool is_move_conversion = false);
   template <typename FormatType>
-  FormatType *Convert(format::Format *source, bool is_move_conversion = false) {
-    auto *res = this->Convert(source, FormatType::get_format_id_static(), is_move_conversion);
+  FormatType *Convert(format::Format *source, context::Context* to_context, bool is_move_conversion = false) {
+    auto *res = this->Convert(source, FormatType::get_format_id_static(), to_context, is_move_conversion);
     return res->template As<FormatType>();
   }
-  bool CanConvert(std::type_index from_type, std::type_index to_type,
+  std::tuple<bool, context::Context*> CanConvert(std::type_index from_type, context::Context* from_context, std::type_index to_type, 
+                  std::vector<context::Context*> to_contexts,
+                  bool is_move_conversion = false);
+  bool CanConvert(std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
                   bool is_move_conversion = false);
   std::vector<format::Format *>
-  ApplyConversionSchema(ConversionSchema cs,
+  ApplyConversionSchema(ConversionSchemaConditional cs,
                         std::vector<format::Format *> packed_sfs,
                         bool is_move_conversion = false);
 };
@@ -66,6 +75,9 @@ public:
 
 #ifdef _HEADER_ONLY
 #include "sparse_converter.cc"
+#ifdef CUDA
+#include "cuda/converter.cu"
+#endif
 #endif
 
 #endif
