@@ -182,7 +182,10 @@ class reader_init(explicit_initialization):
     ## Prints explicit template instantiations for the reader file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['MTXReader', 'UedgelistReader', 'BinaryReader'], self.out_stream)
+        for value_type in value_types:
+            self.out_stream.write("template class BinaryReaderOrderOne<" + value_type + ">;\n")
+        print_implementations(['MTXReader', 'UedgelistReader', 'BinaryReaderOrderTwo'],
+                              self.out_stream)
 
 class writer_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
@@ -191,7 +194,9 @@ class writer_init(explicit_initialization):
     ## Prints explicit template instantiations for the reader file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['BinaryWriter'], self.out_stream)
+        for value_type in value_types:
+            self.out_stream.write("template class BinaryWriterOrderOne<" + value_type + ">;\n")
+        print_implementations(['BinaryWriterOrderOne', 'BinaryWriterOrderTwo'], self.out_stream)
 
 
 class pigo_reader_init(explicit_initialization):
