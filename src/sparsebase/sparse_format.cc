@@ -18,7 +18,8 @@ namespace sparsebase::context{
       return false;
     }
   }
-}
+  Context::~Context() {}
+  }
 namespace sparsebase::format {
 
 template <typename IDType, typename NNZType, typename ValueType>

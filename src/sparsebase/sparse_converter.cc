@@ -603,7 +603,7 @@ Converter::ApplyConversionSchema(
   }
   return ret;
 }
-
+Converter::~Converter() {}
 
 #if !defined(_HEADER_ONLY)
 #include "init/converter.inc"
