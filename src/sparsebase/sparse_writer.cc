@@ -5,15 +5,16 @@
 namespace sparsebase::utils {
 
 template <typename IDType, typename NNZType, typename ValueType>
-BinaryWriter<IDType, NNZType, ValueType>::BinaryWriter(std::string filename)
+BinaryWriterOrderTwo<IDType, NNZType, ValueType>::BinaryWriterOrderTwo(std::string filename)
     : filename_(filename) {}
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-void BinaryWriter<IDType, NNZType, ValueType>::WriteCOO(
+void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCOO(
     format::COO<IDType, NNZType, ValueType> *coo) const {
 
   SbffObject sbff("coo");
+  sbff.AddDimensions(coo->get_dimensions());
   sbff.AddArray("row", coo->get_row(), coo->get_num_nnz());
   sbff.AddArray("col", coo->get_col(), coo->get_num_nnz());
 
@@ -24,7 +25,7 @@ void BinaryWriter<IDType, NNZType, ValueType>::WriteCOO(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-void BinaryWriter<IDType, NNZType, ValueType>::WriteCSR(
+void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCSR(
     format::CSR<IDType, NNZType, ValueType> *csr) const {
 
   SbffObject sbff("csr");
@@ -34,6 +35,7 @@ void BinaryWriter<IDType, NNZType, ValueType>::WriteCSR(
   n = dimensions[0];
   m = dimensions[1];
 
+  sbff.AddDimensions(dimensions);
   sbff.AddArray("row_ptr", csr->get_row_ptr(), n+1);
   sbff.AddArray("col", csr->get_col(), m);
 
@@ -42,4 +44,16 @@ void BinaryWriter<IDType, NNZType, ValueType>::WriteCSR(
 
   sbff.WriteObject(filename_);
 }
+
+template <typename T>
+BinaryWriterOrderOne<T>::BinaryWriterOrderOne(std::string filename): filename_(filename) {}
+
+template <typename T>
+void BinaryWriterOrderOne<T>::WriteArray(format::Array<T> *arr) const {
+  SbffObject sbff("array");
+  sbff.AddDimensions(arr->get_dimensions());
+  sbff.AddArray("array", arr->get_vals(), arr->get_dimensions()[0]);
+  sbff.WriteObject(filename_);
+}
+
 }
