@@ -18,6 +18,7 @@ namespace context {
   struct Context{
     virtual bool IsEquivalent(Context*) const = 0;
     virtual std::type_index get_context_type_member() const = 0;
+    virtual ~Context();
   };
 
   template <typename ContextType> 

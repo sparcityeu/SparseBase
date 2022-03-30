@@ -66,6 +66,7 @@ public:
   virtual std::type_index get_converter_type() = 0;
   virtual utils::Converter* Clone() const = 0;
   virtual void Reset() = 0;
+  virtual ~Converter();
 };
 
 template <class ConverterType>

@@ -128,48 +128,51 @@ MTXReader<VertexID, NumEdges, Weight>::ReadCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
-  // Declare variables: (check the types here)
-  VertexID M, N, L;
+  if(fin.is_open()){
+    // Declare variables: (check the types here)
+    VertexID M, N, L;
 
-  // Ignore headers and comments:
-  while (fin.peek() == '%')
-    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // Ignore headers and comments:
+    while (fin.peek() == '%')
+      fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-  fin >> M >> N >> L;
+    fin >> M >> N >> L;
 
-  VertexID *row = new VertexID[L];
-  VertexID *col = new VertexID[L];
-  std::cout << "weighted " << weighted_ << std::endl;
-  if (weighted_) {
-    if constexpr (!std::is_same_v<void, Weight>) {
-      Weight *vals = new Weight[L];
+    VertexID *row = new VertexID[L];
+    VertexID *col = new VertexID[L];
+    if (weighted_) {
+      if constexpr (!std::is_same_v<void, Weight>) {
+        Weight *vals = new Weight[L];
+        for (NumEdges l = 0; l < L; l++) {
+          VertexID m, n;
+          Weight w;
+          fin >> m >> n >> w;
+          row[l] = n - 1;
+          col[l] = m - 1;
+          vals[l] = w;
+        }
+
+        auto coo =
+            new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, kOwned);
+        return coo;
+      } else {
+        // TODO: Add an exception class for this
+        throw ReaderException("Weight type for weighted graphs can not be void");
+      }
+    } else {
       for (NumEdges l = 0; l < L; l++) {
         VertexID m, n;
-        Weight w;
-        fin >> m >> n >> w;
-        row[l] = n - 1;
-        col[l] = m - 1;
-        vals[l] = w;
+        fin >> m >> n;
+        row[l] = m - 1;
+        col[l] = n - 1;
       }
 
       auto coo =
-          new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, kOwned);
+          new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, kOwned);
       return coo;
-    } else {
-      // TODO: Add an exception class for this
-      throw ReaderException("Weight type for weighted graphs can not be void");
     }
   } else {
-    for (NumEdges l = 0; l < L; l++) {
-      VertexID m, n;
-      fin >> m >> n;
-      row[l] = m - 1;
-      col[l] = n - 1;
-    }
-
-    auto coo =
-        new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, kOwned);
-    return coo;
+    throw ReaderException("file does not exists!!");
   }
 }
 

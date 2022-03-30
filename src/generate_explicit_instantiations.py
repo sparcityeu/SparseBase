@@ -134,11 +134,13 @@ class preprocess_init(explicit_initialization):
         for vertex_type in vertex_types:
             for preprocess_return_type in [vertex_type+'*']:
                 self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<PreprocessType>>;\n")
+                self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<ExtractableType>>;\n")
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
                     for dist_type in float_types:
                         self.out_stream.write(PREFIX+"DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
+                        self.out_stream.write(PREFIX+"Degrees_DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"JaccardWeights<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
         print_implementations(['ReorderPreprocessType', 'GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform'], self.out_stream)
 
@@ -207,6 +209,19 @@ class pigo_reader_init(explicit_initialization):
         self.out_stream.write('// '+self.source_filename+'\n')
         print_implementations(['PigoMTXReader', 'PigoEdgeListReader'], self.out_stream)
 
+class feature_init(explicit_initialization):
+    def __init__(self, folder, dry_run=False):
+        self.source_filename = 'feature.inc'
+        super().__init__(os.path.join(folder, self.source_filename), dry_run)
+    ## Prints explicit template instantiations for the reader file
+    def run(self):
+        self.out_stream.write('// '+self.source_filename+'\n')
+        for vertex_type in vertex_types:
+            for nnz_type in nnz_types:
+                for value_type in value_types:
+                    for dist_type in float_types:
+                        self.out_stream.write(PREFIX+"FeatureExtractor<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
+
 ## Create the output folder if it doesn't already exist
 if not os.path.isdir(output_folder):
     os.mkdir(output_folder)
@@ -222,6 +237,7 @@ inits.append(format_init(output_folder, dry_run))
 inits.append(converter_init(output_folder, dry_run))
 inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
+inits.append(feature_init(output_folder, dry_run))
 inits.append(writer_init(output_folder, dry_run))
 if use_cuda:
     inits.append(converter_cuda_init(cuda_output_folder, dry_run))

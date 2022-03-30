@@ -22,11 +22,11 @@ TypeIndexVectorHash::operator()(const std::vector<std::type_index> &vf) const {
     hash += f.hash_code();
   return hash;
 }
-template <typename ReturnType, class Preprocess, typename Key, typename KeyHash,
+template <typename ReturnType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool FunctionMatcherMixin<ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
+bool FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     RegisterFunctionNoOverride(const Key &key_of_function,
-                                  const PreprocessFunction &func_ptr) {
+                                  const Function &func_ptr) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
     return false; // function already exists for this Key
   } else {
@@ -35,15 +35,15 @@ bool FunctionMatcherMixin<ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
   }
 }
 
-template <typename ReturnType, class Preprocess, typename Key, typename KeyHash,
+template <typename ReturnType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-void FunctionMatcherMixin<ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
-    RegisterFunction(const Key &key_of_function, const PreprocessFunction &func_ptr) {
+void FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
+    RegisterFunction(const Key &key_of_function, const Function &func_ptr) {
   _map_to_function[key_of_function] = func_ptr;
 }
-template <typename ReturnType, class Preprocess, typename Key, typename KeyHash,
+template <typename ReturnType, class Preprocess, typename Function, typename Key, typename KeyHash,
           typename KeyEqualTo>
-bool FunctionMatcherMixin<ReturnType, Preprocess, Key, KeyHash, KeyEqualTo>::
+bool FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash, KeyEqualTo>::
     UnregisterFunction(const Key &key_of_function) {
   if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
     return false; // function already exists for this Key
@@ -62,12 +62,12 @@ void ConverterMixin<Parent>::ResetConverter() {
   sc_->Reset();
 }
 template <typename IDType, typename NNZType, typename ValueType>
-ReorderPreprocessType<IDType, NNZType, ValueType>::~ReorderPreprocessType(){};
+ReorderPreprocessType<IDType, NNZType, ValueType>::~ReorderPreprocessType()= default;;
 
-template <typename ReturnType, class PreprocessingImpl, typename Key,
+template <typename ReturnType, class PreprocessingImpl, typename Function, typename Key,
           typename KeyHash, typename KeyEqualTo>
 bool FunctionMatcherMixin<
-    ReturnType, PreprocessingImpl, Key, KeyHash,
+    ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::CheckIfKeyMatches(ConversionMap map, Key key,
                                    std::vector<format::Format *> packed_sfs,
                                    std::vector<context::Context *> contexts) {
@@ -97,15 +97,16 @@ bool FunctionMatcherMixin<
    */
 template <typename ReturnType,
           class PreprocessingImpl,
+          typename Function,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
-std::tuple<ReturnType (*)(std::vector<Format *>, PreprocessParams *), utils::ConversionSchemaConditional>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl,
+std::tuple<Function, utils::ConversionSchemaConditional>
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(std::vector<format::Format*>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*> contexts,
                 utils::Converter &sc) {
   utils::ConversionSchemaConditional cs;
-  PreprocessFunction func = nullptr;
+  Function func = nullptr;
   if (CheckIfKeyMatches(map, key, packed_sfs, contexts)) {
     for (auto f : key) {
       cs.push_back(std::make_tuple(false, f, nullptr));
@@ -146,7 +147,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl,
     if (usable_keys.size() == 0) {
       throw 1; // TODO: add a custom exception type
     }
-    std::tuple<PreprocessFunction, utils::ConversionSchemaConditional> best_conversion;
+    std::tuple<Function, utils::ConversionSchemaConditional> best_conversion;
     unsigned int num_conversions = (unsigned int)-1;
     for (auto potential_usable_key : usable_keys) {
       if (num_conversions > std::get<0>(potential_usable_key)) {
@@ -161,23 +162,25 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl,
 template <typename ReturnType,
           class PreprocessingImpl,
           typename Key, typename KeyHash,
-          typename KeyEqualTo>
+          typename KeyEqualTo,
+          typename Function>
 template <typename F>
 std::vector<std::type_index> 
 FunctionMatcherMixin<ReturnType, PreprocessingImpl,
                    Key, KeyHash,
-                   KeyEqualTo>::PackFormats(F sf) {
+                   KeyEqualTo, Function>::PackFormats(F sf) {
   return {sf->get_format_id()};
 }
 template <typename ReturnType,
           class PreprocessingImpl,
           typename Key, typename KeyHash,
-          typename KeyEqualTo>
+          typename KeyEqualTo,
+          typename Function>
 template <typename F, typename... SF>
 std::vector<std::type_index> 
 FunctionMatcherMixin<ReturnType, PreprocessingImpl,
                    Key, KeyHash,
-                   KeyEqualTo>::PackFormats(F sf, SF... sfs) {
+                   KeyEqualTo, Function>::PackFormats(F sf, SF... sfs) {
   std::vector<std::type_index> f = {sf->get_format()};
   std::vector<std::type_index> remainder = PackFormats(sfs...);
   for (auto i : remainder) {
@@ -188,23 +191,25 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl,
 template <typename ReturnType,
           class PreprocessingImpl,
           typename Key, typename KeyHash,
-          typename KeyEqualTo>
+          typename KeyEqualTo,
+          typename Function>
 template <typename F>
 std::vector<F>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl,
                    Key, KeyHash,
-                   KeyEqualTo>::PackSFS(F sf) {
+                   KeyEqualTo, Function>::PackSFS(F sf) {
   return {sf};
 }
 template <typename ReturnType,
           class PreprocessingImpl,
           typename Key, typename KeyHash,
-          typename KeyEqualTo>
+          typename KeyEqualTo,
+          typename Function>
 template <typename F, typename... SF>
 std::vector<F>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl,
                    Key, KeyHash,
-                   KeyEqualTo>::PackSFS(F sf, SF... sfs) {
+                   KeyEqualTo, Function>::PackSFS(F sf, SF... sfs) {
   std::vector<F> f = {sf};
   std::vector<F> remainder = PackFormats(sfs...);
   for (auto i : remainder) {
@@ -214,11 +219,12 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl,
 }
 template <typename ReturnType,
           class PreprocessingImpl,
+          typename Function,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 std::tuple<std::vector<format::Format*>, ReturnType>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl,
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
                    Key, KeyHash, KeyEqualTo>::
 CachedExecute(PreprocessParams * params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
         SF... sfs) {
@@ -228,9 +234,9 @@ CachedExecute(PreprocessParams * params, utils::Converter& sc, std::vector<conte
   // pack the SF formats into a vector
   std::vector<std::type_index> formats = PackFormats(sf, sfs...);
   // get conversion schema
-  std::tuple<PreprocessFunction, utils::ConversionSchemaConditional> ret =
+  std::tuple<Function, utils::ConversionSchemaConditional> ret =
       GetFunction(packed_sfs, formats, map, contexts, sc);
-  PreprocessFunction func = std::get<0>(ret);
+  Function func = std::get<0>(ret);
   utils::ConversionSchemaConditional cs = std::get<1>(ret);
   // carry out conversion
   // ready_formats contains the format to use in preprocessing
@@ -248,13 +254,15 @@ CachedExecute(PreprocessParams * params, utils::Converter& sc, std::vector<conte
   // carry out the correct call
   return std::make_tuple(converted, func(ready_formats , params));
 }
+
 template <typename ReturnType,
           class PreprocessingImpl,
+          typename Function,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
 template <typename F, typename... SF>
 ReturnType
-FunctionMatcherMixin<ReturnType, PreprocessingImpl,
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
                    Key, KeyHash, KeyEqualTo>::
     Execute(PreprocessParams * params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
             SF... sfs) {
@@ -482,7 +490,7 @@ Transform<IDType, NNZType, ValueType>::Transform(IDType* order){
 }
 template <typename IDType, typename NNZType, typename ValueType>
 TransformPreprocessType<IDType, NNZType,
-                        ValueType>::~TransformPreprocessType(){};
+                        ValueType>::~TransformPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
 Format *Transform<IDType, NNZType, ValueType>::TransformCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
@@ -536,17 +544,59 @@ TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
   //  return func(sfs, ordr);
   return this->CachedExecute(this->params_.get(), *(this->sc_), contexts, csr);
 }
+
 template <typename IDType, typename NNZType, typename ValueType>
 Format*
-TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
-    Format *csr, std::vector<context::Context*> contexts) {
+TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(Format *csr, std::vector<context::Context*> contexts) {
 //  std::tuple<TransformFunction<IDType, NNZType, ValueType, ReturnType>,
 //             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
 //      func_formats = this->Execute(this->_map_to_function, this->sc_, csr);
 //  TransformFunction<IDType, NNZType, ValueType, ReturnType> func = std::get<0>(func_formats);
 //  std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
 //  return func(sfs, ordr);
-    return this->Execute(this->params_.get(), *(this->sc_), contexts, csr);
+return this->Execute(this->params_.get(), *(this->sc_), contexts, csr);
+ //   Format *csr) {
+ // auto tp = this->Execute(this->sc_, csr);
+ // auto params =  this->params_.get();
+ // auto func = std::get<0>(tp);
+ // auto formats = std::get<1>(tp);
+ // return func(formats, params);
+ //   //return this->Execute(this->params_.get(), this->sc_, csr);
+}
+
+template <typename FeatureType>
+FeaturePreprocessType<FeatureType>::~FeaturePreprocessType()= default;
+
+template <typename FeatureType>
+std::shared_ptr<PreprocessParams>
+FeaturePreprocessType<FeatureType>::get_params() {
+  return this->params_;
+}
+template <typename FeatureType>
+std::shared_ptr<PreprocessParams>
+FeaturePreprocessType<FeatureType>::get_params(
+    std::type_index t) {
+  if(this->pmap_.find(t) != this->pmap_.end()){
+    return this->pmap_[t];
+  }
+  else{
+    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
+  }
+}
+template <typename FeatureType>
+void FeaturePreprocessType<FeatureType>::set_params(
+    std::type_index t, std::shared_ptr<PreprocessParams> p) {
+  auto ids = this->get_sub_ids();
+  if(std::find(ids.begin(), ids.end(), t) != ids.end()){
+    this->pmap_[t] = p;
+  }
+  else{
+    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
+  }
+}
+template <typename FeatureType>
+std::type_index FeaturePreprocessType<FeatureType>::get_feature_id() {
+  return typeid(*this);
 }
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
@@ -574,12 +624,53 @@ format::Format* JaccardWeights<IDType, NNZType, ValueType, FeatureType>::GetJacc
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(){
+    this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+    Register();
+    this->params_ = std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
+    this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
+    const DegreeDistribution & d) {
+    Register();
+    this->params_ = d.params_;
+    this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
+    const std::shared_ptr<DegreeDistributionParams> p) {
   this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
-    this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetDegreeDistributionCSR);
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+void DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Register() {
+  this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetDegreeDistributionCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::~DegreeDistribution(){};
+std::unordered_map<std::type_index, std::any> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(format::Format * format, std::vector<context::Context*> c){
+  return {{this->get_feature_id(), std::forward<FeatureType*>(GetDistribution(format, c))}};
+};
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() { return {typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>)}; }
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType*> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs(){ return {new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>(*this)}; }
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() { return typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>); }
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::~DegreeDistribution()= default;
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 std::tuple<std::vector<format::Format*>, FeatureType*> DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistributionCached(Format * format, std::vector<context::Context*> contexts){
@@ -609,9 +700,8 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDi
     //    func_formats = 
     //DegreeDistributionFunction<IDType, NNZType, ValueType, FeatureType> func = std::get<0>(func_formats);
     //std::vector<SparseFormat<IDType, NNZType, ValueType> *> sfs = std::get<1>(func_formats);
-    DegreeDistributionParams params;
     Format * format = obj->get_connectivity();
-    return this->Execute(&params, *(this->sc_), contexts, format); //func(sfs, this->params_.get());
+    return this->Execute(this->params_.get(), *(this->sc_), contexts, format); //func(sfs, this->params_.get());
 }
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
@@ -630,6 +720,135 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
       //std::cout<< dist[i] << std::endl;
     }
     return dist;
+}
+
+template<typename IDType, typename NNZType, typename ValueType>
+Degrees<IDType, NNZType, ValueType>::Degrees(){
+  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = std::shared_ptr<DegreesParams>(new DegreesParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Degrees<IDType, NNZType, ValueType>::Degrees(const Degrees<IDType, NNZType, ValueType> & d) {
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Degrees<IDType, NNZType, ValueType>::Degrees(const std::shared_ptr<DegreesParams> r) {
+  Register();
+  this->params_ = r;
+  this->pmap_[get_feature_id_static()] = r;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Degrees<IDType, NNZType, ValueType>::~Degrees()= default;
+
+template <typename IDType, typename NNZType, typename ValueType>
+void Degrees<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetDegreesCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index> Degrees<IDType, NNZType, ValueType>::get_sub_ids() { return {typeid(Degrees<IDType, NNZType, ValueType>)}; }
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType*> Degrees<IDType, NNZType, ValueType>::get_subs(){ return {new Degrees<IDType, NNZType, ValueType>(*this)}; }
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index Degrees<IDType, NNZType, ValueType>::get_feature_id_static() { return typeid(Degrees<IDType, NNZType, ValueType>); }
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any> Degrees<IDType, NNZType, ValueType>::Extract(format::Format * format, std::vector<context::Context*> c){
+  return {{this->get_feature_id(), std::forward<IDType*>(GetDegrees(format, c))}};
+};
+
+template<typename IDType, typename NNZType, typename ValueType>
+IDType * Degrees<IDType, NNZType, ValueType>::GetDegrees(Format * format, std::vector<context::Context*> c){
+  return this->Execute(this->params_.get(),*(this->sc_), c, format);
+}
+
+template<typename IDType, typename NNZType, typename ValueType>
+IDType * Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(std::vector<Format *> formats, PreprocessParams * params){
+  auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto dims = csr->get_dimensions();
+  for(auto dim : dims){
+    std::cout << dim << std::endl;
+  }
+  IDType num_vertices = dims[0];
+  NNZType num_edges = csr->get_num_nnz();
+  IDType * degrees = new IDType[num_vertices]();
+  auto * rows = csr->get_row_ptr();
+  for(int i = 0; i < num_vertices; i++){
+    degrees[i] = rows[i+1] - rows[i];
+  }
+  return degrees;
+}
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Degrees_DegreeDistribution(){
+  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+  this->params_ = std::shared_ptr<Params>(new Params());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::~Degrees_DegreeDistribution()=default;
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  std::vector<std::type_index> r = {typeid(Degrees<IDType, NNZType, ValueType>), typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>)};
+  std::sort(r.begin(), r.end());
+  return r;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType*> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs(){
+  auto * f1 = new Degrees<IDType, NNZType, ValueType>();
+  if(this->pmap_.find(Degrees<IDType, NNZType, ValueType>::get_feature_id_static()) != this->pmap_.end()){
+    f1->set_params(Degrees<IDType, NNZType, ValueType>::get_feature_id_static(), this->pmap_[Degrees<IDType, NNZType, ValueType>::get_feature_id_static()]);
+  }
+
+  auto * f2 = new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>();
+  if(this->pmap_.find(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()) != this->pmap_.end()){
+    f1->set_params(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static(), this->pmap_[DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()]);
+  }
+  return {f1, f2};
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() { return typeid(Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>); }
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(format::Format * format, std::vector<context::Context*> c){
+  return Get(format, c);
+};
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Get(Format * format, std::vector<context::Context*> c){
+  Params params;
+  return this->Execute(this->params_.get(),*(this->sc_), c, format);
+}
+
+template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any> Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(std::vector<Format *> formats, PreprocessParams * params){
+  auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto dims = csr->get_dimensions();
+  IDType num_vertices = dims[0];
+  NNZType num_edges = csr->get_num_nnz();
+  auto * degrees = new IDType[num_vertices]();
+  auto * dist = new FeatureType[num_vertices];
+  auto * rows = csr->get_row_ptr();
+  for(int i = 0; i < num_vertices; i++){
+    degrees[i] = rows[i+1] - rows[i];
+    dist[i] = (rows[i+1] - rows[i]) / (FeatureType)num_edges;
+  }
+  return {{Degrees<IDType, NNZType, ValueType>::get_feature_id_static(), std::forward<IDType*>(degrees)},
+          {DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static(), std::forward<FeatureType*>(dist)}};
 }
 
 #if !defined(_HEADER_ONLY)
