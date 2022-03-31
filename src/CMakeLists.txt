@@ -22,6 +22,7 @@ set(LIB_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_object.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_converter.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_preprocess.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_feature.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_writer.cc
 )
 if (${CUDA})
@@ -59,6 +60,7 @@ install(FILES
           sparsebase/sparse_object.cc 
           sparsebase/sparse_preprocess.cc 
           sparsebase/sparse_converter.cc 
+          sparsebase/sparse_feature.cc
           sparsebase/sparse_reader.cc
           sparsebase/sparse_writer.cc
           DESTINATION include/sparsebase)
@@ -81,6 +83,7 @@ install(FILES
           sparsebase/sparse_object.h 
           sparsebase/sparse_preprocess.h 
           sparsebase/sparse_converter.h 
+          sparsebase/sparse_feature.h
           sparsebase/sparse_reader.h
           sparsebase/sparse_writer.h
           sparsebase/sparse_file_format.h

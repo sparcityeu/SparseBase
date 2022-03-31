@@ -15,7 +15,7 @@ int main(){
     // Conversion Syntax 1
     context::CPUContext cpu_context;
     format::COO<int,int,int>* coo = new format::COO<int,int,int>(6, 6, 6, row, col, vals);
-    auto converter = new utils::Converter<int,int,int>();
+    auto converter = new utils::OrderTwoConverter<int,int,int>();
     auto csr = converter->Convert(coo,format::CSR<int, int, int>::get_format_id_static(), &cpu_context);
     auto csr2 = csr->As<format::CSR<int,int,int>>();
 

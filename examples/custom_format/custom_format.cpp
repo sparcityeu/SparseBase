@@ -16,7 +16,7 @@ public:
     order_ = 2;
     dimension_ = {4,4};
   }
-  virtual Format *clone() const override{
+  virtual Format *Clone() const override{
     return nullptr;
   }
 };
@@ -34,7 +34,7 @@ int main(int argc, char * argv[]){
   Graph<int,int,int>* graph = new Graph<int,int,int>(my_format);
 
   // Custom conversion using the custom format
-  utils::Converter<int,int,int> converter;
+  utils::OrderTwoConverter<int,int,int> converter;
   converter.RegisterConditionalConversionFunction(COO<int,int,int>::get_format_id_static(), MyFormat::get_format_id_static(), COOToMyFormat,[] (context::Context*, context::Context*){
     return true;
   });
