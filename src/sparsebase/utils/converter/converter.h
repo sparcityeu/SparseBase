@@ -1,7 +1,7 @@
 #ifndef _SPARSECONVERTER_HPP
 #define _SPARSECONVERTER_HPP
 
-#include "sparse_format.h"
+#include "sparsebase/format/format.h"
 #include "config.h"
 #include <tuple>
 #include <unordered_map>

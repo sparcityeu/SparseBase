@@ -1,8 +1,8 @@
 #ifndef _Feature_HPP
 #define _Feature_HPP
 
-#include "sparse_format.h"
-#include "sparsebase/sparse_preprocess.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/preprocess/preprocess.h"
 #include <unordered_map>
 #include <tuple>
 #include <vector>
@@ -84,7 +84,7 @@ public:
   FeatureExtractor();
 };
 
-} // namespace sparsebase::feature
+} // namespace sparsebase::format
 
 #ifdef _HEADER_ONLY
 #include "sparse_feature.cc"

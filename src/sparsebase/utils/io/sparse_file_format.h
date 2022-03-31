@@ -5,7 +5,7 @@
 #include "external/pigo/pigo.hpp"
 #endif
 
-#include "external/json/json.hpp"
+#include "sparsebase/external/json/json.hpp"
 #include <iostream>
 #include <string>
 #include <climits>

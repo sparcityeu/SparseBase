@@ -1,6 +1,6 @@
-#include "sparsebase/sparse_writer.h"
-#include "sparsebase/sparse_exception.h"
-#include "sparsebase/sparse_file_format.h"
+#include "writer.h"
+#include "sparsebase/utils/exception.h"
+#include "sparse_file_format.h"
 
 namespace sparsebase::utils {
 

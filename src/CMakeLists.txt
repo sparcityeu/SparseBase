@@ -16,21 +16,22 @@ execute_process(COMMAND ${Python_EXECUTABLE}
                 --pigo ${USE_PIGO}
                 --cuda ${CUDA}
                 --output-folder ${PROJECT_BINARY_DIR}/init)
-set(LIB_FILES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_format.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_reader.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_object.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_converter.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_preprocess.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_feature.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/sparse_writer.cc
+set(LIB_FILES
+        sparsebase/format/format.cc
+        sparsebase/context/context.cc
+        sparsebase/utils/io/reader.cc
+        sparsebase/object/object.cc
+        sparsebase/utils/converter/converter.cc
+        sparsebase/preprocess/preprocess.cc
+        sparsebase/feature/feature.cc
+        sparsebase/utils/io/writer.cc
 )
 if (${CUDA})
 
 set(LIB_FILES ${LIB_FILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/cuda/format.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/cuda/converter.cu
-        ${CMAKE_CURRENT_SOURCE_DIR}/sparsebase/cuda/preprocess.cu
+        sparsebase/cuda/format/format.cu
+        sparsebase/cuda/converter/converter.cu
+        sparsebase/cuda/preprocess/preprocess.cu
 )
 endif()
 add_library(sparsebase ${LIB_FILES})
@@ -55,20 +56,20 @@ target_include_directories(sparsebase INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/sparsebase>
         # Location of the headers at install time
         $<INSTALL_INTERFACE:include>)
-install(FILES 
-          sparsebase/sparse_format.cc 
-          sparsebase/sparse_object.cc 
-          sparsebase/sparse_preprocess.cc 
-          sparsebase/sparse_converter.cc 
-          sparsebase/sparse_feature.cc
-          sparsebase/sparse_reader.cc
-          sparsebase/sparse_writer.cc
+install(FILES
+        sparsebase/format/format.cc
+        sparsebase/object/object.cc
+        sparsebase/preprocess/preprocess.cc
+        sparsebase/utils/converter/converter.cc
+        sparsebase/feature/feature.cc
+        sparsebase/utils/io/reader.cc
+        sparsebase/utils/io/writer.cc
           DESTINATION include/sparsebase)
 if(${CUDA})
         install(FILES
-                sparsebase/cuda/format.cu
-                sparsebase/cuda/converter.cu
-                sparsebase/cuda/preprocess.cu
+                sparsebase/cuda/format/format.cu
+                sparsebase/cuda/converter/converter.cu
+                sparsebase/cuda/preprocess/preprocess.cu
                 DESTINATION include/sparsebase/cuda
         )
 endif()
@@ -77,25 +78,25 @@ endif()
 # Creating an alias for the library when used through "find_package()"
 add_library(sparsebase::sparsebase ALIAS sparsebase)
 # Installing the headers to the include directory
-install(FILES 
-          sparsebase/sparse_format.h 
-          sparsebase/sparse_exception.h 
-          sparsebase/sparse_object.h 
-          sparsebase/sparse_preprocess.h 
-          sparsebase/sparse_converter.h 
-          sparsebase/sparse_feature.h
-          sparsebase/sparse_reader.h
-          sparsebase/sparse_writer.h
-          sparsebase/sparse_file_format.h
+install(FILES
+        sparsebase/format/format.h
+        sparsebase/utils/exception.h
+        sparsebase/object/object.h
+        sparsebase/preprocess/preprocess.h
+        sparsebase/utils/converter/converter.h
+        sparsebase/feature/feature.h
+        sparsebase/utils/io/reader.h
+        sparsebase/utils/io/writer.h
+        sparsebase/utils/io/sparse_file_format.h
         DESTINATION include/sparsebase)
 install(FILES 
           sparsebase/external/json/json.hpp
         DESTINATION include/sparsebase/external/json/)
 if(${CUDA})
         install(FILES
-                sparsebase/cuda/format.cuh
-                sparsebase/cuda/converter.cuh
-                sparsebase/cuda/preprocess.cuh
+                sparsebase/cuda/format/format.cuh
+                sparsebase/cuda/converter/converter.cuh
+                sparsebase/cuda/preprocess/preprocess.cuh
                 DESTINATION include/sparsebase/cuda
         )
 endif()

@@ -2,7 +2,7 @@
 #define _SPARSEREADER_HPP
 
 #include "config.h"
-#include "sparse_format.h"
+#include "sparsebase/format/format.h"
 #include <algorithm>
 #include <cstring>
 #include <fstream>
