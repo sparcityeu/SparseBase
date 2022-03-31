@@ -1,9 +1,10 @@
 #ifndef _Reorder_HPP
 #define _Reorder_HPP
 #include "config.h"
-#include "sparse_converter.h"
-#include "sparse_format.h"
-#include "sparse_object.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/object/object.h"
+#include "sparsebase/context/context.h"
 
 #include <iostream>
 #include <memory>

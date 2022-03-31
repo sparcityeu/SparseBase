@@ -1,10 +1,9 @@
 #include <iostream>
 
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_object.h"
-#include "sparsebase/sparse_reader.h"
-#include "sparsebase/sparse_preprocess.h"
-
+#include "sparsebase/format/format.h"
+#include "sparsebase/object/object.h"
+#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/preprocess/preprocess.h"
 
 #include <set>
 

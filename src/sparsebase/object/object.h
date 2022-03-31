@@ -2,8 +2,8 @@
 #define _SPARSEOBJECT_HPP
 
 #include "config.h"
-#include "sparse_format.h"
-#include "sparse_reader.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/io/reader.h"
 #include <functional>
 #include <memory>
 

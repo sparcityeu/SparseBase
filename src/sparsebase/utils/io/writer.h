@@ -1,8 +1,8 @@
 #ifndef _SPARSEWRITER_HPP
 #define _SPARSEWRITER_HPP
 
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_reader.h"
+#include "sparsebase/format/format.h"
+#include "reader.h"
 
 namespace sparsebase::utils {
 

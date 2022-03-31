@@ -1,6 +1,6 @@
-#include "sparsebase/sparse_feature.h"
-#include "sparsebase/sparse_preprocess.h"
-#include "sparsebase/sparse_exception.h"
+#include "feature.h"
+#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/utils/exception.h"
 #include <vector>
 
 namespace sparsebase::feature {
@@ -102,7 +102,7 @@ std::unordered_map<std::type_index, std::any>Extractor::Extract(std::vector<Feat
 std::unordered_map<std::type_index, std::any>Extractor::Extract(format::Format * format, const std::vector<context::Context*> & c){
   if(in_.empty())
     return {};
-  // match and get classes for feature extraction
+  // match and get classes for format extraction
   std::vector<preprocess::ExtractableType*> cs = this->GetClasses(in_);
   std::unordered_map<std::type_index, std::any> res;
   std::cout << std::endl << "Classes used:" << std::endl;

@@ -1,13 +1,13 @@
-#include "sparsebase/sparse_reader.h"
-#include "sparsebase/sparse_exception.h"
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_converter.h"
+#include "reader.h"
+#include "sparsebase/utils/exception.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
 #include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <limits>
 #include <vector>
-#include "sparsebase/sparse_file_format.h"
+#include "sparse_file_format.h"
 #ifdef USE_PIGO
 #include "external/pigo/pigo.hpp"
 #endif

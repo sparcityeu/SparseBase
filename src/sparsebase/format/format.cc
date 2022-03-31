@@ -4,22 +4,12 @@
 #include <string>
 #include <vector>
 
-#include "sparsebase/sparse_converter.h"
-#include "sparsebase/sparse_exception.h"
-#include "sparsebase/sparse_format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/utils/exception.h"
+#include "sparsebase/format/format.h"
 
 using namespace sparsebase::utils;
 
-namespace sparsebase::context{
-  bool CPUContext::IsEquivalent(Context * rhs) const {
-    if (dynamic_cast<CPUContext*>(rhs)!= nullptr){
-      return true;
-    } else {
-      return false;
-    }
-  }
-  Context::~Context() {}
-  }
 namespace sparsebase::format {
 
 template <typename IDType, typename NNZType, typename ValueType>
