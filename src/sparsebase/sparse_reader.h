@@ -18,11 +18,6 @@ public:
   virtual ~Reader() = default;
 };
 
-template <typename IDType, typename NNZType, typename ValueType>
-class ReadsSparseFormat {
-public:
-  virtual format::Format *ReadSparseFormat() const = 0;
-};
 
 template <typename IDType, typename NNZType, typename ValueType> class ReadsCSR {
 public:
@@ -36,17 +31,15 @@ public:
 
 template <typename T> class ReadsArray {
 public:
-  virtual format::Array<T> *ReadCOO() const = 0;
+  virtual format::Array<T> *ReadArray() const = 0;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class UedgelistReader : public Reader,
-                        public ReadsCSR<IDType, NNZType, ValueType>,
-                        public ReadsSparseFormat<IDType, NNZType, ValueType> {
+                        public ReadsCSR<IDType, NNZType, ValueType> {
 public:
   explicit UedgelistReader(std::string filename, bool weighted = false);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
-  format::Format *ReadSparseFormat() const;
   ~UedgelistReader() override;
 
 private:
@@ -58,12 +51,10 @@ private:
 
 template <typename IDType, typename NNZType, typename ValueType>
 class MTXReader : public Reader,
-                  public ReadsCOO<IDType, NNZType, ValueType>,
-                  public ReadsSparseFormat<IDType, NNZType, ValueType> {
+                  public ReadsCOO<IDType, NNZType, ValueType>{
 public:
   explicit MTXReader(std::string filename, bool weighted = false);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
-  format::Format *ReadSparseFormat() const;
   ~MTXReader() override;
 
 private:
@@ -75,13 +66,11 @@ private:
 template <typename IDType, typename NNZType, typename ValueType>
 class PigoMTXReader : public Reader,
                   public ReadsCOO<IDType, NNZType, ValueType>,
-                      public ReadsCSR<IDType, NNZType, ValueType>,
-                  public ReadsSparseFormat<IDType, NNZType, ValueType> {
+                      public ReadsCSR<IDType, NNZType, ValueType> {
 public:
   PigoMTXReader(std::string filename, bool weighted = false, bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
-  format::Format *ReadSparseFormat() const;
   virtual ~PigoMTXReader() = default;
 
 private:
@@ -94,13 +83,11 @@ private:
 template <typename IDType, typename NNZType, typename ValueType>
 class PigoEdgeListReader : public Reader,
                         public ReadsCSR<IDType, NNZType, ValueType>,
-                           public ReadsCOO<IDType, NNZType, ValueType>,
-                        public ReadsSparseFormat<IDType, NNZType, ValueType> {
+                           public ReadsCOO<IDType, NNZType, ValueType>{
 public:
   PigoEdgeListReader(std::string filename, bool weighted = false);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
-  format::Format *ReadSparseFormat() const;
   virtual ~PigoEdgeListReader() = default;
 
 private:
