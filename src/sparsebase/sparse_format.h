@@ -18,6 +18,7 @@ namespace context {
   struct Context{
     virtual bool IsEquivalent(Context*) const = 0;
     virtual std::type_index get_context_type_member() const = 0;
+    virtual ~Context();
   };
 
   template <typename ContextType> 
@@ -70,7 +71,7 @@ public:
   virtual std::type_index get_format_id() = 0;
   virtual ~Format() = default;
 
-  virtual Format *clone() const = 0;
+  virtual Format *Clone() const = 0;
   virtual std::vector<DimensionType> get_dimensions() const = 0;
   virtual DimensionType get_num_nnz() const = 0;
   virtual DimensionType get_order() const = 0;
@@ -124,7 +125,7 @@ public:
   COO(COO<IDType, NNZType, ValueType> &&);
   COO<IDType, NNZType, ValueType> &
   operator=(const COO<IDType, NNZType, ValueType> &);
-  Format *clone() const override;
+  Format *Clone() const override;
   virtual ~COO();
   IDType *get_col() const;
   IDType *get_row() const;
@@ -156,7 +157,7 @@ public:
   Array(Array<ValueType> &&);
   Array<ValueType> &
   operator=(const Array<ValueType> &);
-  Format *clone() const override;
+  Format *Clone() const override;
   virtual ~Array();
   ValueType *get_vals() const;
 
@@ -179,7 +180,7 @@ public:
   CSR(CSR<IDType, NNZType, ValueType> &&);
   CSR<IDType, NNZType, ValueType> &
   operator=(const CSR<IDType, NNZType, ValueType> &);
-  Format *clone() const override;
+  Format *Clone() const override;
   virtual ~CSR();
   NNZType *get_row_ptr() const;
   IDType *get_col() const;

@@ -9,13 +9,12 @@ using namespace sparsebase::format;
 
 namespace sparsebase::utils {
 
-template <typename IDType, typename NNZType, typename ValueType>
 std::unordered_map<
     std::type_index,
     std::unordered_map<std::type_index,
                        std::vector<std::tuple<
                            EdgeConditional, ConditionalConversionFunction>>>> *
-Converter<IDType, NNZType, ValueType>::getl_conversion_map(
+Converter::get_conversion_map(
     bool is_move_conversion) {
   if (is_move_conversion)
     return &conditional_move_map_;
@@ -396,28 +395,14 @@ CooCsrMoveFunction(Format *source) {
   return csr;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Converter<IDType, NNZType, ValueType>::Converter() {
-  this->RegisterConditionalConversionFunction(
-      COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CooCsrFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context*, context::Context*) -> bool {
-        return true;
-      });
-  this->RegisterConditionalConversionFunction(
-      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CsrCooFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context*, context::Context*) -> bool {
-        return true;
-      });
-  #ifdef CUDA
-  this->RegisterConditionalConversionFunction(
-      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CUDACsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
-      CUDAPeerToPeer);
+template <typename ValueType>
+Converter * OrderOneConverter<ValueType>::Clone() const {
+  return new OrderOneConverter<ValueType>(*this);
+}
+
+template <typename ValueType>
+void OrderOneConverter<ValueType>::Reset() {
+#ifdef CUDA
   this->RegisterConditionalConversionFunction(
       Array<ValueType>::get_format_id_static(),
       CUDAArray<ValueType>::get_format_id_static(),
@@ -432,6 +417,41 @@ Converter<IDType, NNZType, ValueType>::Converter() {
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
+#endif
+}
+
+template <typename ValueType>
+OrderOneConverter<ValueType>::OrderOneConverter() {
+  this->Reset();
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Converter * OrderTwoConverter<IDType, NNZType, ValueType>::Clone() const {
+  return new OrderTwoConverter<IDType, NNZType, ValueType>(*this);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void OrderTwoConverter<IDType, NNZType, ValueType>::Reset() {
+  this->RegisterConditionalConversionFunction(
+      COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CooCsrFunctionConditional<IDType, NNZType, ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      });
+  this->RegisterConditionalConversionFunction(
+      CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      CsrCooFunctionConditional<IDType, NNZType, ValueType>,
+      [](context::Context*, context::Context*) -> bool {
+        return true;
+      });
+#ifdef CUDA
+  this->RegisterConditionalConversionFunction(
+      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      CUDACsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
+      CUDAPeerToPeer);
   this->RegisterConditionalConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
@@ -446,7 +466,7 @@ Converter<IDType, NNZType, ValueType>::Converter() {
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
-  #endif
+#endif
   this->RegisterConditionalConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
@@ -464,16 +484,18 @@ Converter<IDType, NNZType, ValueType>::Converter() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Converter<IDType, NNZType, ValueType>::~Converter() {}
+OrderTwoConverter<IDType, NNZType, ValueType>::OrderTwoConverter() {
+  this->Reset();
+}
 
-template <typename IDType, typename NNZType, typename ValueType>
-void Converter<IDType, NNZType, ValueType>::RegisterConditionalConversionFunction(
+
+void Converter::RegisterConditionalConversionFunction(
       std::type_index from_type, 
       std::type_index to_type,
       ConditionalConversionFunction conv_func,
       EdgeConditional edge_condition,
       bool is_move_conversion){
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
   if (map->count(from_type) == 0) {
     map->emplace(
         from_type,
@@ -489,8 +511,7 @@ void Converter<IDType, NNZType, ValueType>::RegisterConditionalConversionFunctio
   }
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *Converter<IDType, NNZType, ValueType>::Convert(
+Format *Converter::Convert(
     Format *source, std::type_index to_type, context::Context* to_context, bool is_move_conversion) {
   if (to_type == source->get_format_id() && source->get_context()->IsEquivalent(to_context)) {
     return source;
@@ -514,14 +535,13 @@ FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
     auto* res = this->Convert(source, FormatType::get_format_id_static());
     return res->template As<FormatType>();
 }*/
-template <typename IDType, typename NNZType, typename ValueType>
 ConditionalConversionFunction
-Converter<IDType, NNZType, ValueType>::GetConversionFunction(
+Converter::GetConversionFunction(
 std::type_index from_type, context::Context* from_context, 
                         std::type_index to_type, context::Context* to_context, 
                         bool is_move_conversion) {
   try {
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
     for (auto conditional_function_tuple : (*map)[from_type][to_type]){
       auto conditional = get<0>(conditional_function_tuple);
       if (conditional(from_context, to_context)){
@@ -535,11 +555,10 @@ std::type_index from_type, context::Context* from_context,
   }
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<bool, context::Context*> Converter<IDType, NNZType, ValueType>::CanConvert(
+std::tuple<bool, context::Context*> Converter::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, std::vector<context::Context*> to_contexts,
                   bool is_move_conversion) {
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
@@ -553,11 +572,10 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
   }
   return make_tuple<bool, context::Context*>(false, nullptr);
 }
-template <typename IDType, typename NNZType, typename ValueType>
-bool Converter<IDType, NNZType, ValueType>::CanConvert(
+bool Converter::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
                   bool is_move_conversion) {
-  auto map = getl_conversion_map(is_move_conversion);
+  auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
@@ -569,9 +587,8 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
   }
   return false;
 }
-template <typename IDType, typename NNZType, typename ValueType>
 std::vector<Format *>
-Converter<IDType, NNZType, ValueType>::ApplyConversionSchema(
+Converter::ApplyConversionSchema(
     ConversionSchemaConditional cs, std::vector<Format *> packed_sfs,
     bool is_move_conversion) {
   std::vector<Format *> ret;
@@ -586,7 +603,7 @@ Converter<IDType, NNZType, ValueType>::ApplyConversionSchema(
   }
   return ret;
 }
-
+Converter::~Converter() {}
 
 #if !defined(_HEADER_ONLY)
 #include "init/converter.inc"

@@ -31,14 +31,17 @@ int main(int argc, char * argv[]){
   cout << "Calculating degree distribution..." << endl;
 
   sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type, value_type, feature_type> extractor;
-  //format::SparseFormat<vertex_type, edge_type, value_type> * con = g.get_connectivity();
-  //feature_type * degree_distribution = extractor.GetFeatures(con);
-  feature_type * degree_distribution = extractor.GetDistribution(g.get_connectivity());
+  format::Format * con = g.get_connectivity();
+  feature_type * degree_distribution = extractor.GetDistribution(con);
   feature_type * degree_distribution2 = extractor.GetDistribution(&g);
 
   cout << degree_distribution[0] << endl;
   cout << degree_distribution2[0] << endl;
 
+  feature_type * dd = std::any_cast<feature_type*>(extractor.Extract(g.get_connectivity()));
+
+  cout << dd[0] << endl;
+  cout << dd[1] << endl;
 
   return 0;
 }
