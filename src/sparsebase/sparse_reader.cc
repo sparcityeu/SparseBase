@@ -22,10 +22,8 @@ template <typename IDType, typename NNZType, typename ValueType>
 UedgelistReader<IDType, NNZType, ValueType>::UedgelistReader(
     std::string filename, bool weighted)
     : filename_(filename), weighted_(weighted) {}
-template <typename IDType, typename NNZType, typename ValueType>
-Format *UedgelistReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
-  return this->ReadCSR();
-}
+
+
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType> *
 UedgelistReader<IDType, NNZType, ValueType>::ReadCSR() const {
@@ -101,10 +99,7 @@ bool UedgelistReader<IDType, NNZType, ValueType>::SortEdge(
 }
 template <typename IDType, typename NNZType, typename ValueType>
 UedgelistReader<IDType, NNZType, ValueType>::~UedgelistReader(){};
-template <typename IDType, typename NNZType, typename ValueType>
-Format *MTXReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
-  return this->ReadCOO();
-}
+
 
 template <typename IDType, typename NNZType, typename ValueType>
 MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
@@ -218,11 +213,6 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *PigoMTXReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
-  return this->ReadCOO();
-}
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType> *
@@ -251,10 +241,7 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::PigoEdgeListReader(
     : filename_(filename), weighted_(weighted) {}
 
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadSparseFormat() const {
-  return this->ReadCOO();
-}
+
 #if !defined(_HEADER_ONLY)
 #include "init/external/pigo.inc"
 #endif
