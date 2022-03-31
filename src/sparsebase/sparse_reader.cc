@@ -119,7 +119,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
   if(fin.is_open()){
     // Declare variables: (check the types here)
-    VertexID M, N, L;
+    DimensionType M, N, L;
 
     // Ignore headers and comments:
     while (fin.peek() == '%')
@@ -127,14 +127,14 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
     fin >> M >> N >> L;
 
-    VertexID *row = new VertexID[L];
-    VertexID *col = new VertexID[L];
+    IDType *row = new IDType[L];
+    IDType *col = new IDType[L];
     if (weighted_) {
-      if constexpr (!std::is_same_v<void, Weight>) {
-        Weight *vals = new Weight[L];
-        for (NumEdges l = 0; l < L; l++) {
-          VertexID m, n;
-          Weight w;
+      if constexpr (!std::is_same_v<void, ValueType>) {
+        ValueType *vals = new ValueType[L];
+        for (NNZType l = 0; l < L; l++) {
+          IDType m, n;
+          ValueType w;
           fin >> m >> n >> w;
           row[l] = n - 1;
           col[l] = m - 1;
@@ -142,22 +142,22 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         }
 
         auto coo =
-            new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, vals, kOwned);
+            new COO<IDType, NNZType, ValueType>(M, N, L, row, col, vals, kOwned);
         return coo;
       } else {
         // TODO: Add an exception class for this
         throw ReaderException("Weight type for weighted graphs can not be void");
       }
     } else {
-      for (NumEdges l = 0; l < L; l++) {
-        VertexID m, n;
+      for (NNZType l = 0; l < L; l++) {
+        IDType m, n;
         fin >> m >> n;
         row[l] = m - 1;
         col[l] = n - 1;
       }
 
       auto coo =
-          new COO<VertexID, NumEdges, Weight>(M, N, L, row, col, nullptr, kOwned);
+          new COO<IDType, NNZType, ValueType>(M, N, L, row, col, nullptr, kOwned);
       return coo;
     }
   } else {
