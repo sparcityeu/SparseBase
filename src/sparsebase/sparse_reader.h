@@ -13,54 +13,49 @@ namespace sparsebase {
 
 namespace utils {
 
-template <typename IDType, typename NNZType, typename ValueType>
 class Reader {
 public:
-  virtual ~Reader();
+  virtual ~Reader() = default;
 };
 
-template <class VertexID, typename NumEdges, typename Weight>
-class ReadsSparseFormat {
+
+template <typename IDType, typename NNZType, typename ValueType> class ReadsCSR {
 public:
-  virtual format::Format *ReadSparseFormat() const = 0;
+  virtual format::CSR<IDType, NNZType, ValueType> *ReadCSR() const = 0;
 };
 
-template <class VertexID, typename NumEdges, typename Weight> class ReadsCSR {
+template <typename IDType, typename NNZType, typename ValueType> class ReadsCOO {
 public:
-  virtual format::CSR<VertexID, NumEdges, Weight> *ReadCSR() const = 0;
+  virtual format::COO<IDType, NNZType, ValueType> *ReadCOO() const = 0;
 };
 
-template <class VertexID, typename NumEdges, typename Weight> class ReadsCOO {
+template <typename T> class ReadsArray {
 public:
-  virtual format::COO<VertexID, NumEdges, Weight> *ReadCOO() const = 0;
+  virtual format::Array<T> *ReadArray() const = 0;
 };
-// Add weighted option with contexpr
-template <typename VertexID, typename NumEdges, typename Weight>
-class UedgelistReader : public Reader<VertexID, NumEdges, Weight>,
-                        public ReadsCSR<VertexID, NumEdges, Weight>,
-                        public ReadsSparseFormat<VertexID, NumEdges, Weight> {
+
+template <typename IDType, typename NNZType, typename ValueType>
+class UedgelistReader : public Reader,
+                        public ReadsCSR<IDType, NNZType, ValueType> {
 public:
-  UedgelistReader(std::string filename, bool _weighted = false);
-  format::CSR<VertexID, NumEdges, Weight> *ReadCSR() const;
-  format::Format *ReadSparseFormat() const;
-  virtual ~UedgelistReader();
+  explicit UedgelistReader(std::string filename, bool weighted = false);
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  ~UedgelistReader() override;
 
 private:
-  static bool SortEdge(const std::pair<VertexID, VertexID> &a,
-                       const std::pair<VertexID, VertexID> &b);
+  static bool SortEdge(const std::pair<IDType, IDType> &a,
+                       const std::pair<IDType, IDType> &b);
   std::string filename_;
   bool weighted_;
 };
 
-template <typename VertexID, typename NumEdges, typename Weight>
-class MTXReader : public Reader<VertexID, NumEdges, Weight>,
-                  public ReadsCOO<VertexID, NumEdges, Weight>,
-                  public ReadsSparseFormat<VertexID, NumEdges, Weight> {
+template <typename IDType, typename NNZType, typename ValueType>
+class MTXReader : public Reader,
+                  public ReadsCOO<IDType, NNZType, ValueType>{
 public:
-  MTXReader(std::string filename, bool _weighted = false);
-  format::COO<VertexID, NumEdges, Weight> *ReadCOO() const;
-  format::Format *ReadSparseFormat() const;
-  virtual ~MTXReader();
+  explicit MTXReader(std::string filename, bool weighted = false);
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  ~MTXReader() override;
 
 private:
   std::string filename_;
@@ -69,15 +64,13 @@ private:
 
 #ifdef USE_PIGO
 template <typename IDType, typename NNZType, typename ValueType>
-class PigoMTXReader : public Reader<IDType, NNZType, ValueType>,
+class PigoMTXReader : public Reader,
                   public ReadsCOO<IDType, NNZType, ValueType>,
-                      public ReadsCSR<IDType, NNZType, ValueType>,
-                  public ReadsSparseFormat<IDType, NNZType, ValueType> {
+                      public ReadsCSR<IDType, NNZType, ValueType> {
 public:
-  PigoMTXReader(std::string filename, bool _weighted = false, bool _convert_to_zero_index = false);
+  PigoMTXReader(std::string filename, bool weighted = false, bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
-  format::Format *ReadSparseFormat() const;
   virtual ~PigoMTXReader() = default;
 
 private:
@@ -86,17 +79,15 @@ private:
   bool convert_to_zero_index_;
 };
 
-// Add weighted option with contexpr
+// Add ValueTypeed option with contexpr
 template <typename IDType, typename NNZType, typename ValueType>
-class PigoEdgeListReader : public Reader<IDType, NNZType, ValueType>,
+class PigoEdgeListReader : public Reader,
                         public ReadsCSR<IDType, NNZType, ValueType>,
-                           public ReadsCOO<IDType, NNZType, ValueType>,
-                        public ReadsSparseFormat<IDType, NNZType, ValueType> {
+                           public ReadsCOO<IDType, NNZType, ValueType>{
 public:
-  PigoEdgeListReader(std::string filename, bool _weighted = false);
+  PigoEdgeListReader(std::string filename, bool weighted = false);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
-  format::Format *ReadSparseFormat() const;
   virtual ~PigoEdgeListReader() = default;
 
 private:
@@ -109,17 +100,31 @@ private:
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-class BinaryReader: public Reader<IDType, NNZType, ValueType>,
+class BinaryReaderOrderTwo : public Reader,
   public ReadsCSR<IDType, NNZType, ValueType>,
   public ReadsCOO<IDType, NNZType, ValueType> {
 public:
-  BinaryReader(std::string filename);
+  explicit BinaryReaderOrderTwo(std::string filename);
+  ~BinaryReaderOrderTwo() override = default;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
 
 private:
   std::string filename_;
 };
+
+template <typename T>
+class BinaryReaderOrderOne : public Reader,
+                             public ReadsArray<T> {
+public:
+  explicit BinaryReaderOrderOne(std::string filename);
+  ~BinaryReaderOrderOne() override = default;
+  format::Array<T> *ReadArray() const;
+  
+private:
+  std::string filename_;
+};
+
 
 } // namespace utils
 
