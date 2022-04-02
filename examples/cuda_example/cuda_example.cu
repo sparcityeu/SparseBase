@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_converter.h"
-#include "sparsebase/sparse_preprocess.h"
-#include "sparsebase/cuda/format.cuh"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/cuda/format/format.cuh"
 
 using namespace std;
 using namespace sparsebase;

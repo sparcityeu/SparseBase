@@ -9,7 +9,7 @@
 #include <vector>
 #include "sparse_file_format.h"
 #ifdef USE_PIGO
-#include "external/pigo/pigo.hpp"
+#include "sparsebase/external/pigo/pigo.hpp"
 #endif
 
 using namespace sparsebase::format;

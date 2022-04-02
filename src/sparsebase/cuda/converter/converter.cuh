@@ -1,6 +1,6 @@
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_converter.h"
-#include "sparsebase/cuda/format.cuh"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/cuda/format/format.cuh"
 
 template <typename ValueType>
 sparsebase::format::Format *
