@@ -1,6 +1,8 @@
 #ifndef _CUDA_H_FILE
 #define _CUDA_H_FILE
 #include "sparsebase/format/format.h"
+#include "sparsebase/context/context.h"
+#include "sparsebase/cuda/context/context.cuh"
 
 namespace sparsebase {
 

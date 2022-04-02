@@ -2,7 +2,7 @@
 #define _SPARSEFILEFORMAT_H
 
 #ifdef USE_PIGO
-#include "external/pigo/pigo.hpp"
+#include "sparsebase/external/pigo/pigo.hpp"
 #endif
 
 #include "sparsebase/external/json/json.hpp"

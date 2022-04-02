@@ -1,14 +1,13 @@
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_preprocess.h"
-#include "sparsebase/cuda/format.cuh"
-#include "sparsebase/cuda/preprocess.cuh"
+#include "sparsebase/format/format.h"
+#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/cuda/format/format.cuh"
+#include "sparsebase/cuda/preprocess/preprocess.cuh"
 using namespace sparsebase;
 using namespace sparsebase::format;
 using namespace sparsebase::utils;
 namespace sparsebase{
 
 namespace preprocess {
-namespace cuda {
 #define WARP_SIZE 32
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
@@ -43,7 +42,7 @@ preprocess::JaccardWeights<IDType, NNZType, ValueType, FeatureType>::
       (int)min((int)max((int)cuda_csr->get_dimensions()[0] / grid.y, (int)1),
                (int)MAX_GRID_DIM);
 
-  jac_binning_gpu_u_per_grid_bst_kernel<IDType, NNZType, FeatureType>
+  cuda::jac_binning_gpu_u_per_grid_bst_kernel<IDType, NNZType, FeatureType>
       <<<grid, block, 0>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(),
                            (NNZType)cuda_csr->get_dimensions()[0],
                            jaccard_weights, 0);
@@ -98,6 +97,7 @@ __inline__ __device__ int warpReduce(int val, unsigned int length,
   }
   return val;
 }
+namespace cuda {
 template <typename IDType, typename NNZType, typename FeatureType>
 __global__ void
 jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
@@ -153,10 +153,10 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
   }
 }
 
+}
 #if !defined(_HEADER_ONLY)
 #include "init/external/cuda/preprocess.inc"
 #endif
-}
 }
 
 }

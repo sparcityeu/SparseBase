@@ -1,8 +1,8 @@
 //
 // Created by Amro on 3/31/2022.
 //
-#include "sparsebase/cuda/context/context.cuh
-#include "sparsebase/context/context.h
+#include "sparsebase/cuda/context/context.cuh"
+#include "sparsebase/context/context.h"
 namespace sparsebase {
 namespace context {
 CUDAContext::CUDAContext(int did) : device_id(did) {

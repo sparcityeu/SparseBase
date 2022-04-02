@@ -1,7 +1,7 @@
 #include <iostream>
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/cuda/format.cuh"
-#include "sparsebase/sparse_exception.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/cuda/format/format.cuh"
+#include "sparsebase/utils/exception.h"
 
 namespace sparsebase {
 

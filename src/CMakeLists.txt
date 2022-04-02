@@ -32,6 +32,7 @@ set(LIB_FILES ${LIB_FILES}
         sparsebase/cuda/format/format.cu
         sparsebase/cuda/converter/converter.cu
         sparsebase/cuda/preprocess/preprocess.cu
+        sparsebase/cuda/context/context.cu
 )
 endif()
 add_library(sparsebase ${LIB_FILES})
