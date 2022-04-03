@@ -1,7 +1,11 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
-#include "sparsebase/cuda/format/format.cuh"
+#include "sparsebase/format/cuda/format.cuh"
 
+namespace sparsebase{
+namespace utils {
+namespace converter{
+namespace cuda{
 template <typename ValueType>
 sparsebase::format::Format *
 CUDAArrayArrayConditionalFunction(sparsebase::format::Format *source, sparsebase::context::Context*context);
@@ -23,3 +27,9 @@ sparsebase::format::Format *
 CUDACsrCUDACsrConditionalFunction(sparsebase::format::Format *source, sparsebase::context::Context*context);
 
 bool CUDAPeerToPeer(sparsebase::context::Context* from, sparsebase::context::Context* to);
+
+}
+
+}
+}
+}

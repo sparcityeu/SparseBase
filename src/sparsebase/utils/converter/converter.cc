@@ -1,4 +1,4 @@
-#include "converter.h"
+#include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/format.h"
 #include <iostream>
 #include <set>
@@ -7,7 +7,7 @@ using namespace std;
 
 using namespace sparsebase::format;
 
-namespace sparsebase::utils {
+namespace sparsebase::utils::converter {
 
 std::unordered_map<
     std::type_index,
@@ -405,15 +405,15 @@ void OrderOneConverter<ValueType>::Reset() {
 #ifdef CUDA
   this->RegisterConditionalConversionFunction(
       Array<ValueType>::get_format_id_static(),
-      CUDAArray<ValueType>::get_format_id_static(),
-      ArrayCUDAArrayConditionalFunction<ValueType>,
+      format::cuda::CUDAArray<ValueType>::get_format_id_static(),
+      converter::cuda::ArrayCUDAArrayConditionalFunction<ValueType>,
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
   this->RegisterConditionalConversionFunction(
-      CUDAArray<ValueType>::get_format_id_static(),
+      format::cuda::CUDAArray<ValueType>::get_format_id_static(),
       Array<ValueType>::get_format_id_static(),
-      CUDAArrayArrayConditionalFunction<ValueType>,
+      converter::cuda::CUDAArrayArrayConditionalFunction<ValueType>,
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
@@ -448,21 +448,21 @@ void OrderTwoConverter<IDType, NNZType, ValueType>::Reset() {
       });
 #ifdef CUDA
   this->RegisterConditionalConversionFunction(
-      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CUDACsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
-      CUDAPeerToPeer);
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      converter::cuda::CUDACsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
+      converter::cuda::CUDAPeerToPeer);
   this->RegisterConditionalConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      converter::cuda::CsrCUDACsrConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context*, context::Context*) -> bool {
         return true;
       });
   this->RegisterConditionalConversionFunction(
-      CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CUDACsrCsrConditionalFunction<IDType, NNZType, ValueType>,
+      converter::cuda::CUDACsrCsrConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context*, context::Context*) -> bool {
         return true;
       });

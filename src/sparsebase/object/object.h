@@ -1,7 +1,7 @@
 #ifndef _SPARSEOBJECT_HPP
 #define _SPARSEOBJECT_HPP
 
-#include "config.h"
+#include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/io/reader.h"
 #include <functional>
@@ -42,8 +42,8 @@ public:
   Graph(Graph<VertexID, NumEdges, Weight> &&);
   Graph<VertexID, NumEdges, Weight> &
   operator=(const Graph<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCSR(const utils::ReadsCSR<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCOO(const utils::ReadsCOO<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCSR(const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCOO(const utils::io::ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
   void ReadConnectivityFromEdgelistToCSR(std::string filename);
   void InitializeInfoFromConnection();
@@ -78,6 +78,6 @@ public:
 } // namespace sparsebase
 
 #ifdef _HEADER_ONLY
-#include "sparse_object.cc"
+#include "sparsebase/object/object.cc"
 #endif
 #endif

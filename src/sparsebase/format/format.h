@@ -1,7 +1,7 @@
 #ifndef _TENSOR_HPP
 #define _TENSOR_HPP
 
-#include "config.h"
+#include "sparsebase/config.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/context/context.h"
 #include <algorithm>
@@ -186,7 +186,7 @@ protected:
 
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
-#include "sparse_format.cc"
+#include "sparsebase/format/format.cc"
 #ifdef CUDA
 #include "cuda/format.cu"
 #endif

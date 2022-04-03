@@ -2,18 +2,20 @@
 #define _SPARSECONVERTER_HPP
 
 #include "sparsebase/format/format.h"
-#include "config.h"
+#include "sparsebase/config.h"
 #include <tuple>
 #include <unordered_map>
 #include <functional>
 #ifdef CUDA
-#include "sparsebase/cuda/format/format.cuh"
-#include "sparsebase/cuda/converter/converter.cuh"
+#include "sparsebase/format/cuda/format.cuh"
+#include "sparsebase/utils/converter/cuda/converter.cuh"
 #endif
 
 namespace sparsebase {
 
 namespace utils {
+
+namespace converter{
 
 typedef std::vector<std::tuple<bool, std::type_index, context::Context*>> ConversionSchemaConditional;
 
@@ -64,7 +66,7 @@ public:
                         std::vector<format::Format *> packed_sfs,
                         bool is_move_conversion = false);
   virtual std::type_index get_converter_type() = 0;
-  virtual utils::Converter* Clone() const = 0;
+  virtual Converter* Clone() const = 0;
   virtual void Reset() = 0;
   virtual ~Converter();
 };
@@ -81,7 +83,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class OrderTwoConverter : public ConverterImpl<OrderTwoConverter<IDType, NNZType, ValueType>>{
 public:
   OrderTwoConverter();
-  virtual utils::Converter* Clone() const;
+  virtual Converter* Clone() const;
   virtual void Reset();
 };
 
@@ -89,7 +91,7 @@ template <typename ValueType>
 class OrderOneConverter : public ConverterImpl<OrderOneConverter<ValueType>>{
 public:
   OrderOneConverter();
-  virtual utils::Converter* Clone() const;
+  virtual Converter* Clone() const;
   virtual void Reset();
 };
 
@@ -97,8 +99,9 @@ public:
 
 } // namespace sparsebase
 
+}
 #ifdef _HEADER_ONLY
-#include "sparse_converter.cc"
+#include "sparsebase/utils/converter/converter.cc"
 #ifdef CUDA
 #include "cuda/converter.cu"
 #endif

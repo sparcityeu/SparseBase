@@ -29,7 +29,9 @@ struct ContextImplementation : public Context {
 struct CPUContext : ContextImplementation<CPUContext>{
   virtual bool IsEquivalent(Context *) const;
 };
-
 };
 };
+#ifdef _HEADER_ONLY
+#include "sparsebase/context/context.cc"
+#endif
 #endif // SPARSEBASE_PROJECT_CONTEXT_H

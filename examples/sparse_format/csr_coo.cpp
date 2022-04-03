@@ -39,7 +39,7 @@ int main(int argc, char * argv[]){
 
   {
     string file_name = argv[1];
-    utils::MTXReader<unsigned int, unsigned int, unsigned int> reader(file_name);
+    utils::io::MTXReader<unsigned int, unsigned int, unsigned int> reader(file_name);
     format::COO<unsigned int, unsigned int, unsigned int> * coo = reader.ReadCOO();
     auto format = coo->get_format_id();
     auto dimensions = coo->get_dimensions();

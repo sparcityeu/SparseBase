@@ -87,7 +87,7 @@ public:
 } // namespace sparsebase::format
 
 #ifdef _HEADER_ONLY
-#include "sparse_feature.cc"
+#include "sparsebase/feature/feature.cc"
 #endif
 
 #endif

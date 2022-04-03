@@ -1,7 +1,7 @@
 #ifndef _SPARSEREADER_HPP
 #define _SPARSEREADER_HPP
 
-#include "config.h"
+#include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
 #include <algorithm>
 #include <cstring>
@@ -12,6 +12,9 @@
 namespace sparsebase {
 
 namespace utils {
+
+namespace io {
+
 
 class Reader {
 public:
@@ -125,12 +128,13 @@ private:
   std::string filename_;
 };
 
-
+#ifdef _HEADER_ONLY
+#include "sparsebase/utils/io/reader.cc"
+#endif
 } // namespace utils
 
 } // namespace sparsebase
 
-#ifdef _HEADER_ONLY
-#include "sparse_reader.cc"
+}
 #endif
-#endif
+

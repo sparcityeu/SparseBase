@@ -84,7 +84,7 @@ Graph<VertexID, NumEdges, Weight>::Graph(Format *connectivity) {
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
-    const ReadsCOO<VertexID, NumEdges, Weight> &reader) {
+    const utils::io::ReadsCOO<VertexID, NumEdges, Weight> &reader) {
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -93,7 +93,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
-    const ReadsCSR<VertexID, NumEdges, Weight> &reader) {
+    const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &reader) {
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -103,7 +103,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
     std::string filename) {
-  UedgelistReader<VertexID, NumEdges, Weight> reader(filename);
+  utils::io::UedgelistReader<VertexID, NumEdges, Weight> reader(filename);
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -113,7 +113,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(
     std::string filename) {
-  MTXReader<VertexID, NumEdges, Weight> reader(filename);
+  utils::io::MTXReader<VertexID, NumEdges, Weight> reader(filename);
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();

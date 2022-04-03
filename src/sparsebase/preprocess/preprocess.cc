@@ -1,6 +1,9 @@
 #include "preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/format.h"
+#ifdef CUDA
+#include "sparsebase/preprocess/cuda/preprocess.cuh"
+#endif
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -54,8 +57,8 @@ bool FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash, KeyEqu
 }
 template <class Parent>
 void ConverterMixin<Parent>::SetConverter(
-    const utils::Converter &new_sc) {
-  sc_ = std::unique_ptr<utils::Converter>(new_sc.Clone());
+    const utils::converter::Converter &new_sc) {
+  sc_ = std::unique_ptr<utils::converter::Converter>(new_sc.Clone());
 }
 template <class Parent>
 void ConverterMixin<Parent>::ResetConverter() {
@@ -92,7 +95,7 @@ bool FunctionMatcherMixin<
   /*!
    * \param key defines the types of input objects (default is vector of format types)
    * \param map the map between keys and functions
-   * \param sc utils::Converter object to query possible conversions
+   * \param sc utils::converter::Converter object to query possible conversions
    * \return the function to be executed and the conversion schema the conversions to carry out on inputs 
    */
 template <typename ReturnType,
@@ -100,12 +103,12 @@ template <typename ReturnType,
           typename Function,
           typename Key, typename KeyHash,
           typename KeyEqualTo>
-std::tuple<Function, utils::ConversionSchemaConditional>
+std::tuple<Function, utils::converter::ConversionSchemaConditional>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
                    Key, KeyHash, KeyEqualTo>::
     GetFunction(std::vector<format::Format*>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*> contexts,
-                utils::Converter &sc) {
-  utils::ConversionSchemaConditional cs;
+                utils::converter::Converter &sc) {
+  utils::converter::ConversionSchemaConditional cs;
   Function func = nullptr;
   if (CheckIfKeyMatches(map, key, packed_sfs, contexts)) {
     for (auto f : key) {
@@ -118,11 +121,11 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
     for (auto key_func : map) {
       all_keys.push_back(key_func.first);
     }
-    std::vector<std::tuple<unsigned int, utils::ConversionSchemaConditional, Key>>
+    std::vector<std::tuple<unsigned int, utils::converter::ConversionSchemaConditional, Key>>
         usable_keys;
     for (auto potential_key : all_keys) {
       if (potential_key.size() == key.size()) {
-        utils::ConversionSchemaConditional temp_cs;
+        utils::converter::ConversionSchemaConditional temp_cs;
         int conversions = 0;
         bool is_usable = true;
         for (int i = 0; i < potential_key.size(); i++) {
@@ -147,7 +150,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
     if (usable_keys.size() == 0) {
       throw 1; // TODO: add a custom exception type
     }
-    std::tuple<Function, utils::ConversionSchemaConditional> best_conversion;
+    std::tuple<Function, utils::converter::ConversionSchemaConditional> best_conversion;
     unsigned int num_conversions = (unsigned int)-1;
     for (auto potential_usable_key : usable_keys) {
       if (num_conversions > std::get<0>(potential_usable_key)) {
@@ -226,7 +229,7 @@ template <typename F, typename... SF>
 std::tuple<std::vector<format::Format*>, ReturnType>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
                    Key, KeyHash, KeyEqualTo>::
-CachedExecute(PreprocessParams * params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
+CachedExecute(PreprocessParams * params, utils::converter::Converter& sc, std::vector<context::Context*> contexts, F sf,
         SF... sfs) {
   ConversionMap map = this->_map_to_function;
   // pack the SFs into a vector
@@ -234,10 +237,10 @@ CachedExecute(PreprocessParams * params, utils::Converter& sc, std::vector<conte
   // pack the SF formats into a vector
   std::vector<std::type_index> formats = PackFormats(sf, sfs...);
   // get conversion schema
-  std::tuple<Function, utils::ConversionSchemaConditional> ret =
+  std::tuple<Function, utils::converter::ConversionSchemaConditional> ret =
       GetFunction(packed_sfs, formats, map, contexts, sc);
   Function func = std::get<0>(ret);
-  utils::ConversionSchemaConditional cs = std::get<1>(ret);
+  utils::converter::ConversionSchemaConditional cs = std::get<1>(ret);
   // carry out conversion
   // ready_formats contains the format to use in preprocessing
   std::vector<Format *> ready_formats = sc.ApplyConversionSchema(cs, packed_sfs);
@@ -264,7 +267,7 @@ template <typename F, typename... SF>
 ReturnType
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function,
                    Key, KeyHash, KeyEqualTo>::
-    Execute(PreprocessParams * params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
+    Execute(PreprocessParams * params, utils::converter::Converter& sc, std::vector<context::Context*> contexts, F sf,
             SF... sfs) {
   auto cached_output = CachedExecute(params, sc, contexts, sf, sfs...);
   auto converted_formats = std::get<0>(cached_output);
@@ -281,7 +284,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(int hyperparameter) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
   // this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
       CalculateReorderCSR);
@@ -344,7 +347,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
 }
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
   this->params_ = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
@@ -484,7 +487,7 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
 template <typename IDType, typename NNZType, typename ValueType>
 Transform<IDType, NNZType, ValueType>::Transform(IDType* order){
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, TransformCSR);
   this->params_ = std::unique_ptr<TransformParams>(new TransformParams(order));
 }
@@ -601,9 +604,9 @@ std::type_index FeaturePreprocessType<FeatureType>::get_feature_id() {
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights(){
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   #ifdef CUDA
-    std::vector<std::type_index> formats ={CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()}; 
+    std::vector<std::type_index> formats ={format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()}; 
     this->RegisterFunction(formats, GetJaccardWeightCUDACSR);
   #endif
 }
@@ -621,10 +624,21 @@ format::Format* JaccardWeights<IDType, NNZType, ValueType, FeatureType>::GetJacc
     JaccardParams params;
     return this->Execute(&params, *(this->sc_), contexts, format); //func(sfs, this->params_.get());
 }
+#ifdef CUDA
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+format::Format *
+preprocess::JaccardWeights<IDType, NNZType, ValueType, FeatureType>::
+    GetJaccardWeightCUDACSR(std::vector<Format *> formats,
+                            PreprocessParams *params) {
+  auto cuda_csr = formats[0]->As<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+  return preprocess::cuda::RunJaccardKernel<IDType, NNZType, ValueType, FeatureType>(cuda_csr);
+}
+#endif
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(){
-    this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+    this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
     Register();
     this->params_ = std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
     this->pmap_.insert({get_feature_id_static(), this->params_});
@@ -643,7 +657,7 @@ template <typename IDType, typename NNZType, typename ValueType,
     typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
     const std::shared_ptr<DegreeDistributionParams> p) {
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = p;
   this->pmap_[get_feature_id_static()] = p;
@@ -724,7 +738,7 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 
 template<typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(){
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = std::shared_ptr<DegreesParams>(new DegreesParams());
   this->pmap_.insert({get_feature_id_static(), this->params_});
@@ -790,7 +804,7 @@ IDType * Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(std::vector<Format *
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Degrees_DegreeDistribution(){
-  this->SetConverter(utils::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
   this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});
