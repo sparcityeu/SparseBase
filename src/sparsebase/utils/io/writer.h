@@ -1,5 +1,5 @@
-#ifndef _SPARSEWRITER_HPP
-#define _SPARSEWRITER_HPP
+#ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
+#define SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 
 #include "sparsebase/format/format.h"
 #include "reader.h"
@@ -54,4 +54,4 @@ private:
 
 
 
-#endif
+#endif // SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_

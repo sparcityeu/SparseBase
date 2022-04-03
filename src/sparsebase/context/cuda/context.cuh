@@ -3,8 +3,8 @@
 //
 
 #include "sparsebase/format/format.h"
-#ifndef SPARSEBASE_PROJECT_CONTEXT_CUH
-#define SPARSEBASE_PROJECT_CONTEXT_CUH
+#ifndef SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
+#define SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 
 namespace sparsebase{
 namespace context {
@@ -21,4 +21,4 @@ struct CUDAContext : ContextImplementation<CUDAContext> {
 #ifdef _HEADER_ONLY
 #include "sparsebase/context/cuda/context.cu"
 #endif
-#endif // SPARSEBASE_PROJECT_CONTEXT_CUH
+#endif // SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_

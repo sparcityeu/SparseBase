@@ -1,5 +1,5 @@
-#ifndef _SPARSEEXC_HPP
-#define _SPARSEEXC_HPP
+#ifndef SPARSEBASE_SPARSEBASE_UTILS_EXCEPTION_H_
+#define SPARSEBASE_SPARSEBASE_UTILS_EXCEPTION_H_
 
 #include "sparsebase/config.h"
 #include <exception>
@@ -85,4 +85,4 @@ class CUDADeviceException : public Exception {
 
 } // namespace sparsebase
 
-#endif
+#endif // SPARSEBASE_SPARSEBASE_UTILS_EXCEPTION_H_

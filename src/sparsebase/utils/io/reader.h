@@ -1,5 +1,5 @@
-#ifndef _SPARSEREADER_HPP
-#define _SPARSEREADER_HPP
+#ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
+#define SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
@@ -136,5 +136,5 @@ private:
 } // namespace sparsebase
 
 }
-#endif
+#endif // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
 

@@ -1,5 +1,5 @@
-#ifndef _SPARSECONVERTER_HPP
-#define _SPARSECONVERTER_HPP
+#ifndef SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
+#define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
 
 #include "sparsebase/format/format.h"
 #include "sparsebase/config.h"
@@ -107,4 +107,4 @@ public:
 #endif
 #endif
 
-#endif
+#endif // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_

@@ -1,6 +1,8 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/cuda/format.cuh"
+#ifndef SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CUDA_CONVERTER_H_
+#define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CUDA_CONVERTER_H_
 
 namespace sparsebase{
 namespace utils {
@@ -33,3 +35,5 @@ bool CUDAPeerToPeer(sparsebase::context::Context* from, sparsebase::context::Con
 }
 }
 }
+
+#endif // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
