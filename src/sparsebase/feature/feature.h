@@ -1,6 +1,3 @@
-#ifndef _Feature_HPP
-#define _Feature_HPP
-
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include <unordered_map>
@@ -8,6 +5,9 @@
 #include <vector>
 #include <set>
 #include <any>
+#ifndef SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
+#define SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
+
 
 namespace sparsebase::feature {
 
@@ -90,4 +90,4 @@ public:
 #include "sparsebase/feature/feature.cc"
 #endif
 
-#endif
+#endif // SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_

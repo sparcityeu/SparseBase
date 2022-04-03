@@ -1,5 +1,5 @@
-#ifndef _SPARSEFILEFORMAT_H
-#define _SPARSEFILEFORMAT_H
+#ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_SPARSE_FILE_FORMAT_H_
+#define SPARSEBASE_SPARSEBASE_UTILS_IO_SPARSE_FILE_FORMAT_H_
 
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
@@ -340,4 +340,4 @@ public:
 };
 }
 
-#endif
+#endif // SPARSEBASE_SPARSEBASE_UTILS_IO_SPARSE_FILE_FORMAT_H_

@@ -1,5 +1,5 @@
-#ifndef _Reorder_HPP
-#define _Reorder_HPP
+#ifndef SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_
+#define SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_
 #include "sparsebase/config.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/format.h"
@@ -282,4 +282,4 @@ protected:
 #endif
 #endif
 
-#endif
+#endif // SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_

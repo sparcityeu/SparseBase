@@ -2,8 +2,8 @@
 // Created by Amro on 3/31/2022.
 //
 
-#ifndef SPARSEBASE_PROJECT_CONTEXT_H
-#define SPARSEBASE_PROJECT_CONTEXT_H
+#ifndef SPARSEBASE_SPARSEBASE_CONTEXT_CONTEXT_H_
+#define SPARSEBASE_SPARSEBASE_CONTEXT_CONTEXT_H_
 
 #include <typeindex>
 
@@ -34,4 +34,4 @@ struct CPUContext : ContextImplementation<CPUContext>{
 #ifdef _HEADER_ONLY
 #include "sparsebase/context/context.cc"
 #endif
-#endif // SPARSEBASE_PROJECT_CONTEXT_H
+#endif // SPARSEBASE_SPARSEBASE_CONTEXT_CONTEXT_H_

@@ -1,3 +1,5 @@
+#ifndef SPARSEBASE_SPARSEBASE_PREPROCESS_CUDA_PREPROCESS_H_
+#define SPARSEBASE_SPARSEBASE_PREPROCESS_CUDA_PREPROCESS_H_
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/preprocess/preprocess.h"
@@ -10,3 +12,4 @@ namespace cuda{
   }
 }
 }
+#endif // SPARSEBASE_SPARSEBASE_PREPROCESS_CUDA_PREPROCESS_H_

@@ -1,5 +1,5 @@
-#ifndef _SPARSEOBJECT_HPP
-#define _SPARSEOBJECT_HPP
+#ifndef SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_
+#define SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
@@ -80,4 +80,4 @@ public:
 #ifdef _HEADER_ONLY
 #include "sparsebase/object/object.cc"
 #endif
-#endif
+#endif // SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_
