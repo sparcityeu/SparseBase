@@ -1,2 +1,2 @@
-add_executable(example_conversion ${CMAKE_CURRENT_SOURCE_DIR}/example_conversion.cpp)
-target_link_libraries(example_conversion sparsebase)
+add_executable(format_conversion ${CMAKE_CURRENT_SOURCE_DIR}/format_conversion.cc)
+target_link_libraries(format_conversion sparsebase)
