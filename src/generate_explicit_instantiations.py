@@ -152,11 +152,11 @@ class converter_init(explicit_initialization):
     ## Prints explicit template instantiations for the converter file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        single_order_classes = ['OrderOneConverter']
+        single_order_classes = ['ConverterOrderOne']
         for value_type in value_types:
             for c in single_order_classes:
                 self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
-        print_implementations(['OrderTwoConverter'], self.out_stream)
+        print_implementations(['ConverterOrderTwo'], self.out_stream)
 
 class object_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):

@@ -396,12 +396,12 @@ CooCsrMoveFunction(Format *source) {
 }
 
 template <typename ValueType>
-Converter * OrderOneConverter<ValueType>::Clone() const {
-  return new OrderOneConverter<ValueType>(*this);
+Converter * ConverterOrderOne<ValueType>::Clone() const {
+  return new ConverterOrderOne<ValueType>(*this);
 }
 
 template <typename ValueType>
-void OrderOneConverter<ValueType>::Reset() {
+void ConverterOrderOne<ValueType>::Reset() {
 #ifdef CUDA
   this->RegisterConditionalConversionFunction(
       Array<ValueType>::get_format_id_static(),
@@ -421,17 +421,17 @@ void OrderOneConverter<ValueType>::Reset() {
 }
 
 template <typename ValueType>
-OrderOneConverter<ValueType>::OrderOneConverter() {
+ConverterOrderOne<ValueType>::ConverterOrderOne() {
   this->Reset();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-Converter * OrderTwoConverter<IDType, NNZType, ValueType>::Clone() const {
-  return new OrderTwoConverter<IDType, NNZType, ValueType>(*this);
+Converter * ConverterOrderTwo<IDType, NNZType, ValueType>::Clone() const {
+  return new ConverterOrderTwo<IDType, NNZType, ValueType>(*this);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-void OrderTwoConverter<IDType, NNZType, ValueType>::Reset() {
+void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
   this->RegisterConditionalConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
@@ -484,7 +484,7 @@ void OrderTwoConverter<IDType, NNZType, ValueType>::Reset() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-OrderTwoConverter<IDType, NNZType, ValueType>::OrderTwoConverter() {
+ConverterOrderTwo<IDType, NNZType, ValueType>::ConverterOrderTwo() {
   this->Reset();
 }
 

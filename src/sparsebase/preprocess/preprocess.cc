@@ -284,7 +284,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(int hyperparameter) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
   // this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
       CalculateReorderCSR);
@@ -347,7 +347,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
 }
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
   this->params_ = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
@@ -487,7 +487,7 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
 template <typename IDType, typename NNZType, typename ValueType>
 Transform<IDType, NNZType, ValueType>::Transform(IDType* order){
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, TransformCSR);
   this->params_ = std::unique_ptr<TransformParams>(new TransformParams(order));
 }
@@ -604,7 +604,7 @@ std::type_index FeaturePreprocessType<FeatureType>::get_feature_id() {
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights(){
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   #ifdef CUDA
     std::vector<std::type_index> formats ={format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()}; 
     this->RegisterFunction(formats, GetJaccardWeightCUDACSR);
@@ -638,7 +638,7 @@ preprocess::JaccardWeights<IDType, NNZType, ValueType, FeatureType>::
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(){
-    this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+    this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
     Register();
     this->params_ = std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
     this->pmap_.insert({get_feature_id_static(), this->params_});
@@ -657,7 +657,7 @@ template <typename IDType, typename NNZType, typename ValueType,
     typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
     const std::shared_ptr<DegreeDistributionParams> p) {
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = p;
   this->pmap_[get_feature_id_static()] = p;
@@ -738,7 +738,7 @@ FeatureType * DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDe
 
 template<typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(){
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = std::shared_ptr<DegreesParams>(new DegreesParams());
   this->pmap_.insert({get_feature_id_static(), this->params_});
@@ -804,7 +804,7 @@ IDType * Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(std::vector<Format *
 
 template<typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Degrees_DegreeDistribution(){
-  this->SetConverter(utils::converter::OrderTwoConverter<IDType, NNZType, ValueType>{});
+  this->SetConverter(utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction({CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});

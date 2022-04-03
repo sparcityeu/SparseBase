@@ -80,17 +80,17 @@ public:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class OrderTwoConverter : public ConverterImpl<OrderTwoConverter<IDType, NNZType, ValueType>>{
+class ConverterOrderTwo : public ConverterImpl<ConverterOrderTwo<IDType, NNZType, ValueType>>{
 public:
-  OrderTwoConverter();
+  ConverterOrderTwo();
   virtual Converter* Clone() const;
   virtual void Reset();
 };
 
 template <typename ValueType>
-class OrderOneConverter : public ConverterImpl<OrderOneConverter<ValueType>>{
+class ConverterOrderOne : public ConverterImpl<ConverterOrderOne<ValueType>>{
 public:
-  OrderOneConverter();
+  ConverterOrderOne();
   virtual Converter* Clone() const;
   virtual void Reset();
 };
