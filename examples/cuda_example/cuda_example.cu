@@ -55,8 +55,8 @@ int main(){
 
     format::CSR<int,int,int>* csr = new format::CSR<int,int,int>(5, 5, row_ptr, col, vals);
 
-    auto graph_converter = new utils::converter::OrderTwoConverter<int,int,int>();
-    auto array_converter = new utils::converter::OrderOneConverter<float>();
+    auto graph_converter = new utils::converter::ConverterOrderTwo<int,int,int>();
+    auto array_converter = new utils::converter::ConverterOrderOne<float>();
 
 
     preprocess::JaccardWeights<int, int, int, float> jac;

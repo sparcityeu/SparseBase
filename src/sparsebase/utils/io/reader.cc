@@ -211,7 +211,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType> *
 PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   COO<IDType, NNZType, ValueType>* coo = ReadCOO();
-  utils::converter::OrderTwoConverter<IDType,NNZType,ValueType> converter;
+  utils::converter::ConverterOrderTwo<IDType,NNZType,ValueType> converter;
   return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
 }
 
@@ -220,7 +220,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType> *
 PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   COO<IDType, NNZType, ValueType>* coo = ReadCOO();
-  utils::converter::OrderTwoConverter<IDType,NNZType,ValueType> converter;
+  utils::converter::ConverterOrderTwo<IDType,NNZType,ValueType> converter;
   return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
 }
 

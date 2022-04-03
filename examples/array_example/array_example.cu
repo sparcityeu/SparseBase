@@ -30,7 +30,7 @@ int main(){
 
     format::Array<int>* array = new format::Array<int>(6, vals);
 
-    auto converter = new utils::converter::OrderOneConverter<int>();
+    auto converter = new utils::converter::ConverterOrderOne<int>();
 
     auto cuda_array = converter->Convert<format::cuda::CUDAArray<int>>(array, &gpu_context);
 
