@@ -1,7 +1,7 @@
 #ifndef _SPARSEEXC_HPP
 #define _SPARSEEXC_HPP
 
-#include "config.h"
+#include "sparsebase/config.h"
 #include <exception>
 #include <iostream>
 

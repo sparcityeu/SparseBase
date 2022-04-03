@@ -1,6 +1,6 @@
 #ifndef _Reorder_HPP
 #define _Reorder_HPP
-#include "config.h"
+#include "sparsebase/config.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/object/object.h"
@@ -45,10 +45,10 @@ class ConverterMixin : public Parent {
   using Parent::Parent;
 
 protected:
-  std::unique_ptr<utils::Converter> sc_;
+  std::unique_ptr<utils::converter::Converter> sc_;
 
 public:
-  void SetConverter(const utils::Converter &new_sc);
+  void SetConverter(const utils::converter::Converter &new_sc);
   void ResetConverter();
 };
 
@@ -79,9 +79,9 @@ public:
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   ConversionMap _map_to_function;
-  std::tuple<Function, utils::ConversionSchemaConditional>
+  std::tuple<Function, utils::converter::ConversionSchemaConditional>
   GetFunction(std::vector<format::Format *>packed_sfs, Key key, ConversionMap map, std::vector<context::Context*>,
-              utils::Converter &sc);
+              utils::converter::Converter &sc);
   bool CheckIfKeyMatches(ConversionMap map, Key key, std::vector<format::Format*> packed_sfs, std::vector<context::Context*> contexts);
   template <typename F> std::vector<std::type_index> PackFormats(F sf);
   template <typename F, typename... SF>
@@ -89,10 +89,10 @@ protected:
   template <typename F> std::vector<F> PackSFS(F sf);
   template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
   template <typename F, typename... SF>
-  ReturnType Execute(PreprocessParams *params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
+  ReturnType Execute(PreprocessParams *params, utils::converter::Converter& sc, std::vector<context::Context*> contexts, F sf,
           SF... sfs);
   template <typename F, typename... SF>
-  std::tuple<std::vector<format::Format*>, ReturnType> CachedExecute(PreprocessParams *params, utils::Converter& sc, std::vector<context::Context*> contexts, F sf,
+  std::tuple<std::vector<format::Format*>, ReturnType> CachedExecute(PreprocessParams *params, utils::converter::Converter& sc, std::vector<context::Context*> contexts, F sf,
                                                                        SF... sfs);
 };
 
@@ -276,7 +276,7 @@ protected:
 
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
-#include "sparse_preprocess.cc"
+#include "sparsebase/preprocess/preprocess.cc"
 #ifdef CUDA
 #include "cuda/preprocess.cu"
 #endif

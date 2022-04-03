@@ -1,29 +1,31 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/cuda/format/format.cuh"
-#include "sparsebase/cuda/preprocess/preprocess.cuh"
+#include "sparsebase/format/cuda/format.cuh"
+#include "sparsebase/preprocess/cuda/preprocess.cuh"
 using namespace sparsebase;
 using namespace sparsebase::format;
 using namespace sparsebase::utils;
 namespace sparsebase{
 
 namespace preprocess {
-#define WARP_SIZE 32
-template <typename IDType, typename NNZType, typename ValueType,
-          typename FeatureType>
-format::Format *
-preprocess::JaccardWeights<IDType, NNZType, ValueType, FeatureType>::
-    GetJaccardWeightCUDACSR(std::vector<Format *> formats,
-                            PreprocessParams *params) {
-  auto cuda_csr = formats[0]->As<CUDACSR<IDType, NNZType, ValueType>>();
-  context::CUDAContext *gpu_context =
-      static_cast<context::CUDAContext *>(cuda_csr->get_context());
+namespace cuda{
+  template <typename IDType, typename NNZType, typename FeatureType>
+  __global__ void
+  jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
+                                        NNZType n, FeatureType *emetrics,
+                                        IDType SM_FAC);
+  template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+  format::cuda::CUDAArray<FeatureType>* RunJaccardKernel(format::cuda::CUDACSR<IDType, NNZType, ValueType>* cuda_csr){
+
+  context::cuda::CUDAContext *gpu_context =
+      static_cast<context::cuda::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(gpu_context->device_id);
 
   FeatureType *jaccard_weights;
   cudaMalloc(&jaccard_weights, cuda_csr->get_num_nnz() * sizeof(FeatureType));
 
 #define MAX_GRID_DIM 65535
+#define WARP_SIZE 32
   dim3 block(1, 1, 1);
   int g = 64;
   int a = 8;
@@ -42,15 +44,15 @@ preprocess::JaccardWeights<IDType, NNZType, ValueType, FeatureType>::
       (int)min((int)max((int)cuda_csr->get_dimensions()[0] / grid.y, (int)1),
                (int)MAX_GRID_DIM);
 
-  cuda::jac_binning_gpu_u_per_grid_bst_kernel<IDType, NNZType, FeatureType>
+  jac_binning_gpu_u_per_grid_bst_kernel<IDType, NNZType, FeatureType>
       <<<grid, block, 0>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(),
                            (NNZType)cuda_csr->get_dimensions()[0],
                            jaccard_weights, 0);
   cudaDeviceSynchronize();
-  auto array = new CUDAArray<FeatureType>(cuda_csr->get_num_nnz(),
+  auto array = new format::cuda::CUDAArray<FeatureType>(cuda_csr->get_num_nnz(),
                                           jaccard_weights, *gpu_context);
   return array;
-}
+  }
 #define FULL_MASK 0xffffffff
 __inline__ __device__ unsigned calculateMask(char length,
                                              unsigned long long thread_id) {
@@ -97,7 +99,6 @@ __inline__ __device__ int warpReduce(int val, unsigned int length,
   }
   return val;
 }
-namespace cuda {
 template <typename IDType, typename NNZType, typename FeatureType>
 __global__ void
 jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
@@ -153,10 +154,10 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
   }
 }
 
-}
 #if !defined(_HEADER_ONLY)
 #include "init/external/cuda/preprocess.inc"
 #endif
+}
 }
 
 }

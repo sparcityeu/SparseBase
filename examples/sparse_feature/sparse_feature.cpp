@@ -24,7 +24,7 @@ int main(int argc, char * argv[]){
   }
 
   string file_name = argv[1];
-  sparsebase::utils::MTXReader<vertex_type, edge_type, value_type> reader(file_name);
+  sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type> reader(file_name);
   COO<vertex_type, edge_type, value_type> * coo = reader.ReadCOO();
   context::CPUContext cpu_context;
 

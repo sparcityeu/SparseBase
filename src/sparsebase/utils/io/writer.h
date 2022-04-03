@@ -4,7 +4,7 @@
 #include "sparsebase/format/format.h"
 #include "reader.h"
 
-namespace sparsebase::utils {
+namespace sparsebase::utils::io {
 
 class Writer {
 public:

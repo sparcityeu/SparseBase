@@ -8,6 +8,8 @@
 
 namespace sparsebase{
 namespace context {
+namespace cuda{
+
 struct CUDAContext : ContextImplementation<CUDAContext> {
   int device_id;
   CUDAContext(int did);
@@ -15,4 +17,8 @@ struct CUDAContext : ContextImplementation<CUDAContext> {
 };
 }
 }
+}
+#ifdef _HEADER_ONLY
+#include "sparsebase/context/cuda/context.cu"
+#endif
 #endif // SPARSEBASE_PROJECT_CONTEXT_CUH

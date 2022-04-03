@@ -2,7 +2,7 @@
 #include "sparsebase/utils/exception.h"
 #include "sparse_file_format.h"
 
-namespace sparsebase::utils {
+namespace sparsebase::utils::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 BinaryWriterOrderTwo<IDType, NNZType, ValueType>::BinaryWriterOrderTwo(std::string filename)
