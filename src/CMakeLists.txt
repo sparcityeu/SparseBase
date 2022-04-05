@@ -59,6 +59,9 @@ target_include_directories(sparsebase INTERFACE
         $<INSTALL_INTERFACE:include>)
 endif()
 ### Installation plan
+set(SINGLE_HEADER_FILE 
+        sparsebase/sparsebase.h
+)
 set(CONTEXT_FILES 
         sparsebase/context/context.h
 )
@@ -109,6 +112,8 @@ set(CONVERTER_FILES ${CONVERTER_FILES}
         sparsebase/utils/converter/converter.cc
 )
 endif()
+install(FILES ${SINGLE_HEADER_FILE}
+        DESTINATION include)
 install(FILES ${CONTEXT_FILES}
         DESTINATION include/sparsebase/context/)
 install(FILES ${FORMAT_FILES}
