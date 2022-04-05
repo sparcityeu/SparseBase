@@ -2,10 +2,10 @@
 // Created by Amro on 3/31/2022.
 //
 
-#include "sparsebase/format/format.h"
 #ifndef SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 #define SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 
+#include "sparsebase/format/format.h"
 namespace sparsebase{
 namespace context {
 namespace cuda{

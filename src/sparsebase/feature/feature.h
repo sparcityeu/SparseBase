@@ -1,3 +1,6 @@
+#ifndef SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
+#define SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
+
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include <unordered_map>
@@ -5,9 +8,6 @@
 #include <vector>
 #include <set>
 #include <any>
-#ifndef SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
-#define SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
-
 
 namespace sparsebase::feature {
 
