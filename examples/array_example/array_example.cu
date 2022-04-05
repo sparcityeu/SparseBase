@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_converter.h"
-#include "sparsebase/cuda/format.cuh"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/format/cuda/format.cuh"
 
 using namespace std;
 using namespace sparsebase;
@@ -25,14 +25,14 @@ __global__ void print_array_cuda(int * vals, int n){
 int main(){
 
     int vals[6] = {10, 20, 30, 40, 50, 60};
-    context::CUDAContext gpu_context{0};
+    context::cuda::CUDAContext gpu_context{0};
     context::CPUContext cpu_context;
 
     format::Array<int>* array = new format::Array<int>(6, vals);
 
-    auto converter = new utils::OrderOneConverter<int>();
+    auto converter = new utils::converter::ConverterOrderOne<int>();
 
-    auto cuda_array = converter->Convert<format::CUDAArray<int>>(array, &gpu_context);
+    auto cuda_array = converter->Convert<format::cuda::CUDAArray<int>>(array, &gpu_context);
 
     print_array_cuda<<<1,1>>>(cuda_array->get_vals(), cuda_array->get_dimensions()[0]);
     cudaDeviceSynchronize();

@@ -44,8 +44,8 @@ jobs:
         ./custom_order/custom_order ./data/com-dblp.uedgelist
         ./degree_order/degree_order ./data/com-dblp.uedgelist
         ./rcm_order/rcm_order ./data/com-dblp.uedgelist
-        ./format_conversion/example_conversion
-        ./sparse_format/csr_coo ./data/ash958.mtx
+        ./format_conversion/format_conversion
+        ./csr_coo/csr_coo ./data/ash958.mtx
         ./sparse_reader/sparse_reader ./data/ash958.mtx
 
     - name: Run Tests

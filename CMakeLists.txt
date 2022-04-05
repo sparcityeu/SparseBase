@@ -11,9 +11,10 @@ option(RUN_TESTS "Enable running tests" OFF)
 option(_HEADER_ONLY "Use the library as a header only library?" OFF)
 option(CUDA "Enable CUDA" OFF)
 option(USE_PIGO "Use PIGO for parallel I/O" ON)
+option(BUILD_EXAMPLES "Build example codes" ON)
 set(ID_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing IDs")
 set(NNZ_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
-set(VALUE_TYPES "unsigned int" "int" "float" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(VALUE_TYPES "unsigned int" "int" "float" "double" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
 if(${CUDA})
@@ -61,7 +62,9 @@ if (MSVC)
     add_compile_options("/bigobj")
 endif()
 add_subdirectory(src)
-add_subdirectory(examples)
+if (${BUILD_EXAMPLES})
+    add_subdirectory(examples)
+endif()
 
 add_custom_target(format
     COMMAND bash ${CMAKE_SOURCE_DIR}/.format.bash ${CMAKE_SOURCE_DIR}

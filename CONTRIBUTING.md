@@ -51,7 +51,7 @@ More precisely, a typical contribution will follow this pattern:
     cd sparsebase
     git checkout develop
     git pull origin develop
-    git checkout -b feature/<new_feature>
+    git checkout -b format/<new_feature>
     ```
     
 3. After you're done working on your feature, make sure that it can be merged cleanly with `origin/develop` by pulling `origin/develop` back into your local machine and merging it with your feature branch:
@@ -59,7 +59,7 @@ More precisely, a typical contribution will follow this pattern:
     ```bash
     git checkout develop
     git pull origin develop
-    git checkout feature/<new_feature>
+    git checkout format/<new_feature>
     git merge develop
     # merge conflicts may arise
     ```
@@ -67,8 +67,8 @@ More precisely, a typical contribution will follow this pattern:
 4. Once your feature branch merges successfully with `develop`, push your branch to `origin`:
     
     ```bash
-    git checkout feature/<new_feature>
-    git push origin feature/<new_feature>
+    git checkout format/<new_feature>
+    git push origin format/<new_feature>
     ```
     
 5. On GitHub, create a pull request to merge your branch with `develop`; the base of the request will be `develop` and the merging branch will be `feature/<new_feature>`. You can use the same labels used for issues with pull requests. You can also link an issue to your pull request.
