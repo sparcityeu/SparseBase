@@ -1,5 +1,5 @@
-#ifndef _TENSOR_HPP
-#define _TENSOR_HPP
+#ifndef SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
+#define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
 
 #include "sparsebase/config.h"
 #include "sparsebase/utils/exception.h"
