@@ -99,14 +99,14 @@ class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
 	static FeatureType* FeatureCSR(std::vector<SparseFormat<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
 		auto csr = static_cast<sparsebase::CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		FeatureParams* params = static_cast<OptimalReorderParams*>(params);
-		// ... carry out format extraction
+		// ... carry out feature extraction
 		return feature;
 	}
 
 	static FeatureType* FeatureCOO(std::vector<SparseFormat<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
 		auto coo = static_cast<sparsebase::COO<IDType, NNZType, ValueType>(input_sf[0]);
 		FeatureParams* params = static_cast<FeatureParams*>(params);
-		// ... carry out format extraction
+		// ... carry out feature extraction
 		return feature;
 	}
 	// .......
