@@ -4,9 +4,11 @@
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
 #include <algorithm>
+#include <string>
 #include <cstring>
 #include <fstream>
 #include <vector>
+#include <utility>
 
 
 namespace sparsebase {
@@ -128,13 +130,13 @@ private:
   std::string filename_;
 };
 
-#ifdef _HEADER_ONLY
-#include "sparsebase/utils/io/reader.cc"
-#endif
 } // namespace utils
 
 } // namespace sparsebase
 
 }
+#ifdef _HEADER_ONLY
+#include "sparsebase/utils/io/reader.cc"
+#endif
 #endif // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
 

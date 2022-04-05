@@ -11,7 +11,7 @@
 #include <climits>
 #include <type_traits>
 
-namespace sparsebase::utils {
+namespace sparsebase::utils::io {
 
 #ifdef USE_PIGO
 

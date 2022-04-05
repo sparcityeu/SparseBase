@@ -1,3 +1,4 @@
+#include <string>
 #include "writer.h"
 #include "sparsebase/utils/exception.h"
 #include "sparse_file_format.h"

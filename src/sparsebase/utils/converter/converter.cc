@@ -3,7 +3,6 @@
 #include <iostream>
 #include <set>
 
-using namespace std;
 
 using namespace sparsebase::format;
 
@@ -195,8 +194,8 @@ Format *CooCsrFunctionConditional(Format *source, context::Context* context) {
   IDType *col = new IDType[m];
   ValueType *vals;
 
-  fill(row_ptr, row_ptr + n + 1, 0);
-  fill(col, col + m, 0);
+  std::fill(row_ptr, row_ptr + n + 1, 0);
+  std::fill(col, col + m, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -205,7 +204,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context* context) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo_col[i], coo_row[i]);
   }
-  sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
+  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     col[i] = edges[i].second;
@@ -225,7 +224,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context* context) {
     if (coo->get_vals() != nullptr) {
       vals = new ValueType[nnz];
       auto coo_vals = coo->get_vals();
-      fill(vals, vals + nnz, 0);
+      std::fill(vals, vals + nnz, 0);
       for (NNZType i = 0; i < nnz; i++) {
         vals[i] = coo_vals[i];
       }
@@ -261,8 +260,8 @@ Format *CooCsrFunction(Format *source) {
   IDType *col = new IDType[m];
   ValueType *vals;
 
-  fill(row_ptr, row_ptr + n + 1, 0);
-  fill(col, col + m, 0);
+  std::fill(row_ptr, row_ptr + n + 1, 0);
+  std::fill(col, col + m, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -271,7 +270,7 @@ Format *CooCsrFunction(Format *source) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo_col[i], coo_row[i]);
   }
-  sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
+  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     col[i] = edges[i].second;
@@ -291,7 +290,7 @@ Format *CooCsrFunction(Format *source) {
     if (coo->get_vals() != nullptr) {
       vals = new ValueType[nnz];
       auto coo_vals = coo->get_vals();
-      fill(vals, vals + nnz, 0);
+      std::fill(vals, vals + nnz, 0);
       for (NNZType i = 0; i < nnz; i++) {
         vals[i] = coo_vals[i];
       }
@@ -320,7 +319,7 @@ CooCsrMoveConditionalFunction(Format *source, context::Context*) {
   IDType *col = coo->release_col();
   ValueType *vals = coo->release_vals();
 
-  fill(row_ptr, row_ptr + n + 1, 0);
+  std::fill(row_ptr, row_ptr + n + 1, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -329,7 +328,7 @@ CooCsrMoveConditionalFunction(Format *source, context::Context*) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(col[i], coo_row[i]);
   }
-  sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
+  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     row_ptr[edges[i].first]++;
@@ -366,7 +365,7 @@ CooCsrMoveFunction(Format *source) {
   IDType *col = coo->release_col();
   ValueType *vals = coo->release_vals();
 
-  fill(row_ptr, row_ptr + n + 1, 0);
+  std::fill(row_ptr, row_ptr + n + 1, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -375,7 +374,7 @@ CooCsrMoveFunction(Format *source) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(col[i], coo_row[i]);
   }
-  sort(edges.begin(), edges.end(), less<std::pair<IDType, IDType>>());
+  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     row_ptr[edges[i].first]++;
@@ -504,10 +503,10 @@ void Converter::RegisterConditionalConversionFunction(
   }
 
   if ((*map)[from_type].count(to_type) == 0) {
-    (*map)[from_type][to_type].push_back(make_tuple<EdgeConditional, ConditionalConversionFunction>(std::forward<EdgeConditional>(edge_condition), std::forward<ConditionalConversionFunction>(conv_func)));
+    (*map)[from_type][to_type].push_back(std::make_tuple<EdgeConditional, ConditionalConversionFunction>(std::forward<EdgeConditional>(edge_condition), std::forward<ConditionalConversionFunction>(conv_func)));
     //(*map)[from_type].emplace(to_type, {make_tuple<EdgeConditional, ConversionFunction>(std::forward<EdgeConditional>(edge_condition), std::forward<ConversionFunction>(conv_func))});
   } else {
-    (*map)[from_type][to_type].push_back(make_tuple<EdgeConditional, ConditionalConversionFunction>(std::forward<EdgeConditional>(edge_condition), std::forward<ConditionalConversionFunction>(conv_func)));
+    (*map)[from_type][to_type].push_back(std::make_tuple<EdgeConditional, ConditionalConversionFunction>(std::forward<EdgeConditional>(edge_condition), std::forward<ConditionalConversionFunction>(conv_func)));
   }
 }
 
@@ -543,9 +542,9 @@ std::type_index from_type, context::Context* from_context,
   try {
   auto map = get_conversion_map(is_move_conversion);
     for (auto conditional_function_tuple : (*map)[from_type][to_type]){
-      auto conditional = get<0>(conditional_function_tuple);
+      auto conditional = std::get<0>(conditional_function_tuple);
       if (conditional(from_context, to_context)){
-        return get<1>(conditional_function_tuple);
+        return std::get<1>(conditional_function_tuple);
       }
     }
     throw ConversionException(from_type.name(), to_type.name());
@@ -563,14 +562,14 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
         for (auto to_context : to_contexts) {
-          if (get<0>(condition_function_pair)(from_context, to_context)) {
-            return make_tuple<bool, context::Context*>(true, std::forward<context::Context*>(to_context));
+          if (std::get<0>(condition_function_pair)(from_context, to_context)) {
+            return std::make_tuple<bool, context::Context*>(true, std::forward<context::Context*>(to_context));
           }
         }
       }
     }
   }
-  return make_tuple<bool, context::Context*>(false, nullptr);
+  return std::make_tuple<bool, context::Context*>(false, nullptr);
 }
 bool Converter::CanConvert(
 std::type_index from_type, context::Context* from_context, std::type_index to_type, context::Context* to_context,
@@ -579,7 +578,7 @@ std::type_index from_type, context::Context* from_context, std::type_index to_ty
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
       for (auto condition_function_pair : (*map)[from_type][to_type]){
-        if (get<0>(condition_function_pair)(from_context, to_context)){
+        if (std::get<0>(condition_function_pair)(from_context, to_context)){
           return true;
         }
       }

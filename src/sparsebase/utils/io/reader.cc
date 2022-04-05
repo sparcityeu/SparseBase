@@ -1,4 +1,4 @@
-#include "reader.h"
+#include "sparsebase/utils/io/reader.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
@@ -7,12 +7,13 @@
 #include <iostream>
 #include <limits>
 #include <vector>
-#include "sparse_file_format.h"
+#include <string>
+#include <utility>
+#include "sparsebase/utils/io/sparse_file_format.h"
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
 
-using namespace sparsebase::format;
 
 namespace sparsebase {
 
@@ -27,7 +28,7 @@ UedgelistReader<IDType, NNZType, ValueType>::UedgelistReader(
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-CSR<IDType, NNZType, ValueType> *
+format::CSR<IDType, NNZType, ValueType> *
 UedgelistReader<IDType, NNZType, ValueType>::ReadCSR() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
@@ -83,8 +84,8 @@ UedgelistReader<IDType, NNZType, ValueType>::ReadCSR() const {
       row_ptr[i] = row_ptr[i - 1];
     }
     row_ptr[0] = 0;
-    return new CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, nullptr,
-                                               kOwned);
+    return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, nullptr,
+                                               format::kOwned);
   } else {
     throw ReaderException("file does not exists!!");
   }
@@ -109,14 +110,14 @@ MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
     : filename_(filename), weighted_(weighted) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
-COO<IDType, NNZType, ValueType> *
+format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
   if(fin.is_open()){
     // Declare variables: (check the types here)
-    DimensionType M, N, L;
+    format::DimensionType M, N, L;
 
     // Ignore headers and comments:
     while (fin.peek() == '%')
@@ -139,7 +140,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         }
 
         auto coo =
-            new COO<IDType, NNZType, ValueType>(M, N, L, row, col, vals, kOwned);
+            new format::COO<IDType, NNZType, ValueType>(M, N, L, row, col, vals, format::kOwned);
         return coo;
       } else {
         // TODO: Add an exception class for this
@@ -154,7 +155,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
       }
 
       auto coo =
-          new COO<IDType, NNZType, ValueType>(M, N, L, row, col, nullptr, kOwned);
+          new format::COO<IDType, NNZType, ValueType>(M, N, L, row, col, nullptr, format::kOwned);
       return coo;
     }
   } else {
@@ -173,24 +174,24 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader
     : filename_(filename), weighted_(weighted), convert_to_zero_index_(convert_to_zero_index) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
-COO<IDType, NNZType, ValueType> *
+format::COO<IDType, NNZType, ValueType> *
 PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
-  COO<IDType, NNZType, ValueType> * coo;
+  format::COO<IDType, NNZType, ValueType> * coo;
 
   if(weighted_){
     pigo::COO<IDType, IDType, IDType*, false, false, false, true, ValueType, ValueType*>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
-    coo = new COO<IDType, NNZType, ValueType>(pigo_coo.n(), pigo_coo.m(),
+    coo = new format::COO<IDType, NNZType, ValueType>(pigo_coo.n(), pigo_coo.m(),
                                               pigo_coo.m(), pigo_coo.x(),
-                                              pigo_coo.y(), pigo_coo.w(), kOwned);
+                                              pigo_coo.y(), pigo_coo.w(), format::kOwned);
   }
   else {
     pigo::COO<IDType, IDType, IDType*, false, false, false, false, ValueType, ValueType*>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
-    coo = new COO<IDType, NNZType, ValueType>(pigo_coo.n(), pigo_coo.m(),
+    coo = new format::COO<IDType, NNZType, ValueType>(pigo_coo.n(), pigo_coo.m(),
                                               pigo_coo.m(), pigo_coo.x(),
-                                              pigo_coo.y(), pigo_coo.w(), kOwned);
+                                              pigo_coo.y(), pigo_coo.w(), format::kOwned);
   }
 
   if(convert_to_zero_index_){
@@ -208,32 +209,32 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-CSR<IDType, NNZType, ValueType> *
+format::CSR<IDType, NNZType, ValueType> *
 PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
-  COO<IDType, NNZType, ValueType>* coo = ReadCOO();
+  format::COO<IDType, NNZType, ValueType>* coo = ReadCOO();
   utils::converter::ConverterOrderTwo<IDType,NNZType,ValueType> converter;
-  return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
+  return converter.template Convert<format::CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
 }
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-CSR<IDType, NNZType, ValueType> *
+format::CSR<IDType, NNZType, ValueType> *
 PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
-  COO<IDType, NNZType, ValueType>* coo = ReadCOO();
+  format::COO<IDType, NNZType, ValueType>* coo = ReadCOO();
   utils::converter::ConverterOrderTwo<IDType,NNZType,ValueType> converter;
-  return converter.template Convert<CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
+  return converter.template Convert<format::CSR<IDType,NNZType,ValueType>>(coo, coo->get_context(), true);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-COO<IDType, NNZType, ValueType> *
+format::COO<IDType, NNZType, ValueType> *
 PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
   if(weighted_){
     pigo::COO<IDType, IDType, IDType*, false, false, false, true, ValueType, ValueType*> coo(filename_, pigo::EDGE_LIST);
-    return new COO<IDType, NNZType, ValueType>(coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), kOwned);
+    return new format::COO<IDType, NNZType, ValueType>(coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
   }
   else {
     pigo::COO<IDType, IDType, IDType*, false, false, false, false, ValueType, ValueType*> coo(filename_, pigo::EDGE_LIST);
-    return new COO<IDType, NNZType, ValueType>(coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), kOwned);
+    return new format::COO<IDType, NNZType, ValueType>(coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
   }
 }
 
@@ -256,7 +257,7 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::BinaryReaderOrderTwo(std::stri
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-CSR<IDType, NNZType, ValueType> *
+format::CSR<IDType, NNZType, ValueType> *
 BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
@@ -277,12 +278,12 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
     sbff.template GetArray("vals", vals);
   }
 
-  return new CSR<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], row_ptr, col, vals, kOwned);
+  return new format::CSR<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], row_ptr, col, vals, format::kOwned);
 }
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-COO<IDType, NNZType, ValueType> *
+format::COO<IDType, NNZType, ValueType> *
 BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
@@ -303,24 +304,24 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
     sbff.template GetArray("vals", vals);
   }
 
-  return new COO<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], dimensions[1], row, col, vals, kOwned);
+  return new format::COO<IDType, NNZType, ValueType>(dimensions[0], dimensions[1], dimensions[1], row, col, vals, format::kOwned);
 }
 
 template <typename T>
 BinaryReaderOrderOne<T>::BinaryReaderOrderOne(std::string filename) : filename_(filename) {}
 
-template <typename T> Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
+template <typename T> format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
   if(sbff.get_name() != "array"){
     throw utils::ReaderException("SBFF file is not in Array format");
   }
 
-  DimensionType size = sbff.get_dimensions()[0];
+  format::DimensionType size = sbff.get_dimensions()[0];
   T* arr;
   sbff.template GetArray("array", arr);
 
-  return new Array<T>(size, arr, kOwned);
+  return new format::Array<T>(size, arr, format::kOwned);
 }
 
 #if !defined(_HEADER_ONLY)
