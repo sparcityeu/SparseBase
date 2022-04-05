@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_converter.h"
-#include "sparsebase/sparse_preprocess.h"
-#include "sparsebase/cuda/format.cuh"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/format/cuda/format.cuh"
 
 using namespace std;
 using namespace sparsebase;
@@ -50,13 +50,13 @@ int main(){
     int row_ptr[6] = {0, 2, 4, 6, 6, 6};
     int col[6] = {1, 3, 0, 2, 0, 1};
     int vals[6] = {10, 20, 30, 40, 50, 60};
-    context::CUDAContext gpu_context{0};
+    context::cuda::CUDAContext gpu_context{0};
     context::CPUContext cpu_context;
 
     format::CSR<int,int,int>* csr = new format::CSR<int,int,int>(5, 5, row_ptr, col, vals);
 
-    auto graph_converter = new utils::OrderTwoConverter<int,int,int>();
-    auto array_converter = new utils::OrderOneConverter<float>();
+    auto graph_converter = new utils::converter::ConverterOrderTwo<int,int,int>();
+    auto array_converter = new utils::converter::ConverterOrderOne<float>();
 
 
     preprocess::JaccardWeights<int, int, int, float> jac;
@@ -66,13 +66,13 @@ int main(){
         auto cpu_array = array_converter->Convert<format::Array<float>>(array, &cpu_context);
         print_array(cpu_array->get_vals(), cpu_array->get_num_nnz());
     }
-    if (array->get_context_type() == context::CUDAContext::get_context_type()){
-        auto gpu_array = array_converter->Convert<format::CUDAArray<float>>(array, &gpu_context);
+    if (array->get_context_type() == context::cuda::CUDAContext::get_context_type()){
+        auto gpu_array = array_converter->Convert<format::cuda::CUDAArray<float>>(array, &gpu_context);
         print_array_cuda<<<1,1>>>(gpu_array->get_vals(), gpu_array->get_num_nnz());
     }
 
 
-    auto cuda_csr = graph_converter->Convert<format::CUDACSR<int, int, int>>(csr, &gpu_context);
+    auto cuda_csr = graph_converter->Convert<format::cuda::CUDACSR<int, int, int>>(csr, &gpu_context);
 
     print_csr_cuda<<<1,1>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(), cuda_csr->get_dimensions()[0]);
     cudaDeviceSynchronize();

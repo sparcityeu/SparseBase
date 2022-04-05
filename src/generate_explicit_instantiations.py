@@ -99,15 +99,15 @@ class preprocess_cuda_init(explicit_initialization):
     ## Prints explicit template instantiations for the preprocess file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        order_two_functions = [('JaccardWeights', ['GetJaccardWeightCUDACSR'])]
+        #order_two_functions = [('JaccardWeights', ['GetJaccardWeightCUDACSR'])]
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
                     for float_type in float_types:
-                        for prep_class, funcs in order_two_functions: 
-                            for function in funcs:
-                                types = "<"+vertex_type+", "+nnz_type+", "+value_type+", "+float_type+">"
-                                self.out_stream.write("template sparsebase::format::Format * preprocess::"+prep_class+types+'::'+function+"(std::vector<sparsebase::format::Format *> formats, sparsebase::preprocess::PreprocessParams * params);\n")
+                        #for prep_class, funcs in order_two_functions: 
+                        #    for function in funcs:
+                                types = "<"+vertex_type+", "+nnz_type+", "+value_type+">"
+                                self.out_stream.write("template format::cuda::CUDAArray<"+float_type+">*  RunJaccardKernel(format::cuda::CUDACSR"+types+"*);\n")
 
 class format_cuda_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
@@ -152,11 +152,11 @@ class converter_init(explicit_initialization):
     ## Prints explicit template instantiations for the converter file
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
-        single_order_classes = ['OrderOneConverter']
+        single_order_classes = ['ConverterOrderOne']
         for value_type in value_types:
             for c in single_order_classes:
                 self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
-        print_implementations(['OrderTwoConverter'], self.out_stream)
+        print_implementations(['ConverterOrderTwo'], self.out_stream)
 
 class object_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
