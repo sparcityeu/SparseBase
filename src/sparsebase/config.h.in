@@ -1,3 +1,8 @@
+#ifndef SPARSEBASE_CONFIG_H_
+#define SPARSEBASE_CONFIG_H_
+
 #cmakedefine _HEADER_ONLY
 #cmakedefine CUDA
 #cmakedefine USE_PIGO
+
+#endif
