@@ -1,0 +1,77 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Docs & Release
+
+# Controls when the workflow will run
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Install System Dependencies
+        run: | 
+          sudo apt update
+          sudo apt -y install python3 python3-pip doxygen build-essential 
+          sudo apt -y install latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+      
+      - name: Install Python Dependencies
+        working-directory: docs/
+        run: python3 -m pip install -r requirements.txt
+      
+      - name: Build Docs
+        working-directory: docs/
+        run: | 
+          make html
+          make latexpdf
+        
+      - name: Bypass Jekyll
+        run: touch docs/_build/html/.nojekyll
+        
+      - name: Deploy To Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4.2.2
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: docs/_build/html
+
+      - name: Build Header Only Release
+        run: |
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D_HEADER_ONLY=ON -DBUILD_EXAMPLES=OFF
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          mkdir -p ${{github.workspace}}/sparsebase_install
+          cmake --install ${{github.workspace}}/build --prefix ${{github.workspace}}/sparsebase_install      
+      
+
+      - name: Create Zip File
+        working-directory: ${{github.workspace}}/sparsebase_install
+        run: zip -r sparsebase_header_only.zip .
+
+      - name: Rename the Documentation
+        run: mv docs/_build/latex/sparsebase.pdf docs/_build/latex/sparsebase_docs.pdf
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: | 
+            LICENSE
+            docs/_build/latex/*.pdf
+            ${{github.workspace}}/sparsebase_install/*.zip
