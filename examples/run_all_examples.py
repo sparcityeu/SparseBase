@@ -20,7 +20,8 @@ examples = [
 
 
 def run_example(exe_filename, data_filename):
-    exe_path = os.path.join(exe_filename, exe_filename)
+    dir_path = os.path.dirname(__file__)
+    exe_path = os.path.join(dir_path, exe_filename, exe_filename)
 
     if not os.path.exists(exe_path):
         print("Example is not built, skipping: ", exe_filename)
@@ -29,7 +30,7 @@ def run_example(exe_filename, data_filename):
     cmd = [exe_path]
 
     if data_filename is not None:
-        data_path = os.path.join("data", data_filename)
+        data_path = os.path.join(dir_path, "data", data_filename)
         cmd.append(data_path)
 
     result = sp.run(cmd)
