@@ -31,11 +31,6 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Copy Data & Script
-      run: |
-        cp -r ${{github.workspace}}/examples/data ${{github.workspace}}/build/examples/
-        cp ${{github.workspace}}/examples/run_all_examples.py ${{github.workspace}}/build/examples/
-
     - name: Run Examples
       working-directory: ${{github.workspace}}/build/examples
       run: python3 run_all_examples.py
