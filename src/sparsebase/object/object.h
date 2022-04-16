@@ -20,7 +20,8 @@ public:
 template <typename IDType, typename NNZType, typename ValueType>
 class AbstractObject : public Object {
 protected:
-  std::unique_ptr<format::Format, std::function<void(format::Format *)>> connectivity_;
+  std::unique_ptr<format::Format, std::function<void(format::Format *)>>
+      connectivity_;
 
 public:
   virtual ~AbstractObject();
@@ -42,8 +43,10 @@ public:
   Graph(Graph<VertexID, NumEdges, Weight> &&);
   Graph<VertexID, NumEdges, Weight> &
   operator=(const Graph<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCSR(const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCOO(const utils::io::ReadsCOO<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCSR(
+      const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCOO(
+      const utils::io::ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
   void ReadConnectivityFromEdgelistToCSR(std::string filename);
   void InitializeInfoFromConnection();

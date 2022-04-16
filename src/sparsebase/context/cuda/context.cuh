@@ -6,18 +6,18 @@
 #define SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 
 #include "sparsebase/format/format.h"
-namespace sparsebase{
+namespace sparsebase {
 namespace context {
-namespace cuda{
+namespace cuda {
 
 struct CUDAContext : ContextImplementation<CUDAContext> {
   int device_id;
   CUDAContext(int did);
   virtual bool IsEquivalent(Context *) const;
 };
-}
-}
-}
+} // namespace cuda
+} // namespace context
+} // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/context/cuda/context.cu"
 #endif
