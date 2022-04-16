@@ -1,3 +1,11 @@
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/run_all_examples.py
+    ${CMAKE_CURRENT_BINARY_DIR}/run_all_examples.py
+    COPYONLY
+)
+
+file(COPY ${CMAKE_SOURCE_DIR}/examples/data DESTINATION ${CMAKE_BINARY_DIR}/examples/)
+
 if (${CUDA})
     add_subdirectory(cuda_example)
     add_subdirectory(array_example)
