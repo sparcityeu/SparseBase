@@ -57,22 +57,27 @@ public:
 
 class FeatureException : public Exception {
   std::string msg_;
+
 public:
-  FeatureException(const std::string feature, const std::string extractor) : msg_("ERROR! " + feature + " is not registered in " + extractor + "!"){}
+  FeatureException(const std::string feature, const std::string extractor)
+      : msg_("ERROR! " + feature + " is not registered in " + extractor + "!") {
+  }
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
 class FeatureParamsException : public Exception {
   std::string msg_;
+
 public:
-  FeatureParamsException(const std::string feature, const std::string type) : msg_("ERROR! " + feature + " do not store params for " + type + "!"){}
+  FeatureParamsException(const std::string feature, const std::string type)
+      : msg_("ERROR! " + feature + " do not store params for " + type + "!") {}
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
 class CUDADeviceException : public Exception {
   std::string msg_;
 
-  public:
+public:
   CUDADeviceException(const int available_devices, const int requested_device) {
     msg_ = "Attempting to use CUDA device " + std::to_string(requested_device) +
            " when only " + std::to_string(available_devices) +

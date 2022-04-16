@@ -2,8 +2,8 @@
 #define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
 
 #include "sparsebase/config.h"
-#include "sparsebase/utils/exception.h"
 #include "sparsebase/context/context.h"
+#include "sparsebase/utils/exception.h"
 #include <algorithm>
 #include <cstring>
 #include <fstream>
@@ -53,7 +53,7 @@ public:
   virtual std::vector<DimensionType> get_dimensions() const = 0;
   virtual DimensionType get_num_nnz() const = 0;
   virtual DimensionType get_order() const = 0;
-  virtual context::Context* get_context() const = 0;
+  virtual context::Context *get_context() const = 0;
   virtual std::type_index get_context_type() const = 0;
 
   template <typename T> T *As() {
@@ -66,21 +66,13 @@ public:
 
 template <typename FormatType> class FormatImplementation : public Format {
 public:
-  virtual std::vector<DimensionType> get_dimensions() const{
+  virtual std::vector<DimensionType> get_dimensions() const {
     return dimension_;
   }
-  virtual DimensionType get_num_nnz() const{
-    return nnz_;
-  }
-  virtual DimensionType get_order() const{
-    return order_;
-  }
-  virtual context::Context* get_context() const{
-    return context_.get();
-  }
-  std::type_index get_format_id() final {
-    return typeid(FormatType);
-  }
+  virtual DimensionType get_num_nnz() const { return nnz_; }
+  virtual DimensionType get_order() const { return order_; }
+  virtual context::Context *get_context() const { return context_.get(); }
+  std::type_index get_format_id() final { return typeid(FormatType); }
   static std::type_index get_format_id_static() { return typeid(FormatType); }
 
   virtual std::type_index get_context_type() const {
@@ -133,8 +125,7 @@ public:
   Array(DimensionType nnz, ValueType *row_ptr, Ownership own = kNotOwned);
   Array(const Array<ValueType> &);
   Array(Array<ValueType> &&);
-  Array<ValueType> &
-  operator=(const Array<ValueType> &);
+  Array<ValueType> &operator=(const Array<ValueType> &);
   Format *Clone() const override;
   virtual ~Array();
   ValueType *get_vals() const;
