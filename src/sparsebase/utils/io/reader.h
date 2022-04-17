@@ -4,12 +4,11 @@
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
 #include <algorithm>
-#include <string>
 #include <cstring>
 #include <fstream>
-#include <vector>
+#include <string>
 #include <utility>
-
+#include <vector>
 
 namespace sparsebase {
 
@@ -17,19 +16,19 @@ namespace utils {
 
 namespace io {
 
-
 class Reader {
 public:
   virtual ~Reader() = default;
 };
 
-
-template <typename IDType, typename NNZType, typename ValueType> class ReadsCSR {
+template <typename IDType, typename NNZType, typename ValueType>
+class ReadsCSR {
 public:
   virtual format::CSR<IDType, NNZType, ValueType> *ReadCSR() const = 0;
 };
 
-template <typename IDType, typename NNZType, typename ValueType> class ReadsCOO {
+template <typename IDType, typename NNZType, typename ValueType>
+class ReadsCOO {
 public:
   virtual format::COO<IDType, NNZType, ValueType> *ReadCOO() const = 0;
 };
@@ -55,8 +54,7 @@ private:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class MTXReader : public Reader,
-                  public ReadsCOO<IDType, NNZType, ValueType>{
+class MTXReader : public Reader, public ReadsCOO<IDType, NNZType, ValueType> {
 public:
   explicit MTXReader(std::string filename, bool weighted = false);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
@@ -70,10 +68,11 @@ private:
 #ifdef USE_PIGO
 template <typename IDType, typename NNZType, typename ValueType>
 class PigoMTXReader : public Reader,
-                  public ReadsCOO<IDType, NNZType, ValueType>,
+                      public ReadsCOO<IDType, NNZType, ValueType>,
                       public ReadsCSR<IDType, NNZType, ValueType> {
 public:
-  PigoMTXReader(std::string filename, bool weighted = false, bool convert_to_zero_index = true);
+  PigoMTXReader(std::string filename, bool weighted = false,
+                bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
   virtual ~PigoMTXReader() = default;
@@ -87,8 +86,8 @@ private:
 // Add ValueTypeed option with contexpr
 template <typename IDType, typename NNZType, typename ValueType>
 class PigoEdgeListReader : public Reader,
-                        public ReadsCSR<IDType, NNZType, ValueType>,
-                           public ReadsCOO<IDType, NNZType, ValueType>{
+                           public ReadsCSR<IDType, NNZType, ValueType>,
+                           public ReadsCOO<IDType, NNZType, ValueType> {
 public:
   PigoEdgeListReader(std::string filename, bool weighted = false);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
@@ -102,12 +101,10 @@ private:
 
 #endif
 
-
-
 template <typename IDType, typename NNZType, typename ValueType>
 class BinaryReaderOrderTwo : public Reader,
-  public ReadsCSR<IDType, NNZType, ValueType>,
-  public ReadsCOO<IDType, NNZType, ValueType> {
+                             public ReadsCSR<IDType, NNZType, ValueType>,
+                             public ReadsCOO<IDType, NNZType, ValueType> {
 public:
   explicit BinaryReaderOrderTwo(std::string filename);
   ~BinaryReaderOrderTwo() override = default;
@@ -119,24 +116,22 @@ private:
 };
 
 template <typename T>
-class BinaryReaderOrderOne : public Reader,
-                             public ReadsArray<T> {
+class BinaryReaderOrderOne : public Reader, public ReadsArray<T> {
 public:
   explicit BinaryReaderOrderOne(std::string filename);
   ~BinaryReaderOrderOne() override = default;
   format::Array<T> *ReadArray() const;
-  
+
 private:
   std::string filename_;
 };
 
+} // namespace io
+
 } // namespace utils
 
 } // namespace sparsebase
-
-}
 #ifdef _HEADER_ONLY
 #include "sparsebase/utils/io/reader.cc"
 #endif
 #endif // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
-

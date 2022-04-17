@@ -6,9 +6,9 @@
 #endif
 
 #include "sparsebase/external/json/json.hpp"
+#include <climits>
 #include <iostream>
 #include <string>
-#include <climits>
 #include <type_traits>
 
 namespace sparsebase::utils::io {
@@ -20,12 +20,9 @@ private:
   pigo::WFile file;
 
 public:
+  SbffWriteFile(std::string filename, size_t size) : file(filename, size) {}
 
-  SbffWriteFile(std::string filename, size_t size): file(filename, size){}
-
-  void Write(char* data, size_t size){
-    file.parallel_write(data, size);
-  }
+  void Write(char *data, size_t size) { file.parallel_write(data, size); }
 };
 
 class SbffReadOnlyFile {
@@ -33,11 +30,9 @@ private:
   pigo::ROFile file;
 
 public:
-  explicit SbffReadOnlyFile(std::string filename): file(filename){}
+  explicit SbffReadOnlyFile(std::string filename) : file(filename) {}
 
-  void Read(char* buffer, size_t size){
-    file.parallel_read(buffer, size);
-  }
+  void Read(char *buffer, size_t size) { file.parallel_read(buffer, size); }
 };
 
 #else
@@ -47,16 +42,11 @@ private:
   std::ofstream ofs;
 
 public:
-
-  SbffWriteFile(std::string filename, size_t size){
+  SbffWriteFile(std::string filename, size_t size) {
     ofs.open(filename, std::ios::out | std::ios::binary);
   }
-  ~SbffWriteFile(){
-    ofs.close();
-  }
-  void Write(char* data, size_t size){
-    ofs.write(data, size);
-  }
+  ~SbffWriteFile() { ofs.close(); }
+  void Write(char *data, size_t size) { ofs.write(data, size); }
 };
 
 class SbffReadOnlyFile {
@@ -64,15 +54,11 @@ private:
   std::ifstream ifs;
 
 public:
-  explicit SbffReadOnlyFile(std::string filename){
-    ifs.open(filename,  std::ios::in | std::ios::binary);
+  explicit SbffReadOnlyFile(std::string filename) {
+    ifs.open(filename, std::ios::in | std::ios::binary);
   }
-  ~SbffReadOnlyFile(){
-    ifs.close();
-  }
-  void Read(char* buffer, size_t size){
-    ifs.read(buffer, size);
-  }
+  ~SbffReadOnlyFile() { ifs.close(); }
+  void Read(char *buffer, size_t size) { ifs.read(buffer, size); }
 };
 
 #endif
@@ -129,8 +115,6 @@ std::vector<char> HeaderToBytes(nlohmann::json &header) {
   return header_bytes;
 }
 
-
-
 class SbffArray {
 private:
   std::string name;
@@ -182,7 +166,7 @@ public:
 
       sbas_arr.data = new char[sbas_arr.array_size * sbas_arr.type_size];
       file.Read((char *)sbas_arr.data,
-                         sbas_arr.array_size * sbas_arr.type_size);
+                sbas_arr.array_size * sbas_arr.type_size);
 
       return sbas_arr;
 
@@ -216,7 +200,7 @@ private:
 public:
   explicit SbffObject(std::string name) : name(name) {}
 
-  void AddDimensions(const std::vector<int> & dims){
+  void AddDimensions(const std::vector<int> &dims) {
     dimensions.insert(dimensions.end(), dims.begin(), dims.end());
   }
 
@@ -275,8 +259,6 @@ public:
     }
   }
 
-
-
   void WriteObject(std::string filename) {
     SbffWriteFile file(filename, total_size);
     WriteObject(file);
@@ -324,20 +306,12 @@ public:
     return ReadObject(file);
   }
 
+  std::string get_name() { return name; }
 
+  size_t get_array_count() { return arrays.size(); }
 
-  std::string get_name(){
-    return name;
-  }
-
-  size_t get_array_count(){
-    return arrays.size();
-  }
-
-  std::vector<int> get_dimensions(){
-    return dimensions;
-  }
+  std::vector<int> get_dimensions() { return dimensions; }
 };
-}
+} // namespace sparsebase::utils::io
 
 #endif // SPARSEBASE_SPARSEBASE_UTILS_IO_SPARSE_FILE_FORMAT_H_

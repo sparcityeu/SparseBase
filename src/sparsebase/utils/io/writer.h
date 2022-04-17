@@ -1,9 +1,9 @@
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 
-#include <string>
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/io/reader.h"
+#include <string>
 
 namespace sparsebase::utils::io {
 
@@ -51,11 +51,10 @@ private:
   std::string filename_;
 };
 
-}
+} // namespace sparsebase::utils::io
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/utils/io/writer.cc"
 #endif
-
 
 #endif // SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
