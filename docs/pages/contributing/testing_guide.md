@@ -131,9 +131,9 @@ the [FAQ](https://google.github.io/googletest/faq.html#CtorVsSetUp).
 
 ## Adding tests
 
-For `SparseBase`, we will have the test files following the file structure of the library itself. Tests for a module in file `src/path/to/file/<file_name>.cpp`, the tests of that file will be located in `tests/suites/path/to/file/<file_name>_tests.cpp`. Each test file will be a separate `CTest` test.
+Test files follow the same structure as the source files of the library itself. Tests for code in the file `src/path/to/file/<file_name>.cc` are written in the file `tests/suites/path/to/file/<file_name>_tests.cpp`. Each test file will be a separate `CTest` test.
 
-When adding a test for some module, first check to see if that module has a test file or not. If it does, add your tests there. Otherwise, create a new test file and modify the `CMakeLists.txt` files as shown in the next section.
+When adding a test for source code in some file, first check to see if that source code file has a matching test file. If it does, add your tests to that test file. Otherwise, create a new test file as shown in the next section and add your tests to that file.
 
 ### Adding a new test file
 
@@ -141,7 +141,7 @@ The following are the steps needed to add a new test file.
 
 #### 1. Determine the directory to which the test file is to be added and check if it exists.
 
-The directory of a test file must match the directory of the source file it is written for relative to the `src` root level directory. However, that folder will be under the `tests/suites` folder.  
+The directory of a test file must match the directory of the source file it is written for, with the `src/` root level directory being replaced by `tests/suites`.  
 
 For example, if the file you are writing tests for is `src/sparsebase/preprocess/preprocess.cc`, then the directory of the test file is `tests/suites/sparsebase/preprocess/`. 
 
@@ -157,7 +157,7 @@ The `CMakeLists.txt` file will be located in the same directory of the test file
 
 After creating the `CMakeLists.txt` file, you must add it to the root level tests `CMakeLists.txt` file. At the end fo the `tests/CMakeLists.txt` file, add the directory you had just created as a subdirectory. 
 
-For example, if the directory created for the test file is `tests/suites/sparsebase/preprocess`, then we would create the empty file `tests/suites/sparsebase/preprocess/CMakeLists.txt`, then we would add the following line to the end of the file `tests/CMakeLists.txt`:
+For example, if the directory created for the test file is `tests/suites/sparsebase/preprocess`, then you would create the empty file `tests/suites/sparsebase/preprocess/CMakeLists.txt` and add the following line to the end of the file `tests/CMakeLists.txt`:
 ```CMake
 add_subdirectory(sparsebase/preprocess)
 ```
@@ -183,9 +183,9 @@ You must start this file by including the GTest header, the `sparsebase/config.h
 ```
 
 Your tests will follow these headers.
-#### 4. Add an executable target and a test command and to the 'CMakeLists.txt' file in the test file directory.
+#### 4. Add an executable target and a test command to the 'CMakeLists.txt' file in the test file directory.
 
-Each test file will be compiled into an executable target, and each test executable will be added as a CTest test. The name of the CTest test of a file its path relative to the `tests/suites` directory, followed by its name, all of which delimited by the underscore character. The name of the executable of a test file will be the name of its CTest test with the extension `.test`. For instance, the test file `tests/suites/src/sparsebase/preprocess/preprocess_test.cc` will have the CTest test name:
+Each test file will be compiled into an executable target, and each test executable will be added as a CTest test. The name of the CTest test of a test file is its path relative to the `tests/suites` directory, followed by its name, with the file delimiter being the underscore character. The name of the executable of a test file will be the name of its CTest test with the extension `.test`. For instance, the test file `tests/suites/src/sparsebase/preprocess/preprocess_test.cc` will have the CTest test name:
 
 ```CMake
 sparsebase_preprocess_preprocess_tests
@@ -197,7 +197,7 @@ And will have the executable name:
 sparsebase_preprocess_preprocess_tests
 ```
 
-To add the executable and CTest to the build process, add the following lines to the `CMakeLists.txt` file in the test file's directory:
+To add the executable and CTest test to the build system generation process, add the following lines to the `CMakeLists.txt` file in the test file's directory:
 ```CMake
 # Add the executable target
 add_executable(<test_executable_name> <test_source_file>)
@@ -221,14 +221,15 @@ add_test(NAME sparsebase_preprocess_preprocess_test COMMAND sparsebase_preproces
 
 ### What about CMake options and flags?
 `SparseBase` has many compilation options ranging from including different architectures (e.g. `CUDA`) to different I/O library support (e.g. `PIGO`). We incorporate these flags into testing in the same way we do in the compilation of the library: 
-- If the entirety of a test file is conditional on an option, we make its exeutable and test decleration conditional on that option at the `CMakeLists.txt` level.
+- If the entirety of a test file is conditional on an option, we make its executable and test decleration conditional on that option at the `CMakeLists.txt` level.
 - If some tests within a test file are conditional on an option, we use preprocessor directives inside the test source code to control these tests.
 
+The following subsections elaborate on these two approaches.
 #### Conditional compilation
 
-If there is a certain test file that is conditional on a CMake option, then you can simply sorround the executable and test declerations of that test (shown in step 4 of "Adding a new test file") with an `if()` call contingent on that option.  
+If there is a certain test file that is conditional on a CMake option, then you can simply surround the executable and test declerations of that test (shown in step 4 of "Adding a new test file") with an `if()` call contingent on that option.  
 
-For example, the test file `tests/suites/sparsebase/preprocess/cuda/preprocess_tests.cu` should only be added when the library is compiled with `CUDA`. Here is how we define its executable and tests in the file `tests/suites/sparsebase/preprocess/cuda/CMakeLists.txt`:
+For example, the test file `tests/suites/sparsebase/preprocess/cuda/preprocess_tests.cu` should only be added when the library is compiled with the `CUDA` option enabled. Here is how we define its executable and tests in the file `tests/suites/sparsebase/preprocess/cuda/CMakeLists.txt`:
 ```CMake
 if(${CUDA})
     add_executable(sparsebase__preprocess_cuda_preprocess_test.test preprocess_test.cu)
@@ -241,7 +242,7 @@ endif()
 
 #### 2. Conditional tests within a test file
 
-If a certain code (or test) within a test file is conditional on a CMake option, you can sorround that code with a preprocessor if statement. Note: make sure that the test file includes the `sparsebase/config.h` file since that is where all the CMake flags are defined.
+If a certain code (or test) within a test file is conditional on a CMake option, you can surround that code with a preprocessor if statement. Note: make sure that the test file includes the `sparsebase/config.h` file since that is where all the CMake flags are defined.
 
 For example, if a certain test is only required when the library is compiled with `CUDA` enabled, we can define that test in the code as follows:
 
