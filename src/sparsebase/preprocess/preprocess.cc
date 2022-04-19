@@ -341,13 +341,13 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
-  IDType *inv_sorted = new IDType[n];
-  for (IDType i = 0; i < n; i++)
-    inv_sorted[sorted[i]] = i;
+  //IDType *inv_sorted = new IDType[n];
+  //for (IDType i = 0; i < n; i++)
+  //  inv_sorted[sorted[i]] = i;
   delete[] mr;
   delete[] counts;
-  delete[] sorted;
-  return inv_sorted;
+  return sorted;
+  //return inv_sorted;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
