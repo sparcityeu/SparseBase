@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "sparsebase/config.h"
 
 #include <iostream>
 #include "sparsebase/format/format.h"
