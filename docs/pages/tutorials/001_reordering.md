@@ -9,7 +9,7 @@ In this tutorial, you will use SparseBase to do the following:
 
 1. Read a graph from an unordered edge list file.
 2. Reorder the vertices of the graph according to their degree.
-3. Restructure the graph according to the generated ordering .
+3. Restructure the graph according to the generated ordering.
 
 ## Preliminaries
 Start by navigating to the directory `tutorials/001_reordering/start_here/`. Open the file `tutorial_001.cc` using a code editor and follow along with the tutorial. The file contains some boilerplate code that includes the appropriate headers, creates some type definitions, and uses the `sparsebase` namespace.
@@ -23,9 +23,9 @@ Begin your main program by reading the unordered edge list file into a `CSR` obj
 
 ```c++
 // The name of the matrix-market file in disk
-std::string filename = "chesapeake.edgelist"; 
+std::string filename(argv[1]); 
 // Create a reader object and set the name of the file it will read
-utils::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
+utils::io::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
 // Read the file into a CSR format
 format::CSR<IDType, NNZType, ValueType>* csr = reader.ReadCSR();
 ```
@@ -34,11 +34,12 @@ The three templated type parameters of the `CSR` and `UedgelistReader` objects d
 
 You will find that these three template types are used by most classes of the library.
 
-To get a feel of the graph, print some statistics about graph you read:
+To get a feel for the graph you just read, print some of its statistics:
 
 ```c++
 std::cout << "Original graph:" << std::endl; 
-// the dimensions of the matrix represented by `csr`, i.e, the adjacency matrix of the graph
+// get a vector representing the dimensions of the matrix represented by `csr`, 
+// i.e, the adjacency matrix of the graph
 std::cout << "Number of vertices: " << csr->get_dimensions()[0] << std::endl;
 // Number of non-zeros in the matrix represented by `csr`
 std::cout << "Number of edges: " << csr->get_num_nnz() << std::endl;
@@ -57,10 +58,14 @@ Next, create a degree reordering of the graph:
 // Create a DegreeReorder object and tell it to sort in descending order
 bool ascending = false;
 preprocess::DegreeReorder<IDType, NNZType, ValueType> reorderer(ascending);
-// Create a reordering of `coo`
-IDType* new_order = reorderer.GetReorder(csr);
+// Create a CPU context
+context::CPUContext cpu_context;
+// Create a reordering of `csr` using one of the passed contexts 
+// (in this case, only one is passed)
+IDType* new_order = reorderer.GetReorder(csr, {&cpu_context});
 ```
-The array `new_order` is an array containing the inverse permutation of all the vertices of `csr`. In other words, `new_order[i] = j` indicates that the vertex `i` in `csr` at location `j` after reordering.
+
+The array `new_order` is an array containing the inverse permutation of all the vertices of `csr`. In other words, `new_order[i] = j` indicates that the vertex `i` in `csr` is at location `j` after reordering.
 
 ### 3. Use the reordering to restructure the graph
 Finally, use the reordering array `new_order` to restrucuture the graph and apply the new order to it.
@@ -69,8 +74,8 @@ Finally, use the reordering array `new_order` to restrucuture the graph and appl
 // Transform object takes the reordering as an argument
 preprocess::Transform<IDType, NNZType, ValueType> transform(new_order);
 // The transformer will use `new_order` to restructure `csr`
-format::Format* format = transform.GetTransformation(csr);
-// The abstract `Format` pointer is casted into a `CSR` pointer
+format::Format* format = transform.GetTransformation(csr, {&cpu_context});
+// The abstract `Format` pointer is cast into a `CSR` pointer
 format::CSR<IDType, NNZType, ValueType>* new_csr = 
   format->As<format::CSR<IDType, NNZType, ValueType>>();
 ```
@@ -95,7 +100,7 @@ Compile the code using `g++`. We assume SparseBase has already been installed in
 
 While in the directory `tutorials/001_reordering/start_here`, execute the following commands:
 ```bash
-g++ -std=c++17 tutorial_001.cpp -lsparsebase -o reorder.out
+g++ -std=c++17 tutorial_001.cc -lsparsebase -lomp -std=c++17 -o reorder.out
 ./reorder.out ../chesapeake.edgelist
 ```
 
