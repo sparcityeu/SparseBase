@@ -43,7 +43,7 @@ class UedgelistReader : public Reader,
                         public ReadsCSR<IDType, NNZType, ValueType> {
 public:
   explicit UedgelistReader(std::string filename, bool weighted = false);
-  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   ~UedgelistReader() override;
 
 private:
@@ -57,7 +57,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class MTXReader : public Reader, public ReadsCOO<IDType, NNZType, ValueType> {
 public:
   explicit MTXReader(std::string filename, bool weighted = false);
-  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   ~MTXReader() override;
 
 private:
@@ -73,8 +73,8 @@ class PigoMTXReader : public Reader,
 public:
   PigoMTXReader(std::string filename, bool weighted = false,
                 bool convert_to_zero_index = true);
-  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
-  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   virtual ~PigoMTXReader() = default;
 
 private:
@@ -90,8 +90,8 @@ class PigoEdgeListReader : public Reader,
                            public ReadsCOO<IDType, NNZType, ValueType> {
 public:
   PigoEdgeListReader(std::string filename, bool weighted = false);
-  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
-  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   virtual ~PigoEdgeListReader() = default;
 
 private:
@@ -108,8 +108,8 @@ class BinaryReaderOrderTwo : public Reader,
 public:
   explicit BinaryReaderOrderTwo(std::string filename);
   ~BinaryReaderOrderTwo() override = default;
-  format::COO<IDType, NNZType, ValueType> *ReadCOO() const;
-  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const;
+  format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
+  format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
 
 private:
   std::string filename_;
@@ -120,7 +120,7 @@ class BinaryReaderOrderOne : public Reader, public ReadsArray<T> {
 public:
   explicit BinaryReaderOrderOne(std::string filename);
   ~BinaryReaderOrderOne() override = default;
-  format::Array<T> *ReadArray() const;
+  format::Array<T> *ReadArray() const override;
 
 private:
   std::string filename_;
