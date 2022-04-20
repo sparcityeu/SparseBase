@@ -164,9 +164,9 @@ add_subdirectory(sparsebase/preprocess)
 
 #### 3. Create the tests source file.
 
-The file you create will be located in the test directory determined in step 1. It will have the same name as the source file that it is testing, with the addition of the suffix `_test`.
+The file you create will be located in the test directory determined in step 1. It will have the same name as the source file that it is testing, with the addition of the suffix `_tests`.
 
-For example, if the source file you are testing is `sparsebase/src/sparsebase/preprocess/preprocess.cc`, you will create the file `tests/suites/src/sparsebase/preprocess/preprocess_test.cc`. 
+For example, if the source file you are testing is `sparsebase/src/sparsebase/preprocess/preprocess.cc`, you will create the file `tests/suites/src/sparsebase/preprocess/preprocess_tests.cc`. 
 
 You must start this file by including the GTest header, the `sparsebase/config.h` header, and then whichever headers you need for the test. For example:
 
@@ -185,7 +185,7 @@ You must start this file by including the GTest header, the `sparsebase/config.h
 Your tests will follow these headers.
 #### 4. Add an executable target and a test command to the 'CMakeLists.txt' file in the test file directory.
 
-Each test file will be compiled into an executable target, and each test executable will be added as a CTest test. The name of the CTest test of a test file is its path relative to the `tests/suites` directory, followed by its name, with the file delimiter being the underscore character. The name of the executable of a test file will be the name of its CTest test with the extension `.test`. For instance, the test file `tests/suites/src/sparsebase/preprocess/preprocess_test.cc` will have the CTest test name:
+Each test file will be compiled into an executable target, and each test executable will be added as a CTest test. The name of the CTest test of a test file is its path relative to the `tests/suites` directory, followed by its name, with the file delimiter being the underscore character. The name of the executable of a test file will be the name of its CTest test with the extension `.test`. For instance, the test file `tests/suites/src/sparsebase/preprocess/preprocess_tests.cc` will have the CTest test name:
 
 ```CMake
 sparsebase_preprocess_preprocess_tests
@@ -208,15 +208,15 @@ target_link_libraries(<test_executable_name> gtest gtest_main)
 add_test(NAME <CTest_test_name> COMMAND <test_executable_name>)
 ```
 
-For example, given that the test file we are adding is `tests/suites/src/sparsebase/preprocess/preprocess_test.cc`, we would add the following lines to the file `tests/suites/src/sparsebase/preprocess/CMakeLists.txt`:
+For example, given that the test file we are adding is `tests/suites/src/sparsebase/preprocess/preprocess_tests.cc`, we would add the following lines to the file `tests/suites/src/sparsebase/preprocess/CMakeLists.txt`:
 ```CMake
 # Add the executable target
-add_executable(sparsebase_preprocess_preprocess_test.test preprocess_test.cc)
-target_link_libraries(sparsebase_preprocess_preprocess_test.test sparsebase)
-target_link_libraries(sparsebase_preprocess_preprocess_test.test gtest gtest_main)
+add_executable(sparsebase_preprocess_preprocess_tests.test preprocess_tests.cc)
+target_link_libraries(sparsebase_preprocess_preprocess_tests.test sparsebase)
+target_link_libraries(sparsebase_preprocess_preprocess_tests.test gtest gtest_main)
 
 # Add the CTest test 
-add_test(NAME sparsebase_preprocess_preprocess_test COMMAND sparsebase_preprocess_preprocess_test.test)
+add_test(NAME sparsebase_preprocess_preprocess_tests COMMAND sparsebase_preprocess_preprocess_tests.test)
 ```
 
 ### What about CMake options and flags?
@@ -232,11 +232,11 @@ If there is a certain test file that is conditional on a CMake option, then you 
 For example, the test file `tests/suites/sparsebase/preprocess/cuda/preprocess_tests.cu` should only be added when the library is compiled with the `CUDA` option enabled. Here is how we define its executable and tests in the file `tests/suites/sparsebase/preprocess/cuda/CMakeLists.txt`:
 ```CMake
 if(${CUDA})
-    add_executable(sparsebase__preprocess_cuda_preprocess_test.test preprocess_test.cu)
-    target_link_libraries(sparsebase_preprocess_cuda_preprocess_test.test sparsebase)
-    target_link_libraries(sparsebase_preprocess_cuda_preprocess_test.test gtest gtest_main)
+    add_executable(sparsebase__preprocess_cuda_preprocess_tests.test preprocess_tests.cu)
+    target_link_libraries(sparsebase_preprocess_cuda_preprocess_tests.test sparsebase)
+    target_link_libraries(sparsebase_preprocess_cuda_preprocess_tests.test gtest gtest_main)
 
-    add_test(NAME sparsebase_preprocess_preprocess_cuda_test COMMAND sparsebase_preprocess_preprocess_cuda_test.test)
+    add_test(NAME sparsebase_preprocess_preprocess_cuda_tests COMMAND sparsebase_preprocess_preprocess_cuda_tests.test)
 endif()
 ```
 
