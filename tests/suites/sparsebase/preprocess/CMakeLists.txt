@@ -1,6 +1,6 @@
 
-add_executable(preprocess_preprocess_tests.test preprocess_tests.cc)
-target_link_libraries(preprocess_preprocess_tests.test sparsebase)
-target_link_libraries(preprocess_preprocess_tests.test gtest gtest_main)
+add_executable(sparsebase_preprocess_preprocess_tests.test preprocess_tests.cc)
+target_link_libraries(sparsebase_preprocess_preprocess_tests.test sparsebase)
+target_link_libraries(sparsebase_preprocess_preprocess_tests.test gtest gtest_main)
 
-add_test(NAME preprocess_preprocess_tests.test COMMAND preprocess_preprocess_tests.test)
+add_test(NAME sparsebase_preprocess_preprocess_tests.test COMMAND sparsebase_preprocess_preprocess_tests.test)
