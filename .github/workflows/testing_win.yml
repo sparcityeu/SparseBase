@@ -1,0 +1,50 @@
+name: Testing Windows
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: MSYS2 Setup
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: git base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja
+
+      - name: Configure CMake
+        working-directory: ${{github.workspace}}
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DRUN_TESTS=ON
+
+      - name: Build
+        working-directory: ${{github.workspace}}
+        # Build your program with the given configuration
+        run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+      
