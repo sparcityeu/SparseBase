@@ -94,7 +94,6 @@ bool FunctionMatcherMixin<
   } else {
     match = false;
   }
-  std::cout << "Match :" << match << std::endl;
   return match;
 }
 //! Return the correct function for the operation and a conversion schema to
@@ -322,7 +321,6 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   CSR<IDType, NNZType, ValueType> *csr =
       formats[0]->As<CSR<IDType, NNZType, ValueType>>();
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
-  std::cout << cast_params->hyperparameter;
   IDType n = csr->get_dimensions()[0];
   IDType *counts = new IDType[n]();
   auto row_ptr = csr->get_row_ptr();
@@ -341,13 +339,9 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
-  IDType *inv_sorted = new IDType[n];
-  for (IDType i = 0; i < n; i++)
-    inv_sorted[sorted[i]] = i;
   delete[] mr;
   delete[] counts;
-  delete[] sorted;
-  return inv_sorted;
+  return sorted;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
