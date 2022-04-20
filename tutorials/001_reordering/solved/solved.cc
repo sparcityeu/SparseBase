@@ -1,6 +1,7 @@
-#include "sparsebase/sparse_format.h"
-#include "sparsebase/sparse_reader.h"
-#include "sparsebase/sparse_preprocess.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/context/context.h"
 #include <string>
 #include <iostream>
 
@@ -9,16 +10,21 @@ typedef unsigned int NNZType;
 typedef unsigned int ValueType;
 
 using namespace sparsebase;
-int main(){
+int main(int argc, char * argv[]){
+    if (argc < 2){
+        std::cout << "Please enter the name of the edgelist file as a parameter\n";
+        return 1;
+    }
     // The name of the matrix-market file in disk
-    std::string filename = "chesapeake.edgelist"; 
+    std::string filename(argv[1]); 
     // Create a reader object and set the name of the file it will read
-    utils::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
+    utils::io::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
     // Read the file into a CSR format
     format::CSR<IDType, NNZType, ValueType>* csr = reader.ReadCSR();
 
     std::cout << "Original graph:" << std::endl; 
-    // the dimensions of the matrix represented by `csr`, i.e, the adjacency matrix of the graph
+    // get a vector representing the dimensions of the matrix represented by `csr`, 
+    // i.e, the adjacency matrix of the graph
     std::cout << "Number of vertices: " << csr->get_dimensions()[0] << std::endl;
     // Number of non-zeros in the matrix represented by `csr`
     std::cout << "Number of edges: " << csr->get_num_nnz() << std::endl;
@@ -33,13 +39,16 @@ int main(){
     // Create a DegreeReorder object and tell it to sort in descending order
     bool ascending = false;
     preprocess::DegreeReorder<IDType, NNZType, ValueType> reorderer(ascending);
-    // Create a reordering of `coo`
-    IDType* new_order = reorderer.GetReorder(csr);
+    // Create a CPU context
+    context::CPUContext cpu_context;
+    // Create a reordering of `csr` using one of the passed contexts 
+    // (in this case, only one is passed)
+    IDType* new_order = reorderer.GetReorder(csr, {&cpu_context});
 
     // Transform object takes the reordering as an argument
     preprocess::Transform<IDType, NNZType, ValueType> transform(new_order);
     // The transformer will use `new_order` to restructure `csr`
-    format::Format* format = transform.GetTransformation(csr);
+    format::Format* format = transform.GetTransformation(csr, {&cpu_context});
     // The abstract `Format` pointer is casted into a `CSR` pointer
     format::CSR<IDType, NNZType, ValueType>* new_csr = 
       format->As<format::CSR<IDType, NNZType, ValueType>>();
