@@ -1,2 +1,2 @@
-add_executable(custom_converter ${CMAKE_CURRENT_SOURCE_DIR}/custom_converter.cpp)
+add_executable(custom_converter ${CMAKE_CURRENT_SOURCE_DIR}/custom_converter.cc)
 target_link_libraries(custom_converter sparsebase)
