@@ -16,12 +16,20 @@ TEST(ConverterOrderTwo, CSRToCOO){
   sparsebase::format::CSR<int,int,int> csr(4,4,csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
   sparsebase::utils::converter::ConverterOrderTwo<int,int,int> converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
-  auto coo = converterOrderTwo.Convert<sparsebase::format::COO<int,int,int>>(&csr, &cpu_context);
+  auto coo = converterOrderTwo.Convert<sparsebase::format::COO<int,int,int>>(&csr, &cpu_context, false);
 
   for(int i=0; i<4; i++){
     EXPECT_EQ(coo->get_row()[i], coo_row[i]);
     EXPECT_EQ(coo->get_col()[i], coo_col[i]);
     EXPECT_EQ(coo->get_vals()[i], coo_vals[i]);
+  }
+
+  auto coo2 = converterOrderTwo.Convert<sparsebase::format::COO<int,int,int>>(&csr, &cpu_context, true);
+
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(coo2->get_row()[i], coo_row[i]);
+    EXPECT_EQ(coo2->get_col()[i], coo_col[i]);
+    EXPECT_EQ(coo2->get_vals()[i], coo_vals[i]);
   }
 }
 
@@ -29,7 +37,7 @@ TEST(ConverterOrderTwo, COOToCSR){
   sparsebase::format::COO<int,int,int> coo(4,4,4,coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
   sparsebase::utils::converter::ConverterOrderTwo<int,int,int> converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
-  auto csr = converterOrderTwo.Convert<sparsebase::format::CSR<int,int,int>>(&coo, &cpu_context);
+  auto csr = converterOrderTwo.Convert<sparsebase::format::CSR<int,int,int>>(&coo, &cpu_context, false);
 
   for(int i=0; i<4; i++){
     EXPECT_EQ(csr->get_col()[i], csr_col[i]);
@@ -39,6 +47,18 @@ TEST(ConverterOrderTwo, COOToCSR){
   for(int i=0; i<5; i++){
     EXPECT_EQ(csr->get_row_ptr()[i], csr_row_ptr[i]);
   }
+
+  auto csr2 = converterOrderTwo.Convert<sparsebase::format::CSR<int,int,int>>(&coo, &cpu_context, true);
+
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(csr2->get_col()[i], csr_col[i]);
+    EXPECT_EQ(csr2->get_vals()[i], csr_vals[i]);
+  }
+
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(csr2->get_row_ptr()[i], csr_row_ptr[i]);
+  }
+
 }
 
 TEST(ConverterOrderTwo, COOToCOO){
