@@ -198,7 +198,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   std::vector<std::pair<IDType, IDType>> edges;
   edges.reserve(nnz);
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(coo_col[i], coo_row[i]);
+    edges.emplace_back(coo_row[i], coo_col[i]);
   }
   sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
@@ -264,7 +264,7 @@ Format *CooCsrFunction(Format *source) {
   std::vector<std::pair<IDType, IDType>> edges;
   edges.reserve(nnz);
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(coo_col[i], coo_row[i]);
+    edges.emplace_back(coo_row[i], coo_col[i]);
   }
   sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
@@ -321,7 +321,7 @@ Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
   std::vector<std::pair<IDType, IDType>> edges;
   edges.reserve(nnz);
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(col[i], coo_row[i]);
+    edges.emplace_back(coo_row[i], col[i]);
   }
   sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
@@ -366,7 +366,7 @@ Format *CooCsrMoveFunction(Format *source) {
   std::vector<std::pair<IDType, IDType>> edges;
   edges.reserve(nnz);
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(col[i], coo_row[i]);
+    edges.emplace_back(coo_row[i], col[i]);
   }
   sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
