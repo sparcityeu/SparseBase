@@ -190,7 +190,7 @@ class reader_init(explicit_initialization):
         self.out_stream.write('// '+self.source_filename+'\n')
         for value_type in value_types:
             self.out_stream.write("template class BinaryReaderOrderOne<" + value_type + ">;\n")
-        print_implementations(['MTXReader', 'UedgelistReader', 'BinaryReaderOrderTwo'],
+        print_implementations(['MTXReader', 'EdgeListReader', 'BinaryReaderOrderTwo'],
                               self.out_stream)
 
 class writer_init(explicit_initialization):
@@ -202,7 +202,7 @@ class writer_init(explicit_initialization):
         self.out_stream.write('// '+self.source_filename+'\n')
         for value_type in value_types:
             self.out_stream.write("template class BinaryWriterOrderOne<" + value_type + ">;\n")
-        print_implementations(['BinaryWriterOrderOne', 'BinaryWriterOrderTwo'], self.out_stream)
+        print_implementations(['BinaryWriterOrderTwo'], self.out_stream)
 
 
 class pigo_reader_init(explicit_initialization):

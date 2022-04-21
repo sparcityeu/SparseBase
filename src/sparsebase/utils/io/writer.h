@@ -1,11 +1,16 @@
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 
+#include <string>
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/io/reader.h"
 #include <string>
 
-namespace sparsebase::utils::io {
+namespace sparsebase {
+
+namespace utils {
+
+namespace io {
 
 class Writer {
 public:
@@ -23,7 +28,7 @@ class WritesCOO {
 };
 
 template <typename T> class WritesArray {
-  virtual void WriteArray(format::Array<T> arr) const = 0;
+  virtual void WriteArray(format::Array<T>* arr) const = 0;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -51,10 +56,15 @@ private:
   std::string filename_;
 };
 
-} // namespace sparsebase::utils::io
+} // namespace io
+
+} // namespace utils
+
+} // namespace sparsebase
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/utils/io/writer.cc"
 #endif
+
 
 #endif // SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
