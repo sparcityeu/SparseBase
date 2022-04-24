@@ -131,6 +131,7 @@ class preprocess_init(explicit_initialization):
     def run(self):
         self.out_stream.write('// '+self.source_filename+'\n')
         self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+ 'Format*'+", "+"ConverterMixin<PreprocessType>>;\n")
+        self.out_stream.write(PREFIX+"ConverterMixin<PreprocessType>;\n")
         for vertex_type in vertex_types:
             for preprocess_return_type in [vertex_type+'*']:
                 self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<PreprocessType>>;\n")

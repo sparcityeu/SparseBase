@@ -69,6 +69,7 @@ public:
   void SetConverter(const utils::converter::Converter &new_sc);
   //! Resets the concrete converter pointed at by `sc_` to its initial state
   void ResetConverter();
+  //! Returns a unique pointer at a copy of the current Converter pointed to by `new_sc`
   std::unique_ptr<utils::converter::Converter> GetConverter();
 };
 
