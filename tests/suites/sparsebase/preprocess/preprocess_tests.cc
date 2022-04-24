@@ -5,6 +5,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/utils/converter/converter.h"
 #include <typeindex>
 #include <typeinfo>
 #include <vector>
@@ -22,6 +23,12 @@ TEST(TypeIndexHash, Basic){
     hash+= tid.hash_code();
   }
   EXPECT_EQ(hash, hasher(vec));
+}
+TEST(ConverterMixin, Basics){
+  sparsebase::preprocess::ConverterMixin<sparsebase::preprocess::PreprocessType> instance;
+  sparsebase::utils::converter::ConverterOrderOne<int> converter;
+  // Check setting a converter
+  ASSERT_EQ(instance.GetConverter(), nullptr);
 }
 TEST(DegreeReorder, AscendingOrder){
   int xadj[4] = {0, 2, 3, 4};

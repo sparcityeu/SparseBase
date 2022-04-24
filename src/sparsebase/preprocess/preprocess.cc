@@ -67,6 +67,11 @@ void ConverterMixin<Parent>::SetConverter(
 template <class Parent> void ConverterMixin<Parent>::ResetConverter() {
   sc_->Reset();
 }
+template <class Parent>
+std::unique_ptr<utils::converter::Converter> ConverterMixin<Parent>::GetConverter() {
+  if (sc_ == nullptr) return nullptr;
+  return std::unique_ptr<utils::converter::Converter>(sc_->Clone());
+}
 template <typename IDType, typename NNZType, typename ValueType>
 ReorderPreprocessType<IDType, NNZType, ValueType>::~ReorderPreprocessType() =
     default;
