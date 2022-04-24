@@ -24,12 +24,28 @@ TEST(TypeIndexHash, Basic){
   }
   EXPECT_EQ(hash, hasher(vec));
 }
+
 TEST(ConverterMixin, Basics){
   sparsebase::preprocess::ConverterMixin<sparsebase::preprocess::PreprocessType> instance;
-  sparsebase::utils::converter::ConverterOrderOne<int> converter;
-  // Check setting a converter
+  //! Check getting an empty converter
   ASSERT_EQ(instance.GetConverter(), nullptr);
+
+  //! Check setting a converter
+  sparsebase::utils::converter::ConverterOrderOne<int> converter;
+  instance.SetConverter(converter);
+  // Same type
+  ASSERT_NE(dynamic_cast<sparsebase::utils::converter::ConverterOrderOne<int>*>(instance.GetConverter().get()), nullptr);
+  // Different object
+  ASSERT_NE(instance.GetConverter().get(), &converter);
+
+  //! Check resetting a converter
+  instance.ResetConverter();
+  // Same type
+  ASSERT_NE(dynamic_cast<sparsebase::utils::converter::ConverterOrderOne<int>*>(instance.GetConverter().get()), nullptr);
+  // Different object
+  ASSERT_NE(instance.GetConverter().get(), &converter);
 }
+
 TEST(DegreeReorder, AscendingOrder){
   int xadj[4] = {0, 2, 3, 4};
   int adj[4] = {1,2,0,0};
@@ -40,7 +56,6 @@ TEST(DegreeReorder, AscendingOrder){
   for (int i =0; i< 2; i++){
     auto u = order[i];
     auto v = order[i+1];
-    std::cout << u << " " << v << std::endl;
     EXPECT_GE(xadj[v+1]-xadj[v], xadj[u+1]-xadj[u]);
   }
 }
