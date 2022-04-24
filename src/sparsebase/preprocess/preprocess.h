@@ -20,9 +20,14 @@ namespace sparsebase::preprocess {
 struct TypeIndexVectorHash {
   std::size_t operator()(const std::vector<std::type_index> &vf) const;
 };
+
+//! An abstraction for parameter objects used for preprocessing
 struct PreprocessParams {};
+
+//! A generic type for all preprocessing types
 class PreprocessType {
 protected:
+  //! Polymorphic pointer at a PreprocessParams object
   std::unique_ptr<PreprocessParams> params_;
 };
 
@@ -44,15 +49,27 @@ protected:
   std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
 };
 
+//! A mixin class that attaches to its templated parameter a sparsebase::utils::converter::Converter
+/*!
+ *
+ * @tparam Parent any class to which a converter should be added
+ */
 template <class Parent> class ConverterMixin : public Parent {
   using Parent::Parent;
 
 protected:
+  //! A unique pointer at an abstract sparsebase::utils::converter::Converter object
   std::unique_ptr<utils::converter::Converter> sc_;
 
 public:
+  //! Set the data member `sc_` to be a clone of `new_sc`
+  /*!
+   * @param new_sc a reference to a Converter object
+   */
   void SetConverter(const utils::converter::Converter &new_sc);
+  //! Resets the concrete converter pointed at by `sc_` to its initial state
   void ResetConverter();
+  std::unique_ptr<utils::converter::Converter> GetConverter();
 };
 
 template <typename ReturnType>
