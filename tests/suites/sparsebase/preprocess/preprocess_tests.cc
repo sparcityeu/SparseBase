@@ -5,6 +5,24 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include <typeindex>
+#include <typeinfo>
+#include <vector>
+TEST(TypeIndexHash, Basic){
+  sparsebase::preprocess::TypeIndexVectorHash hasher;
+  // Empty vector
+  std::vector<std::type_index> vec;
+  EXPECT_EQ(hasher(vec), 0);
+  // Vector with values
+  vec.push_back(typeid(int));
+  vec.push_back(typeid(double));
+  vec.push_back(typeid(float));
+  size_t hash = 0; 
+  for (auto tid : vec){
+    hash+= tid.hash_code();
+  }
+  EXPECT_EQ(hash, hasher(vec));
+}
 TEST(DegreeReorder, AscendingOrder){
   int xadj[4] = {0, 2, 3, 4};
   int adj[4] = {1,2,0,0};
