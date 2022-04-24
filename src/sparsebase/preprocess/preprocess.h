@@ -16,6 +16,7 @@
 
 namespace sparsebase::preprocess {
 
+//! Functor used for hashing vectors of type_index values.
 struct TypeIndexVectorHash {
   std::size_t operator()(const std::vector<std::type_index> &vf) const;
 };
