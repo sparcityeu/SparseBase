@@ -133,9 +133,12 @@ class preprocess_init(explicit_initialization):
         self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+ 'Format*'+", "+"ConverterMixin<PreprocessType>>;\n")
         self.out_stream.write(PREFIX+"ConverterMixin<PreprocessType>;\n")
         for vertex_type in vertex_types:
-            for preprocess_return_type in [vertex_type+'*']:
+            for preprocess_return_type in [vertex_type+'*', vertex_type]:
                 self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<PreprocessType>>;\n")
                 self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<ExtractableType>>;\n")
+        for vertex_type in vertex_types:
+            self.out_stream.write(PREFIX+"GenericPreprocessType<"+vertex_type+">;\n")
+            self.out_stream.write(PREFIX+"ReorderPreprocessType<"+vertex_type+">;\n")
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
@@ -143,7 +146,7 @@ class preprocess_init(explicit_initialization):
                         self.out_stream.write(PREFIX+"DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"Degrees_DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"JaccardWeights<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-        print_implementations(['ReorderPreprocessType', 'GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform', 'Degrees'], self.out_stream)
+        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform', 'Degrees'], self.out_stream)
 
 class converter_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):

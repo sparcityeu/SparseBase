@@ -59,7 +59,7 @@ template <class Parent> class ConverterMixin : public Parent {
 
 protected:
   //! A unique pointer at an abstract sparsebase::utils::converter::Converter object
-  std::unique_ptr<utils::converter::Converter> sc_;
+  std::unique_ptr<utils::converter::Converter> sc_ = nullptr;
 
 public:
   //! Set the data member `sc_` to be a clone of `new_sc`
@@ -73,10 +73,25 @@ public:
   std::unique_ptr<utils::converter::Converter> GetConverter();
 };
 
+//! Template for implementation functions of all preprocesses
+/*!
+  \tparam ReturnType the return type of preprocessing functions
+  \param formats a vector of pointers at format::Format objects
+  \param params a polymorphic pointer at a PreprocessParams object
+*/
 template <typename ReturnType>
-using PreprocessFunction = ReturnType (*)(std::vector<format::Format *>,
-                                          PreprocessParams *);
+using PreprocessFunction = ReturnType (*)(std::vector<format::Format *> formats,
+                                          PreprocessParams * params);
 
+//! A mixin that attaches the functionality of matching keys to functions
+/*!
+  This mixin attaches the functionality of matching keys (which, by default, are vectors of type indices) to function pointer objects (by default, their signature is PreprocessFunction). 
+  \tparam ReturnType the return type that will be returned by the preprocessing function implementations
+  \tparam Function the function signatures that keys will map to. Default is sparsebase::preprocess::PreprocessFunction
+  \tparam Key the type of the keys used to access function in the inner maps. Default is std::vector<std::type_index>>
+  \tparam KeyHash the hash function used to has keys.
+  \tparam KeyEqualTo the function used to evaluate equality of keys
+*/
 template <typename ReturnType,
           class PreprocessingImpl = ConverterMixin<PreprocessType>,
           typename Function = PreprocessFunction<ReturnType>,
@@ -85,39 +100,110 @@ template <typename ReturnType,
           typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class FunctionMatcherMixin : public PreprocessingImpl {
 
+  //! Defines a map between `Key` objects and function pointer `Function` objects.
   typedef std::unordered_map<Key, Function, KeyHash, KeyEqualTo> ConversionMap;
 
 public:
+  //! Register a key to a function as long as that key isn't already registered 
+  /*!
+    \param key_of_function key used in the map
+    \param func_ptr function pointer being registered
+    \return True if the function was registered successfully and false otherwise
+  */
   bool RegisterFunctionNoOverride(const Key &key_of_function,
                                   const Function &func_ptr);
+  //! Register a key to a function and overrides previous registered function (if any) 
+  /*!
+    \param key_of_function key used in the map
+    \param func_ptr function pointer being registered
+  */
   void RegisterFunction(const Key &key_of_function, const Function &func_ptr);
+  //! Unregister a key from the map if the key was registered to a function
+  /*!
+    \param key_of_function key to unregister
+    \return true if the key was unregistered successfully, and false if it wasn't already registerd to something.
+  */
   bool UnregisterFunction(const Key &key_of_function);
 
 protected:
   using PreprocessingImpl::PreprocessingImpl;
+  //! Map between `Key` objects and function pointer `Function` objects.
   ConversionMap _map_to_function;
+  //! Determines the exact Function and format conversions needed to carry out preprocessing 
+  /*!
+   * \param packed_formats a vector of the input Format* needed for conversion.
+   * \param key the Key representing the input formats.
+   * \param map the map between Keys and Functions used to find the needed function
+   * \param contexts Contexts available for execution of the preprocessing
+   * \param converter Converter object to be used for determining available Format conversions
+   * \return a tuple of a) the Function to use,  and b) a utils::converter::ConversionSchemaConditional indicating conversions to be done on input Format objects 
+  */
   std::tuple<Function, utils::converter::ConversionSchemaConditional>
-  GetFunction(std::vector<format::Format *> packed_sfs, Key key,
-              ConversionMap map, std::vector<context::Context *>,
-              utils::converter::Converter &sc);
+  GetFunction(std::vector<format::Format *> packed_formats, Key key,
+              ConversionMap map, std::vector<context::Context *> contexts,
+              utils::converter::Converter *converter);
+  //! Check if a given Key has a function that can be used without any conversions.
+  /*!
+   * Given a conversion map, available execution contexts, input formats, and a key, determines whether the key has a corresponding function and that the available contexts allow that function to be executed.
+   * \param map the map between Keys and Functions used to find the needed function
+   * \param key the Key representing the input formats.
+   * \param packed_formats a vector of the input Format* needed for conversion.
+   * \param contexts Contexts available for execution of the preprocessing
+   * \return true if the key has a matching function that can be used with the inputs without any conversions.
+   */
   bool CheckIfKeyMatches(ConversionMap map, Key key,
-                         std::vector<format::Format *> packed_sfs,
+                         std::vector<format::Format *> packed_formats,
                          std::vector<context::Context *> contexts);
-  template <typename F> std::vector<std::type_index> PackFormats(F sf);
+  //! A variadic method to pack objects into a vector
+  template <typename Object, typename... Objects> std::vector<Object> PackObjects(Object object, Objects... objects);
+  //! Base case of a variadic method to pack objects into a vector
+  template <typename Object> std::vector<Object> PackObjects(Object object);
+  //! Executes preprocessing on input formats (given variadically)
+  /*!
+   * Determines the function needed to carry out preprocessing on input Format* objects (given variadically), as well as the Format conversions needed on the inputs, executes the preprocessing, and returns the results.  
+   * Note: this function will delete any intermediery Format objects that were created due to a conversion.
+   * \param PreprocessParams a polymorphic pointer at the object containing hyperparameters needed for preprocessing.
+   * \param converter Converter object to be used for determining available Format conversions.
+   * \param contexts Contexts available for execution of the preprocessing.
+   * \param sf a single input Format* (this is templated to allow variadic definition).
+   * \param sfs a variadic Format* (this is templated to allow variadic definition).
+   * \return the output of the preprocessing (of type ReturnType). 
+   */
   template <typename F, typename... SF>
-  std::vector<std::type_index> PackFormats(F sf, SF... sfs);
-  template <typename F> std::vector<F> PackSFS(F sf);
-  template <typename F, typename... SF> std::vector<F> PackSFS(F sf, SF... sfs);
-  template <typename F, typename... SF>
-  ReturnType Execute(PreprocessParams *params, utils::converter::Converter &sc,
+  ReturnType Execute(PreprocessParams *params, utils::converter::Converter *converter,
                      std::vector<context::Context *> contexts, F sf, SF... sfs);
+  //! Executes preprocessing on input formats (given variadically)
+  /*!
+   * Determines the function needed to carry out preprocessing on input Format* objects (given variadically), as well as the Format conversions needed on the inputs, executes the preprocessing, and returns:
+   * - the preprocessing result.  
+   * - pointers at any Format objects that were created due to a conversion.
+   * Note: this function will delete any intermediery Format objects that were created due to a conversion.
+   * \param PreprocessParams a polymorphic pointer at the object containing hyperparameters needed for preprocessing.
+   * \param converter Converter object to be used for determining available Format conversions.
+   * \param contexts Contexts available for execution of the preprocessing.
+   * \param sf a single input Format* (this is templated to allow variadic definition).
+   * \param sfs a variadic Format* (this is templated to allow variadic definition).
+   * \return a tuple containing a) the output of the preprocessing (of type ReturnType), and b) a vector of Format*, where each pointer in the output points at the format that the corresponds Format object from the the input was converted to. If an input Format wasn't converted, the output pointer will point at nullptr.
+   */
   template <typename F, typename... SF>
   std::tuple<std::vector<format::Format *>, ReturnType>
-  CachedExecute(PreprocessParams *params, utils::converter::Converter &sc,
+  CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
                 std::vector<context::Context *> contexts, F sf, SF... sfs);
 };
 
-template <typename IDType, typename NNZType, typename ValueType>
+template <typename ReturnType>
+class GenericPreprocessType : public FunctionMatcherMixin<ReturnType> {
+protected:
+public:
+  int GetOutput(format::Format *csr, PreprocessParams *params,
+                     std::vector<context::Context *>);
+  std::tuple<std::vector<format::Format *>, int>
+  GetOutputCached(format::Format *csr, PreprocessParams *params,
+                   std::vector<context::Context *>);
+  virtual ~GenericPreprocessType();
+};
+
+template <typename IDType>
 class ReorderPreprocessType : public FunctionMatcherMixin<IDType *> {
 protected:
 public:
@@ -133,7 +219,7 @@ public:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class DegreeReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
+class DegreeReorder : public ReorderPreprocessType<IDType> {
 public:
   DegreeReorder(int hyperparameter);
 
@@ -148,13 +234,13 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType>
 class GenericReorder
-    : public ReorderPreprocessType<IDType, NNZType, ValueType> {
+    : public ReorderPreprocessType<IDType> {
 public:
   GenericReorder();
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class RCMReorder : public ReorderPreprocessType<IDType, NNZType, ValueType> {
+class RCMReorder : public ReorderPreprocessType<IDType> {
   typedef typename std::make_signed<IDType>::type SignedID;
 
 public:
