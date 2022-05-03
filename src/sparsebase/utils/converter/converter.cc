@@ -543,7 +543,7 @@ ConditionalConversionFunction Converter::GetConversionFunction(
 std::tuple<bool, context::Context *>
 Converter::CanConvert(std::type_index from_type, context::Context *from_context,
                       std::type_index to_type,
-                      std::vector<context::Context *> to_contexts,
+                      const std::vector<context::Context *>& to_contexts,
                       bool is_move_conversion) {
   auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
