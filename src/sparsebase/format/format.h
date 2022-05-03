@@ -90,7 +90,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class COO : public FormatImplementation<COO<IDType, NNZType, ValueType>> {
 public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col,
-      ValueType *vals, Ownership own = kNotOwned);
+      ValueType *vals, Ownership own = kNotOwned, bool ignore_sort=false);
   COO(const COO<IDType, NNZType, ValueType> &);
   COO(COO<IDType, NNZType, ValueType> &&);
   COO<IDType, NNZType, ValueType> &

@@ -200,7 +200,6 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo_row[i], coo_col[i]);
   }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     col[i] = edges[i].second;
@@ -266,7 +265,6 @@ Format *CooCsrFunction(Format *source) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo_row[i], coo_col[i]);
   }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     col[i] = edges[i].second;
@@ -323,7 +321,6 @@ Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo_row[i], col[i]);
   }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     row_ptr[edges[i].first]++;
@@ -368,7 +365,6 @@ Format *CooCsrMoveFunction(Format *source) {
   for (IDType i = 0; i < nnz; i++) {
     edges.emplace_back(coo_row[i], col[i]);
   }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
   for (IDType i = 0; i < m; i++) {
     row_ptr[edges[i].first]++;
@@ -453,13 +449,13 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
   this->RegisterConditionalConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CooCsrFunctionConditional<IDType, NNZType, ValueType>,
+      CooCsrMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; },
       true);
   this->RegisterConditionalConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CsrCooFunctionConditional<IDType, NNZType, ValueType>,
+      CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; },
       true);
 }

@@ -1,5 +1,6 @@
 #include "sparsebase/sparsebase.h"
 #include "gtest/gtest.h"
+#include <iostream>
 
 // The arrays defined here are for two matrices
 // One in csr format one in coo format
@@ -18,6 +19,7 @@ TEST(ConverterOrderTwo, CSRToCOO){
   sparsebase::context::CPUContext cpu_context;
 
   // Testing non-move converter (deep copy)
+  std::cout << "Testing non-move converter (deep copy)" << std::endl;
   auto coo = converterOrderTwo.Convert<sparsebase::format::COO<int,int,int>>(&csr, &cpu_context, false);
 
   // None of the pointers should be the same due to deep copy
@@ -33,6 +35,7 @@ TEST(ConverterOrderTwo, CSRToCOO){
   }
 
   // Testing move converter (some arrays can be shallow copied)
+  std::cout << "Testing move converter" << std::endl;
   auto coo2 = converterOrderTwo.Convert<sparsebase::format::COO<int,int,int>>(&csr, &cpu_context, true);
 
   // All values should be equal
@@ -41,6 +44,8 @@ TEST(ConverterOrderTwo, CSRToCOO){
     EXPECT_EQ(coo2->get_col()[i], coo_col[i]);
     EXPECT_EQ(coo2->get_vals()[i], coo_vals[i]);
   }
+
+  std::cout << "End of test" << std::endl;
 }
 
 TEST(ConverterOrderTwo, COOToCSR){
@@ -69,6 +74,13 @@ TEST(ConverterOrderTwo, COOToCSR){
 
   // Testing move converter (some arrays can be shallow copied)
   auto csr2 = converterOrderTwo.Convert<sparsebase::format::CSR<int,int,int>>(&coo, &cpu_context, true);
+
+  // These two arrays should be moved
+  EXPECT_EQ(csr2->get_col(), coo.get_col());
+  EXPECT_EQ(csr2->get_vals(), coo.get_vals());
+
+  // row_ptr array should be constructed from scratch
+  EXPECT_NE(csr2->get_row_ptr(), coo.get_row());
 
   // All values should be equal
   for(int i=0; i<4; i++){
