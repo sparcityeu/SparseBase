@@ -13,12 +13,30 @@ const std::string mtx_data = R"(%%MatrixMarket matrix coordinate pattern symmetr
 5 4
 )";
 
+const std::string mtx_data_with_values = R"(%%MatrixMarket matrix coordinate pattern symmetric
+%This is a comment
+5 5 5
+2 1 0.1
+4 1 0.2
+3 2 0.3
+5 3 0.4
+5 4 0.5
+)";
+
 const std::string edge_list_data = R"(1 0
 3 0
 2 1
 4 2
 4 3
 )";
+
+const std::string edge_list_data_with_values = R"(1 0 0.1
+3 0 0.2
+2 1 0.3
+4 2 0.4
+4 3 0.5
+)";
+
 
 
 TEST(MTXReader, Basics){
@@ -28,7 +46,12 @@ TEST(MTXReader, Basics){
   ofs << mtx_data;
   ofs.close();
 
-  // Read it using sparsebase
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_values.mtx");
+  ofs2 << mtx_data_with_values;
+  ofs2.close();
+
+  // Read non-weighted file using sparsebase
   sparsebase::utils::io::MTXReader<int,int,int> reader("test.mtx");
   auto coo = reader.ReadCOO()->As<sparsebase::format::COO<int,int,int>>();
 
@@ -36,6 +59,35 @@ TEST(MTXReader, Basics){
   EXPECT_EQ(coo->get_dimensions()[0], 5);
   EXPECT_EQ(coo->get_dimensions()[1], 5);
   EXPECT_EQ(coo->get_num_nnz(), 5);
+
+  // Check that the arrays are populated
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  // Read the weighted file using sparsebase
+  sparsebase::utils::io::MTXReader<int,int,float> reader2("test_values.mtx", true);
+  auto coo2 = reader2.ReadCOO()->As<sparsebase::format::COO<int,int,float>>();
+
+  // Check the dimensions
+  EXPECT_EQ(coo2->get_dimensions()[0], 5);
+  EXPECT_EQ(coo2->get_dimensions()[1], 5);
+  EXPECT_EQ(coo2->get_num_nnz(), 5);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo2->get_vals(), nullptr);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+
+  // Since COO may be sorted during construction the order of values is not certain
+  std::vector<float> values(coo2->get_vals(), coo2->get_vals()+5);
+  std::sort(values.begin(), values.end());
+
+  // But they should match the values in the file otherwise
+  std::vector<float> expected_values{0.1, 0.2, 0.3, 0.4, 0.5};
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(values[i], expected_values[i]);
+  }
 }
 
 TEST(EdgeListReader, Basics){
@@ -45,12 +97,19 @@ TEST(EdgeListReader, Basics){
   ofs << edge_list_data;
   ofs.close();
 
+  // Write the edge list data with values to a file
+  std::ofstream ofs2("test_values.edges");
+  ofs2 << edge_list_data_with_values;
+  ofs2.close();
+
   // Read it using sparsebase (undirected)
   sparsebase::utils::io::EdgeListReader<int,int,int> reader1("test.edges");
   auto coo = reader1.ReadCOO()->As<sparsebase::format::COO<int,int,int>>();
 
   // Check the dimensions (double the edges due to undirected read)
   EXPECT_EQ(coo->get_num_nnz(), 10);
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
 
   // Read it using sparsebase (directed)
   sparsebase::utils::io::EdgeListReader<int,int,int> reader2("test.edges", false, false, false, false);
@@ -58,6 +117,30 @@ TEST(EdgeListReader, Basics){
 
   // Check the dimensions
   EXPECT_EQ(coo2->get_num_nnz(), 5);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Read it using sparsebase (weighted, directed)
+  sparsebase::utils::io::EdgeListReader<int,int,float> reader3("test_values.edges", true, false, false, false);
+  auto coo3 = reader3.ReadCOO()->As<sparsebase::format::COO<int,int,float>>();
+
+  // Check the dimensions
+  EXPECT_EQ(coo3->get_num_nnz(), 5);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo3->get_vals(), nullptr);
+  EXPECT_NE(coo3->get_row(), nullptr);
+  EXPECT_NE(coo3->get_col(), nullptr);
+
+  // Since COO may be sorted during construction the order of values is not certain
+  std::vector<float> values(coo3->get_vals(), coo3->get_vals()+5);
+  std::sort(values.begin(), values.end());
+
+  // But they should match the values in the file otherwise
+  std::vector<float> expected_values{0.1, 0.2, 0.3, 0.4, 0.5};
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(values[i], expected_values[i]);
+  }
 }
 
 TEST(BinaryOrderOneReader, Basics){
