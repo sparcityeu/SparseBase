@@ -38,6 +38,13 @@ TEST(ConverterOrderTwo, CSRToCOO){
   std::cout << "Testing move converter" << std::endl;
   auto coo2 = converterOrderTwo.Convert<sparsebase::format::COO<int,int,int>>(&csr, &cpu_context, true);
 
+  // Particularly, these two arrays should have been moved
+  EXPECT_EQ(coo2->get_col(), csr.get_col());
+  EXPECT_EQ(coo2->get_vals(), csr.get_vals());
+
+  // row array should be constructed from scratch
+  EXPECT_NE(coo2->get_row(), csr.get_row_ptr());
+
   // All values should be equal
   for(int i=0; i<4; i++){
     EXPECT_EQ(coo2->get_row()[i], coo_row[i]);
@@ -75,7 +82,7 @@ TEST(ConverterOrderTwo, COOToCSR){
   // Testing move converter (some arrays can be shallow copied)
   auto csr2 = converterOrderTwo.Convert<sparsebase::format::CSR<int,int,int>>(&coo, &cpu_context, true);
 
-  // These two arrays should be moved
+  // Particularly, these two arrays should have been moved
   EXPECT_EQ(csr2->get_col(), coo.get_col());
   EXPECT_EQ(csr2->get_vals(), coo.get_vals());
 

@@ -25,7 +25,7 @@ typedef std::vector<std::tuple<bool, std::type_index, context::Context *>>
 using ConditionalConversionFunction =
     std::function<format::Format *(format::Format *, context::Context *)>;
 
-
+//! A function type that returns true if the relevant conversion function can convert between the contexts in the parameters
 using EdgeConditional =
     std::function<bool(context::Context *, context::Context *)>;
 
