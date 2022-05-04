@@ -76,7 +76,7 @@ TEST(COO, Ownership){
   // Ownership model is designed to work with dynamic memory
   // So we copy our static arrays to dynamic ones
   // If static arrays are to be used, kNotOwned should always be used
-  int* new_coo_row = new int[5];
+  int* new_coo_row = new int[4];
   int* new_coo_col = new int[4];
   int* new_coo_vals = new int[4];
   std::copy(coo_row, coo_row+4, new_coo_row);
@@ -126,7 +126,7 @@ TEST(COO, Release){
   // Ownership model is designed to work with dynamic memory
   // So we copy our static arrays to dynamic ones
   // If static arrays are to be used, kNotOwned should always be used
-  int* new_coo_row = new int[5];
+  int* new_coo_row = new int[4];
   int* new_coo_col = new int[4];
   int* new_coo_vals = new int[4];
   std::copy(coo_row, coo_row+4, new_coo_row);
