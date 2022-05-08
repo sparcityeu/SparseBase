@@ -57,25 +57,71 @@ protected:
   GetClasses(std::unordered_map<std::type_index, ClassType> &source);
 };
 
+
+//! Extractor provides an interface for users to generate multiple features optimally with a single call.
+/*!
+ *  Detailed
+ */
 class Extractor : public ClassMatcherMixin<preprocess::ExtractableType *> {
 public:
   ~Extractor();
+  //! Calculates the features that are passed.
+  /*!
+    Detailed Description.
+    \param features vector of features to extract.
+    \param format a format to be used as the data source.
+    \param con vector of contexts to be used to determine the where the computation will take place.
+    \return void
+  */
   static std::unordered_map<std::type_index, std::any>
   Extract(std::vector<Feature> &features, format::Format *format,
           const std::vector<context::Context *> &);
   std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, const std::vector<context::Context *> &);
+  //! Calculates the features that are added to in_ private data member.
+  /*!
+    Detailed Description.
+    \param format a format to be used as the data source.
+    \param con vector of contexts to be used to determine the where the computation will take place.
+    \return void
+  */
+  Extract(format::Format *format, const std::vector<context::Context *> & con);
+  //! Adds a feature to private in_ data member.
+  /*!
+    Detailed Description.
+    \param f a Feature argument.
+    \return void
+  */
   void Add(Feature f);
+  //! Subtracts a feature from private in_ data member.
+  /*!
+    Detailed Description.
+    \param f a Feature argument.
+    \return void
+  */
   void Subtract(Feature f);
+  //! Returns the in_ private data member as a vector.
+  /*!
+    Detailed Description.
+    \return vector of type std::type_index
+  */
   std::vector<std::type_index> GetList();
+  //! Prints all the registered functions to the ClassMatcher map.
+  /*!
+    Detailed Description.
+    \return void
+  */
   void PrintFuncList();
 
 protected:
   Extractor() noexcept = default;
 
 private:
-  std::unordered_map<std::type_index, preprocess::ExtractableType *> in_;
-};
+  //! Stores the features that are going to be extracted once the Extract function is called.
+  /*!
+   *  Detailed
+   */
+    std::unordered_map<std::type_index, preprocess::ExtractableType *> in_;
+  };
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>

@@ -33,7 +33,7 @@ if(NOT ${_HEADER_ONLY})
       sparsebase/utils/converter/cuda/converter.cu
       sparsebase/preprocess/cuda/preprocess.cu
       sparsebase/context/cuda/context.cu
-    )
+            ../tests/suites/feature_tests.cpp)
   endif()
   add_library(sparsebase ${LIB_FILES})
   # defining the include paths of the library

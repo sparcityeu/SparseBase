@@ -77,6 +77,7 @@ if ( RUN_TESTS )
   add_subdirectory(tests)
   enable_testing()
   add_test(NAME sparseformat_tests COMMAND tests/sparseformat_tests.test)
+  add_test(NAME feature_tests COMMAND tests/feature_tests.test)
 endif()
 
 # Create the sparseprocess export set
