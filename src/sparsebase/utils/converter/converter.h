@@ -119,6 +119,13 @@ public:
   virtual ~Converter();
 };
 
+/*!
+ * Intermediate class used to implement CRTP (curiously recurring template pattern).
+ * Under most circumstances, users don't need to interact with this class unless
+ * they are defining their own converter classes.
+ *
+ * @tparam ConverterType Concrete type of the Converter class that is derived from this class
+ */
 template <class ConverterType> class ConverterImpl : public Converter {
 public:
   //! Returns the type_index for the Converter instance
