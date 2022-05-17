@@ -31,21 +31,62 @@ protected:
   std::unique_ptr<PreprocessParams> params_;
 };
 
+//! Abstract class that can be utilized with fusued feature extraction
+/*!
+ * Classes implementing ExtractableType can be used with with a sparsebase::feature::Extractor for fused feature extraction.
+ * Each ExtractableType object can be a fusion of multiple ExtractableType classes. An ExtractableType object will contain 
+ * parameters for each of the ExtractableType it is fusud into as well as one for itself.
+ */
 class ExtractableType {
 public:
+  //! Extract features from the passed Format through passed Contexts
+  /*!
+   *
+   * \param format object from which features are extracted.
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return An uordered map containing the extracted features as key-value pairs with the key being the std::type_index of the feature and the value an std::any to that feature.
+   */
   virtual std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>) = 0;
+  Extract(format::Format *format, std::vector<context::Context *> contexts) = 0;
+  //! Returns the std::type_index of this class
   virtual std::type_index get_feature_id() = 0;
+  //! Get the std::type_index of all the ExtractableType classes fused into this class 
+  /*!
+   *
+   * \return a vector containing the std::type_index values of all the ExtractableType classes fusued into this class
+   */
   virtual std::vector<std::type_index> get_sub_ids() = 0;
+  //! Get instances of the ExtractableType classes that make up this class
+  /*!
+   * \return A vector of pointers to ExtractableType objects, each of which corresponds to one of the features that this class is extracting, and the classes will have their respective parameters passed over to them.
+   */ 
   virtual std::vector<ExtractableType *> get_subs() = 0;
+  //! Get a std::shared_ptr at the PreprocessParams of this object
+  /*!
+   *
+   * \return An std::shared_ptr at the same PreprocessParams instance of this object (not a copy)
+   */
   virtual std::shared_ptr<PreprocessParams> get_params() = 0;
-  virtual std::shared_ptr<PreprocessParams> get_params(std::type_index) = 0;
-  virtual void set_params(std::type_index,
-                          std::shared_ptr<PreprocessParams>) = 0;
+  //! Get an std::shared_ptr at a PreprocessParams of one of the ExtractableType classes fused into this class
+  /*!
+   * Returns a std::shared_ptr at a PreprocessParams object belonging to one of the ExtractableType classes fused into this class
+   * \param feature_extractor std::type_index identifying the ExtractableType within this class whose parameters are requested
+   * \return an std::shared_ptr at the PreprocessParams corresponding feature_extractor
+   */ 
+  virtual std::shared_ptr<PreprocessParams> get_params(std::type_index feature_extractor) = 0;
+  //! Set the parameters of one of ExtractableType classes fusued into this classes.
+  /*!
+   * \param feature_extractor std::type_index identifying the ExtractableType class fusued into this class whose parameters are to be set.
+   * \param params an std::shared_ptr at the PreprocessParams belonging to the class feature_extractor
+   */
+  virtual void set_params(std::type_index feature_extractor,
+                          std::shared_ptr<PreprocessParams> params) = 0;
   virtual ~ExtractableType() = default;
 
 protected:
+  //! a pointer at the PreprocessParams of this class
   std::shared_ptr<PreprocessParams> params_;
+  //! A key-value map of PreprocessParams, one for each of the ExtractableType classes fused into this class
   std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
 };
 
@@ -187,7 +228,7 @@ protected:
    */
   template <typename F, typename... SF>
   std::tuple<std::vector<format::Format *>, ReturnType>
-  CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
+  CachedExecute(PreprocessP//arams *params, utils::converter::Converter *sc,
                 std::vector<context::Context *> contexts, F sf, SF... sfs);
 };
 
@@ -287,6 +328,11 @@ protected:
                                       PreprocessParams *);
 };
 
+//! A class that does feature extraction.
+/*!
+ * An ExtractableType class that has a Converter and the function matching capability. In other words, an Extractable to which implementation functions can be added and used.
+ * \tparam FeatureType the return type of feature extraction
+ */
 template <typename FeatureType>
 class FeaturePreprocessType
     : public FunctionMatcherMixin<FeatureType,
@@ -298,9 +344,9 @@ public:
   std::type_index get_feature_id() override;
   ~FeaturePreprocessType();
 
-protected:
-  std::shared_ptr<PreprocessParams> params_;
-  std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
+//protected:
+//  std::shared_ptr<PreprocessParams> params_;
+//  std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
 };
 
 template <typename IDType, typename NNZType, typename ValueType,
