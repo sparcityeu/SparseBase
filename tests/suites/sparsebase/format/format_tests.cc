@@ -49,6 +49,20 @@ TEST(COO, Basics){
   }
 }
 
+TEST(Array, Basics){
+  sparsebase::format::Array<int> array(4, coo_vals, sparsebase::format::kNotOwned);
+
+  // Check the dimensions
+  EXPECT_EQ(array.get_num_nnz(), 4);
+  std::vector<sparsebase::format::DimensionType> expected_dimensions{4};
+  EXPECT_EQ(array.get_dimensions(), expected_dimensions);
+
+  // Check the array
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(array.get_vals()[i], coo_vals[i]);
+  }
+}
+
 TEST(CSR, Ownership){
 
   // Ownership model is designed to work with dynamic memory
@@ -71,6 +85,8 @@ TEST(CSR, Ownership){
 
 }
 
+
+
 TEST(COO, Ownership){
 
   // Ownership model is designed to work with dynamic memory
@@ -92,6 +108,19 @@ TEST(COO, Ownership){
   delete coo_owned;
 }
 
+TEST(Array, Ownership){
+  // Ownership model is designed to work with dynamic memory
+  int* data = new int[4]{1,3,2,4};
+
+  // Construct the Arrays
+  auto* array_owned = new sparsebase::format::Array<int>(4, data, sparsebase::format::kOwned);
+  auto* array_not_owned = new sparsebase::format::Array<int>(4, data, sparsebase::format::kNotOwned);
+
+  // Deleting both should not cause an issue since only one should deallocate the memory
+  delete array_owned;
+  delete array_not_owned;
+}
+
 TEST(CSR, Release){
 
   // Ownership model is designed to work with dynamic memory
@@ -104,7 +133,7 @@ TEST(CSR, Release){
   std::copy(csr_col, csr_col+4, new_csr_col);
   std::copy(csr_vals, csr_vals+4, new_csr_vals);
 
-  // Construct the CSRs
+  // Construct an owned CSR
   auto* csr_owned = new sparsebase::format::CSR<int,int,int>(4,4,new_csr_row_ptr,new_csr_col,new_csr_vals, sparsebase::format::kOwned);
 
   // Release the arrays
@@ -133,7 +162,7 @@ TEST(COO, Release){
   std::copy(coo_col, coo_col+4, new_coo_col);
   std::copy(coo_vals, coo_vals+4, new_coo_vals);
 
-  // Construct the CSRs
+  // Construct an owned COO
   auto* coo_owned = new sparsebase::format::COO<int,int,int>(4,4,4,new_coo_row, new_coo_col, new_coo_vals, sparsebase::format::kOwned);
 
   // Release the arrays
@@ -148,4 +177,21 @@ TEST(COO, Release){
   delete[] row;
   delete[] col;
   delete[] vals;
+}
+
+TEST(Array, Release){
+  // Ownership model is designed to work with dynamic memory
+  int* data = new int[4]{1,3,2,4};
+
+  // Construct an owned array
+  auto* array_owned = new sparsebase::format::Array<int>(4, data, sparsebase::format::kOwned);
+
+  // Release the internal array
+  auto* data2 = array_owned->release_vals();
+
+  // Deleting the Array should not deallocate the internal data
+  delete array_owned;
+
+  // To check delete it manually
+  delete[] data;
 }
