@@ -228,7 +228,7 @@ protected:
    */
   template <typename F, typename... SF>
   std::tuple<std::vector<format::Format *>, ReturnType>
-  CachedExecute(PreprocessP//arams *params, utils::converter::Converter *sc,
+  CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
                 std::vector<context::Context *> contexts, F sf, SF... sfs);
 };
 
@@ -418,7 +418,20 @@ public:
   std::vector<ExtractableType *> get_subs() override;
   static std::type_index get_feature_id_static();
 
+  //! Degree generation executer function that carries out function matching
+  /*!
+   *
+   * \param format a single format pointer to any format
+   * \return an array of size formats.get_dimensions()[0] where element i is the degree of the ith vertex in `formats`
+   */
   IDType *GetDegrees(format::Format *format, std::vector<context::Context *>);
+  //! Degree generation implementation function for CSRs
+  /*!
+   *
+   * \param formats A vector containing a single format pointer that should point at a CSR object
+   * \param params a PreprocessParams pointer, though it is not used in the function
+   * \return an array of size formats.get_dimensions()[0] where element i is the degree of the ith vertex in `formats`
+   */
   static IDType *GetDegreesCSR(std::vector<format::Format *> formats,
                                PreprocessParams *params);
   ~Degrees();
