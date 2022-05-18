@@ -32,6 +32,7 @@ If you are new to the project, we suggest starting here: :doc:`pages/getting_sta
 
 
    pages/getting_started
+   pages/tutorials/index
    pages/explanations/index
    pages/how_to_guides/index
    api/library_root
