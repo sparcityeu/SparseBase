@@ -187,11 +187,11 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   auto coo_col = coo->get_col();
   auto coo_row = coo->get_row();
   NNZType *row_ptr = new NNZType[n + 1];
-  IDType *col = new IDType[m];
+  IDType *col = new IDType[nnz];
   ValueType *vals;
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
-  std::fill(col, col + m, 0);
+  std::fill(col, col + nnz, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -202,7 +202,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   }
   sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     col[i] = edges[i].second;
     row_ptr[edges[i].first]++;
   }

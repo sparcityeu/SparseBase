@@ -755,9 +755,6 @@ FeatureType *DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
                              PreprocessParams *params) {
   auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
   auto dims = csr->get_dimensions();
-  for (auto dim : dims) {
-    std::cout << dim << std::endl;
-  }
   IDType num_vertices = dims[0];
   NNZType num_edges = csr->get_num_nnz();
   FeatureType *dist = new FeatureType[num_vertices]();
