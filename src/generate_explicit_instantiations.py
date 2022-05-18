@@ -244,12 +244,12 @@ inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
 inits.append(feature_init(output_folder, dry_run))
 inits.append(writer_init(output_folder, dry_run))
+inits.append(pigo_reader_init(external_output_folder, dry_run))
 if use_cuda:
     inits.append(converter_cuda_init(cuda_output_folder, dry_run))
     inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
     inits.append(format_cuda_init(cuda_output_folder, dry_run))
-if use_pigo:
-    inits.append(pigo_reader_init(external_output_folder, dry_run))
+
 
 ## Create temporary files containing the explicit instantiations
 for init_object in inits:
