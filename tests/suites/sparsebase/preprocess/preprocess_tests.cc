@@ -152,12 +152,17 @@ class Degrees_DegreeDistributionTest : public ::testing::Test {
 protected:
     Degrees_DegreeDistribution<int, int, int, float> feature;
     sparsebase::format::CSR<int, int, int>* csr;
+    sparsebase::format::COO<int, int, int>* coo;
     int xadj[4] = {0, 2, 3, 4};
     int adj[4] = {1,2,0,0};
+    int is[4] = {0, 0, 1, 2};
+    float distribution[3] = {2.0/4, 1.0/4, 1.0/4};
+    int degrees[3] = {2, 1, 1};
     sparsebase::context::CPUContext cpu_context;
 
     void SetUp() override{
         csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
+        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr);
     }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
@@ -181,13 +186,16 @@ class DegreesTest : public ::testing::Test {
 protected:
     Degrees<int, int, int> feature;
     sparsebase::format::CSR<int, int, int>* csr;
+    sparsebase::format::COO<int, int, int>* coo;
     int xadj[4] = {0, 2, 3, 4};
     int adj[4] = {1,2,0,0};
+    int is[4] = {0, 0, 1, 2};
     int degrees[3] = {2, 1, 1};
     sparsebase::context::CPUContext cpu_context;
 
     void SetUp() override{
         csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
+        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr);
     }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
@@ -218,8 +226,24 @@ TEST_F(DegreesTest, AllTests){
     for (int i =0; i<3; i++){
         EXPECT_EQ(degrees_array[i], degrees[i]);
     }
+    delete [] degrees_array;
+    // Check GetDegrees with conversion
+    degrees_array = feature.GetDegrees({coo}, {&cpu_context});
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(degrees_array[i], degrees[i]);
+    }
     // Check Extract
     auto feature_map = feature.Extract(csr, {&cpu_context});
+    // Check map size and type
+    EXPECT_EQ(feature_map.size(), 1);
+    for (auto feat : feature_map){
+        EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
+    }
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(std::any_cast<int*>(feature_map[feature.get_feature_id()])[i], degrees[i]);
+    }
+    // Check Extract with conversion
+    feature_map = feature.Extract(coo, {&cpu_context});
     // Check map size and type
     EXPECT_EQ(feature_map.size(), 1);
     for (auto feat : feature_map){
@@ -308,4 +332,94 @@ TEST_F(DegreeDistributionTest, AllTests){
     for (int i =0; i<3; i++){
     EXPECT_EQ(std::any_cast<float*>(feature_map[feature.get_feature_id()])[i], distribution[i]);
     }
+    // Check Extract with conversion
+    feature_map = feature.Extract(coo, {&cpu_context});
+    // Check map size and type
+    EXPECT_EQ(feature_map.size(), 1);
+    for (auto feat : feature_map){
+        EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
+    }
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(std::any_cast<float*>(feature_map[feature.get_feature_id()])[i], distribution[i]);
+    }
+}
+TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests){
+    // test get_sub_ids
+    EXPECT_EQ(feature.get_sub_ids().size(), 2);
+    std::vector<std::type_index> ids = {Degrees<int, int, int>::get_feature_id_static(), DegreeDistribution<int, int, int, float>::get_feature_id_static()};
+    std::sort(ids.begin(), ids.end());
+    EXPECT_EQ(feature.get_sub_ids()[0], ids[0]);
+    EXPECT_EQ(feature.get_sub_ids()[1], ids[1]);
+
+    // Test get_subs
+    auto subs = feature.get_subs();
+    // two sub-feature
+    EXPECT_EQ(subs.size(), 2);
+    // same type as feature but different address
+    EXPECT_EQ(std::type_index(typeid(*(subs[0]))), ids[0]);
+    EXPECT_EQ(std::type_index(typeid(*(subs[1]))), ids[1]);
+    EXPECT_NE(subs[0], &feature);
+    EXPECT_NE(subs[1], &feature);
+
+    // Check GetCSR implementation function
+    Params1 p1;
+    auto degrees_and_distribution_map = Degrees_DegreeDistribution<int, int, int, float>::GetCSR({csr}, &p1);
+    ASSERT_EQ(degrees_and_distribution_map.size(), 2);
+    ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
+    ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
+    ASSERT_NO_THROW(std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+    auto distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+    ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
+    auto degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(distribution_array[i], distribution[i]);
+        EXPECT_EQ(degree_array[i], degrees[i]);
+    }
+    delete [] distribution_array;
+    delete [] degree_array;
+    //// Check Get (function matcher)
+    degrees_and_distribution_map = feature.Get({csr}, {&cpu_context});
+    ASSERT_EQ(degrees_and_distribution_map.size(), 2);
+    ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
+    ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
+    ASSERT_NO_THROW(std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+    distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+    ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
+    degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(distribution_array[i], distribution[i]);
+        EXPECT_EQ(degree_array[i], degrees[i]);
+    }
+    delete [] distribution_array;
+    delete [] degree_array;
+    //// Check Get with conversion (function matcher)
+    degrees_and_distribution_map = feature.Get({coo}, {&cpu_context});
+    ASSERT_EQ(degrees_and_distribution_map.size(), 2);
+    ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
+    ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
+    ASSERT_NO_THROW(std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+    distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+    ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
+    degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(distribution_array[i], distribution[i]);
+        EXPECT_EQ(degree_array[i], degrees[i]);
+    }
+    delete [] distribution_array;
+    delete [] degree_array;
+    // Check Extract
+    degrees_and_distribution_map = feature.Extract(csr, {&cpu_context});
+    ASSERT_EQ(degrees_and_distribution_map.size(), 2);
+    ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
+    ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
+    ASSERT_NO_THROW(std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+    distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+    ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
+    degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(distribution_array[i], distribution[i]);
+        EXPECT_EQ(degree_array[i], degrees[i]);
+    }
+    delete [] distribution_array;
+    delete [] degree_array;
 }
