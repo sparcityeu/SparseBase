@@ -900,7 +900,12 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
         this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
                                        FeatureType>::get_feature_id_static()]);
   }
-  return {f1, f2};
+
+  auto ids = this->get_sub_ids();
+  if (ids[0] == f1->get_feature_id())
+      return {f1, f2};
+  else
+      return {f2, f1};
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
