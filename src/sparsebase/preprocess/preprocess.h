@@ -483,8 +483,23 @@ public:
   std::vector<ExtractableType *> get_subs() override;
   static std::type_index get_feature_id_static();
 
+  //! Degree and degree distribution generation executor function that carries out function matching
+  /*!
+   *
+   * \param format a single format pointer to any format
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return a map with two (type_index, any) pairs. One is a degrees array of type IDType*, and one is a degree distribution array of type FeatureType*. Both arrays have the respective metric of the ith vertex in the ith array element.
+   */
   std::unordered_map<std::type_index, std::any>
   Get(format::Format *format, std::vector<context::Context *> contexts);
+
+  //! Degree and degree distribution implementation function for CSRs
+  /*!
+   *
+   * \param format a single format pointer to any format
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return a map with two (type_index, any) pairs. One is a degrees array of type IDType*, and one is a degree distribution array of type FeatureType*. Both arrays have the respective metric of the ith vertex in the ith array element.
+   */
   static std::unordered_map<std::type_index, std::any>
   GetCSR(std::vector<format::Format *> formats, PreprocessParams *params);
   ~Degrees_DegreeDistribution();
