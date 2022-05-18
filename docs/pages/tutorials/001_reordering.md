@@ -19,18 +19,18 @@ The completed tutorial can be found in `tutorials/001_reordering/solved/solved.c
 ## Steps
 
 ### 1. Read the graph from disk
-Begin your main program by reading the unordered edge list file into a `CSR` object using a `UedgelistReader` object. 
+Begin your main program by reading the undirected edge list file into a `CSR` object using an `EdgeListReader` object. 
 
 ```c++
 // The name of the matrix-market file in disk
 std::string filename(argv[1]); 
 // Create a reader object and set the name of the file it will read
-utils::io::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
+utils::io::EdgeListReader<IDType, NNZType, ValueType> reader(filename);
 // Read the file into a CSR format
 format::CSR<IDType, NNZType, ValueType>* csr = reader.ReadCSR();
 ```
 
-The three templated type parameters of the `CSR` and `UedgelistReader` objects determine the data types that will store the IDs, the number of non-zeros, and the values of the weights of the graph, respectively. These types are defined at the beginning of the file. Notice that, since the graph we read is unweighted, there will be no values in the `CSR` format object, only connectivity information. However, the type of the cannot be set to `void` due to internal details with smart pointers. For this reason, we set it to `unsigned int`. 
+The three templated type parameters of the `CSR` and `EdgeListReader` objects determine the data types that will store the IDs, the number of non-zeros, and the values of the weights of the graph, respectively. These types are defined at the beginning of the file. Notice that, since the graph we read is unweighted, there will be no values in the `CSR` format object, only connectivity information. However, the type of the cannot be set to `void` due to internal details with smart pointers. For this reason, we set it to `unsigned int`. 
 
 You will find that these three template types are used by most classes of the library.
 
