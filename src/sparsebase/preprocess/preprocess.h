@@ -386,16 +386,43 @@ public:
   virtual std::vector<ExtractableType *> get_subs();
   static std::type_index get_feature_id_static();
 
+  //! Degree distribution generation executor function that carries out function matching
+  /*!
+   *
+   * \param format a single format pointer to any format
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return an array of size format.get_dimensions()[0] where element i is the degree distribution of the ith vertex in `formats`
+   */
   FeatureType *GetDistribution(format::Format *format,
-                               std::vector<context::Context *>);
+                               std::vector<context::Context *> contexts);
+  //! Degree distribution generation executor function that carries out function matching on a Graph
+  /*!
+   *
+   * \param object a single format pointer to any format
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return an array of size format.get_dimensions()[0] where element i is the degree distribution of the ith vertex in `formats`
+   */
   FeatureType *
   GetDistribution(object::Graph<IDType, NNZType, ValueType> *object,
-                  std::vector<context::Context *>);
+                  std::vector<context::Context *> contexts);
+  //! Degree distribution generation executer function that carries out function matching with cached outputs
+  /*!
+   * Generates the degree distribution of the passed format. If the input format was converted to other format types, the converting results are also returned with the output
+   * \param format a single format pointer to any format
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return A tuple with the first element being a vector of Format*, where each pointer in the output points at the format that the corresponds Format object from the the input was converted to. If an input Format wasn't converted, the output pointer will point at nullptr. The second element is an array of size format.get_dimensions()[0] where element i is the degree distribution of the ith vertex in `formats`
+   */
   std::tuple<std::vector<format::Format *>, FeatureType *>
   GetDistributionCached(format::Format *format,
-                        std::vector<context::Context *>);
+                        std::vector<context::Context *> contexts);
 
   static FeatureType *
+  //! Degree distribution generation implementation function for CSRs
+  /*!
+   *
+   * \param format a single format pointer to any format
+   * \return an array of size formats[0].get_dimensions()[0] where element i is the degree distribution of the ith vertex in `formats[0]`
+   */
   GetDegreeDistributionCSR(std::vector<format::Format *> formats,
                            PreprocessParams *params);
   ~DegreeDistribution();
@@ -422,15 +449,16 @@ public:
   /*!
    *
    * \param format a single format pointer to any format
-   * \return an array of size formats.get_dimensions()[0] where element i is the degree of the ith vertex in `formats`
+   * \param contexts vector of contexts that can be used for extracting features.
+   * \return an array of size format.get_dimensions()[0] where element i is the degree of the ith vertex in `format`
    */
-  IDType *GetDegrees(format::Format *format, std::vector<context::Context *>);
+  IDType *GetDegrees(format::Format *format, std::vector<context::Context *> contexts);
   //! Degree generation implementation function for CSRs
   /*!
    *
    * \param formats A vector containing a single format pointer that should point at a CSR object
    * \param params a PreprocessParams pointer, though it is not used in the function
-   * \return an array of size formats.get_dimensions()[0] where element i is the degree of the ith vertex in `formats`
+   * \return an array of size formats[0].get_dimensions()[0] where element i is the degree of the ith vertex in `formats[0]`
    */
   static IDType *GetDegreesCSR(std::vector<format::Format *> formats,
                                PreprocessParams *params);
@@ -456,7 +484,7 @@ public:
   static std::type_index get_feature_id_static();
 
   std::unordered_map<std::type_index, std::any>
-  Get(format::Format *format, std::vector<context::Context *>);
+  Get(format::Format *format, std::vector<context::Context *> contexts);
   static std::unordered_map<std::type_index, std::any>
   GetCSR(std::vector<format::Format *> formats, PreprocessParams *params);
   ~Degrees_DegreeDistribution();
