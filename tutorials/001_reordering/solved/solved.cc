@@ -18,7 +18,7 @@ int main(int argc, char * argv[]){
     // The name of the matrix-market file in disk
     std::string filename(argv[1]); 
     // Create a reader object and set the name of the file it will read
-    utils::io::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
+    utils::io::EdgeListReader<IDType, NNZType, ValueType> reader(filename);
     // Read the file into a CSR format
     format::CSR<IDType, NNZType, ValueType>* csr = reader.ReadCSR();
 
