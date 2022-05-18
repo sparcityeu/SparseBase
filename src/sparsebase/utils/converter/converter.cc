@@ -43,7 +43,7 @@ Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
     }
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     col[i] = csr_col[i];
   }
 
@@ -90,7 +90,7 @@ Format *CsrCooFunction(Format *source) {
     }
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     col[i] = csr_col[i];
   }
 
@@ -187,7 +187,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   auto coo_col = coo->get_col();
   auto coo_row = coo->get_row();
   NNZType *row_ptr = new NNZType[n + 1];
-  IDType *col = new IDType[m];
+  IDType *col = new IDType[nnz];
   ValueType *vals;
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
@@ -201,7 +201,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
     edges.emplace_back(coo_row[i], coo_col[i]);
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     col[i] = edges[i].second;
     row_ptr[edges[i].first]++;
   }
@@ -252,7 +252,7 @@ Format *CooCsrFunction(Format *source) {
   auto coo_col = coo->get_col();
   auto coo_row = coo->get_row();
   NNZType *row_ptr = new NNZType[n + 1];
-  IDType *col = new IDType[m];
+  IDType *col = new IDType[nnz];
   ValueType *vals;
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
@@ -266,7 +266,7 @@ Format *CooCsrFunction(Format *source) {
     edges.emplace_back(coo_row[i], coo_col[i]);
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     col[i] = edges[i].second;
     row_ptr[edges[i].first]++;
   }
@@ -322,7 +322,7 @@ Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
     edges.emplace_back(coo_row[i], col[i]);
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     row_ptr[edges[i].first]++;
   }
 
@@ -366,7 +366,7 @@ Format *CooCsrMoveFunction(Format *source) {
     edges.emplace_back(coo_row[i], col[i]);
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     row_ptr[edges[i].first]++;
   }
 
