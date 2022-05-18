@@ -148,3 +148,84 @@ TEST(DegreeReorder, AscendingOrder){
     EXPECT_GE(xadj[v+1]-xadj[v], xadj[u+1]-xadj[u]);
   }
 }
+class Degrees_DegreeDistributionMixinTest : public ::testing::Test {
+protected:
+    Degrees_DegreeDistribution<int, int, int, float> feature;
+    sparsebase::format::CSR<int, int, int>* csr;
+    int xadj[4] = {0, 2, 3, 4};
+    int adj[4] = {1,2,0,0};
+    sparsebase::context::CPUContext cpu_context;
+
+    void SetUp() override{
+        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
+    }
+    struct Params1 : sparsebase::preprocess::PreprocessParams{};
+    struct Params2 : sparsebase::preprocess::PreprocessParams{};
+};
+
+TEST_F(Degrees_DegreeDistributionMixinTest, FeaturePreprocessTypeTests){
+    std::shared_ptr<Params1> p1(new Params1);
+    std::shared_ptr<Params2> p2(new Params2);
+    // Check getting feature id
+    EXPECT_EQ(std::type_index(typeid(Degrees_DegreeDistribution<int, int, int, float>)), feature.get_feature_id());
+    // Getting a params object for an unset params
+    EXPECT_THROW(feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(), utils::FeatureParamsException);
+    // Checking setting params of a sub-feature
+    feature.set_params(Degrees<int, int, int>::get_feature_id_static(), p1);
+    EXPECT_EQ(feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(), p1.get());
+    EXPECT_NE(feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(), p2.get());
+    // Checking setting params of feature that isn't a sub-feature
+    EXPECT_THROW(feature.set_params(typeid(int), p1), utils::FeatureParamsException);
+}
+class DegreesMixinTest : public ::testing::Test {
+protected:
+    Degrees<int, int, int> feature;
+    sparsebase::format::CSR<int, int, int>* csr;
+    int xadj[4] = {0, 2, 3, 4};
+    int adj[4] = {1,2,0,0};
+    int degrees[3] = {2, 1, 1};
+    sparsebase::context::CPUContext cpu_context;
+
+    void SetUp() override{
+        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
+    }
+    struct Params1 : sparsebase::preprocess::PreprocessParams{};
+    struct Params2 : sparsebase::preprocess::PreprocessParams{};
+};
+
+TEST_F(DegreesMixinTest, ExtractableFunctions){
+    // test get_sub_ids
+    EXPECT_EQ(feature.get_sub_ids().size(), 1);
+    EXPECT_EQ(feature.get_sub_ids()[0], std::type_index(typeid(feature)));
+
+    // Test get_subs
+    auto subs = feature.get_subs();
+    // a single sub-feature
+    EXPECT_EQ(subs.size(), 1);
+    // same type as feature but different address
+    EXPECT_EQ(std::type_index(typeid(*(subs[0]))), std::type_index(typeid(feature)));
+    EXPECT_NE(subs[0], &feature);
+
+    // Check GetDegreesCSR implementation function
+    Params1 p1;
+    auto degrees_array = Degrees<int, int, int>::GetDegreesCSR({csr}, &p1);
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(degrees_array[i], degrees[i]);
+    }
+    delete [] degrees_array;
+    // Check GetDegrees
+    degrees_array = feature.GetDegrees({csr}, {&cpu_context});
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(degrees_array[i], degrees[i]);
+    }
+    // Check Extract
+    auto feature_map = feature.Extract(csr, {&cpu_context});
+    // Check map size and type
+    EXPECT_EQ(feature_map.size(), 1);
+    for (auto feat : feature_map){
+        EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
+    }
+    for (int i =0; i<3; i++){
+        EXPECT_EQ(std::any_cast<int*>(feature_map[feature.get_feature_id()])[i], degrees[i]);
+    }
+}
