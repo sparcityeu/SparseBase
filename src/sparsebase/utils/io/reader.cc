@@ -245,7 +245,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
   std::cerr << "Warning: PIGO suppport is not compiled in this build of sparsebase (your system might not be supported)." << std::endl;
   std::cerr << "Defaulting to sequential reader" << std::endl;
-  MTXReader<IDType, NNZType, ValueType> reader(filename_);
+  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
   return reader.ReadCOO();
 #endif
 }
@@ -288,7 +288,7 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #else
   std::cerr << "Warning: PIGO suppport is not compiled in this build of sparsebase (your system might not be supported)." << std::endl;
   std::cerr << "Defaulting to sequential reader" << std::endl;
-  EdgeListReader<IDType, NNZType, ValueType> reader(filename_);
+  EdgeListReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
   return reader.ReadCOO();
 #endif
 }
@@ -380,11 +380,9 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 
 #if !defined(_HEADER_ONLY)
 #include "init/reader.inc"
-#endif
-
-#if defined(USE_PIGO) && !defined(_HEADER_ONLY)
 #include "init/external/pigo.inc"
 #endif
+
 
 } // namespace io
 

@@ -53,7 +53,7 @@ TEST(MTXReader, Basics){
 
   // Read non-weighted file using sparsebase
   sparsebase::utils::io::MTXReader<int,int,int> reader("test.mtx");
-  auto coo = reader.ReadCOO()->As<sparsebase::format::COO<int,int,int>>();
+  auto coo = reader.ReadCOO();
 
   // Check the dimensions
   EXPECT_EQ(coo->get_dimensions()[0], 5);
@@ -66,7 +66,7 @@ TEST(MTXReader, Basics){
 
   // Read the weighted file using sparsebase
   sparsebase::utils::io::MTXReader<int,int,float> reader2("test_values.mtx", true);
-  auto coo2 = reader2.ReadCOO()->As<sparsebase::format::COO<int,int,float>>();
+  auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions
   EXPECT_EQ(coo2->get_dimensions()[0], 5);
@@ -104,7 +104,7 @@ TEST(EdgeListReader, Basics){
 
   // Read it using sparsebase (undirected)
   sparsebase::utils::io::EdgeListReader<int,int,int> reader1("test.edges");
-  auto coo = reader1.ReadCOO()->As<sparsebase::format::COO<int,int,int>>();
+  auto coo = reader1.ReadCOO();
 
   // Check the dimensions (double the edges due to undirected read)
   EXPECT_EQ(coo->get_num_nnz(), 10);
@@ -113,7 +113,7 @@ TEST(EdgeListReader, Basics){
 
   // Read it using sparsebase (directed)
   sparsebase::utils::io::EdgeListReader<int,int,int> reader2("test.edges", false, false, false, false);
-  auto coo2 = reader2.ReadCOO()->As<sparsebase::format::COO<int,int,int>>();
+  auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions
   EXPECT_EQ(coo2->get_num_nnz(), 5);
@@ -122,7 +122,7 @@ TEST(EdgeListReader, Basics){
 
   // Read it using sparsebase (weighted, directed)
   sparsebase::utils::io::EdgeListReader<int,int,float> reader3("test_values.edges", true, false, false, false);
-  auto coo3 = reader3.ReadCOO()->As<sparsebase::format::COO<int,int,float>>();
+  auto coo3 = reader3.ReadCOO();
 
   // Check the dimensions
   EXPECT_EQ(coo3->get_num_nnz(), 5);
@@ -141,6 +141,74 @@ TEST(EdgeListReader, Basics){
   for(int i=0; i<5; i++){
     EXPECT_EQ(values[i], expected_values[i]);
   }
+}
+
+TEST(PigoMTXReader, Basics){
+  // Write the mtx data to a file
+  std::ofstream ofs("test_pigo.mtx");
+  ofs << mtx_data;
+  ofs.close();
+
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_values_pigo.mtx");
+  ofs2 << mtx_data_with_values;
+  ofs2.close();
+
+  sparsebase::utils::io::PigoMTXReader<int,int,int> reader("test_pigo.mtx", false);
+  auto coo = reader.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo->get_dimensions()[0], 5);
+  EXPECT_EQ(coo->get_dimensions()[1], 5);
+  EXPECT_EQ(coo->get_num_nnz(), 5);
+
+  // Check that the arrays are populated
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  sparsebase::utils::io::PigoMTXReader<int,int,float> reader2("test_values_pigo.mtx", true);
+  auto coo2 = reader2.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo2->get_dimensions()[0], 5);
+  EXPECT_EQ(coo2->get_dimensions()[1], 5);
+  EXPECT_EQ(coo2->get_num_nnz(), 5);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo2->get_vals(), nullptr);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+}
+
+TEST(PigoEdgeListReader, Basics){
+  // Write the edge list data to a file
+  std::ofstream ofs("test_pigo.edges");
+  ofs << edge_list_data;
+  ofs.close();
+
+  // Write the edge list data with values to a file
+  std::ofstream ofs2("test_values_pigo.edges");
+  ofs2 << edge_list_data_with_values;
+  ofs2.close();
+
+  sparsebase::utils::io::EdgeListReader<int,int,int> reader("test_pigo.edges");
+  auto coo = reader.ReadCOO();
+
+  // Check the dimensions (double the edges due to undirected read)
+  EXPECT_EQ(coo->get_num_nnz(), 10);
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  sparsebase::utils::io::EdgeListReader<int,int,int> reader2("test_values_pigo.edges", true);
+  auto coo2 = reader2.ReadCOO();
+
+  // Check the dimensions (double the edges due to undirected read)
+  EXPECT_EQ(coo->get_num_nnz(), 10);
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+  EXPECT_NE(coo->get_vals(), nullptr);
+
 }
 
 TEST(BinaryOrderOneReader, Basics){
