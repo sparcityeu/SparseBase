@@ -838,9 +838,6 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
   auto dims = csr->get_dimensions();
-  for (auto dim : dims) {
-    std::cout << dim << std::endl;
-  }
   IDType num_vertices = dims[0];
   NNZType num_edges = csr->get_num_nnz();
   IDType *degrees = new IDType[num_vertices]();
