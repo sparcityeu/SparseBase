@@ -124,7 +124,6 @@ Format *CsrCooMoveConditionalFunction(Format *source, context::Context *) {
 
   auto row = new IDType[nnz];
   auto csr_row_ptr = csr->get_row_ptr();
-  auto csr_col = csr->get_col();
 
   IDType count = 0;
   for (IDType i = 0; i < n; i++) {
@@ -156,7 +155,6 @@ Format *CsrCooMoveFunction(Format *source) {
 
   auto row = new IDType[nnz];
   auto csr_row_ptr = csr->get_row_ptr();
-  auto csr_col = csr->get_col();
 
   IDType count = 0;
   for (IDType i = 0; i < n; i++) {
@@ -191,7 +189,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   ValueType *vals;
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
-  std::fill(col, col + m, 0);
+  std::fill(col, col + nnz, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -256,7 +254,7 @@ Format *CooCsrFunction(Format *source) {
   ValueType *vals;
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
-  std::fill(col, col + m, 0);
+  std::fill(col, col + nnz, 0);
 
   // We need to ensure that they are sorted
   // Maybe add a sort check and then not do this if it is already sorted
@@ -509,7 +507,6 @@ Format *Converter::Convert(Format *source, std::type_index to_type,
                               to_type, to_context, is_move_conversion);
     return conv_func(source, to_context);
   } catch (...) {
-    // TODO: add type here
     throw ConversionException(source->get_format_id().name(), to_type.name());
     // mechanism
   }
