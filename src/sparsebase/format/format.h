@@ -162,7 +162,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class COO : public FormatImplementation<COO<IDType, NNZType, ValueType>> {
 public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col,
-      ValueType *vals, Ownership own = kNotOwned);
+      ValueType *vals, Ownership own = kNotOwned, bool ignore_sort=false);
   COO(const COO<IDType, NNZType, ValueType> &);
   COO(COO<IDType, NNZType, ValueType> &&);
   COO<IDType, NNZType, ValueType> &
@@ -238,7 +238,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class CSR : public FormatImplementation<CSR<IDType, NNZType, ValueType>> {
 public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
-      Ownership own = kNotOwned);
+      Ownership own = kNotOwned, bool ignore_sort = false);
   CSR(const CSR<IDType, NNZType, ValueType> &);
   CSR(CSR<IDType, NNZType, ValueType> &&);
   CSR<IDType, NNZType, ValueType> &

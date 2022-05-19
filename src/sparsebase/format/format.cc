@@ -80,7 +80,7 @@ COO<IDType, NNZType, ValueType>::COO(const COO<IDType, NNZType, ValueType> &rhs)
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
                                      IDType *row, IDType *col, ValueType *vals,
-                                     Ownership own)
+                                     Ownership own, bool ignore_sort)
     : col_(col, BlankDeleter<IDType>()), row_(row, BlankDeleter<IDType>()),
       vals_(vals, BlankDeleter<ValueType>()) {
   this->nnz_ = nnz;
@@ -97,6 +97,46 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
   }
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
       new sparsebase::context::CPUContext);
+
+  bool not_sorted = false;
+  if(!ignore_sort){
+    IDType prev_row = 0;
+    IDType prev_col = 0;
+    for(DimensionType i=0; i<nnz; i++){
+      if(prev_row > row[i] || (prev_row == row[i] && prev_col > col[i])){
+        not_sorted = true;
+        break;
+      }
+      prev_row = row[i];
+      prev_col = col[i];
+    }
+  }
+
+  if(not_sorted){
+    std::cerr << "COO arrays must be sorted. Sorting..." << std::endl;
+    std::vector<std::tuple<IDType, IDType, ValueType>> sort_vec;
+    for(DimensionType i=0; i<nnz; i++){
+      ValueType value = (vals != nullptr) ? vals[i] : 0;
+      sort_vec.emplace_back(row[i], col[i], value);
+    }
+    std::sort(sort_vec.begin(), sort_vec.end(), [](std::tuple<IDType, IDType, ValueType> t1,
+                                                   std::tuple<IDType, IDType, ValueType> t2) {
+      if(std::get<0>(t1) == std::get<0>(t2)){
+        return std::get<1>(t1) < std::get<1>(t2);
+      }
+      return std::get<0>(t1) < std::get<0>(t2);
+    });
+
+    for(DimensionType i=0; i<nnz; i++){
+      auto& t = sort_vec[i];
+      row[i] = std::get<0>(t);
+      col[i] = std::get<1>(t);
+
+      if(vals != nullptr){
+        vals[i] = std::get<2>(t);
+      }
+    }
+  }
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format *COO<IDType, NNZType, ValueType>::Clone() const {
@@ -274,7 +314,7 @@ CSR<IDType, NNZType, ValueType>::CSR(const CSR<IDType, NNZType, ValueType> &rhs)
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
                                      IDType *col, ValueType *vals,
-                                     Ownership own)
+                                     Ownership own, bool ignore_sort)
     : row_ptr_(row_ptr, BlankDeleter<NNZType>()),
       col_(col, BlankDeleter<IDType>()),
       vals_(vals, BlankDeleter<ValueType>()) {
@@ -292,6 +332,53 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
   }
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
       new sparsebase::context::CPUContext);
+
+  if(!ignore_sort){
+    bool not_sorted = false;
+
+#pragma omp parallel for default(none) reduction(||: not_sorted) shared(col, row_ptr, n)
+    for(IDType i=0; i<n; i++){
+        NNZType start = row_ptr[i];
+        NNZType end = row_ptr[i+1];
+        IDType prev_value = 0;
+        for(NNZType j=start; j<end; j++){
+          if(col[j] < prev_value){
+            not_sorted = true;
+            break;
+          }
+          prev_value = col[j];
+        }
+    }
+
+    if(not_sorted){
+      std::cerr << "CSR column array must be sorted. Sorting..." << std::endl;
+
+#pragma omp parallel for default(none) shared(row_ptr, col, vals, n)
+      for(IDType i=0; i<n; i++){
+        NNZType start = row_ptr[i];
+        NNZType end = row_ptr[i+1];
+
+        if(end-start <= 1){
+          continue;
+        }
+
+        std::vector<std::pair<IDType, ValueType>> sort_vec;
+        for(NNZType j=start; j<end; j++){
+          ValueType val = (vals != nullptr) ? vals[j] : 0;
+          sort_vec.emplace_back(col[j], val);
+        }
+        std::sort(sort_vec.begin(), sort_vec.end(), std::less<std::pair<IDType, ValueType>>());
+        for(NNZType j=start; j<end; j++){
+          if(vals != nullptr){
+            vals[j] = sort_vec[j-start].second;
+          }
+          col[j] = sort_vec[j-start].first;
+        }
+      }
+
+    }
+  }
+
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
