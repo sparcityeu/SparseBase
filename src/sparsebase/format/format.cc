@@ -342,7 +342,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
         NNZType end = row_ptr[i+1];
         IDType prev_value = 0;
         for(NNZType j=start; j<end; j++){
-          if(col[j] > prev_value){
+          if(col[j] < prev_value){
             not_sorted = true;
             break;
           }
@@ -353,11 +353,27 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
     if(not_sorted){
       std::cerr << "CSR column array must be sorted. Sorting..." << std::endl;
 
-#pragma omp parallel for default(none) shared(row_ptr, col, n)
+#pragma omp parallel for default(none) shared(row_ptr, col, vals, n)
       for(IDType i=0; i<n; i++){
         NNZType start = row_ptr[i];
         NNZType end = row_ptr[i+1];
-        std::sort(col + start, col + end);
+
+        if(end-start <= 1){
+          continue;
+        }
+
+        std::vector<std::pair<IDType, ValueType>> sort_vec;
+        for(NNZType j=start; j<end; j++){
+          ValueType val = (vals != nullptr) ? vals[j] : 0;
+          sort_vec.emplace_back(col[j], val);
+        }
+        std::sort(sort_vec.begin(), sort_vec.end(), std::less<std::pair<IDType, ValueType>>());
+        for(NNZType j=start; j<end; j++){
+          if(vals != nullptr){
+            vals[j] = sort_vec[j].second;
+          }
+          col[j] = sort_vec[j].first;
+        }
       }
 
     }
