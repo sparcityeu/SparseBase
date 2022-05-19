@@ -72,12 +72,12 @@ add_custom_target(format
 )
 
 if ( RUN_TESTS )
-  execute_process(COMMAND git submodule update --recursive --init
-  ${CMAKE_CURRENT_SOURCE_DIR})
-  add_subdirectory(tests)
+  execute_process(
+    COMMAND git submodule update --recursive --init
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  )
   enable_testing()
-  add_test(NAME sparseformat_tests COMMAND tests/sparseformat_tests.test)
-  add_test(NAME feature_tests COMMAND tests/feature_tests.test)
+  add_subdirectory(tests)
 endif()
 
 # Create the sparseprocess export set
