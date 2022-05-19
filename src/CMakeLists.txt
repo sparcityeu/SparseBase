@@ -44,7 +44,7 @@ if(NOT ${_HEADER_ONLY})
     $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
     # Location of the headers at install time
     $<INSTALL_INTERFACE:include>)
-  target_compile_features(sparsebase PRIVATE cxx_std_17)
+  target_compile_features(sparsebase PUBLIC cxx_std_17)
   target_link_libraries(sparsebase OpenMP::OpenMP_CXX)
 else()
   add_library(sparsebase INTERFACE)

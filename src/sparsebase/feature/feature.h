@@ -44,7 +44,12 @@ template <class ClassType, typename Key = std::vector<std::type_index>,
           typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class ClassMatcherMixin {
 
+#ifdef DEBUG
+public:
+#else
 protected:
+#endif
+
   std::unordered_map<Key, ClassType, KeyHash, KeyEqualTo> map_;
   void RegisterClass(std::vector<std::type_index> instants, ClassType);
   std::tuple<ClassType, std::vector<std::type_index>>
@@ -57,8 +62,8 @@ protected:
   GetClasses(std::unordered_map<std::type_index, ClassType> &source);
 };
 
-
-//! Extractor provides an interface for users to generate multiple features optimally with a single call.
+//! Extractor provides an interface for users to generate multiple features
+//! optimally with a single call.
 /*!
  *  Detailed
  */
@@ -70,21 +75,23 @@ public:
     Detailed Description.
     \param features vector of features to extract.
     \param format a format to be used as the data source.
-    \param con vector of contexts to be used to determine the where the computation will take place.
-    \return void
+    \param con vector of contexts to be used to determine the where the
+    computation will take place. \return void
   */
   static std::unordered_map<std::type_index, std::any>
   Extract(std::vector<Feature> &features, format::Format *format,
           const std::vector<context::Context *> &);
-  std::unordered_map<std::type_index, std::any>
-  //! Calculates the features that are added to in_ private data member.
-  /*!
-    Detailed Description.
-    \param format a format to be used as the data source.
-    \param con vector of contexts to be used to determine the where the computation will take place.
-    \return void
-  */
-  Extract(format::Format *format, const std::vector<context::Context *> & con);
+  std::
+      unordered_map<std::type_index, std::any>
+      //! Calculates the features that are added to in_ private data member.
+      /*!
+        Detailed Description.
+        \param format a format to be used as the data source.
+        \param con vector of contexts to be used to determine the where the
+        computation will take place. \return void
+      */
+      Extract(format::Format *format,
+              const std::vector<context::Context *> &con);
   //! Adds a feature to private in_ data member.
   /*!
     Detailed Description.
@@ -111,17 +118,19 @@ public:
     \return void
   */
   void PrintFuncList();
+  std::vector<preprocess::ExtractableType *> GetFuncList();
 
 protected:
   Extractor() noexcept = default;
 
 private:
-  //! Stores the features that are going to be extracted once the Extract function is called.
+  //! Stores the features that are going to be extracted once the Extract
+  //! function is called.
   /*!
    *  Detailed
    */
-    std::unordered_map<std::type_index, preprocess::ExtractableType *> in_;
-  };
+  std::unordered_map<std::type_index, preprocess::ExtractableType *> in_;
+};
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>

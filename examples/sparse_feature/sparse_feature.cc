@@ -47,6 +47,9 @@ int main(int argc, char *argv[]) {
     }
     engine.Add(feature::Feature(degrees{}));
     engine.Add(feature::Feature(degree_dist{}));
+    //engine.Add(feature::Feature(
+    //    preprocess::Degrees_DegreeDistribution<vertex_type, edge_type,
+    //                                           value_type, feature_type>{}));
 
     // print features to be extracted
     auto fs = engine.GetList();

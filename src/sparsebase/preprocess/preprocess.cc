@@ -94,7 +94,6 @@ bool FunctionMatcherMixin<
   } else {
     match = false;
   }
-  std::cout << "Match :" << match << std::endl;
   return match;
 }
 //! Return the correct function for the operation and a conversion schema to
@@ -322,7 +321,6 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   CSR<IDType, NNZType, ValueType> *csr =
       formats[0]->As<CSR<IDType, NNZType, ValueType>>();
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
-  std::cout << cast_params->hyperparameter;
   IDType n = csr->get_dimensions()[0];
   IDType *counts = new IDType[n]();
   auto row_ptr = csr->get_row_ptr();
@@ -341,13 +339,9 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
-  IDType *inv_sorted = new IDType[n];
-  for (IDType i = 0; i < n; i++)
-    inv_sorted[sorted[i]] = i;
   delete[] mr;
   delete[] counts;
-  delete[] sorted;
-  return inv_sorted;
+  return sorted;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
@@ -890,10 +884,38 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
                            FeatureType>::Degrees_DegreeDistribution() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
-  this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+  this->Register();
+  // this->RegisterFunction(
+  //     {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void Degrees_DegreeDistribution<IDType, NNZType, ValueType,
+                                FeatureType>::Register() {
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
+    Degrees_DegreeDistribution(const Degrees_DegreeDistribution<
+                               IDType, NNZType, ValueType, FeatureType> &d) {
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
+    Degrees_DegreeDistribution(const std::shared_ptr<Params> r) {
+  Register();
+  this->params_ = r;
+  this->pmap_[get_feature_id_static()] = r;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,

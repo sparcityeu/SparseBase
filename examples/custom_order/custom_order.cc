@@ -41,13 +41,9 @@ vertex_type *degree_reorder_csr(std::vector<format::Format *> formats,
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
-  vertex_type *inv_sorted = new vertex_type[n];
-  for (vertex_type i = 0; i < n; i++)
-    inv_sorted[sorted[i]] = i;
   delete[] mr;
   delete[] counts;
-  delete[] sorted;
-  return inv_sorted;
+  return sorted;
 }
 int main(int argc, char *argv[]) {
   if (argc < 2) {
