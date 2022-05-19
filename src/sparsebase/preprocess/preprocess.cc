@@ -275,7 +275,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
 template <typename IDType, typename NNZType, typename ValueType>
 GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {}
 template <typename IDType, typename NNZType, typename ValueType>
-DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(int hyperparameter) {
+DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
   // this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
   this->SetConverter(
@@ -284,7 +284,7 @@ DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(int hyperparameter) {
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
       CalculateReorderCSR);
   this->params_ = std::unique_ptr<DegreeReorderParams>(
-      new DegreeReorderParams(hyperparameter));
+      new DegreeReorderParams(ascending));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *ReorderPreprocessType<IDType, NNZType, ValueType>::GetReorder(
@@ -321,6 +321,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   CSR<IDType, NNZType, ValueType> *csr =
       formats[0]->As<CSR<IDType, NNZType, ValueType>>();
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
+  bool ascending = cast_params->ascending;
   IDType n = csr->get_dimensions()[0];
   IDType *counts = new IDType[n]();
   auto row_ptr = csr->get_row_ptr();
@@ -338,6 +339,13 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     IDType ec = counts[row_ptr[u + 1] - row_ptr[u]];
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
+  }
+  if (!ascending){
+    for (IDType i = 0; i < n/2; i++){
+      IDType swp = sorted[i];
+      sorted[i] = sorted[n-i-1];
+      sorted[n-i-1] = swp;
+    }
   }
   delete[] mr;
   delete[] counts;
