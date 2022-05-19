@@ -370,9 +370,9 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
         std::sort(sort_vec.begin(), sort_vec.end(), std::less<std::pair<IDType, ValueType>>());
         for(NNZType j=start; j<end; j++){
           if(vals != nullptr){
-            vals[j] = sort_vec[j].second;
+            vals[j] = sort_vec[j-start].second;
           }
-          col[j] = sort_vec[j].first;
+          col[j] = sort_vec[j-start].first;
         }
       }
 
