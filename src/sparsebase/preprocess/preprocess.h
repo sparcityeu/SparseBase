@@ -374,9 +374,9 @@ protected:
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
-  struct DegreeDistributionParams : PreprocessParams {};
 
 public:
+  struct DegreeDistributionParams : PreprocessParams {};
   DegreeDistribution();
   DegreeDistribution(const DegreeDistribution &);
   DegreeDistribution(std::shared_ptr<DegreeDistributionParams>);
@@ -433,9 +433,9 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType>
 class Degrees : public FeaturePreprocessType<IDType *> {
-  struct DegreesParams : PreprocessParams {};
 
 public:
+  struct DegreesParams : PreprocessParams {};
   Degrees();
   Degrees(const Degrees<IDType, NNZType, ValueType> &d);
   Degrees(std::shared_ptr<DegreesParams>);

@@ -855,6 +855,10 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});
+  std::shared_ptr<PreprocessParams> deg_dist_param(new typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistributionParams);
+  std::shared_ptr<PreprocessParams> degs_param(new typename Degrees<IDType, NNZType, ValueType>::DegreesParams);
+  this->pmap_[DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()] = deg_dist_param;
+  this->pmap_[Degrees<IDType, NNZType, ValueType>::get_feature_id_static()] = degs_param;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -894,7 +898,7 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
           DegreeDistribution<IDType, NNZType, ValueType,
                              FeatureType>::get_feature_id_static()) !=
       this->pmap_.end()) {
-    f1->set_params(
+    f2->set_params(
         DegreeDistribution<IDType, NNZType, ValueType,
                            FeatureType>::get_feature_id_static(),
         this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
