@@ -70,6 +70,23 @@ void compare_csr(format::CSR<IDType, NNZType, ValueType>* correct, format::CSR<I
     EXPECT_EQ(correct_col[i], testing_col[i]);
   }
 }
+template <typename V, typename E, typename O, typename L>
+void confirm_renumbered_csr(V* xadj, V* renumbered_xadj, E* adj, E* renumbered_adj, O* inverse_order, L n) {
+  auto order = new E[n];
+  for (L i = 0; i < n; i++){
+    order[inverse_order[i]] = i;
+  }
+  for (L i = 0; i < n; i++) {
+    EXPECT_EQ(xadj[i + 1] - xadj[i], renumbered_xadj[inverse_order[i] + 1] - renumbered_xadj[inverse_order[i]]);
+    std::set<V> edges;
+    for (E edge = xadj[i]; edge < xadj[i + 1]; edge++) {
+      edges.insert(inverse_order[adj[edge]]);
+    }
+    for (E edge = renumbered_xadj[inverse_order[i]]; edge < renumbered_xadj[inverse_order[i]+1]; edge++){
+      EXPECT_NE(edges.find(renumbered_adj[edge]), edges.end());
+    }
+  }
+}
 TEST(TypeIndexHash, Basic){
   TypeIndexVectorHash hasher;
   // Empty vector
@@ -262,6 +279,50 @@ TEST(RCMReorderTest, BasicTest){
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
   check_reorder(order, n);
 }
+
+TEST(TransformTest, ConversionNoParam){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  sparsebase::preprocess::Transform<int, int, int> transformer(order);
+  auto transformed_format = transformer.GetTransformation(&global_coo, {&cpu_context})->As<format::CSR<int, int, int>>();
+  confirm_renumbered_csr(global_csr.get_row_ptr(), transformed_format->get_row_ptr(), global_csr.get_col(), transformed_format->get_col(), order, n);
+}
+
+TEST(TransformTest, NoConversionParam){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorder(&global_csr, {&cpu_context});
+  sparsebase::preprocess::Transform<int, int, int> transformer(nullptr);
+  sparsebase::preprocess::Transform<int, int, int>::TransformParams params(order);
+  auto transformed_format = transformer.GetTransformation(&global_csr, &params, {&cpu_context})->As<format::CSR<int, int, int>>();
+  confirm_renumbered_csr(global_csr.get_row_ptr(), transformed_format->get_row_ptr(), global_csr.get_col(), transformed_format->get_col(), order, n);
+}
+
+TEST(TransformTest, ConversionParamCached){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  sparsebase::preprocess::Transform<int, int, int> transformer(nullptr);
+  sparsebase::preprocess::Transform<int, int, int>::TransformParams params(order);
+  auto transformed_output = transformer.GetTransformationCached(&global_coo, &params, {&cpu_context});
+  auto transformed_format = get<1>(transformed_output)->As<format::CSR<int, int, int>>();
+  confirm_renumbered_csr(global_csr.get_row_ptr(), transformed_format->get_row_ptr(), global_csr.get_col(), transformed_format->get_col(), order, n);
+  EXPECT_EQ(get<0>(transformed_output).size(), 1);
+  ASSERT_NE(get<0>(transformed_output)[0], nullptr);
+  auto cached_format = get<0>(transformed_output)[0]->As<format::CSR<int, int, int>>();
+  compare_csr(&global_csr, cached_format);
+}
+
+TEST(TransformTest, NoConversionNoParamCached){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  sparsebase::preprocess::Transform<int, int, int> transformer(nullptr);
+  sparsebase::preprocess::Transform<int, int, int>::TransformParams params(order);
+  auto transformed_output = transformer.GetTransformationCached(&global_csr, &params, {&cpu_context});
+  auto transformed_format = get<1>(transformed_output)->As<format::CSR<int, int, int>>();
+  confirm_renumbered_csr(global_csr.get_row_ptr(), transformed_format->get_row_ptr(), global_csr.get_col(), transformed_format->get_col(), order, n);
+  EXPECT_EQ(get<0>(transformed_output).size(), 1);
+  ASSERT_EQ(get<0>(transformed_output)[0], nullptr);
+}
+
 class Degrees_DegreeDistributionTest : public ::testing::Test {
 protected:
     Degrees_DegreeDistribution<int, int, int, float> feature;

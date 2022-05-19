@@ -552,9 +552,22 @@ TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, format::Format *>
+TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
+        Format *csr, PreprocessParams* params, std::vector<context::Context *> contexts) {
+  return this->CachedExecute(params, (this->sc_.get()), contexts, csr);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 Format *TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
     Format *csr, std::vector<context::Context *> contexts) {
   return this->Execute(this->params_.get(), (this->sc_.get()), contexts, csr);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+Format *TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
+        Format *csr, PreprocessParams* params, std::vector<context::Context *> contexts) {
+  return this->Execute(params, (this->sc_.get()), contexts, csr);
 }
 
 template <typename FeatureType>

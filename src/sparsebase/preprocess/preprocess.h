@@ -336,24 +336,59 @@ public:
 protected:
   static IDType peripheral(NNZType *xadj, IDType *adj, IDType n, IDType start,
                            SignedID *distance, IDType *Q);
-    //! An implementation function that will reorder a CSR format
-    /*!
-     *
-     * @param formats a vector containing a single Format object of type CSR
-     * @param params a polymorphic pointer at a `RCMReorderParams` object
-     * @return an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
-     */
+  //! An implementation function that will reorder a CSR format
+  /*!
+   *
+   * @param formats a vector containing a single Format object of type CSR
+   * @param params a polymorphic pointer at a `RCMReorderParams` object
+   * @return an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+   */
   static IDType *GetReorderCSR(std::vector<format::Format *> formats,
                                PreprocessParams *);
 };
 
+//! Transforms a format according to an inverse permutation of its rows/columns
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType : public FunctionMatcherMixin<format::Format *> {
 public:
+    //! Transforms `format` to a new format according to an inverse permutation using one of the contexts in `contexts`
+    /*!
+     *
+     * @param format the Format object that will be transformed.
+     * @param contexts vector of contexts that can be used for generating transformation.
+     * @return a transformed Format object
+     */
   format::Format *GetTransformation(format::Format *csr,
                                     std::vector<context::Context *>);
+    //! Transforms `format` to a new format according to an inverse permutation using one of the contexts in `contexts`
+    /*!
+     *
+     * @param format the Format object that will be transformed.
+     * @param params a polymorphic pointer at a params object
+     * @param contexts vector of contexts that can be used for generating transformation.
+     * @return a transformed Format object
+     */
+    format::Format *GetTransformation(format::Format *csr, PreprocessParams* params,
+                                      std::vector<context::Context *>);
+  //! Transforms `format` to a new format according to an inverse permutation using one of the contexts in `contexts`
+  /*!
+   *
+   * @param format the Format object that will be transformed.
+   * @param contexts vector of contexts that can be used for generating transformation.
+   * @return A tuple with the first element being a vector of Format*, where each pointer in the output points at the format that the corresponds Format object from the the input was converted to. If an input Format wasn't converted, the output pointer will point at nullptr. The second element is a transformed Format object.
+   */
   std::tuple<std::vector<format::Format *>, format::Format *>
   GetTransformationCached(format::Format *csr, std::vector<context::Context *>);
+    //! Transforms `format` to a new format according to an inverse permutation using one of the contexts in `contexts`
+    /*!
+     *
+     * @param format the Format object that will be transformed.
+     * @param params a polymorphic pointer at a params object
+     * @param contexts vector of contexts that can be used for generating transformation.
+     * @return A tuple with the first element being a vector of Format*, where each pointer in the output points at the format that the corresponds Format object from the the input was converted to. If an input Format wasn't converted, the output pointer will point at nullptr. The second element is a transformed Format object.
+     */
+    std::tuple<std::vector<format::Format *>, format::Format *>
+    GetTransformationCached(format::Format *csr, PreprocessParams* params, std::vector<context::Context *>);
   virtual ~TransformPreprocessType();
 };
 
@@ -367,6 +402,13 @@ public:
   };
 
 protected:
+  //! An implementation function that will transform a CSR format into another CSR
+  /*!
+   *
+   * @param formats a vector containing a single Format object of type CSR
+   * @param params a polymorphic pointer at a `TransformParams` object
+   * @return a transformed Format object of type CSR
+   */
   static format::Format *TransformCSR(std::vector<format::Format *> formats,
                                       PreprocessParams *);
 };
