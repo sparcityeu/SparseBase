@@ -337,11 +337,11 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
     bool not_sorted = false;
 
 #pragma omp parallel for default(none) reduction(||: not_sorted) shared(col, row_ptr, n)
-    for(NNZType i=0; i<n; i++){
+    for(IDType i=0; i<n; i++){
         NNZType start = row_ptr[i];
         NNZType end = row_ptr[i+1];
         IDType prev_value = 0;
-        for(IDType j=start; j<end; j++){
+        for(NNZType j=start; j<end; j++){
           if(col[j] > prev_value){
             not_sorted = true;
             break;
