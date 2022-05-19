@@ -447,6 +447,11 @@ public:
   ~JaccardWeights();
 };
 
+//! Find the degree distribution of the graph representation of a format object
+/*!
+ *
+ * @tparam FeatureType the type in which the distribution value are returned -- should be a floating type
+ */
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
@@ -507,6 +512,7 @@ protected:
   void Register();
 };
 
+//! Count the degrees of every vertex in the graph representation of a format object
 template <typename IDType, typename NNZType, typename ValueType>
 class Degrees : public FeaturePreprocessType<IDType *> {
 
@@ -544,6 +550,7 @@ protected:
   void Register();
 };
 
+//! Find the degree and degree distribution of each vertex in the graph representation of a format object
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class Degrees_DegreeDistribution
