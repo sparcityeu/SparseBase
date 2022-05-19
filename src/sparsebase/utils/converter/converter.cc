@@ -43,7 +43,7 @@ Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
     }
   }
 
-  for (IDType i = 0; i < m; i++) {
+  for (IDType i = 0; i < nnz; i++) {
     col[i] = csr_col[i];
   }
 
@@ -65,53 +65,7 @@ Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
 
   return coo;
 }
-template <typename IDType, typename NNZType, typename ValueType>
-Format *CsrCooFunction(Format *source) {
-  auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
 
-  std::vector<DimensionType> dimensions = csr->get_dimensions();
-  IDType n = dimensions[0];
-  IDType m = dimensions[1];
-  NNZType nnz = csr->get_num_nnz();
-
-  auto col = new IDType[nnz];
-  auto row = new IDType[nnz];
-  auto csr_row_ptr = csr->get_row_ptr();
-  auto csr_col = csr->get_col();
-
-  IDType count = 0;
-  for (IDType i = 0; i < n; i++) {
-    IDType start = csr_row_ptr[i];
-    IDType end = csr_row_ptr[i + 1];
-
-    for (IDType j = start; j < end; j++) {
-      row[count] = i;
-      count++;
-    }
-  }
-
-  for (IDType i = 0; i < m; i++) {
-    col[i] = csr_col[i];
-  }
-
-  // if (csr->vals != nullptr)
-  ValueType *vals = nullptr;
-  if constexpr (!std::is_same_v<void, ValueType>) {
-    if (csr->get_vals() != nullptr) {
-      vals = new ValueType[nnz];
-      auto csr_vals = csr->get_vals();
-      for (NNZType i = 0; i < nnz; i++) {
-        vals[i] = csr_vals[i];
-      }
-    } else {
-      vals = nullptr;
-    }
-  }
-  auto *coo =
-      new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals, kOwned);
-
-  return coo;
-}
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CsrCooMoveConditionalFunction(Format *source, context::Context *) {
   auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
@@ -124,39 +78,6 @@ Format *CsrCooMoveConditionalFunction(Format *source, context::Context *) {
 
   auto row = new IDType[nnz];
   auto csr_row_ptr = csr->get_row_ptr();
-  auto csr_col = csr->get_col();
-
-  IDType count = 0;
-  for (IDType i = 0; i < n; i++) {
-    IDType start = csr_row_ptr[i];
-    IDType end = csr_row_ptr[i + 1];
-
-    for (IDType j = start; j < end; j++) {
-      row[count] = i;
-      count++;
-    }
-  }
-
-  // if (csr->vals != nullptr)
-  auto *coo =
-      new COO<IDType, NNZType, ValueType>(n, m, nnz, row, col, vals, kOwned);
-
-  return coo;
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-Format *CsrCooMoveFunction(Format *source) {
-  auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
-  auto col = csr->release_col();
-  auto vals = csr->release_vals();
-  std::vector<DimensionType> dimensions = csr->get_dimensions();
-  IDType n = dimensions[0];
-  IDType m = dimensions[1];
-  NNZType nnz = csr->get_num_nnz();
-
-  auto row = new IDType[nnz];
-  auto csr_row_ptr = csr->get_row_ptr();
-  auto csr_col = csr->get_col();
 
   IDType count = 0;
   for (IDType i = 0; i < n; i++) {
@@ -187,24 +108,15 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
   auto coo_col = coo->get_col();
   auto coo_row = coo->get_row();
   NNZType *row_ptr = new NNZType[n + 1];
-  IDType *col = new IDType[m];
+  IDType *col = new IDType[nnz];
   ValueType *vals;
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
-  std::fill(col, col + m, 0);
+  std::fill(col, col + nnz, 0);
 
-  // We need to ensure that they are sorted
-  // Maybe add a sort check and then not do this if it is already sorted
-  std::vector<std::pair<IDType, IDType>> edges;
-  edges.reserve(nnz);
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(coo_col[i], coo_row[i]);
-  }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
-
-  for (IDType i = 0; i < m; i++) {
-    col[i] = edges[i].second;
-    row_ptr[edges[i].first]++;
+    col[i] = coo_col[i];
+    row_ptr[coo_row[i]]++;
   }
 
   for (IDType i = 1; i <= n; i++) {
@@ -235,72 +147,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
       new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
   return csr;
 }
-// Ai -> row indices -> col
-// Aj -> col indices -> is
-// Ax -> nnz values -> vals
 
-// Bp -> row -> row_ptr
-// Bj -> col -> col
-// Bx -> nnz -> vals
-template <typename IDType, typename NNZType, typename ValueType>
-Format *CooCsrFunction(Format *source) {
-  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
-
-  std::vector<DimensionType> dimensions = coo->get_dimensions();
-  IDType n = dimensions[0];
-  IDType m = dimensions[1];
-  NNZType nnz = coo->get_num_nnz();
-  auto coo_col = coo->get_col();
-  auto coo_row = coo->get_row();
-  NNZType *row_ptr = new NNZType[n + 1];
-  IDType *col = new IDType[m];
-  ValueType *vals;
-
-  std::fill(row_ptr, row_ptr + n + 1, 0);
-  std::fill(col, col + m, 0);
-
-  // We need to ensure that they are sorted
-  // Maybe add a sort check and then not do this if it is already sorted
-  std::vector<std::pair<IDType, IDType>> edges;
-  edges.reserve(nnz);
-  for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(coo_col[i], coo_row[i]);
-  }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
-
-  for (IDType i = 0; i < m; i++) {
-    col[i] = edges[i].second;
-    row_ptr[edges[i].first]++;
-  }
-
-  for (IDType i = 1; i <= n; i++) {
-    row_ptr[i] += row_ptr[i - 1];
-  }
-
-  for (IDType i = n; i > 0; i--) {
-    row_ptr[i] = row_ptr[i - 1];
-  }
-  row_ptr[0] = 0;
-
-  if constexpr (!std::is_same_v<void, ValueType>) {
-    if (coo->get_vals() != nullptr) {
-      vals = new ValueType[nnz];
-      auto coo_vals = coo->get_vals();
-      std::fill(vals, vals + nnz, 0);
-      for (NNZType i = 0; i < nnz; i++) {
-        vals[i] = coo_vals[i];
-      }
-    } else {
-      vals = nullptr;
-    }
-  } else {
-    vals = nullptr;
-  }
-
-  auto csr =
-      new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
-  return csr;
-}
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
   auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
@@ -316,62 +163,8 @@ Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
 
   std::fill(row_ptr, row_ptr + n + 1, 0);
 
-  // We need to ensure that they are sorted
-  // Maybe add a sort check and then not do this if it is already sorted
-  std::vector<std::pair<IDType, IDType>> edges;
-  edges.reserve(nnz);
   for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(col[i], coo_row[i]);
-  }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
-
-  for (IDType i = 0; i < m; i++) {
-    row_ptr[edges[i].first]++;
-  }
-
-  for (IDType i = 1; i <= n; i++) {
-    row_ptr[i] += row_ptr[i - 1];
-  }
-
-  for (IDType i = n; i > 0; i--) {
-    row_ptr[i] = row_ptr[i - 1];
-  }
-  row_ptr[0] = 0;
-
-  auto csr =
-      new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
-  return csr;
-}
-
-#ifdef CUDA
-#endif
-
-template <typename IDType, typename NNZType, typename ValueType>
-Format *CooCsrMoveFunction(Format *source) {
-  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
-
-  std::vector<DimensionType> dimensions = coo->get_dimensions();
-  IDType n = dimensions[0];
-  IDType m = dimensions[1];
-  NNZType nnz = coo->get_num_nnz();
-  auto coo_row = coo->get_row();
-  NNZType *row_ptr = new NNZType[n + 1];
-  IDType *col = coo->release_col();
-  ValueType *vals = coo->release_vals();
-
-  std::fill(row_ptr, row_ptr + n + 1, 0);
-
-  // We need to ensure that they are sorted
-  // Maybe add a sort check and then not do this if it is already sorted
-  std::vector<std::pair<IDType, IDType>> edges;
-  edges.reserve(nnz);
-  for (IDType i = 0; i < nnz; i++) {
-    edges.emplace_back(col[i], coo_row[i]);
-  }
-  sort(edges.begin(), edges.end(), std::less<std::pair<IDType, IDType>>());
-
-  for (IDType i = 0; i < m; i++) {
-    row_ptr[edges[i].first]++;
+    row_ptr[coo_row[i]]++;
   }
 
   for (IDType i = 1; i <= n; i++) {
@@ -453,13 +246,13 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
   this->RegisterConditionalConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      CooCsrFunctionConditional<IDType, NNZType, ValueType>,
+      CooCsrMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; },
       true);
   this->RegisterConditionalConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      CsrCooFunctionConditional<IDType, NNZType, ValueType>,
+      CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; },
       true);
 }
@@ -513,7 +306,6 @@ Format *Converter::Convert(Format *source, std::type_index to_type,
                               to_type, to_context, is_move_conversion);
     return conv_func(source, to_context);
   } catch (...) {
-    // TODO: add type here
     throw ConversionException(source->get_format_id().name(), to_type.name());
     // mechanism
   }
@@ -547,7 +339,7 @@ ConditionalConversionFunction Converter::GetConversionFunction(
 std::tuple<bool, context::Context *>
 Converter::CanConvert(std::type_index from_type, context::Context *from_context,
                       std::type_index to_type,
-                      std::vector<context::Context *> to_contexts,
+                      const std::vector<context::Context *>& to_contexts,
                       bool is_move_conversion) {
   auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
