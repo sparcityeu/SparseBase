@@ -347,9 +347,14 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
       sorted[n-i-1] = swp;
     }
   }
+  auto * inverse_permutation = new IDType[n];
+  for (IDType i = 0; i < n; i++){
+      inverse_permutation[sorted[i]] = i;
+  }
   delete[] mr;
   delete[] counts;
-  return sorted;
+  delete[] sorted;
+  return inverse_permutation;
 }
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
