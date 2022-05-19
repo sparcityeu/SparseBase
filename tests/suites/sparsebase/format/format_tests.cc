@@ -219,6 +219,15 @@ TEST(COO, Sort){
     EXPECT_EQ(coo2.get_vals()[i], coo_vals_shuffled2[i]);
   }
 
+  int coo_row_shuffled3[4]{0,0,3,1};
+  int coo_col_shuffled3[4]{2,0,3,1};
+  sparsebase::format::COO<int,int,int> coo3(4,4,4,coo_row_shuffled3, coo_col_shuffled3, nullptr, sparsebase::format::kNotOwned);
+
+  EXPECT_EQ(coo3.get_vals(), nullptr);
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(coo3.get_row()[i], coo_row[i]);
+    EXPECT_EQ(coo3.get_col()[i], coo_col[i]);
+  }
 }
 
 TEST(CSR, Sort){
@@ -241,5 +250,15 @@ TEST(CSR, Sort){
     EXPECT_EQ(csr2.get_col()[i], csr_col_shuffled2[i]);
     EXPECT_EQ(csr2.get_vals()[i], csr_vals_shuffled2[i]);
   }
+
+  int csr_row_ptr_shuffled3[5]{0,2,3,3,4};
+  int csr_col_shuffled3[4]{2,0,1,3};
+  sparsebase::format::CSR<int,int,int> csr3(4,4,csr_row_ptr_shuffled3, csr_col_shuffled3, nullptr, sparsebase::format::kNotOwned);
+
+  EXPECT_EQ(csr3.get_vals(), nullptr);
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(csr3.get_col()[i], csr_col[i]);
+  }
+
 
 }
