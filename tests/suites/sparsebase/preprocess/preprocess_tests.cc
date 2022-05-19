@@ -11,14 +11,65 @@
 #include <typeinfo>
 #include <vector>
 #include <tuple>
+#include <set>
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
-int xadj[4] = {0, 2, 3, 4};
-int adj[4] = {1,2,0,0};
-int is[4] = {0, 0, 1, 2};
-float distribution[3] = {2.0/4, 1.0/4, 1.0/4};
-int degrees[3] = {2, 1, 1};
+const int n = 3;
+const int nnz = 4;
+int row_ptr[n+1] = {0, 2, 3, 4};
+int cols[nnz] = {1,2,0,0};
+int rows[nnz] = {0, 0, 1, 2};
+float distribution[n] = {2.0/nnz, 1.0/nnz, 1.0/nnz};
+int degrees[n] = {2, 1, 1};
+format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, nullptr, format::kNotOwned);
+format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, nullptr, format::kNotOwned);
 sparsebase::context::CPUContext cpu_context;
+
+template <typename IDType>
+void check_degree_ordering(IDType* order, IDType n, IDType* row_ptr, bool ascending=true){
+  auto * permutation = new IDType[n];
+  for (IDType i = 0; i < n; i++){
+    permutation[order[i]] = i;
+  }
+  bool order_is_correct = true;
+  std::set<IDType> check;
+  for (IDType new_u = 0; new_u < n - 1 && order_is_correct; new_u++) {
+    IDType u = permutation[new_u];
+    EXPECT_EQ(check.find(u), check.end());
+    check.insert(u);
+    IDType v = permutation[new_u+1];
+    if (ascending)
+      EXPECT_LE(row_ptr[u + 1] - row_ptr[u], row_ptr[v + 1] - row_ptr[v]);
+    else
+      EXPECT_GE(row_ptr[u + 1] - row_ptr[u], row_ptr[v + 1] - row_ptr[v]);
+  }
+  IDType v = permutation[n - 1];
+  EXPECT_EQ(check.find(v), check.end());
+  check.insert(v);
+  delete [] permutation;
+}
+template <typename IDType>
+void check_reorder(IDType* order, IDType n){
+ std::set<IDType> vertices;
+ for (IDType i = 0; i < n; i++){
+   EXPECT_EQ(vertices.find(order[i]), vertices.end());
+   vertices.insert(order[i]);
+ }
+}
+template <typename IDType, typename NNZType, typename ValueType>
+void compare_csr(format::CSR<IDType, NNZType, ValueType>* correct, format::CSR<IDType, NNZType, ValueType>* testing){
+  auto correct_row_ptr = correct->get_row_ptr();
+  auto correct_col = correct->get_col();
+  auto testing_row_ptr = testing->get_row_ptr();
+  auto testing_col = testing->get_col();
+
+  for (int i =0; i<nnz;i++){
+    EXPECT_EQ(correct_row_ptr[i], testing_row_ptr[i]);
+  }
+  for (int i =0; i<nnz;i++) {
+    EXPECT_EQ(correct_col[i], testing_col[i]);
+  }
+}
 TEST(TypeIndexHash, Basic){
   TypeIndexVectorHash hasher;
   // Empty vector
@@ -59,11 +110,6 @@ TEST(ConverterMixin, Basics){
 class FunctionMatcherMixinTest : public ::testing::Test {
   protected:
     GenericPreprocessType<int> concrete_preprocess;
-    sparsebase::format::CSR<int, int, int>* csr;
-
-  void SetUp() override{
-    csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
-  }
 
   static int OneImplementationFunction(std::vector<format::Format*> inputs, PreprocessParams*){
     return 1;
@@ -77,9 +123,6 @@ class FunctionMatcherMixinTest : public ::testing::Test {
   static int FourImplementationFunction(std::vector<format::Format*> inputs, PreprocessParams*){
     return 4;
   }
-  void TearDown() override{
-      delete csr;
-  }
   struct GenericParams : PreprocessParams {
     GenericParams(int p): param(p){}
     int param;
@@ -87,6 +130,7 @@ class FunctionMatcherMixinTest : public ::testing::Test {
 };
 
 TEST_F(FunctionMatcherMixinTest, BlackBox){
+  format::CSR<int, int, int>* csr = &global_csr;
   // Check calling with an empty map
   EXPECT_THROW(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}), utils::FunctionNotFoundException);
 
@@ -142,35 +186,86 @@ TEST_F(FunctionMatcherMixinTest, BlackBox){
 }
 
 TEST(DegreeReorder, AscendingOrder){
-  sparsebase::context::CPUContext cpu_context;
-  sparsebase::format::CSR<int, int, int> csr(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(true);
-  auto order = reorder.GetReorder(&csr, {&cpu_context});
-  auto perm = new int[3];
-  for (int i =0; i< 3; i++){
-      perm[order[i]] = i;
-  }
-  for (int i =0; i< 2; i++){
-    auto u = perm[i];
-    auto v = perm[i+1];
-    EXPECT_GE(xadj[v+1]-xadj[v], xadj[u+1]-xadj[u]);
-  }
+  auto order = reorder.GetReorder(&global_csr, {&cpu_context});
+  check_degree_ordering(order, n, row_ptr);
+}
+TEST(DegreeReorder, DescendingOrder){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorder(&global_csr, {&cpu_context});
+  check_degree_ordering(order, n, row_ptr, false);
+}
+TEST(DegreeReorder, TwoParamsConversion){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  check_degree_ordering(order, n, row_ptr, false);
+}
+TEST(ReorderTypeTest, DescendingWithParams){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(true);
+  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(false);
+  auto order = reorder.GetReorder(&global_csr, &param, {&cpu_context});
+  check_degree_ordering(order, n, row_ptr, false);
+}
+TEST(ReorderTypeTest, AscendingWithParams){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(true);
+  auto order = reorder.GetReorder(&global_csr, &param, {&cpu_context});
+  check_degree_ordering(order, n, row_ptr, true);
+}
+TEST(ReorderTypeTest, NoCachConversion){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(true);
+  auto order = reorder.GetReorder(&global_coo, &param, {&cpu_context});
+  check_degree_ordering(order, n, row_ptr, true);
+}
+
+TEST(ReorderTypeTest, CachedNoConversion){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(true);
+  auto order = reorder.GetReorderCached(&global_csr, &param, {&cpu_context});
+  check_degree_ordering(get<1>(order), n, row_ptr, true);
+  EXPECT_EQ(get<0>(order).size(), 1);
+  EXPECT_EQ(get<0>(order)[0], nullptr);
+}
+
+TEST(ReorderTypeTest, CachedConversionTwoParams){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorderCached(&global_coo, {&cpu_context});
+  check_degree_ordering(get<1>(order), n, row_ptr, false);
+  EXPECT_EQ(get<0>(order).size(), 1);
+  EXPECT_NE(get<0>(order)[0], nullptr);
+  auto cached_csr = get<0>(order)[0]->As<format::CSR<int, int, int>>();
+  compare_csr(&global_csr, cached_csr);
+}
+
+TEST(ReorderTypeTest, CachedNoConversionTwoParams){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  auto order = reorder.GetReorderCached(&global_csr, {&cpu_context});
+  check_degree_ordering(get<1>(order), n, row_ptr, false);
+  EXPECT_EQ(get<0>(order).size(), 1);
+  EXPECT_EQ(get<0>(order)[0], nullptr);
+}
+
+TEST(ReorderTypeTest, CachedConversion){
+  sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
+  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(true);
+  auto order = reorder.GetReorderCached(&global_coo, &param, {&cpu_context});
+  check_degree_ordering(get<1>(order), n, row_ptr, true);
+  EXPECT_EQ(get<0>(order).size(), 1);
+  EXPECT_NE(get<0>(order)[0], nullptr);
+  auto cached_csr = get<0>(order)[0]->As<format::CSR<int, int, int>>();
+  compare_csr(&global_csr, cached_csr);
+}
+
+TEST(RCMReorderTest, BasicTest){
+  sparsebase::preprocess::RCMReorder<int, int, int> reorder;
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  check_reorder(order, n);
 }
 class Degrees_DegreeDistributionTest : public ::testing::Test {
 protected:
     Degrees_DegreeDistribution<int, int, int, float> feature;
-    sparsebase::format::CSR<int, int, int>* csr;
-    sparsebase::format::COO<int, int, int>* coo;
-    sparsebase::context::CPUContext cpu_context;
 
-    void SetUp() override{
-        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
-        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr, sparsebase::format::kNotOwned);
-    }
-    void TearDown() override {
-        delete csr;
-        delete coo;
-    }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
 };
@@ -192,18 +287,7 @@ TEST_F(Degrees_DegreeDistributionTest, FeaturePreprocessTypeTests){
 class DegreesTest : public ::testing::Test {
 protected:
     Degrees<int, int, int> feature;
-    sparsebase::format::CSR<int, int, int>* csr;
-    sparsebase::format::COO<int, int, int>* coo;
-    sparsebase::context::CPUContext cpu_context;
 
-    void SetUp() override{
-        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
-        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr, sparsebase::format::kNotOwned);
-    }
-    void TearDown() override {
-        delete csr;
-        delete coo;
-    }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
 };
@@ -223,58 +307,47 @@ TEST_F(DegreesTest, AllTests){
 
     // Check GetDegreesCSR implementation function
     Params1 p1;
-    auto degrees_array = Degrees<int, int, int>::GetDegreesCSR({csr}, &p1);
-    for (int i =0; i<3; i++){
+    auto degrees_array = Degrees<int, int, int>::GetDegreesCSR({&global_csr}, &p1);
+    for (int i =0; i<n; i++){
         EXPECT_EQ(degrees_array[i], degrees[i]);
     }
     delete [] degrees_array;
     // Check GetDegrees
-    degrees_array = feature.GetDegrees({csr}, {&cpu_context});
-    for (int i =0; i<3; i++){
+    degrees_array = feature.GetDegrees({&global_csr}, {&cpu_context});
+    for (int i =0; i<n; i++){
         EXPECT_EQ(degrees_array[i], degrees[i]);
     }
     delete [] degrees_array;
     // Check GetDegrees with conversion
-    degrees_array = feature.GetDegrees({coo}, {&cpu_context});
-    for (int i =0; i<3; i++){
+    degrees_array = feature.GetDegrees({&global_coo}, {&cpu_context});
+    for (int i =0; i<n; i++){
         EXPECT_EQ(degrees_array[i], degrees[i]);
     }
     // Check Extract
-    auto feature_map = feature.Extract(csr, {&cpu_context});
+    auto feature_map = feature.Extract(&global_csr, {&cpu_context});
     // Check map size and type
     EXPECT_EQ(feature_map.size(), 1);
     for (auto feat : feature_map){
         EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
     }
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(std::any_cast<int*>(feature_map[feature.get_feature_id()])[i], degrees[i]);
     }
     // Check Extract with conversion
-    feature_map = feature.Extract(coo, {&cpu_context});
+    feature_map = feature.Extract(&global_coo, {&cpu_context});
     // Check map size and type
     EXPECT_EQ(feature_map.size(), 1);
     for (auto feat : feature_map){
         EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
     }
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(std::any_cast<int*>(feature_map[feature.get_feature_id()])[i], degrees[i]);
     }
 }
 class DegreeDistributionTest : public ::testing::Test {
 protected:
     DegreeDistribution<int, int, int, float> feature;
-    sparsebase::format::CSR<int, int, int>* csr;
-    sparsebase::format::COO<int, int, int>* coo;
-    sparsebase::context::CPUContext cpu_context;
 
-    void SetUp() override{
-        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
-        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr, sparsebase::format::kNotOwned);
-    }
-    void TearDown() override {
-        delete csr;
-        delete coo;
-    }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
 };
@@ -294,59 +367,52 @@ TEST_F(DegreeDistributionTest, AllTests){
 
     // Check GetDegreeDistributionCSR implementation function
     Params1 p1;
-    auto distribution_array = DegreeDistribution<int, int, int, float>::GetDegreeDistributionCSR({csr}, &p1);
-    for (int i =0; i<3; i++){
+    auto distribution_array = DegreeDistribution<int, int, int, float>::GetDegreeDistributionCSR({&global_csr}, &p1);
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
     }
     delete [] distribution_array ;
     //// Check GetDistribution (function matcher)
-    distribution_array = feature.GetDistribution(csr, {&cpu_context});
-    for (int i =0; i<3; i++){
+    distribution_array = feature.GetDistribution(&global_csr, {&cpu_context});
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
     }
     delete [] distribution_array ;
     // Check GetDistribution with conversion
-    distribution_array = feature.GetDistribution(coo, {&cpu_context});
-    for (int i =0; i<3; i++){
+    distribution_array = feature.GetDistribution(&global_coo, {&cpu_context});
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
     }
     delete [] distribution_array ;
     // Check GetDistribution with conversion and cached
-    auto distribution_array_format = feature.GetDistributionCached(coo, {&cpu_context});
-    for (int i =0; i<3; i++){
+    auto distribution_array_format = feature.GetDistributionCached(&global_coo, {&cpu_context});
+    for (int i =0; i<n; i++){
         EXPECT_EQ(get<1>(distribution_array_format)[i], distribution[i]);
     }
     delete [] get<1>(distribution_array_format);
     auto cached_data = get<0>(distribution_array_format);
     ASSERT_EQ(cached_data.size(), 1);
-    ASSERT_EQ(cached_data[0]->get_format_id(), std::type_index(typeid(*csr)));
+    ASSERT_EQ(cached_data[0]->get_format_id(), std::type_index(typeid(global_csr)));
     auto converted_csr = cached_data[0]->As<format::CSR<int, int, int>>();
-    auto row_ptr = converted_csr->get_row_ptr();
-    auto col = converted_csr->get_col();
-    for (int i =0; i<4;i++){
-        EXPECT_EQ(row_ptr[i], csr->get_row_ptr()[i]);
-    }
-    for (int i =0; i<4;i++) {
-        EXPECT_EQ(col[i], csr->get_col()[i]);
-    }
+    compare_csr(&global_csr, converted_csr);
     // Check Extract
-    auto feature_map = feature.Extract(csr, {&cpu_context});
+    auto feature_map = feature.Extract(&global_csr, {&cpu_context});
     // Check map size and type
     EXPECT_EQ(feature_map.size(), 1);
     for (auto feat : feature_map){
     EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
     }
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
     EXPECT_EQ(std::any_cast<float*>(feature_map[feature.get_feature_id()])[i], distribution[i]);
     }
     // Check Extract with conversion
-    feature_map = feature.Extract(coo, {&cpu_context});
+    feature_map = feature.Extract(&global_coo, {&cpu_context});
     // Check map size and type
     EXPECT_EQ(feature_map.size(), 1);
     for (auto feat : feature_map){
         EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
     }
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(std::any_cast<float*>(feature_map[feature.get_feature_id()])[i], distribution[i]);
     }
 }
@@ -370,7 +436,7 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests){
 
     // Check GetCSR implementation function
     Params1 p1;
-    auto degrees_and_distribution_map = Degrees_DegreeDistribution<int, int, int, float>::GetCSR({csr}, &p1);
+    auto degrees_and_distribution_map = Degrees_DegreeDistribution<int, int, int, float>::GetCSR({&global_csr}, &p1);
     ASSERT_EQ(degrees_and_distribution_map.size(), 2);
     ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
     ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
@@ -378,14 +444,14 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests){
     auto distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
     ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
     auto degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
         EXPECT_EQ(degree_array[i], degrees[i]);
     }
     delete [] distribution_array;
     delete [] degree_array;
     //// Check Get (function matcher)
-    degrees_and_distribution_map = feature.Get({csr}, {&cpu_context});
+    degrees_and_distribution_map = feature.Get({&global_csr}, {&cpu_context});
     ASSERT_EQ(degrees_and_distribution_map.size(), 2);
     ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
     ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
@@ -393,14 +459,14 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests){
     distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
     ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
     degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
         EXPECT_EQ(degree_array[i], degrees[i]);
     }
     delete [] distribution_array;
     delete [] degree_array;
     //// Check Get with conversion (function matcher)
-    degrees_and_distribution_map = feature.Get({coo}, {&cpu_context});
+    degrees_and_distribution_map = feature.Get({&global_coo}, {&cpu_context});
     ASSERT_EQ(degrees_and_distribution_map.size(), 2);
     ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
     ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
@@ -408,14 +474,14 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests){
     distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
     ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
     degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
         EXPECT_EQ(degree_array[i], degrees[i]);
     }
     delete [] distribution_array;
     delete [] degree_array;
     // Check Extract
-    degrees_and_distribution_map = feature.Extract(csr, {&cpu_context});
+    degrees_and_distribution_map = feature.Extract(&global_csr, {&cpu_context});
     ASSERT_EQ(degrees_and_distribution_map.size(), 2);
     ASSERT_NE(degrees_and_distribution_map.find(ids[0]), degrees_and_distribution_map.end());
     ASSERT_NE(degrees_and_distribution_map.find(ids[1]), degrees_and_distribution_map.end());
@@ -423,7 +489,7 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests){
     distribution_array = std::any_cast<float*>(degrees_and_distribution_map[DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
     ASSERT_NO_THROW(std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]));
     degree_array = std::any_cast<int*>(degrees_and_distribution_map[Degrees<int, int, int>::get_feature_id_static()]);
-    for (int i =0; i<3; i++){
+    for (int i =0; i<n; i++){
         EXPECT_EQ(distribution_array[i], distribution[i]);
         EXPECT_EQ(degree_array[i], degrees[i]);
     }
