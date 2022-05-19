@@ -36,17 +36,17 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
   if (infile.is_open()) {
     IDType u, v;
     ValueType w;
-    NNZType m = 0;
+    IDType m = 0;
     IDType n = 0;
+    NNZType nnz = 0;
+
 
     std::vector<std::tuple<IDType, IDType, ValueType>> edges;
-    std::vector<ValueType> values;
     // vertices are 0-based
     while (infile >> u >> v) {
 
       if (weighted_) {
         infile >> w;
-        values.push_back(w);
       }
 
       if (u != v || !remove_self_edges_) {
@@ -55,8 +55,8 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
         if(read_undirected_)
           edges.push_back(std::tuple<IDType, IDType, ValueType>(v, u, w));
 
-        n = std::max(n, u);
-        n = std::max(n, v);
+        n = std::max(n, u+1);
+        m = std::max(m, v+1);
 
       }
 
@@ -81,16 +81,16 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       edges.erase(unique_it, edges.end());
     }
 
-    m = edges.size();
+    nnz = edges.size();
 
-    IDType* row = new IDType[m];
-    IDType* col = new IDType[m];
+    IDType* row = new IDType[nnz];
+    IDType* col = new IDType[nnz];
     ValueType* vals = nullptr;
     if(weighted_){
-      vals = new ValueType[m];
+      vals = new ValueType[nnz];
     }
 
-    for(IDType i=0; i<m; i++){
+    for(IDType i=0; i<nnz; i++){
       row[i] = std::get<0>(edges[i]);
       col[i] = std::get<1>(edges[i]);
 
@@ -98,7 +98,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
         vals[i] = std::get<2>(edges[i]);
     }
 
-    return new format::COO<IDType, NNZType, ValueType>(n,n,m,row,col,vals,format::kOwned);
+    return new format::COO<IDType, NNZType, ValueType>(n,m,nnz,row,col,vals,format::kOwned);
 
   } else {
     throw ReaderException("file does not exist!");
@@ -157,8 +157,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
             m--;
           }
 
-          row[l] = n;
-          col[l] = m;
+          row[l] = m;
+          col[l] = n;
           vals[l] = w;
         }
 
@@ -174,8 +174,14 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
       for (NNZType l = 0; l < L; l++) {
         IDType m, n;
         fin >> m >> n;
-        row[l] = m - 1;
-        col[l] = n - 1;
+
+        if(convert_to_zero_index_){
+          n--;
+          m--;
+        }
+
+        row[l] = m;
+        col[l] = n;
       }
 
       auto coo = new format::COO<IDType, NNZType, ValueType>(

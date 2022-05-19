@@ -102,7 +102,7 @@ public:
    */
   explicit MTXReader(std::string filename,
                      bool weighted = false,
-                     bool convert_to_zero_index = false);
+                     bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   ~MTXReader() override;
