@@ -430,16 +430,28 @@ public:
   ~FeaturePreprocessType();
 };
 
+//! Calculate the Jaccard Weights of the edges in a graph representation of a format object
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class JaccardWeights : public FunctionMatcherMixin<format::Format *> {
-  struct JaccardParams : PreprocessParams {};
-
 public:
   JaccardWeights();
+  //! Take a single Format object representating a graph and get the Jaccard Weights as a 1D format object
+  /*!
+   *
+   * @param format input format object representing a graph
+   * @return a 1D format (array) where element i in the array is the Jaccard Weight of edge i in the graph (ith non-zero)
+   */
   format::Format *GetJaccardWeights(format::Format *format,
                                     std::vector<context::Context *>);
 #ifdef CUDA
+  //! Take a CUDACSR representating a graph and get the Jaccard Weights as a CUDAArray
+  /*!
+   *
+   * @param formats a vector of size 1 with formats[0] being CUDACSR representing a graph
+   * @param params a polymorphic pointer at a PreprocessParams (not used)
+   * @return a 1D array (CUDAArray) where element i in the array is the Jaccard Weight of edge i in the graph (ith non-zero)
+   */
   static format::Format *
   GetJaccardWeightCUDACSR(std::vector<format::Format *> formats,
                           PreprocessParams *params);
