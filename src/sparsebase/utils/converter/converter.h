@@ -21,7 +21,7 @@ namespace converter {
 typedef std::vector<std::tuple<bool, std::type_index, context::Context *>>
     ConversionSchemaConditional;
 
-//! Any function that matches the signature of this definition can be registered in the Converter instances
+//! Any function that matches the signature of this definition can be registered in Converter instances
 using ConditionalConversionFunction =
     std::function<format::Format *(format::Format *, context::Context *)>;
 

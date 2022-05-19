@@ -144,7 +144,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class CSR : public FormatImplementation<CSR<IDType, NNZType, ValueType>> {
 public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
-      Ownership own = kNotOwned);
+      Ownership own = kNotOwned, bool ignore_sort = false);
   CSR(const CSR<IDType, NNZType, ValueType> &);
   CSR(CSR<IDType, NNZType, ValueType> &&);
   CSR<IDType, NNZType, ValueType> &

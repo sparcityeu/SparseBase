@@ -103,12 +103,12 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
     IDType prev_row = 0;
     IDType prev_col = 0;
     for(DimensionType i=0; i<nnz; i++){
-      if(prev_row > row[i] || prev_col > col[i]){
+      if(prev_row > row[i] || (prev_row == row[i] && prev_col > col[i])){
         not_sorted = true;
         break;
-      } else if(row[i] > prev_row){
-        prev_col = 0;
       }
+      prev_row = row[i];
+      prev_col = col[i];
     }
   }
 
@@ -314,7 +314,7 @@ CSR<IDType, NNZType, ValueType>::CSR(const CSR<IDType, NNZType, ValueType> &rhs)
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
                                      IDType *col, ValueType *vals,
-                                     Ownership own)
+                                     Ownership own, bool ignore_sort)
     : row_ptr_(row_ptr, BlankDeleter<NNZType>()),
       col_(col, BlankDeleter<IDType>()),
       vals_(vals, BlankDeleter<ValueType>()) {
@@ -332,6 +332,37 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
   }
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
       new sparsebase::context::CPUContext);
+
+  if(!ignore_sort){
+    bool not_sorted = false;
+
+#pragma omp parallel for default(none) reduction(||: not_sorted) shared(col, row_ptr, n)
+    for(NNZType i=0; i<n; i++){
+        NNZType start = row_ptr[i];
+        NNZType end = row_ptr[i+1];
+        IDType prev_value = 0;
+        for(IDType j=start; j<end; j++){
+          if(col[j] > prev_value){
+            not_sorted = true;
+            break;
+          }
+          prev_value = col[j];
+        }
+    }
+
+    if(not_sorted){
+      std::cerr << "CSR column array must be sorted. Sorting..." << std::endl;
+
+#pragma omp parallel for default(none) shared(row_ptr, col, n)
+      for(NNZType i=0; i<n; i++){
+        NNZType start = row_ptr[i];
+        NNZType end = row_ptr[i+1];
+        std::sort(col + start, col + end);
+      }
+
+    }
+  }
+
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
