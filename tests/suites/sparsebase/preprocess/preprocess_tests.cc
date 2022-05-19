@@ -13,6 +13,12 @@
 #include <tuple>
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
+int xadj[4] = {0, 2, 3, 4};
+int adj[4] = {1,2,0,0};
+int is[4] = {0, 0, 1, 2};
+float distribution[3] = {2.0/4, 1.0/4, 1.0/4};
+int degrees[3] = {2, 1, 1};
+sparsebase::context::CPUContext cpu_context;
 TEST(TypeIndexHash, Basic){
   TypeIndexVectorHash hasher;
   // Empty vector
@@ -54,12 +60,9 @@ class FunctionMatcherMixinTest : public ::testing::Test {
   protected:
     GenericPreprocessType<int> concrete_preprocess;
     sparsebase::format::CSR<int, int, int>* csr;
-    int xadj[4] = {0, 2, 3, 4};
-    int adj[4] = {1,2,0,0};
-    sparsebase::context::CPUContext cpu_context;
-  
+
   void SetUp() override{
-    csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
+    csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
   }
 
   static int OneImplementationFunction(std::vector<format::Format*> inputs, PreprocessParams*){
@@ -73,6 +76,9 @@ class FunctionMatcherMixinTest : public ::testing::Test {
   }
   static int FourImplementationFunction(std::vector<format::Format*> inputs, PreprocessParams*){
     return 4;
+  }
+  void TearDown() override{
+      delete csr;
   }
   struct GenericParams : PreprocessParams {
     GenericParams(int p): param(p){}
@@ -136,10 +142,8 @@ TEST_F(FunctionMatcherMixinTest, BlackBox){
 }
 
 TEST(DegreeReorder, AscendingOrder){
-  int xadj[4] = {0, 2, 3, 4};
-  int adj[4] = {1,2,0,0};
   sparsebase::context::CPUContext cpu_context;
-  sparsebase::format::CSR<int, int, int> csr(3, 3, xadj, adj, nullptr);
+  sparsebase::format::CSR<int, int, int> csr(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(true);
   auto order = reorder.GetReorder(&csr, {&cpu_context});
   for (int i =0; i< 2; i++){
@@ -153,16 +157,15 @@ protected:
     Degrees_DegreeDistribution<int, int, int, float> feature;
     sparsebase::format::CSR<int, int, int>* csr;
     sparsebase::format::COO<int, int, int>* coo;
-    int xadj[4] = {0, 2, 3, 4};
-    int adj[4] = {1,2,0,0};
-    int is[4] = {0, 0, 1, 2};
-    float distribution[3] = {2.0/4, 1.0/4, 1.0/4};
-    int degrees[3] = {2, 1, 1};
     sparsebase::context::CPUContext cpu_context;
 
     void SetUp() override{
-        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
-        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr);
+        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
+        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr, sparsebase::format::kNotOwned);
+    }
+    void TearDown() override {
+        delete csr;
+        delete coo;
     }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
@@ -174,7 +177,7 @@ TEST_F(Degrees_DegreeDistributionTest, FeaturePreprocessTypeTests){
     // Check getting feature id
     EXPECT_EQ(std::type_index(typeid(Degrees_DegreeDistribution<int, int, int, float>)), feature.get_feature_id());
     // Getting a params object for an unset params
-    EXPECT_THROW(feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(), utils::FeatureParamsException);
+    EXPECT_THROW(feature.get_params(std::type_index(typeid(int))).get(), utils::FeatureParamsException);
     // Checking setting params of a sub-feature
     feature.set_params(Degrees<int, int, int>::get_feature_id_static(), p1);
     EXPECT_EQ(feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(), p1.get());
@@ -187,15 +190,15 @@ protected:
     Degrees<int, int, int> feature;
     sparsebase::format::CSR<int, int, int>* csr;
     sparsebase::format::COO<int, int, int>* coo;
-    int xadj[4] = {0, 2, 3, 4};
-    int adj[4] = {1,2,0,0};
-    int is[4] = {0, 0, 1, 2};
-    int degrees[3] = {2, 1, 1};
     sparsebase::context::CPUContext cpu_context;
 
     void SetUp() override{
-        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
-        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr);
+        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
+        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr, sparsebase::format::kNotOwned);
+    }
+    void TearDown() override {
+        delete csr;
+        delete coo;
     }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
@@ -258,15 +261,15 @@ protected:
     DegreeDistribution<int, int, int, float> feature;
     sparsebase::format::CSR<int, int, int>* csr;
     sparsebase::format::COO<int, int, int>* coo;
-    int xadj[4] = {0, 2, 3, 4};
-    int is[4] = {0, 0, 1, 2};
-    int adj[4] = {1,2,0,0};
-    float distribution[3] = {2.0/4, 1.0/4, 1.0/4};
     sparsebase::context::CPUContext cpu_context;
 
     void SetUp() override{
-        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr);
-        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr);
+        csr = new sparsebase::format::CSR<int, int, int>(3, 3, xadj, adj, nullptr, sparsebase::format::kNotOwned);
+        coo = new sparsebase::format::COO<int, int, int>(3, 3, 4, is, adj, nullptr, sparsebase::format::kNotOwned);
+    }
+    void TearDown() override {
+        delete csr;
+        delete coo;
     }
     struct Params1 : sparsebase::preprocess::PreprocessParams{};
     struct Params2 : sparsebase::preprocess::PreprocessParams{};
@@ -289,13 +292,13 @@ TEST_F(DegreeDistributionTest, AllTests){
     Params1 p1;
     auto distribution_array = DegreeDistribution<int, int, int, float>::GetDegreeDistributionCSR({csr}, &p1);
     for (int i =0; i<3; i++){
-    EXPECT_EQ(distribution_array[i], distribution[i]);
+        EXPECT_EQ(distribution_array[i], distribution[i]);
     }
     delete [] distribution_array ;
     //// Check GetDistribution (function matcher)
     distribution_array = feature.GetDistribution(csr, {&cpu_context});
     for (int i =0; i<3; i++){
-    EXPECT_EQ(distribution_array[i], distribution[i]);
+        EXPECT_EQ(distribution_array[i], distribution[i]);
     }
     delete [] distribution_array ;
     // Check GetDistribution with conversion
