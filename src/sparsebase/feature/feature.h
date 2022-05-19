@@ -70,20 +70,20 @@ protected:
 class Extractor : public ClassMatcherMixin<preprocess::ExtractableType *> {
 public:
   ~Extractor();
-  //! Calculates the features that are passed.
-  /*!
-    Detailed Description.
-    \param features vector of features to extract.
-    \param format a format to be used as the data source.
-    \param con vector of contexts to be used to determine the where the
-    computation will take place. \return void
-  */
-  static std::unordered_map<std::type_index, std::any>
-  Extract(std::vector<Feature> &features, format::Format *format,
-          const std::vector<context::Context *> &);
+  ////! Computes the features that are passed.
+  ///*!
+  //  Detailed Description.
+  //  \param features vector of features to extract.
+  //  \param format a format to be used as the data source.
+  //  \param con vector of contexts to be used to determine the where the
+  //  computation will take place. \return void
+  //*/
+  //static std::unordered_map<std::type_index, std::any>
+  //Extract(std::vector<Feature> &features, format::Format *format,
+  //        const std::vector<context::Context *> &);
   std::
       unordered_map<std::type_index, std::any>
-      //! Calculates the features that are added to in_ private data member.
+      //! Computes the features that are added to in_ private data member.
       /*!
         Detailed Description.
         \param format a format to be used as the data source.

@@ -105,17 +105,17 @@ TEST_F(COOMock, ExtractorExtract){
   EXPECT_EQ(degree_dist[4], 0);
 }
 
-TEST_F(COOMock, ExtractorExtractGiven){
-  CPUContext cpu_context;
-
-  vector<Feature> features;
-  features.push_back(Feature(Degrees<vertex_type, edge_type, value_type>{}));
-  features.push_back(Feature(DegreeDistribution<vertex_type, edge_type, value_type, feature_type>{}));
-  features.push_back(Feature(Degrees_DegreeDistribution<vertex_type, edge_type, value_type, feature_type>{}));
-
-  auto results = Extractor::Extract(features, coo, {&cpu_context});
-  EXPECT_EQ(results.size(), 3);
-}
+//TEST_F(COOMock, ExtractorExtractGiven){
+//  CPUContext cpu_context;
+//
+//  vector<Feature> features;
+//  features.push_back(Feature(Degrees<vertex_type, edge_type, value_type>{}));
+//  features.push_back(Feature(DegreeDistribution<vertex_type, edge_type, value_type, feature_type>{}));
+//  features.push_back(Feature(Degrees_DegreeDistribution<vertex_type, edge_type, value_type, feature_type>{}));
+//
+//  auto results = Extractor::Extract(features, coo, {&cpu_context});
+//  EXPECT_EQ(results.size(), 3);
+//}
 
 //ClassMatcherMixin functions are protected
 //TEST(feature, ClassMatcherMixinMatch){
