@@ -239,20 +239,31 @@ TEST(PigoEdgeListReader, Basics){
   auto coo = reader.ReadCOO();
 
   // Check the dimensions (double the edges due to undirected read)
-  EXPECT_EQ(coo->get_num_nnz(), 10);
+  EXPECT_EQ(coo->get_num_nnz(), 5);
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
+  // Check the integrity and order of data
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(coo->get_row()[i], row[i]);
+    EXPECT_EQ(coo->get_col()[i], col[i]);
+  }
 
   sparsebase::utils::io::PigoEdgeListReader<int,int,float> reader2("test_values_pigo.edges", true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions (double the edges due to undirected read)
-  EXPECT_EQ(coo2->get_num_nnz(), 10);
+  EXPECT_EQ(coo2->get_num_nnz(), 5);
   EXPECT_NE(coo2->get_row(), nullptr);
   EXPECT_NE(coo2->get_col(), nullptr);
   EXPECT_NE(coo2->get_vals(), nullptr);
 
+  // Check the integrity and order of data
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(coo2->get_row()[i], row[i]);
+    EXPECT_EQ(coo2->get_col()[i], col[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals[i]);
+  }
 
 }
 

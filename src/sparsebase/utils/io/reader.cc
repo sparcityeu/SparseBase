@@ -294,7 +294,7 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #else
   std::cerr << "Warning: PIGO suppport is not compiled in this build of sparsebase (your system might not be supported)." << std::endl;
   std::cerr << "Defaulting to sequential reader" << std::endl;
-  EdgeListReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
+  EdgeListReader<IDType, NNZType, ValueType> reader(filename_, weighted_, true, true, false);
   return reader.ReadCOO();
 #endif
 }
