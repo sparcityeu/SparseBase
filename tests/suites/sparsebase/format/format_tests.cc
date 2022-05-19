@@ -195,3 +195,51 @@ TEST(Array, Release){
   // To check delete it manually
   delete[] data;
 }
+
+TEST(COO, Sort){
+  int coo_row_shuffled[4]{0,0,3,1};
+  int coo_col_shuffled[4]{2,0,3,1};
+  int coo_vals_shuffled[4]{5,4,9,7};
+  sparsebase::format::COO<int,int,int> coo(4,4,4,coo_row_shuffled, coo_col_shuffled, coo_vals_shuffled,sparsebase::format::kNotOwned);
+
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(coo.get_row()[i], coo_row[i]);
+    EXPECT_EQ(coo.get_col()[i], coo_col[i]);
+    EXPECT_EQ(coo.get_vals()[i], coo_vals[i]);
+  }
+
+  int coo_row_shuffled2[4]{0,0,3,1};
+  int coo_col_shuffled2[4]{2,0,3,1};
+  int coo_vals_shuffled2[4]{5,4,9,7};
+  sparsebase::format::COO<int,int,int> coo2(4,4,4,coo_row_shuffled2, coo_col_shuffled2, coo_vals_shuffled2,sparsebase::format::kNotOwned, true);
+
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(coo2.get_row()[i], coo_row_shuffled2[i]);
+    EXPECT_EQ(coo2.get_col()[i], coo_col_shuffled2[i]);
+    EXPECT_EQ(coo2.get_vals()[i], coo_vals_shuffled2[i]);
+  }
+
+}
+
+TEST(CSR, Sort){
+  int csr_row_ptr_shuffled[5]{0,2,3,3,4};
+  int csr_col_shuffled[4]{2,0,1,3};
+  int csr_vals_shuffled[4]{5,4,7,9};
+  sparsebase::format::CSR<int,int,int> csr(4,4,csr_row_ptr_shuffled, csr_col_shuffled, csr_vals_shuffled, sparsebase::format::kNotOwned);
+
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(csr.get_col()[i], csr_col[i]);
+    EXPECT_EQ(csr.get_vals()[i], csr_vals[i]);
+  }
+
+  int csr_row_ptr_shuffled2[5]{0,2,3,3,4};
+  int csr_col_shuffled2[4]{2,0,1,3};
+  int csr_vals_shuffled2[4]{5,4,7,9};
+  sparsebase::format::CSR<int,int,int> csr2(4,4,csr_row_ptr_shuffled2, csr_col_shuffled2, csr_vals_shuffled2, sparsebase::format::kNotOwned, true);
+
+  for(int i=0; i<4; i++){
+    EXPECT_EQ(csr2.get_col()[i], csr_col_shuffled2[i]);
+    EXPECT_EQ(csr2.get_vals()[i], csr_vals_shuffled2[i]);
+  }
+
+}
