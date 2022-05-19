@@ -35,7 +35,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
     IDType u, v;
-    ValueType w;
+    ValueType w = 0;
     IDType m = 0;
     IDType n = 0;
     NNZType nnz = 0;

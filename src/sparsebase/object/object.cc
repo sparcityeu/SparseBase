@@ -125,7 +125,7 @@ Graph<VertexID, NumEdges, Weight>::Graph() {}
 template <typename VertexID, typename NumEdges, typename ValueType>
 void Graph<VertexID, NumEdges, ValueType>::InitializeInfoFromConnection() {
   auto dimensions = this->connectivity_->get_dimensions();
-  n_ = dimensions[0];
+  n_ = (dimensions[0] > dimensions[1]) ? dimensions[0] : dimensions[1];
   m_ = this->connectivity_->get_num_nnz();
 }
 template <typename VertexID, typename NumEdges, typename ValueType>
