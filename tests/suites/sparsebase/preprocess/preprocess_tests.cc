@@ -12,10 +12,13 @@ TEST(DegreeReorder, AscendingOrder){
   sparsebase::format::CSR<int, int, int> csr(3, 3, xadj, adj, nullptr);
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(true);
   auto order = reorder.GetReorder(&csr, {&cpu_context});
+  auto perm = new int[3];
+  for (int i =0; i< 3; i++){
+      perm[order[i]] = i;
+  }
   for (int i =0; i< 2; i++){
-    auto u = order[i];
-    auto v = order[i+1];
-    std::cout << u << " " << v << std::endl;
+    auto u = perm[i];
+    auto v = perm[i+1];
     EXPECT_GE(xadj[v+1]-xadj[v], xadj[u+1]-xadj[u]);
   }
 }
