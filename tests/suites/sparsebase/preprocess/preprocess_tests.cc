@@ -240,37 +240,37 @@ TEST(ReorderTypeTest, CachedNoConversion){
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(true);
   auto order = reorder.GetReorderCached(&global_csr, &param, {&cpu_context});
-  check_degree_ordering(get<1>(order), n, row_ptr, true);
-  EXPECT_EQ(get<0>(order).size(), 1);
-  EXPECT_EQ(get<0>(order)[0], nullptr);
+  check_degree_ordering(std::get<1>(order), n, row_ptr, true);
+  EXPECT_EQ(std::get<0>(order).size(), 1);
+  EXPECT_EQ(std::get<0>(order)[0], nullptr);
 }
 
 TEST(ReorderTypeTest, CachedConversionTwoParams){
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorderCached(&global_coo, {&cpu_context});
-  check_degree_ordering(get<1>(order), n, row_ptr, false);
-  EXPECT_EQ(get<0>(order).size(), 1);
-  EXPECT_NE(get<0>(order)[0], nullptr);
-  auto cached_csr = get<0>(order)[0]->As<format::CSR<int, int, int>>();
+  check_degree_ordering(std::get<1>(order), n, row_ptr, false);
+  EXPECT_EQ(std::get<0>(order).size(), 1);
+  EXPECT_NE(std::get<0>(order)[0], nullptr);
+  auto cached_csr = std::get<0>(order)[0]->As<format::CSR<int, int, int>>();
   compare_csr(&global_csr, cached_csr);
 }
 
 TEST(ReorderTypeTest, CachedNoConversionTwoParams){
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorderCached(&global_csr, {&cpu_context});
-  check_degree_ordering(get<1>(order), n, row_ptr, false);
-  EXPECT_EQ(get<0>(order).size(), 1);
-  EXPECT_EQ(get<0>(order)[0], nullptr);
+  check_degree_ordering(std::get<1>(order), n, row_ptr, false);
+  EXPECT_EQ(std::get<0>(order).size(), 1);
+  EXPECT_EQ(std::get<0>(order)[0], nullptr);
 }
 
 TEST(ReorderTypeTest, CachedConversion){
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams param(true);
   auto order = reorder.GetReorderCached(&global_coo, &param, {&cpu_context});
-  check_degree_ordering(get<1>(order), n, row_ptr, true);
-  EXPECT_EQ(get<0>(order).size(), 1);
-  EXPECT_NE(get<0>(order)[0], nullptr);
-  auto cached_csr = get<0>(order)[0]->As<format::CSR<int, int, int>>();
+  check_degree_ordering(std::get<1>(order), n, row_ptr, true);
+  EXPECT_EQ(std::get<0>(order).size(), 1);
+  EXPECT_NE(std::get<0>(order)[0], nullptr);
+  auto cached_csr = std::get<0>(order)[0]->As<format::CSR<int, int, int>>();
   compare_csr(&global_csr, cached_csr);
 }
 
@@ -303,11 +303,11 @@ TEST(TransformTest, ConversionParamCached){
   sparsebase::preprocess::Transform<int, int, int> transformer(nullptr);
   sparsebase::preprocess::Transform<int, int, int>::TransformParams params(order);
   auto transformed_output = transformer.GetTransformationCached(&global_coo, &params, {&cpu_context});
-  auto transformed_format = get<1>(transformed_output)->As<format::CSR<int, int, int>>();
+  auto transformed_format = std::get<1>(transformed_output)->As<format::CSR<int, int, int>>();
   confirm_renumbered_csr(global_csr.get_row_ptr(), transformed_format->get_row_ptr(), global_csr.get_col(), transformed_format->get_col(), order, n);
-  EXPECT_EQ(get<0>(transformed_output).size(), 1);
-  ASSERT_NE(get<0>(transformed_output)[0], nullptr);
-  auto cached_format = get<0>(transformed_output)[0]->As<format::CSR<int, int, int>>();
+  EXPECT_EQ(std::get<0>(transformed_output).size(), 1);
+  ASSERT_NE(std::get<0>(transformed_output)[0], nullptr);
+  auto cached_format = std::get<0>(transformed_output)[0]->As<format::CSR<int, int, int>>();
   compare_csr(&global_csr, cached_format);
 }
 
@@ -317,10 +317,10 @@ TEST(TransformTest, NoConversionNoParamCached){
   sparsebase::preprocess::Transform<int, int, int> transformer(nullptr);
   sparsebase::preprocess::Transform<int, int, int>::TransformParams params(order);
   auto transformed_output = transformer.GetTransformationCached(&global_csr, &params, {&cpu_context});
-  auto transformed_format = get<1>(transformed_output)->As<format::CSR<int, int, int>>();
+  auto transformed_format = std::get<1>(transformed_output)->As<format::CSR<int, int, int>>();
   confirm_renumbered_csr(global_csr.get_row_ptr(), transformed_format->get_row_ptr(), global_csr.get_col(), transformed_format->get_col(), order, n);
-  EXPECT_EQ(get<0>(transformed_output).size(), 1);
-  ASSERT_EQ(get<0>(transformed_output)[0], nullptr);
+  EXPECT_EQ(std::get<0>(transformed_output).size(), 1);
+  ASSERT_EQ(std::get<0>(transformed_output)[0], nullptr);
 }
 
 #ifndef CUDA
@@ -455,10 +455,10 @@ TEST_F(DegreeDistributionTest, AllTests){
     // Check GetDistribution with conversion and cached
     auto distribution_array_format = feature.GetDistributionCached(&global_coo, {&cpu_context});
     for (int i =0; i<n; i++){
-        EXPECT_EQ(get<1>(distribution_array_format)[i], distribution[i]);
+        EXPECT_EQ(std::get<1>(distribution_array_format)[i], distribution[i]);
     }
-    delete [] get<1>(distribution_array_format);
-    auto cached_data = get<0>(distribution_array_format);
+    delete [] std::get<1>(distribution_array_format);
+    auto cached_data = std::get<0>(distribution_array_format);
     ASSERT_EQ(cached_data.size(), 1);
     ASSERT_EQ(cached_data[0]->get_format_id(), std::type_index(typeid(global_csr)));
     auto converted_csr = cached_data[0]->As<format::CSR<int, int, int>>();
