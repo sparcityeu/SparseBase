@@ -21,7 +21,7 @@ We suggest using the most recent versions when possible.
     - GNU make (version 4.1 or above) or ninja (version 1.11 or above)
     
 
-## Compiling
+### Compiling
 
 > A version of the header-only release can be obtained in the releases section on Github 
 > (no compilation needed)
@@ -149,7 +149,7 @@ cmake ..
 make format
 ``` 
 
-## Including SparseBase
+### Including SparseBase
 
 SparseBase can be included using the ``sparsebase.h`` header file.
 
@@ -165,7 +165,7 @@ This can be useful to reduce compile times if the header only build is being use
 #include "sparsebase/preprocess/preprocess.h"
 ```
 
-## Creating a Format Object
+### Creating a Format Object
 
 Currently two sparse data formats are supported:
 - COO (Coordinate List)
@@ -202,7 +202,7 @@ auto coo = new sparsebase::COO<int,int,int>(6, 6, 6, row, col, vals);
 
 
 
-## Input
+### Input
 
 Currently, we support two sparse data file formats:
 - Matrix Market Files (.mtx)
@@ -219,7 +219,7 @@ auto reader2 = new sparsebase::utils::io::EdgeListReader<vertex_type, edge_type,
 auto csr = reader2->ReadCSR();
 ```
 
-## Casting Formats
+### Casting Formats
 
 Many function in the library return generic ``Format`` pointers to ensure flexibility.
 These pointers can easily be converted into concrete versions using the ``As<>()`` function of the
@@ -236,7 +236,7 @@ sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR<i
 ```
 
 
-## Converting Formats
+### Converting Formats
 
 As explained in the previous section, readers will read to different formats.
 
@@ -261,7 +261,7 @@ auto csr = converter.Convert<sparsebase::format::CSR<vertex_type, edge_type, val
 
 > If the source and destination formats are the same the converter will simply do nothing.
 
-## Ownership
+### Ownership
 
 SparseBase allows users to choose whether they want to take responsibility of managing the memory.
 By default the data stored inside ``Format`` instances are considered owned by the instance and as a
@@ -283,7 +283,7 @@ auto* csr_not_owned = new sparsebase::format::CSR<int,int,int>(4, 4, row_ptr, co
 > will almost always be owned by the instance. The user can release the arrays manually as discussed 
 > above if this is not desired.
 
-## Working with Graphs
+### Working with Graphs
 
 Graphs can be created using any SparseFormat as the connectivity information of the graph.
 
@@ -302,7 +302,7 @@ Alternatively we can create a graph by directly passing the reader.
 
 As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
 
-## Ordering
+### Ordering
 
 Various orderings can be generated for a graph using the ``ReorderPreprocessType`` classes. 
 Currently these include ``RCMReoder`` and ``DegreeReorder``. There is also a ``GenericReorder`` class
