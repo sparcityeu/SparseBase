@@ -323,6 +323,13 @@ TEST(TransformTest, NoConversionNoParamCached){
   ASSERT_EQ(get<0>(transformed_output)[0], nullptr);
 }
 
+#ifndef CUDA
+TEST(JaccardTest, NoCuda){
+  sparsebase::preprocess::JaccardWeights<int, int, int, float> jac;
+  EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}), utils::FunctionNotFoundException);
+}
+#endif
+
 class Degrees_DegreeDistributionTest : public ::testing::Test {
 protected:
     Degrees_DegreeDistribution<int, int, int, float> feature;

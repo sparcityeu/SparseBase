@@ -624,8 +624,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 format::Format *
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::GetJaccardWeights(
     Format *format, std::vector<context::Context *> contexts) {
-  JaccardParams params;
-  return this->Execute(&params, (this->sc_.get()), contexts,
+  return this->Execute(nullptr, (this->sc_.get()), contexts,
                        format); // func(sfs, this->params_.get());
 }
 #ifdef CUDA
