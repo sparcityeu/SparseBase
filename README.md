@@ -14,4 +14,4 @@ The library is still in early stages of development. As a result, the API is not
 
 :scroll: [License](https://github.com/SU-HPC/sparsebase/blob/main/LICENSE)
 
-:heart: [Contribution Guide](CONTRIBUTING.md)
+:heart: [Contribution Guide](https://su-hpc.github.io/sparsebase/pages/contributing/index.html)
