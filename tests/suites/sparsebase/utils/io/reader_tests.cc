@@ -192,7 +192,7 @@ TEST(PigoEdgeListReader, Basics){
   ofs2 << edge_list_data_with_values;
   ofs2.close();
 
-  sparsebase::utils::io::EdgeListReader<int,int,int> reader("test_pigo.edges");
+  sparsebase::utils::io::PigoEdgeListReader<int,int,int> reader("test_pigo.edges");
   auto coo = reader.ReadCOO();
 
   // Check the dimensions (double the edges due to undirected read)
@@ -200,14 +200,14 @@ TEST(PigoEdgeListReader, Basics){
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
-  sparsebase::utils::io::EdgeListReader<int,int,int> reader2("test_values_pigo.edges", true);
+  sparsebase::utils::io::PigoEdgeListReader<int,int,float> reader2("test_values_pigo.edges", true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions (double the edges due to undirected read)
-  EXPECT_EQ(coo->get_num_nnz(), 10);
-  EXPECT_NE(coo->get_row(), nullptr);
-  EXPECT_NE(coo->get_col(), nullptr);
-  EXPECT_NE(coo->get_vals(), nullptr);
+  EXPECT_EQ(coo2->get_num_nnz(), 10);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+  EXPECT_NE(coo2->get_vals(), nullptr);
 
 }
 
