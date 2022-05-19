@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include "sparsebase/sparsebase.h"
+#include <iostream>
+#include <unordered_set>
 
 const std::string mtx_data = R"(%%MatrixMarket matrix coordinate pattern symmetric
 %This is a comment
@@ -13,6 +15,8 @@ const std::string mtx_data = R"(%%MatrixMarket matrix coordinate pattern symmetr
 5 4
 )";
 
+
+
 const std::string mtx_data_with_values = R"(%%MatrixMarket matrix coordinate pattern symmetric
 %This is a comment
 5 5 5
@@ -22,6 +26,8 @@ const std::string mtx_data_with_values = R"(%%MatrixMarket matrix coordinate pat
 5 3 0.4
 5 4 0.5
 )";
+
+
 
 const std::string edge_list_data = R"(1 0
 3 0
@@ -37,6 +43,11 @@ const std::string edge_list_data_with_values = R"(1 0 0.1
 4 3 0.5
 )";
 
+// Both files should result in the COO arrays below
+// (With the convert_to_zero_index option set to true for mtx)
+int row[5]{1,2,3,4,4};
+int col[5]{0,1,0,2,3};
+float vals[5]{0.1, 0.3, 0.2, 0.4, 0.5};
 
 
 TEST(MTXReader, Basics){
@@ -64,6 +75,12 @@ TEST(MTXReader, Basics){
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
+  // Check the integrity and order of data
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(coo->get_row()[i], row[i]);
+    EXPECT_EQ(coo->get_col()[i], col[i]);
+  }
+
   // Read the weighted file using sparsebase
   sparsebase::utils::io::MTXReader<int,int,float> reader2("test_values.mtx", true);
   auto coo2 = reader2.ReadCOO();
@@ -78,15 +95,11 @@ TEST(MTXReader, Basics){
   EXPECT_NE(coo2->get_row(), nullptr);
   EXPECT_NE(coo2->get_col(), nullptr);
 
-
-  // Since COO may be sorted during construction the order of values is not certain
-  std::vector<float> values(coo2->get_vals(), coo2->get_vals()+5);
-  std::sort(values.begin(), values.end());
-
-  // But they should match the values in the file otherwise
-  std::vector<float> expected_values{0.1, 0.2, 0.3, 0.4, 0.5};
+  // Check the integrity and order of data
   for(int i=0; i<5; i++){
-    EXPECT_EQ(values[i], expected_values[i]);
+    EXPECT_EQ(coo2->get_row()[i], row[i]);
+    EXPECT_EQ(coo2->get_col()[i], col[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals[i]);
   }
 }
 
@@ -111,6 +124,19 @@ TEST(EdgeListReader, Basics){
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
+  // To test integrity we create an edge_set from the known values
+  // And check if every edge read is a member of that
+  // This is done due to the fact that this is an undirected read
+  std::set<std::pair<int,int>> edge_set;
+  for(int i=0; i<5; i++){
+    edge_set.emplace(row[i], col[i]);
+    edge_set.emplace(col[i], row[i]);
+  }
+  for(int i=0; i<10; i++){
+    std::pair<int,int> p(coo->get_row()[i], coo->get_col()[i]);
+    EXPECT_NE(edge_set.find(p), edge_set.end());
+  }
+
   // Read it using sparsebase (directed)
   sparsebase::utils::io::EdgeListReader<int,int,int> reader2("test.edges", false, false, false, false);
   auto coo2 = reader2.ReadCOO();
@@ -119,6 +145,12 @@ TEST(EdgeListReader, Basics){
   EXPECT_EQ(coo2->get_num_nnz(), 5);
   EXPECT_NE(coo2->get_row(), nullptr);
   EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(coo2->get_row()[i], row[i]);
+    EXPECT_EQ(coo2->get_col()[i], col[i]);
+  }
 
   // Read it using sparsebase (weighted, directed)
   sparsebase::utils::io::EdgeListReader<int,int,float> reader3("test_values.edges", true, false, false, false);
@@ -132,15 +164,13 @@ TEST(EdgeListReader, Basics){
   EXPECT_NE(coo3->get_row(), nullptr);
   EXPECT_NE(coo3->get_col(), nullptr);
 
-  // Since COO may be sorted during construction the order of values is not certain
-  std::vector<float> values(coo3->get_vals(), coo3->get_vals()+5);
-  std::sort(values.begin(), values.end());
-
-  // But they should match the values in the file otherwise
-  std::vector<float> expected_values{0.1, 0.2, 0.3, 0.4, 0.5};
+  // Check the integrity and order of data
   for(int i=0; i<5; i++){
-    EXPECT_EQ(values[i], expected_values[i]);
+    EXPECT_EQ(coo3->get_row()[i], row[i]);
+    EXPECT_EQ(coo3->get_col()[i], col[i]);
+    EXPECT_EQ(coo3->get_vals()[i], vals[i]);
   }
+
 }
 
 TEST(PigoMTXReader, Basics){
@@ -166,6 +196,12 @@ TEST(PigoMTXReader, Basics){
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
+  // Check the integrity and order of data
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(coo->get_row()[i], row[i]);
+    EXPECT_EQ(coo->get_col()[i], col[i]);
+  }
+
   sparsebase::utils::io::PigoMTXReader<int,int,float> reader2("test_values_pigo.mtx", true);
   auto coo2 = reader2.ReadCOO();
 
@@ -178,6 +214,13 @@ TEST(PigoMTXReader, Basics){
   EXPECT_NE(coo2->get_vals(), nullptr);
   EXPECT_NE(coo2->get_row(), nullptr);
   EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for(int i=0; i<5; i++){
+    EXPECT_EQ(coo2->get_row()[i], row[i]);
+    EXPECT_EQ(coo2->get_col()[i], col[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals[i]);
+  }
 
 }
 
@@ -200,6 +243,7 @@ TEST(PigoEdgeListReader, Basics){
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
+
   sparsebase::utils::io::PigoEdgeListReader<int,int,float> reader2("test_values_pigo.edges", true);
   auto coo2 = reader2.ReadCOO();
 
@@ -208,6 +252,7 @@ TEST(PigoEdgeListReader, Basics){
   EXPECT_NE(coo2->get_row(), nullptr);
   EXPECT_NE(coo2->get_col(), nullptr);
   EXPECT_NE(coo2->get_vals(), nullptr);
+
 
 }
 
