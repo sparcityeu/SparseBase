@@ -41,9 +41,14 @@ vertex_type *degree_reorder_csr(std::vector<format::Format *> formats,
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
+  auto * inverse_permutation = new vertex_type[n];
+  for (vertex_type i = 0; i < n; i++){
+      inverse_permutation[sorted[i]] = i;
+  }
   delete[] mr;
   delete[] counts;
-  return sorted;
+  delete [] sorted;
+  return inverse_permutation;
 }
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -93,22 +98,27 @@ int main(int argc, char *argv[]) {
   cout << "********************************" << endl;
 
   cout << "Checking the correctness of the ordering..." << endl;
+  auto * permutation = new vertex_type[n];
+  for (vertex_type i = 0; i < n; i++){
+      permutation[order[i]] = i;
+  }
   bool order_is_correct = true;
   set<vertex_type> check;
-  for (vertex_type i = 0; i < n - 1 && order_is_correct; i++) {
-    vertex_type v = order[i];
-    if (check.find(v) == check.end()) {
-      check.insert(v);
+  for (vertex_type new_u = 0; new_u < n - 1 && order_is_correct; new_u++) {
+    vertex_type u = permutation[new_u];
+    if (check.find(u) == check.end()) {
+      check.insert(u);
     } else {
       order_is_correct = false;
     }
-    vertex_type u = order[i + 1];
-    if (xadj[v + 1] - xadj[v] > xadj[u + 1] - xadj[u]) {
+    vertex_type v = permutation[new_u+1];
+    if (xadj[u + 1] - xadj[u] > xadj[v + 1] - xadj[v]) {
       cout << "Degree Order is incorrect!" << endl;
       order_is_correct = false;
+      return 1;
     }
   }
-  vertex_type v = order[n - 1];
+  vertex_type v = permutation[n - 1];
   if (check.find(v) == check.end()) {
     check.insert(v);
   } else {
@@ -116,7 +126,11 @@ int main(int argc, char *argv[]) {
   }
   if (order_is_correct) {
     cout << "Order is correct." << endl;
+  } else {
+      cout << "Degree Order is incorrect!" << endl;
+      return 1;
   }
+  delete [] permutation;
 
   preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
   format::Format *csr = transformer.GetTransformation(con, {&cpu_context});
@@ -130,6 +144,7 @@ int main(int argc, char *argv[]) {
     if (n_row_ptr[i + 2] - n_row_ptr[i + 1] < n_row_ptr[i + 1] - n_row_ptr[i]) {
       cout << "Transformation is incorrect!" << endl;
       transform_is_correct = false;
+      return 1;
     }
   }
   if (transform_is_correct) {
