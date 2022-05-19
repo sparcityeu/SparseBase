@@ -231,14 +231,14 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.nrows(), pigo_coo.ncols(), pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
+        pigo_coo.nrows()-1, pigo_coo.ncols()-1, pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
         pigo_coo.w(), format::kOwned);
   } else {
     pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
               ValueType *>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.nrows(), pigo_coo.ncols(), pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
+        pigo_coo.nrows()-1, pigo_coo.ncols()-1, pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
         pigo_coo.w(), format::kOwned);
   }
 
