@@ -354,7 +354,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
       std::cerr << "CSR column array must be sorted. Sorting..." << std::endl;
 
 #pragma omp parallel for default(none) shared(row_ptr, col, n)
-      for(NNZType i=0; i<n; i++){
+      for(IDType i=0; i<n; i++){
         NNZType start = row_ptr[i];
         NNZType end = row_ptr[i+1];
         std::sort(col + start, col + end);
