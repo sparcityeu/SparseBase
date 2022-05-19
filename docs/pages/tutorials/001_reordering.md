@@ -22,7 +22,7 @@ The completed tutorial can be found in `tutorials/001_reordering/solved/solved.c
 Begin your main program by reading the unordered edge list file into a `CSR` object using a `UedgelistReader` object. 
 
 ```c++
-// The name of the matrix-market file in disk
+// The name of the edge list file in disk
 std::string filename(argv[1]); 
 // Create a reader object and set the name of the file it will read
 utils::io::UedgelistReader<IDType, NNZType, ValueType> reader(filename);
