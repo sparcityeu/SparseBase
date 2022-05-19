@@ -378,12 +378,11 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   return inverse_permutation;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-RCMReorder<IDType, NNZType, ValueType>::RCMReorder(float a, float b) {
+RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
-  this->params_ = std::unique_ptr<RCMReorderParams>(new RCMReorderParams(a, b));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
@@ -431,9 +430,6 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<format::Format *> formats, PreprocessParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
       formats[0]->As<CSR<IDType, NNZType, ValueType>>();
-  RCMReorderParams *params_ = static_cast<RCMReorderParams *>(params);
-  std::cout << "using the parameters " << params_->alpha << " and "
-            << params_->beta << std::endl;
   NNZType *xadj = csr->get_row_ptr();
   IDType *adj = csr->get_col();
   IDType n = csr->get_dimensions()[0];

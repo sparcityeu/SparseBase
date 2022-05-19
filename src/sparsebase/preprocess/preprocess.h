@@ -244,35 +244,80 @@ public:
   virtual ~GenericPreprocessType();
 };
 
+//! An abstract class representing reordering algorithms.
+/*!
+ * Class that generalizes reordering algorithms. It defines the API used for reordering as well as the return type of reordering (IDType*).
+ * @tparam IDType  the data type of row and column numbers (vertex IDs in the case of graphs)
+ */
 template <typename IDType>
 class ReorderPreprocessType : public FunctionMatcherMixin<IDType *> {
 protected:
 public:
-  IDType *GetReorder(format::Format *csr, std::vector<context::Context *>);
-  IDType *GetReorder(format::Format *csr, PreprocessParams *params,
-                     std::vector<context::Context *>);
+  //! Generates a reordering inverse permutation of `format` using one of the contexts in `contexts`
+  /*!
+   *
+   * @param format the Format object that will be reordered.
+   * @param contexts vector of contexts that can be used for generating the reordering.
+   * @return an invere permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+   */
+  IDType *GetReorder(format::Format *format, std::vector<context::Context *> contexts);
+  //! Generates a reordering inverse permutation of `format` with the given PreprocessParams object and using one of the contexts in `contexts`
+  /*!
+   *
+   * @param format the Format object that will be reordered.
+   * @param params a polymorphic pointer at a `PreprocessParams` object that will contain hyperparameters used for reordering.
+   * @param contexts vector of contexts that can be used for generating the reordering.
+   * @return an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+   */
+  IDType *GetReorder(format::Format *format, PreprocessParams *params,
+                     std::vector<context::Context *> contexts);
+  //! Generates a reordering using one of the contexts in `contexts`, and caches intermediate `Format` objects.
+  /*!
+   *
+   * @param format the Format object that will be reordered.
+   * @param contexts vector of contexts that can be used for generating the reordering.
+   * @return A tuple with the first element being a vector of Format*, where each pointer in the output points at the format that the corresponds Format object from the the input was converted to. If an input Format wasn't converted, the output pointer will point at nullptr. The second element is an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+   */
   std::tuple<std::vector<format::Format *>, IDType *>
   GetReorderCached(format::Format *csr, std::vector<context::Context *>);
+  //! Generates a reordering inverse permutation of `format` with the given PreprocessParams object and using one of the contexts in `contexts`
+  /*!
+   *
+   * @param format the Format object that will be reordered.
+   * @param params a polymorphic pointer at a `PreprocessParams` object that will contain hyperparameters used for reordering.
+   * @param contexts vector of contexts that can be used for generating the reordering.
+   * @return A tuple with the first element being a vector of Format*, where each pointer in the output points at the format that the corresponds Format object from the the input was converted to. If an input Format wasn't converted, the output pointer will point at nullptr. The second element is an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+   */
   std::tuple<std::vector<format::Format *>, IDType *>
   GetReorderCached(format::Format *csr, PreprocessParams *params,
                    std::vector<context::Context *>);
   virtual ~ReorderPreprocessType();
 };
 
+//! Reordering preprocessing algorithm that reorders a format by representing it as an adjacency matrix of a graph and ordering its vertices by degree
 template <typename IDType, typename NNZType, typename ValueType>
 class DegreeReorder : public ReorderPreprocessType<IDType> {
 public:
   DegreeReorder(bool ascending);
+  //! The hyperparameters used by the implementation functions
+  struct DegreeReorderParams : PreprocessParams {
+      bool ascending;
+      DegreeReorderParams(bool ascending) : ascending(ascending) {}
+  };
 
 protected:
-  struct DegreeReorderParams : PreprocessParams {
-    bool ascending;
-    DegreeReorderParams(bool ascending) : ascending(ascending) {}
-  };
+  //! An implementation function that will reorder a CSR format
+  /*!
+   *
+   * @param formats a vector containing a single Format object of type CSR
+   * @param params a polymorphic pointer at a `DegreeReorderParams` object
+   * @return an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+   */
   static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
                                      PreprocessParams *params);
 };
 
+//! A generic reordering class that the user instantiate and then register their own functions to.
 template <typename IDType, typename NNZType, typename ValueType>
 class GenericReorder
     : public ReorderPreprocessType<IDType> {
@@ -280,29 +325,27 @@ public:
   GenericReorder();
 };
 
+//! Reordering using the Reverse Cuthill-McKee algorithm: https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
 template <typename IDType, typename NNZType, typename ValueType>
 class RCMReorder : public ReorderPreprocessType<IDType> {
   typedef typename std::make_signed<IDType>::type SignedID;
 
 public:
-  RCMReorder(float a, float b);
+  RCMReorder();
 
 protected:
-  struct RCMReorderParams : PreprocessParams {
-    float alpha;
-    float beta;
-    RCMReorderParams(float a, float b) : alpha(a), beta(b) {}
-  };
   static IDType peripheral(NNZType *xadj, IDType *adj, IDType n, IDType start,
                            SignedID *distance, IDType *Q);
+    //! An implementation function that will reorder a CSR format
+    /*!
+     *
+     * @param formats a vector containing a single Format object of type CSR
+     * @param params a polymorphic pointer at a `RCMReorderParams` object
+     * @return an inverse permutation of the input format; an array of size `format.get_dimensions()[0]` where the ith element is the order of the ith element in the original format object
+     */
   static IDType *GetReorderCSR(std::vector<format::Format *> formats,
                                PreprocessParams *);
 };
-
-// transform
-// template <typename IDType, typename NNZType, typename ValueType, typename
-// ReturnType> using TransformFunction = ReturnType
-// (*)(std::vector<SparseFormat<IDType, NNZType, ValueType> *>, IDType *order);
 
 template <typename IDType, typename NNZType, typename ValueType>
 class TransformPreprocessType : public FunctionMatcherMixin<format::Format *> {
@@ -343,10 +386,6 @@ public:
   void set_params(std::type_index, std::shared_ptr<PreprocessParams>) override;
   std::type_index get_feature_id() override;
   ~FeaturePreprocessType();
-
-//protected:
-//  std::shared_ptr<PreprocessParams> params_;
-//  std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
 };
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -364,11 +403,6 @@ public:
                           PreprocessParams *params);
 #endif
   ~JaccardWeights();
-
-protected:
-  // GetDegreeDistributionCSR(std::vector<SparseFormat<IDType, NNZType,
-  // ValueType> *> formats, FeatureParams *); static float *
-  // GetDegreeDistributionCSR(SparseObject<IDtype, NNZType, ValueType> * obj);
 };
 
 template <typename IDType, typename NNZType, typename ValueType,
