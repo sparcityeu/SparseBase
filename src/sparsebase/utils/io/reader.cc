@@ -231,14 +231,14 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.n(), pigo_coo.m(), pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
+        pigo_coo.nrows(), pigo_coo.ncols(), pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
         pigo_coo.w(), format::kOwned);
   } else {
     pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
               ValueType *>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.n(), pigo_coo.m(), pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
+        pigo_coo.nrows(), pigo_coo.ncols(), pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
         pigo_coo.w(), format::kOwned);
   }
 
@@ -289,13 +289,13 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         coo(filename_, pigo::EDGE_LIST);
     return new format::COO<IDType, NNZType, ValueType>(
-        coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
+        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
   } else {
     pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
               ValueType *>
         coo(filename_, pigo::EDGE_LIST);
     return new format::COO<IDType, NNZType, ValueType>(
-        coo.n(), coo.m(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
+        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
   }
 #else
   std::cerr << "Warning: PIGO suppport is not compiled in this build of sparsebase (your system might not be supported)." << std::endl;
