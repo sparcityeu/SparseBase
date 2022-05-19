@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     } else {
       cout << "RCM ordering is incorrect!";
       order_is_correct = false;
+      return 1;
     }
   }
   if (ids.size() > n) {
@@ -64,6 +65,10 @@ int main(int argc, char *argv[]) {
   }
   if (order_is_correct) {
     cout << "Order is correct!" << endl;
+  } else {
+    cout << "RCM ordering is incorrect!";
+    order_is_correct = false;
+    return 1;
   }
   return 0;
 }
