@@ -103,7 +103,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
     std::string filename) {
-  utils::io::EdgeListReader<VertexID, NumEdges, Weight> reader(filename);
+  utils::io::EdgeListReader<VertexID, NumEdges, Weight> reader(filename, false, false, false, true, true);
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -125,7 +125,7 @@ Graph<VertexID, NumEdges, Weight>::Graph() {}
 template <typename VertexID, typename NumEdges, typename ValueType>
 void Graph<VertexID, NumEdges, ValueType>::InitializeInfoFromConnection() {
   auto dimensions = this->connectivity_->get_dimensions();
-  n_ = (dimensions[0] > dimensions[1]) ? dimensions[0] : dimensions[1];
+  n_ = dimensions[0];
   m_ = this->connectivity_->get_num_nnz();
 }
 template <typename VertexID, typename NumEdges, typename ValueType>

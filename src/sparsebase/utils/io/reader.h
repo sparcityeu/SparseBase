@@ -70,7 +70,8 @@ public:
                           bool weighted = false,
                           bool remove_duplicates=false,
                           bool remove_self_edges=false,
-                          bool read_undirected_=true);
+                          bool read_undirected_=true,
+                          bool square=false);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   ~EdgeListReader() override;
@@ -81,6 +82,7 @@ private:
   bool remove_duplicates_;
   bool remove_self_edges_;
   bool read_undirected_;
+  bool square_;
 };
 
 //! Reader for the Matrix Market File Format

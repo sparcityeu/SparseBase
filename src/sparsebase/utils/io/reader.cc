@@ -22,11 +22,12 @@ namespace io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 EdgeListReader<IDType, NNZType, ValueType>::EdgeListReader(
-    std::string filename, bool weighted, bool remove_duplicates, bool remove_self_edges, bool read_undirected)
+    std::string filename, bool weighted, bool remove_duplicates, bool remove_self_edges, bool read_undirected, bool square)
     : filename_(filename), weighted_(weighted),
       remove_duplicates_(remove_duplicates),
       remove_self_edges_(remove_self_edges),
-      read_undirected_(read_undirected)
+      read_undirected_(read_undirected),
+      square_(square)
 {}
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -60,6 +61,11 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
       }
 
+    }
+
+    if(square_){
+      n = std::max(n,m);
+      m = n;
     }
 
     sort(edges.begin(), edges.end(),
