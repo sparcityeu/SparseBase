@@ -190,7 +190,7 @@ class reader_init(explicit_initialization):
         self.out_stream.write('// '+self.source_filename+'\n')
         for value_type in value_types:
             self.out_stream.write("template class BinaryReaderOrderOne<" + value_type + ">;\n")
-        print_implementations(['MTXReader', 'UedgelistReader', 'BinaryReaderOrderTwo'],
+        print_implementations(['MTXReader', 'EdgeListReader', 'BinaryReaderOrderTwo'],
                               self.out_stream)
 
 class writer_init(explicit_initialization):
@@ -202,7 +202,7 @@ class writer_init(explicit_initialization):
         self.out_stream.write('// '+self.source_filename+'\n')
         for value_type in value_types:
             self.out_stream.write("template class BinaryWriterOrderOne<" + value_type + ">;\n")
-        print_implementations(['BinaryWriterOrderOne', 'BinaryWriterOrderTwo'], self.out_stream)
+        print_implementations(['BinaryWriterOrderTwo'], self.out_stream)
 
 
 class pigo_reader_init(explicit_initialization):
@@ -244,12 +244,12 @@ inits.append(preprocess_init(output_folder, dry_run))
 inits.append(object_init(output_folder, dry_run))
 inits.append(feature_init(output_folder, dry_run))
 inits.append(writer_init(output_folder, dry_run))
+inits.append(pigo_reader_init(external_output_folder, dry_run))
 if use_cuda:
     inits.append(converter_cuda_init(cuda_output_folder, dry_run))
     inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
     inits.append(format_cuda_init(cuda_output_folder, dry_run))
-if use_pigo:
-    inits.append(pigo_reader_init(external_output_folder, dry_run))
+
 
 ## Create temporary files containing the explicit instantiations
 for init_object in inits:
