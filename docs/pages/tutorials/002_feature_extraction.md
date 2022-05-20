@@ -78,10 +78,10 @@ auto raws = engine.Extract(coo, {&cpu_context});
 ```
 
 The extract function, if possible, merges the computation for the features by finding a class that provides the merged version of the calculations.
-For this tutorial we will add `Degrees` and `DegreeDistribution` classes separately and observe that the `Degrees_DegreeDistribution` class will call. This means the `ClassMatcherMixin` merged the two features into single class that has an efficient implementation.
+For this tutorial we will add `Degrees` and `DegreeDistribution` classes separately and observe that the `Degrees_DegreeDistribution` class will be used. This means the `ClassMatcherMixin` merged the two features into single class that has an efficient implementation.
 
 After the extraction, cast the features to their raw/original type by first using the `std::type` of the feature to access it from the map. Then cast it to the correct primitive type by using `std::any_cast`.
-Note that all the computations takes place using c arrays of the respective primitive type thanks to the highly templated structure of the library thanks to the highly templated design of the library.
+Note that all the computations takes place using c arrays of the respective primitive type thanks to the highly templated design of the library.
 
 ```c++
 cout << "#features extracted: " << raws.size() << endl;
