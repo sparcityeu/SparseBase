@@ -56,36 +56,36 @@ int main(int argc, char *argv[]) {
   cout << "********************************" << endl;
 
   cout << "Checking the correctness of the ordering..." << endl;
-  auto * permutation = new vertex_type[n];
-  for (vertex_type i = 0; i < n; i++){
-      permutation[order[i]] = i;
+  auto *permutation = new vertex_type[n];
+  for (vertex_type i = 0; i < n; i++) {
+    permutation[order[i]] = i;
   }
   bool order_is_correct = true;
   set<vertex_type> check;
   for (vertex_type new_u = 0; new_u < n - 1 && order_is_correct; new_u++) {
-      vertex_type u = permutation[new_u];
-      if (check.find(u) == check.end()) {
-          check.insert(u);
-      } else {
-          order_is_correct = false;
-      }
-      vertex_type v = permutation[new_u+1];
-      if (row_ptr[u + 1] - row_ptr[u] > row_ptr[v + 1] - row_ptr[v]) {
-          cout << "Degree Order is incorrect!" << endl;
-          order_is_correct = false;
-          return 1;
-      }
+    vertex_type u = permutation[new_u];
+    if (check.find(u) == check.end()) {
+      check.insert(u);
+    } else {
+      order_is_correct = false;
+    }
+    vertex_type v = permutation[new_u + 1];
+    if (row_ptr[u + 1] - row_ptr[u] > row_ptr[v + 1] - row_ptr[v]) {
+      cout << "Degree Order is incorrect!" << endl;
+      order_is_correct = false;
+      return 1;
+    }
   }
   vertex_type v = permutation[n - 1];
   if (check.find(v) == check.end()) {
-      check.insert(v);
+    check.insert(v);
   } else {
-      order_is_correct = false;
+    order_is_correct = false;
   }
   if (order_is_correct) {
-      cout << "Order is correct." << endl;
+    cout << "Order is correct." << endl;
   }
-  delete [] permutation;
+  delete[] permutation;
   preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
   format::Format *csr = transformer.GetTransformation(con, {&cpu_context});
   auto *n_row_ptr =

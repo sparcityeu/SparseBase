@@ -59,7 +59,7 @@ class FunctionNotFoundException : public Exception {
   std::string msg_;
 
 public:
-  FunctionNotFoundException (std::string message) : msg_(message) {}
+  FunctionNotFoundException(std::string message) : msg_(message) {}
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
@@ -67,7 +67,9 @@ class NoConverterException : public Exception {
   std::string msg_;
 
 public:
-  NoConverterException  () : msg_("Attempting to convert a format in a preprocessing object that does not have a Converter") {}
+  NoConverterException()
+      : msg_("Attempting to convert a format in a preprocessing object that "
+             "does not have a Converter") {}
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
