@@ -102,7 +102,28 @@ g++ -std=c++17 tutorial_002.cc -lsparsebase -fopenmp -std=c++17 -o feature.out
 ./feature.out ../../../examples/data/ash958.mtx
 ```
 
-You should see the following output:
+You should see something similar to the following output:
 
 ```
+COO arrays must be sorted. Sorting...
+
+Features that will be extracted: 
+N10sparsebase10preprocess18DegreeDistributionIjjfdEE
+N10sparsebase10preprocess7DegreesIjjfEE
+
+Here: 2
+remaining size: 2
+N10sparsebase10preprocess7DegreesIjjfEE
+N10sparsebase10preprocess18DegreeDistributionIjjfdEE
+
+2 2 0x7ff74bc05f00
+result size: 1
+
+
+Classes used:
+N10sparsebase10preprocess26Degrees_DegreeDistributionIjjfdEE
+
+#features extracted: 2
+vertex 0 => degree: 2
+dst[0] 0.00104384
 ```
