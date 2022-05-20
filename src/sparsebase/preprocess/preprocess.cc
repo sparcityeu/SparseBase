@@ -872,14 +872,42 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
                            FeatureType>::Degrees_DegreeDistribution() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
-  this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+  this->Register();
+  // this->RegisterFunction(
+  //     {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});
   std::shared_ptr<PreprocessParams> deg_dist_param(new typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistributionParams);
   std::shared_ptr<PreprocessParams> degs_param(new typename Degrees<IDType, NNZType, ValueType>::DegreesParams);
   this->pmap_[DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static()] = deg_dist_param;
   this->pmap_[Degrees<IDType, NNZType, ValueType>::get_feature_id_static()] = degs_param;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void Degrees_DegreeDistribution<IDType, NNZType, ValueType,
+                                FeatureType>::Register() {
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
+    Degrees_DegreeDistribution(const Degrees_DegreeDistribution<
+                               IDType, NNZType, ValueType, FeatureType> &d) {
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
+    Degrees_DegreeDistribution(const std::shared_ptr<Params> r) {
+  Register();
+  this->params_ = r;
+  this->pmap_[get_feature_id_static()] = r;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,

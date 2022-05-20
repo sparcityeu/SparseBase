@@ -572,6 +572,10 @@ class Degrees_DegreeDistribution
 
 public:
   Degrees_DegreeDistribution();
+  Degrees_DegreeDistribution(
+      const Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>
+          &d);
+  Degrees_DegreeDistribution(std::shared_ptr<Params>);
   std::unordered_map<std::type_index, std::any>
   Extract(format::Format *format, std::vector<context::Context *>) override;
   std::vector<std::type_index> get_sub_ids() override;
@@ -600,6 +604,7 @@ public:
   ~Degrees_DegreeDistribution();
 
 protected:
+  void Register();
 };
 
 } // namespace sparsebase::preprocess
