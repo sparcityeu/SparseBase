@@ -120,16 +120,16 @@ std::vector<preprocess::ExtractableType *> Extractor::GetFuncList() {
   return res;
 }
 
-//std::unordered_map<std::type_index, std::any>
-//Extractor::Extract(std::vector<Feature> &fs, format::Format *format,
-//                   const std::vector<context::Context *> &c) {
-//  std::unordered_map<std::type_index, std::any> res;
-//  for (auto &el : fs) {
-//    auto t = el->Extract(format, c);
-//    res.merge(t);
-//  }
-//  return res;
-//}
+std::unordered_map<std::type_index, std::any>
+Extractor::Extract(std::vector<Feature> &fs, format::Format *format,
+                   const std::vector<context::Context *> &c) {
+  std::unordered_map<std::type_index, std::any> res;
+  for (auto &el : fs) {
+    auto t = el->Extract(format, c);
+    res.merge(t);
+  }
+  return res;
+}
 
 std::unordered_map<std::type_index, std::any>
 Extractor::Extract(format::Format *format,
