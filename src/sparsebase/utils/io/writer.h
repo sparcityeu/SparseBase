@@ -1,31 +1,44 @@
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
 
+#include <string>
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/io/reader.h"
 #include <string>
 
-namespace sparsebase::utils::io {
+namespace sparsebase {
 
+namespace utils {
+
+namespace io {
+
+//! Base class for all writers, has no special functionality on its own
 class Writer {
 public:
   virtual ~Writer() = default;
 };
 
+//! Interface for writers that can write a CSR instance to a file
 template <typename IDType, typename NNZType, typename ValueType>
 class WritesCSR {
+  //! Writes the given CSR instance to a file
   virtual void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const = 0;
 };
 
+//! Interface for writers that can write a COO instance to a file
 template <typename IDType, typename NNZType, typename ValueType>
 class WritesCOO {
+  //! Writes the given COO instance to a file
   virtual void WriteCOO(format::COO<IDType, NNZType, ValueType> *coo) const = 0;
 };
 
+//! Interface for writers that can write an Array instance to a file
 template <typename T> class WritesArray {
-  virtual void WriteArray(format::Array<T> arr) const = 0;
+  //! Writes the given Array instance to a file
+  virtual void WriteArray(format::Array<T>* arr) const = 0;
 };
 
+//! Writes files by encoding them in SparseBase's custom binary format (CSR and COO)
 template <typename IDType, typename NNZType, typename ValueType>
 class BinaryWriterOrderTwo : public Writer,
                              public WritesCOO<IDType, NNZType, ValueType>,
@@ -40,6 +53,7 @@ private:
   std::string filename_;
 };
 
+//! Writes files by encoding them in SparseBase's custom binary format (Array)
 template <typename T>
 class BinaryWriterOrderOne : public Writer, public WritesArray<T> {
 public:
@@ -51,10 +65,15 @@ private:
   std::string filename_;
 };
 
-} // namespace sparsebase::utils::io
+} // namespace io
+
+} // namespace utils
+
+} // namespace sparsebase
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/utils/io/writer.cc"
 #endif
+
 
 #endif // SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_
