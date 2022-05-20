@@ -439,7 +439,8 @@ TEST_F(DegreesTest, AllTests) {
   // a single sub-feature
   EXPECT_EQ(subs.size(), 1);
   // same type as feature but different address
-  EXPECT_EQ(std::type_index(typeid(*(subs[0]))),
+  auto& feat = *(subs[0]);
+  EXPECT_EQ(std::type_index(typeid(feat)),
             std::type_index(typeid(feature)));
   EXPECT_NE(subs[0], &feature);
 
@@ -452,13 +453,13 @@ TEST_F(DegreesTest, AllTests) {
   }
   delete[] degrees_array;
   // Check GetDegrees
-  degrees_array = feature.GetDegrees({&global_csr}, {&cpu_context});
+  degrees_array = feature.GetDegrees(&global_csr, {&cpu_context});
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(degrees_array[i], degrees[i]);
   }
   delete[] degrees_array;
   // Check GetDegrees with conversion
-  degrees_array = feature.GetDegrees({&global_coo}, {&cpu_context});
+  degrees_array = feature.GetDegrees(&global_coo, {&cpu_context});
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(degrees_array[i], degrees[i]);
   }
@@ -503,7 +504,8 @@ TEST_F(DegreeDistributionTest, AllTests) {
   // a single sub-feature
   EXPECT_EQ(subs.size(), 1);
   // same type as feature but different address
-  EXPECT_EQ(std::type_index(typeid(*(subs[0]))),
+  auto& feat = *(subs[0]);
+  EXPECT_EQ(std::type_index(typeid(feat)),
             std::type_index(typeid(feature)));
   EXPECT_NE(subs[0], &feature);
 
@@ -579,8 +581,10 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
   // two sub-feature
   EXPECT_EQ(subs.size(), 2);
   // same type as feature but different address
-  EXPECT_EQ(std::type_index(typeid(*(subs[0]))), ids[0]);
-  EXPECT_EQ(std::type_index(typeid(*(subs[1]))), ids[1]);
+  auto& feat = *(subs[0]);
+  EXPECT_EQ(std::type_index(typeid(feat)), ids[0]);
+  auto& feat1 = *(subs[1]);
+  EXPECT_EQ(std::type_index(typeid(feat1)), ids[1]);
   EXPECT_NE(subs[0], &feature);
   EXPECT_NE(subs[1], &feature);
 
@@ -613,7 +617,7 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
   delete[] distribution_array;
   delete[] degree_array;
   //// Check Get (function matcher)
-  degrees_and_distribution_map = feature.Get({&global_csr}, {&cpu_context});
+  degrees_and_distribution_map = feature.Get(&global_csr, {&cpu_context});
   ASSERT_EQ(degrees_and_distribution_map.size(), 2);
   ASSERT_NE(degrees_and_distribution_map.find(ids[0]),
             degrees_and_distribution_map.end());
@@ -638,7 +642,7 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
   delete[] distribution_array;
   delete[] degree_array;
   //// Check Get with conversion (function matcher)
-  degrees_and_distribution_map = feature.Get({&global_coo}, {&cpu_context});
+  degrees_and_distribution_map = feature.Get(&global_coo, {&cpu_context});
   ASSERT_EQ(degrees_and_distribution_map.size(), 2);
   ASSERT_NE(degrees_and_distribution_map.find(ids[0]),
             degrees_and_distribution_map.end());
