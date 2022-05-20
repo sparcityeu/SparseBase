@@ -59,16 +59,16 @@ void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClassesHelper(
     return;
   }
   bool found = false;
-  //std::cout << "remaining size: " << ordered.size() << std::endl;
-  //for (auto &el : ordered) {
-  //  std::cout << el.name() << std::endl;
-  //}
-  //std::cout << std::endl;
+  // std::cout << "remaining size: " << ordered.size() << std::endl;
+  // for (auto &el : ordered) {
+  //   std::cout << el.name() << std::endl;
+  // }
+  // std::cout << std::endl;
 
   for (unsigned int c = source.size(); !found && c > 0; c--) {
     auto r = MatchClass(source, ordered, c);
-    //std::cout << source.size() << " " << c << " " << std::get<0>(r)
-    //          << std::endl;
+    // std::cout << source.size() << " " << c << " " << std::get<0>(r)
+    //           << std::endl;
     if (std::get<0>(r)) {
       res.push_back(std::get<0>(r));
       ordered = std::get<1>(r);
@@ -76,11 +76,11 @@ void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClassesHelper(
     }
   }
 
-  //std::cout << "result size: " << res.size() << std::endl;
-  // for(auto &el : res){
-  //   std::cout << el->get_feature_id().name() << std::endl;
-  // }
-  //std::cout << std::endl;
+  // std::cout << "result size: " << res.size() << std::endl;
+  //  for(auto &el : res){
+  //    std::cout << el->get_feature_id().name() << std::endl;
+  //  }
+  // std::cout << std::endl;
   GetClassesHelper(source, ordered, res);
 }
 
@@ -95,7 +95,7 @@ ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClasses(
     ordered.push_back(std::get<0>(el));
   }
   std::sort(ordered.begin(), ordered.end());
-  //std::cout << "Here: " << ordered.size() << std::endl;
+  // std::cout << "Here: " << ordered.size() << std::endl;
   GetClassesHelper(source, ordered, res);
   return res;
 }

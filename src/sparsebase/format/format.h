@@ -19,9 +19,11 @@ namespace format {
 
 //! Enum depicting the ownership status of a Format instance
 enum Ownership {
-  //! When used the arrays are owned by the user (Format instance is not responsible from deallocation)
+  //! When used the arrays are owned by the user (Format instance is not
+  //! responsible from deallocation)
   kNotOwned = 0,
-  //! When used the arrays are owned and will be deallocated by the Format instance
+  //! When used the arrays are owned and will be deallocated by the Format
+  //! instance
   kOwned = 1,
 };
 
@@ -45,7 +47,8 @@ template <class T> struct BlankDeleter {
   void operator()(T *obj) {}
 };
 
-//! Type used to represent sizes in the library (usually will be a 64-bit unsigned integer type)
+//! Type used to represent sizes in the library (usually will be a 64-bit
+//! unsigned integer type)
 typedef unsigned long long DimensionType;
 
 //! Base class representing a Sparse Data Format (like CSR, COO etc.)
@@ -53,23 +56,25 @@ typedef unsigned long long DimensionType;
  * Format is base class representing a Sparse Data Format.
  * All Sparse Data Format Objects (like CSR and COO) are derived from Format.
  * Most of the library uses Format pointers as input and output.
- * By itself Format has very little functionality besides giving size information.
- * Often a user will have to use the As() function to convert it to a concrete format.
+ * By itself Format has very little functionality besides giving size
+ * information. Often a user will have to use the As() function to convert it to
+ * a concrete format.
  */
 class Format {
 public:
   //! Returns a type identifier for the concrete format class
   /*!
    * \return A type_index object from the standard C++ library that represents
-   * the type of the underlying concrete object. For example, a CSR and a COO object
-   * will have different identifiers. But also, objects of the same class with
-   * varying template types (like CSR<int,int,int> and CSR<int,int,float)
+   * the type of the underlying concrete object. For example, a CSR and a COO
+   * object will have different identifiers. But also, objects of the same class
+   * with varying template types (like CSR<int,int,int> and CSR<int,int,float)
    * will also have different identifiers.
    */
   virtual std::type_index get_format_id() = 0;
   virtual ~Format() = default;
 
-  //! Performs a deep copy of the Format object and returns the pointer to the newly created object
+  //! Performs a deep copy of the Format object and returns the pointer to the
+  //! newly created object
   virtual Format *Clone() const = 0;
 
   //! Returns the sizes of all dimensions as a vector
@@ -87,11 +92,11 @@ public:
   //! Returns the type_index for the context for the format instance
   virtual std::type_index get_context_type() const = 0;
 
-
   //! Templated function that can be used to cast to a concrete format class
   /*!
    * \tparam T a concrete format class (for example: CSR<int,int,int>)
-   * \return A concrete format pointer to this object (for example: CSR<int,int,int>*)
+   * \return A concrete format pointer to this object (for example:
+   * CSR<int,int,int>*)
    */
   template <typename T> T *As() {
     if (this->get_format_id() == std::type_index(typeid(T))) {
@@ -101,7 +106,8 @@ public:
   }
 };
 
-//! A class derived from the base Format class, mostly used for development purposes
+//! A class derived from the base Format class, mostly used for development
+//! purposes
 /*!
  * FormatImplementation derives from the Format class.
  * It implements some common functionality used by all formats.
@@ -125,7 +131,8 @@ public:
   virtual DimensionType get_order() const { return order_; }
   virtual context::Context *get_context() const { return context_.get(); }
 
-  //! Returns the std::type_index for the concrete Format class that this instance is a member of
+  //! Returns the std::type_index for the concrete Format class that this
+  //! instance is a member of
   std::type_index get_format_id() final { return typeid(FormatType); }
 
   //! A static variant of the get_format_id() function
@@ -141,7 +148,6 @@ protected:
   DimensionType nnz_;
   std::unique_ptr<sparsebase::context::Context> context_;
 };
-
 
 //! Coordinate List Sparse Data Format
 /*!
@@ -162,7 +168,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class COO : public FormatImplementation<COO<IDType, NNZType, ValueType>> {
 public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col,
-      ValueType *vals, Ownership own = kNotOwned, bool ignore_sort=false);
+      ValueType *vals, Ownership own = kNotOwned, bool ignore_sort = false);
   COO(const COO<IDType, NNZType, ValueType> &);
   COO(COO<IDType, NNZType, ValueType> &&);
   COO<IDType, NNZType, ValueType> &
