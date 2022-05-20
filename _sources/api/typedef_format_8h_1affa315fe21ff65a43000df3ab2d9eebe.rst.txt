@@ -1,0 +1,13 @@
+.. _exhale_typedef_format_8h_1affa315fe21ff65a43000df3ab2d9eebe:
+
+Typedef sparsebase::format::DimensionType
+=========================================
+
+- Defined in :ref:`file_src_sparsebase_format_format.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::format::DimensionType

@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1format_1_1FormatImplementation:
+
+Template Class FormatImplementation
+===================================
+
+- Defined in :ref:`file_src_sparsebase_format_format.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::format::Format`` (:ref:`exhale_class_classsparsebase_1_1format_1_1Format`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::format::FormatImplementation
+   :members:
+   :protected-members:
+   :undoc-members:

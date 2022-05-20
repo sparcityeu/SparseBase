@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1preprocess_1_1FeaturePreprocessType:
+
+Template Class FeaturePreprocessType
+====================================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::preprocess::FunctionMatcherMixin< FeatureType, ConverterMixin< ExtractableType > >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1FunctionMatcherMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::preprocess::FeaturePreprocessType
+   :members:
+   :protected-members:
+   :undoc-members:

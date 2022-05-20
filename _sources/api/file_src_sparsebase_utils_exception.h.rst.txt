@@ -1,0 +1,93 @@
+
+.. _file_src_sparsebase_utils_exception.h:
+
+File exception.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/exception.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_exception.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``exception`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``iostream``
+
+- ``sparsebase/config.h``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_feature_feature.cc`
+
+- :ref:`file_src_sparsebase_format_format.cc`
+
+- :ref:`file_src_sparsebase_format_format.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_io_reader.cc`
+
+- :ref:`file_src_sparsebase_utils_io_writer.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1CUDADeviceException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Exception`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureParamsException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionNotFoundException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1InvalidDataMember`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1NoConverterException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ReaderException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1TypeException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1WriterException`
+

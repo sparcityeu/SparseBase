@@ -1,0 +1,33 @@
+.. _exhale_class_classsparsebase_1_1preprocess_1_1ReorderPreprocessType:
+
+Template Class ReorderPreprocessType
+====================================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::preprocess::FunctionMatcherMixin< IDType * >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1FunctionMatcherMixin`)
+
+
+Derived Types
+*************
+
+- ``public sparsebase::preprocess::DegreeReorder< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1DegreeReorder`)
+- ``public sparsebase::preprocess::GenericReorder< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1GenericReorder`)
+- ``public sparsebase::preprocess::RCMReorder< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1RCMReorder`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::preprocess::ReorderPreprocessType
+   :members:
+   :protected-members:
+   :undoc-members:

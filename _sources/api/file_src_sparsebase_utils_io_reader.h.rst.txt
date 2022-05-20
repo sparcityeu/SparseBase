@@ -1,0 +1,101 @@
+
+.. _file_src_sparsebase_utils_io_reader.h:
+
+File reader.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils_io>` (``src/sparsebase/utils/io``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/io/reader.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_io_reader.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``cstring``
+
+- ``fstream``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``string``
+
+- ``utility``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_object_object.h`
+
+- :ref:`file_src_sparsebase_object_object.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_io_reader.cc`
+
+- :ref:`file_src_sparsebase_utils_io_writer.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+- :ref:`namespace_sparsebase__utils__io`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryReaderOrderOne`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryReaderOrderTwo`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1EdgeListReader`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1MTXReader`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1PigoEdgeListReader`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1PigoMTXReader`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1Reader`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1ReadsArray`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1ReadsCOO`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1ReadsCSR`
+

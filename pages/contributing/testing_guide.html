@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Testing &mdash; SparseBase v0.1.5 documentation</title>
+  <title>Testing &mdash; SparseBase v0.2.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -41,6 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
@@ -62,7 +63,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#adding-tests">Adding tests</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#adding-a-new-test-file">Adding a new test file</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#add-the-executable-target-as-a-test-in-the-cmakelists-txt-file-in-the-root-directory">3. Add the executable target as a test in the ‘CMakeLists.txt’ file in the root directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-about-cmake-options-and-flags">What about CMake options and flags?</a></li>
 </ul>
 </li>
 </ul>
@@ -250,46 +251,117 @@ the <a class="reference external" href="https://google.github.io/googletest/faq.
 </section>
 <section id="adding-tests">
 <h2>Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline"></a></h2>
-<p>For <code class="docutils literal notranslate"><span class="pre">SparseBase</span></code>, we will have the test files following the file structure of the library itself. Tests for a module in file <code class="docutils literal notranslate"><span class="pre">sparsebase/src/&lt;file_name&gt;.cpp</span></code>, the tests of that file will be located in <code class="docutils literal notranslate"><span class="pre">tests/suites/&lt;file_name&gt;_tests.cpp</span></code>. Each test file will be a separate <code class="docutils literal notranslate"><span class="pre">CTest</span></code> test.</p>
-<p>When adding a test for some module, first check to see if that module has a test file or not. If it does, add your tests there. Otherwise, create a new test file and modify the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> files as shown in the next section.</p>
+<p>Test files follow the same structure as the source files of the library itself. Tests for code in the file <code class="docutils literal notranslate"><span class="pre">src/path/to/file/&lt;file_name&gt;.cc</span></code> are written in the file <code class="docutils literal notranslate"><span class="pre">tests/suites/path/to/file/&lt;file_name&gt;_tests.cpp</span></code>. Each test file will be a separate <code class="docutils literal notranslate"><span class="pre">CTest</span></code> test.</p>
+<p>When adding a test for source code in some file, first check to see if that source code file has a matching test file. If it does, add your tests to that test file. Otherwise, create a new test file as shown in the next section and add your tests to that file.</p>
 <section id="adding-a-new-test-file">
 <h3>Adding a new test file<a class="headerlink" href="#adding-a-new-test-file" title="Permalink to this headline"></a></h3>
-<p>When adding a test file, there are three steps you need to follow:</p>
-<section id="create-the-cpp-file">
-<h4>1. Create the ‘.cpp’ file.<a class="headerlink" href="#create-the-cpp-file" title="Permalink to this headline"></a></h4>
-<p>Given that the module you are unit-testing is in the file <code class="docutils literal notranslate"><span class="pre">sparsebase/src/path/package.cpp</span></code>, create the file <code class="docutils literal notranslate"><span class="pre">tests/suites/path/package_tests.cpp</span></code>.</p>
-<p>In this file, you must add the GTest headers as well as whichever headers you need for the test. For example:</p>
+<p>The following are the steps needed to add a new test file.</p>
+<section id="determine-the-directory-to-which-the-test-file-is-to-be-added-and-check-if-it-exists">
+<h4>1. Determine the directory to which the test file is to be added and check if it exists.<a class="headerlink" href="#determine-the-directory-to-which-the-test-file-is-to-be-added-and-check-if-it-exists" title="Permalink to this headline"></a></h4>
+<p>The directory of a test file must match the directory of the source file it is written for, with the <code class="docutils literal notranslate"><span class="pre">src/</span></code> root level directory being replaced by <code class="docutils literal notranslate"><span class="pre">tests/suites</span></code>.</p>
+<p>For example, if the file you are writing tests for is <code class="docutils literal notranslate"><span class="pre">src/sparsebase/preprocess/preprocess.cc</span></code>, then the directory of the test file is <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/</span></code>.</p>
+<p>If that subdirectory already exists, you can skip steps 2 and 3.</p>
+</section>
+<section id="create-a-directory-for-your-test-file-if-one-doesn-t-already-exist">
+<h4>2. Create a directory for your test file (if one doesn’t already exist).<a class="headerlink" href="#create-a-directory-for-your-test-file-if-one-doesn-t-already-exist" title="Permalink to this headline"></a></h4>
+<p>Assuming that the source file you are writing the tests for is located in <code class="docutils literal notranslate"><span class="pre">src/path/to/file</span></code>, then you need to create a directory that matches that path in the <code class="docutils literal notranslate"><span class="pre">tests/suites/</span></code> folder.</p>
+<p>For example, if the file you are writing tests for is <code class="docutils literal notranslate"><span class="pre">src/sparsebase/preprocess/preprocess.cc</span></code>, then you must create the directory <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/</span></code>.</p>
+</section>
+<section id="create-a-cmakelists-txt-file-in-that-test-s-directory-if-one-doesn-t-already-exist">
+<h4>3. Create a CMakeLists.txt file in that test’s directory (if one doesn’t already exist).<a class="headerlink" href="#create-a-cmakelists-txt-file-in-that-test-s-directory-if-one-doesn-t-already-exist" title="Permalink to this headline"></a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file will be located in the same directory of the test file (the directory determined in step 1). It will contain the instructions for building the test executable as well as the test definition for CMake.</p>
+<p>After creating the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file, you must add it to the root level tests <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file. At the end fo the <code class="docutils literal notranslate"><span class="pre">tests/CMakeLists.txt</span></code> file, add the directory you had just created as a subdirectory.</p>
+<p>For example, if the directory created for the test file is <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess</span></code>, then you would create the empty file <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/CMakeLists.txt</span></code> and add the following line to the end of the file <code class="docutils literal notranslate"><span class="pre">tests/CMakeLists.txt</span></code>:</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">sparsebase/preprocess</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-the-tests-source-file">
+<h4>3. Create the tests source file.<a class="headerlink" href="#create-the-tests-source-file" title="Permalink to this headline"></a></h4>
+<p>The file you create will be located in the test directory determined in step 1. It will have the same name as the source file that it is testing, with the addition of the suffix <code class="docutils literal notranslate"><span class="pre">_tests</span></code>.</p>
+<p>For example, if the source file you are testing is <code class="docutils literal notranslate"><span class="pre">sparsebase/src/sparsebase/preprocess/preprocess.cc</span></code>, you will create the file <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/preprocess_tests.cc</span></code>.</p>
+<p>You must start this file by including the GTest header, the <code class="docutils literal notranslate"><span class="pre">sparsebase/config.h</span></code> header, and then whichever headers you need for the test. For example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;gtest/gtest.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.hpp&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_object.hpp&quot;</span><span class="cp"></span>
+
+<span class="c1">// needed for CMake flags (e.g. CUDA, PIGO, etc.)</span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/format/format.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/object/object.h&quot;</span><span class="cp"></span>
 
 <span class="c1">// test suites and test functions</span>
 </pre></div>
 </div>
 <p>Your tests will follow these headers.</p>
 </section>
-<section id="add-an-executable-target-to-the-cmakelists-txt-file-in-the-tests-top-level-directory">
-<h4>2. Add an executable target to the ‘CMakeLists.txt’ file in the ‘tests’ top-level directory.<a class="headerlink" href="#add-an-executable-target-to-the-cmakelists-txt-file-in-the-tests-top-level-directory" title="Permalink to this headline"></a></h4>
-<p>To add a target for the file we defined in step 1, add the following lines to the end of the file <code class="docutils literal notranslate"><span class="pre">tests/CMakeLists.txt</span></code></p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">add_executable</span><span class="p">(</span><span class="n">package_tests</span><span class="p">.</span><span class="n">test</span> <span class="n">suites</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">package_tests</span><span class="p">.</span><span class="n">cpp</span><span class="p">)</span>
-<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">package_tests</span><span class="p">.</span><span class="n">test</span> <span class="n">sparsebase</span><span class="p">)</span>
-<span class="n">target_link_libraries</span><span class="p">(</span><span class="n">package_tests</span><span class="p">.</span><span class="n">test</span> <span class="n">gtest</span> <span class="n">gtest_main</span><span class="p">)</span>
+<section id="add-an-executable-target-and-a-test-command-to-the-cmakelists-txt-file-in-the-test-file-directory">
+<h4>4. Add an executable target and a test command to the ‘CMakeLists.txt’ file in the test file directory.<a class="headerlink" href="#add-an-executable-target-and-a-test-command-to-the-cmakelists-txt-file-in-the-test-file-directory" title="Permalink to this headline"></a></h4>
+<p>Each test file will be compiled into an executable target, and each test executable will be added as a CTest test. The name of the CTest test of a test file is its path relative to the <code class="docutils literal notranslate"><span class="pre">tests/suites</span></code> directory, followed by its name, with the file delimiter being the underscore character. The name of the executable of a test file will be the name of its CTest test with the extension <code class="docutils literal notranslate"><span class="pre">.test</span></code>. For instance, the test file <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/preprocess_tests.cc</span></code> will have the CTest test name:</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span>sparsebase_preprocess_preprocess_tests
 </pre></div>
 </div>
-<p>The name of the target should match the name of the test file, but its extension will be <code class="docutils literal notranslate"><span class="pre">.test</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.cpp</span></code>. In our case, given the test file <code class="docutils literal notranslate"><span class="pre">tests/suites/path/package_tests.cpp</span></code>, the target for it is called <code class="docutils literal notranslate"><span class="pre">package_tests.test</span></code>. We add the file executable target for CMake to compile, and we tell CMake that it needs to be linked with the <code class="docutils literal notranslate"><span class="pre">SparseBase</span></code> library and with Google Test.</p>
-</section>
-</section>
-<section id="add-the-executable-target-as-a-test-in-the-cmakelists-txt-file-in-the-root-directory">
-<h3>3. Add the executable target as a test in the ‘CMakeLists.txt’ file in the root directory<a class="headerlink" href="#add-the-executable-target-as-a-test-in-the-cmakelists-txt-file-in-the-root-directory" title="Permalink to this headline"></a></h3>
-<p>To add the executable as a test, add the following to the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file in the root directory between the the <code class="docutils literal notranslate"><span class="pre">if(</span> <span class="pre">RUN_TESTS</span> <span class="pre">)</span> <span class="pre">...</span> <span class="pre">endif()</span></code> tags.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">(</span> RUN_TESTS <span class="o">)</span>
-
-	add_test<span class="o">(</span>NAME package_tests COMMAND tests/package_tests.test<span class="o">)</span>
-
-endif<span class="o">()</span>
+<p>And will have the executable name:</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span>sparsebase_preprocess_preprocess_tests
 </pre></div>
 </div>
-<p>the test name matches the file name, but it doesn’t have an extension.</p>
+<p>To add the executable and CTest test to the build system generation process, add the following lines to the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file in the test file’s directory:</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="c"># Add the executable target</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span> <span class="s">&lt;test_source_file&gt;</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span> <span class="s">sparsebase</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span> <span class="s">gtest</span> <span class="s">gtest_main</span><span class="p">)</span>
+
+<span class="c"># Add the CTest test </span>
+<span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span> <span class="s">&lt;CTest_test_name&gt;</span> <span class="s">COMMAND</span> <span class="s">&lt;test_executable_name&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, given that the test file we are adding is <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/preprocess_tests.cc</span></code>, we would add the following lines to the file <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/CMakeLists.txt</span></code>:</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="c"># Add the executable target</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span> <span class="s">preprocess_tests.cc</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span> <span class="s">sparsebase</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span> <span class="s">gtest</span> <span class="s">gtest_main</span><span class="p">)</span>
+
+<span class="c"># Add the CTest test </span>
+<span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span> <span class="s">sparsebase_preprocess_preprocess_tests</span> <span class="s">COMMAND</span> <span class="s">sparsebase_preprocess_preprocess_tests.test</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="what-about-cmake-options-and-flags">
+<h3>What about CMake options and flags?<a class="headerlink" href="#what-about-cmake-options-and-flags" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SparseBase</span></code> has many compilation options ranging from including different architectures (e.g. <code class="docutils literal notranslate"><span class="pre">CUDA</span></code>) to different I/O library support (e.g. <code class="docutils literal notranslate"><span class="pre">PIGO</span></code>). We incorporate these flags into testing in the same way we do in the compilation of the library:</p>
+<ul class="simple">
+<li><p>If the entirety of a test file is conditional on an option, we make its executable and test decleration conditional on that option at the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> level.</p></li>
+<li><p>If some tests within a test file are conditional on an option, we use preprocessor directives inside the test source code to control these tests.</p></li>
+</ul>
+<p>The following subsections elaborate on these two approaches.</p>
+<section id="conditional-compilation">
+<h4>Conditional compilation<a class="headerlink" href="#conditional-compilation" title="Permalink to this headline"></a></h4>
+<p>If there is a certain test file that is conditional on a CMake option, then you can simply surround the executable and test declerations of that test (shown in step 4 of “Adding a new test file”) with an <code class="docutils literal notranslate"><span class="pre">if()</span></code> call contingent on that option.</p>
+<p>For example, the test file <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/cuda/preprocess_tests.cu</span></code> should only be added when the library is compiled with the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> option enabled. Here is how we define its executable and tests in the file <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/cuda/CMakeLists.txt</span></code>:</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="nb">if</span><span class="p">(</span><span class="o">${</span><span class="nv">CUDA</span><span class="o">}</span><span class="p">)</span>
+    <span class="nb">add_executable</span><span class="p">(</span><span class="s">sparsebase__preprocess_cuda_preprocess_tests.test</span> <span class="s">preprocess_tests.cu</span><span class="p">)</span>
+    <span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_cuda_preprocess_tests.test</span> <span class="s">sparsebase</span><span class="p">)</span>
+    <span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_cuda_preprocess_tests.test</span> <span class="s">gtest</span> <span class="s">gtest_main</span><span class="p">)</span>
+
+    <span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span> <span class="s">sparsebase_preprocess_preprocess_cuda_tests</span> <span class="s">COMMAND</span> <span class="s">sparsebase_preprocess_preprocess_cuda_tests.test</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="conditional-tests-within-a-test-file">
+<h4>2. Conditional tests within a test file<a class="headerlink" href="#conditional-tests-within-a-test-file" title="Permalink to this headline"></a></h4>
+<p>If a certain code (or test) within a test file is conditional on a CMake option, you can surround that code with a preprocessor if statement. Note: make sure that the test file includes the <code class="docutils literal notranslate"><span class="pre">sparsebase/config.h</span></code> file since that is where all the CMake flags are defined.</p>
+<p>For example, if a certain test is only required when the library is compiled with <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> enabled, we can define that test in the code as follows:</p>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#ifdef CUDA</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">CudaTestSuite</span><span class="p">,</span> <span class="n">CudaInitialization</span><span class="p">){</span>
+  <span class="c1">// code</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>

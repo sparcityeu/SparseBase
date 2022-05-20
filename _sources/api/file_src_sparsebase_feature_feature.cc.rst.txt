@@ -1,0 +1,54 @@
+
+.. _file_src_sparsebase_feature_feature.cc:
+
+File feature.cc
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_feature>` (``src/sparsebase/feature``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/feature/feature.cc``)
+--------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_feature_feature.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``feature.h`` (:ref:`file_src_sparsebase_feature_feature.h`)
+
+- ``init/feature.inc``
+
+- ``sparsebase/preprocess/preprocess.h`` (:ref:`file_src_sparsebase_preprocess_preprocess.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``vector``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__feature`
+

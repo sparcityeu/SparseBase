@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1io_1_1Writer:
+
+Class Writer
+============
+
+- Defined in :ref:`file_src_sparsebase_utils_io_writer.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::utils::io::BinaryWriterOrderOne< T >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderOne`)
+- ``public sparsebase::utils::io::BinaryWriterOrderTwo< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::io::Writer
+   :members:
+   :protected-members:
+   :undoc-members:

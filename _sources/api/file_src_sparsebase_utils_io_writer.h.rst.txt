@@ -1,0 +1,77 @@
+
+.. _file_src_sparsebase_utils_io_writer.h:
+
+File writer.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils_io>` (``src/sparsebase/utils/io``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/io/writer.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_io_writer.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/utils/io/reader.h`` (:ref:`file_src_sparsebase_utils_io_reader.h`)
+
+- ``string``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_io_writer.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+- :ref:`namespace_sparsebase__utils__io`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderOne`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1Writer`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1WritesArray`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1WritesCOO`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1WritesCSR`
+

@@ -1,0 +1,31 @@
+.. _exhale_class_classsparsebase_1_1preprocess_1_1TransformPreprocessType:
+
+Template Class TransformPreprocessType
+======================================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::preprocess::FunctionMatcherMixin< format::Format * >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1FunctionMatcherMixin`)
+
+
+Derived Type
+************
+
+- ``public sparsebase::preprocess::Transform< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1Transform`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::preprocess::TransformPreprocessType
+   :members:
+   :protected-members:
+   :undoc-members:

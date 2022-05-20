@@ -1,0 +1,13 @@
+.. _exhale_typedef_feature_8h_1a290ecb674ec42caaa3427d237e0b65d9:
+
+Typedef sparsebase::feature::Feature
+====================================
+
+- Defined in :ref:`file_src_sparsebase_feature_feature.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::feature::Feature

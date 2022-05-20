@@ -1,0 +1,53 @@
+
+.. _file_src_sparsebase_sparsebase.h:
+
+File sparsebase.h
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase>` (``src/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/sparsebase.h``)
+--------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_sparsebase.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/context/context.h`` (:ref:`file_src_sparsebase_context_context.h`)
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/object/object.h`` (:ref:`file_src_sparsebase_object_object.h`)
+
+- ``sparsebase/preprocess/preprocess.h`` (:ref:`file_src_sparsebase_preprocess_preprocess.h`)
+
+- ``sparsebase/utils/converter/converter.h`` (:ref:`file_src_sparsebase_utils_converter_converter.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sparsebase/utils/io/reader.h`` (:ref:`file_src_sparsebase_utils_io_reader.h`)
+
+- ``sparsebase/utils/io/writer.h`` (:ref:`file_src_sparsebase_utils_io_writer.h`)
+
+
+
+
+

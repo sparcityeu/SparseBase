@@ -14,7 +14,42 @@ Namespaces
 .. toctree::
    :maxdepth: 5
 
-   namespace_std.rst
+   namespace_sparsebase__context.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__feature.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__format.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__object.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__preprocess.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__utils.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__utils__converter.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_sparsebase__utils__io.rst
 
 Classes and Structs
 *******************
@@ -23,197 +58,382 @@ Classes and Structs
 .. toctree::
    :maxdepth: 5
 
-   structsparsebase_1_1DegreeReorder_1_1DegreeReorderParams.rst
+   structsparsebase_1_1context_1_1Context.rst
 
 .. toctree::
    :maxdepth: 5
 
-   structsparsebase_1_1FormatHash.rst
+   structsparsebase_1_1context_1_1ContextImplementation.rst
 
 .. toctree::
    :maxdepth: 5
 
-   structsparsebase_1_1FormatVectorHash.rst
+   structsparsebase_1_1context_1_1CPUContext.rst
 
 .. toctree::
    :maxdepth: 5
 
-   structsparsebase_1_1RCMReorder_1_1RCMReorderParams.rst
+   structsparsebase_1_1feature_1_1Implementation.rst
 
 .. toctree::
    :maxdepth: 5
 
-   structsparsebase_1_1ReorderParams.rst
+   structsparsebase_1_1format_1_1BlankDeleter.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1AbstractSparseFormat.rst
+   structsparsebase_1_1format_1_1Deleter.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1AbstractSparseObject.rst
+   structsparsebase_1_1format_1_1Deleter2D.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1ConversionFunctor.rst
+   structsparsebase_1_1preprocess_1_1DegreeDistribution_1_1DegreeDistributionParams.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1COO.rst
+   structsparsebase_1_1preprocess_1_1DegreeReorder_1_1DegreeReorderParams.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1CooCsrFunctor.rst
+   structsparsebase_1_1preprocess_1_1Degrees_1_1DegreesParams.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1CSF.rst
+   structsparsebase_1_1preprocess_1_1Degrees__DegreeDistribution_1_1Params.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1CSR.rst
+   structsparsebase_1_1preprocess_1_1PreprocessParams.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1CsrCooFunctor.rst
+   structsparsebase_1_1preprocess_1_1Transform_1_1TransformParams.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1DegreeReorder.rst
+   structsparsebase_1_1preprocess_1_1TypeIndexVectorHash.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1DegreeReorderInstance.rst
+   structsparsebase_1_1utils_1_1io_1_1SbffObject.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1FormatMatcherMixin.rst
+   classsparsebase_1_1feature_1_1ClassMatcherMixin.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1GenericReorder.rst
+   classsparsebase_1_1feature_1_1Extractor.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1Graph.rst
+   classsparsebase_1_1feature_1_1FeatureExtractor.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1InvalidDataMember.rst
+   classsparsebase_1_1format_1_1Array.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1MapToFunctionMixin.rst
+   classsparsebase_1_1format_1_1COO.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1MTXReader.rst
+   classsparsebase_1_1format_1_1CSR.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1PreprocessType.rst
+   classsparsebase_1_1format_1_1Format.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1RCMReorder.rst
+   classsparsebase_1_1format_1_1FormatImplementation.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1RCMReorderInstance.rst
+   classsparsebase_1_1object_1_1AbstractObject.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1ReadsCOO.rst
+   classsparsebase_1_1object_1_1Graph.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1ReadsCSR.rst
+   classsparsebase_1_1object_1_1Object.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1ReadsSparseFormat.rst
+   classsparsebase_1_1preprocess_1_1ConverterMixin.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1ReorderInstance.rst
+   classsparsebase_1_1preprocess_1_1DegreeDistribution.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1ReorderPreprocessType.rst
+   classsparsebase_1_1preprocess_1_1DegreeReorder.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1SparseConverter.rst
+   classsparsebase_1_1preprocess_1_1Degrees.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1SparseConverterMixin.rst
+   classsparsebase_1_1preprocess_1_1Degrees__DegreeDistribution.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1SparseFormat.rst
+   classsparsebase_1_1preprocess_1_1ExtractableType.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1SparseObject.rst
+   classsparsebase_1_1preprocess_1_1FeaturePreprocessType.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1SparseReader.rst
+   classsparsebase_1_1preprocess_1_1FunctionMatcherMixin.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1SparseReaderException.rst
+   classsparsebase_1_1preprocess_1_1GenericPreprocessType.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1Transform.rst
+   classsparsebase_1_1preprocess_1_1GenericReorder.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1TransformInstance.rst
+   classsparsebase_1_1preprocess_1_1JaccardWeights.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1TransformPreprocessType.rst
+   classsparsebase_1_1preprocess_1_1PreprocessType.rst
 
 .. toctree::
    :maxdepth: 5
 
-   classsparsebase_1_1UedgelistReader.rst
+   classsparsebase_1_1preprocess_1_1RCMReorder.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1preprocess_1_1ReorderPreprocessType.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1preprocess_1_1Transform.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1preprocess_1_1TransformPreprocessType.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1ConversionException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1converter_1_1Converter.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1converter_1_1ConverterImpl.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1converter_1_1ConverterOrderOne.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1converter_1_1ConverterOrderTwo.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1CUDADeviceException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1Exception.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1FeatureException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1FeatureParamsException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1FunctionNotFoundException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1InvalidDataMember.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1BinaryReaderOrderOne.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1BinaryReaderOrderTwo.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderOne.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1EdgeListReader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1MTXReader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1PigoEdgeListReader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1PigoMTXReader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1Reader.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1ReadsArray.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1ReadsCOO.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1ReadsCSR.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1SbffArray.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1SbffReadOnlyFile.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1SbffWriteFile.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1Writer.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1WritesArray.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1WritesCOO.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1io_1_1WritesCSR.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1NoConverterException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1ReaderException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1TypeException.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   classsparsebase_1_1utils_1_1WriterException.rst
 
 Enums
 *****
@@ -222,7 +442,7 @@ Enums
 .. toctree::
    :maxdepth: 5
 
-   enum_sparse__format_8h_1a905d26cba0eeff021f572be68aa4ee89.rst
+   enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6.rst
 
 Functions
 *********
@@ -231,12 +451,42 @@ Functions
 .. toctree::
    :maxdepth: 5
 
-   function_CMakeLists_8txt_1a9987f805d77740b579cfe1b2d67c8b8b.rst
+   function_CMakeLists_8txt_1a283fcbfdcfc72454477c0e8c1adfb7ad.rst
 
 .. toctree::
    :maxdepth: 5
 
-   function_CMakeLists_8txt_1a38c371107125da6c75e7989e41bbfa4d.rst
+   function_CMakeLists_8txt_1aed6e812f1a56ac7cc4013400c75586b4.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_CMakeLists_8txt_1a5b57ce92dd547c6442539335f6d3d1e6.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_CMakeLists_8txt_1a010ca05c8acc41beafa2f5e64c0a3139.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_converter_8cc_1aa44b813d97d13325107ac345d86aaec1.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_converter_8cc_1a169e15b1832b2d312888b7b2c27cd697.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_converter_8cc_1a265185e6f117c7a0882e65621ea4aa8d.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   function_converter_8cc_1a77377b61318e53d034e1b773cf56c570.rst
 
 Typedefs
 ********
@@ -245,14 +495,29 @@ Typedefs
 .. toctree::
    :maxdepth: 5
 
-   typedef_sparse__converter_8h_1a2ff441af9fc648f2ab6e9c6f4fa691e2.rst
+   typedef_feature_8h_1a290ecb674ec42caaa3427d237e0b65d9.rst
 
 .. toctree::
    :maxdepth: 5
 
-   typedef_sparse__preprocess_8h_1a7140502995fa75728764d416111c67f9.rst
+   typedef_format_8h_1affa315fe21ff65a43000df3ab2d9eebe.rst
 
 .. toctree::
    :maxdepth: 5
 
-   typedef_sparse__preprocess_8h_1a2a2bd769d60cb64a372a4680b15a68e6.rst
+   typedef_preprocess_8h_1a7bff01b3ea6833f6e4ef7130feb294e8.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   typedef_converter_8h_1a858a51c708d447a78b721fee189f9eff.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   typedef_converter_8h_1acdbb230e66cf6913f44b62f17764928e.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   typedef_converter_8h_1a5dde7b70f3e94c7027301a4fffda65e5.rst

@@ -1,0 +1,75 @@
+
+.. _file_src_sparsebase_object_object.h:
+
+File object.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_object>` (``src/sparsebase/object``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/object/object.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_object_object.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``functional``
+
+- ``memory``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/utils/io/reader.h`` (:ref:`file_src_sparsebase_utils_io_reader.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_object_object.cc`
+
+- :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__object`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1object_1_1AbstractObject`
+
+- :ref:`exhale_class_classsparsebase_1_1object_1_1Graph`
+
+- :ref:`exhale_class_classsparsebase_1_1object_1_1Object`
+

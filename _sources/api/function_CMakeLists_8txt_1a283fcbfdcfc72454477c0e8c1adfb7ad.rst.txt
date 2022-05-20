@@ -1,0 +1,13 @@
+.. _exhale_function_CMakeLists_8txt_1a283fcbfdcfc72454477c0e8c1adfb7ad:
+
+Function find_package(OpenMP)
+=============================
+
+- Defined in :ref:`file_src_CMakeLists.txt`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: find_package(OpenMP)

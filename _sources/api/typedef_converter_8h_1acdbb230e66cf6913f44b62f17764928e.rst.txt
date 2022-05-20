@@ -1,0 +1,13 @@
+.. _exhale_typedef_converter_8h_1acdbb230e66cf6913f44b62f17764928e:
+
+Typedef sparsebase::utils::converter::ConversionSchemaConditional
+=================================================================
+
+- Defined in :ref:`file_src_sparsebase_utils_converter_converter.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::utils::converter::ConversionSchemaConditional

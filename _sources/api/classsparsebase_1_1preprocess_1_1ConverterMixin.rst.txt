@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1preprocess_1_1ConverterMixin:
+
+Template Class ConverterMixin
+=============================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public Parent``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::preprocess::ConverterMixin
+   :members:
+   :protected-members:
+   :undoc-members:

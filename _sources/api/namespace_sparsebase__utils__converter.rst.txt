@@ -1,0 +1,50 @@
+
+.. _namespace_sparsebase__utils__converter:
+
+Namespace sparsebase::utils::converter
+======================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1Converter`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterImpl`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterOrderOne`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterOrderTwo`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_converter_8cc_1aa44b813d97d13325107ac345d86aaec1`
+
+- :ref:`exhale_function_converter_8cc_1a169e15b1832b2d312888b7b2c27cd697`
+
+- :ref:`exhale_function_converter_8cc_1a265185e6f117c7a0882e65621ea4aa8d`
+
+- :ref:`exhale_function_converter_8cc_1a77377b61318e53d034e1b773cf56c570`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_converter_8h_1a858a51c708d447a78b721fee189f9eff`
+
+- :ref:`exhale_typedef_converter_8h_1acdbb230e66cf6913f44b62f17764928e`
+
+- :ref:`exhale_typedef_converter_8h_1a5dde7b70f3e94c7027301a4fffda65e5`

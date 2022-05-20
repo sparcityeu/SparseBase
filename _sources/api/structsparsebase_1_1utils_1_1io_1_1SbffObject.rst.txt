@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1utils_1_1io_1_1SbffObject:
+
+Struct SbffObject
+=================
+
+- Defined in :ref:`file_src_sparsebase_utils_io_sparse_file_format.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::utils::io::SbffObject
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,13 @@
+.. _exhale_enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6:
+
+Enum Ownership
+==============
+
+- Defined in :ref:`file_src_sparsebase_format_format.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: sparsebase::format::Ownership

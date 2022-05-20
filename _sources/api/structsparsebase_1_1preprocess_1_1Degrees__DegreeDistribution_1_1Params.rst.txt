@@ -1,0 +1,31 @@
+.. _exhale_struct_structsparsebase_1_1preprocess_1_1Degrees__DegreeDistribution_1_1Params:
+
+Struct Degrees_DegreeDistribution::Params
+=========================================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classsparsebase_1_1preprocess_1_1Degrees__DegreeDistribution`.
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::preprocess::PreprocessParams`` (:ref:`exhale_struct_structsparsebase_1_1preprocess_1_1PreprocessParams`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::preprocess::Degrees_DegreeDistribution::Params
+   :members:
+   :protected-members:
+   :undoc-members:

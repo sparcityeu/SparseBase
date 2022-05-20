@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enum Ownership &mdash; SparseBase v0.2.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function find_package(OpenMP)" href="function_CMakeLists_8txt_1a283fcbfdcfc72454477c0e8c1adfb7ad.html" />
+    <link rel="prev" title="Class WriterException" href="classsparsebase_1_1utils_1_1WriterException.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Enum Ownership</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="enum-ownership">
+<span id="exhale-enum-format-8h-1ae47d7de73f7f3a5d50b9f03c2ae3c0d6"></span><h1>Enum Ownership<a class="headerlink" href="#enum-ownership" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_format_format.h.html#file-src-sparsebase-format-format-h"><span class="std std-ref">File format.h</span></a></p></li>
+</ul>
+<section id="enum-documentation">
+<h2>Enum Documentation<a class="headerlink" href="#enum-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp enum">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9OwnershipE">
+<span id="_CPPv3N10sparsebase6format9OwnershipE"></span><span id="_CPPv2N10sparsebase6format9OwnershipE"></span><span class="target" id="format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Ownership</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format9OwnershipE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Enum depicting the ownership status of a <a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> instance. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9Ownership9kNotOwnedE">
+<span id="_CPPv3N10sparsebase6format9Ownership9kNotOwnedE"></span><span id="_CPPv2N10sparsebase6format9Ownership9kNotOwnedE"></span><span class="target" id="format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6a186eace6bf3b6c9197ea0619df723c5c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kNotOwned</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format9Ownership9kNotOwnedE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>When used the arrays are owned by the user (<a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> instance is not responsible from deallocation) </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9Ownership6kOwnedE">
+<span id="_CPPv3N10sparsebase6format9Ownership6kOwnedE"></span><span id="_CPPv2N10sparsebase6format9Ownership6kOwnedE"></span><span class="target" id="format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6a6d7af28f2e862749b5df25246e6c4aa8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kOwned</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format9Ownership6kOwnedE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>When used the arrays are owned and will be deallocated by the <a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> instance </p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1utils_1_1WriterException.html" class="btn btn-neutral float-left" title="Class WriterException" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_CMakeLists_8txt_1a283fcbfdcfc72454477c0e8c1adfb7ad.html" class="btn btn-neutral float-right" title="Function find_package(OpenMP)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

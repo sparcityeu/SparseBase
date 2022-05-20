@@ -1,0 +1,21 @@
+.. _dir_src:
+
+
+Directory src
+=============
+
+
+*Directory path:* ``src``
+
+Subdirectories
+--------------
+
+- :ref:`dir_src_sparsebase`
+
+
+Files
+-----
+
+- :ref:`file_src_CMakeLists.txt`
+
+

@@ -1,0 +1,84 @@
+
+.. _file_src_sparsebase_feature_feature.h:
+
+File feature.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_feature>` (``src/sparsebase/feature``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/feature/feature.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_feature_feature.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``any``
+
+- ``set``
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/preprocess/preprocess.h`` (:ref:`file_src_sparsebase_preprocess_preprocess.h`)
+
+- ``tuple``
+
+- ``unordered_map``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_feature_feature.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__feature`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1feature_1_1Implementation`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1ClassMatcherMixin`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1Extractor`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1FeatureExtractor`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_feature_8h_1a290ecb674ec42caaa3427d237e0b65d9`
+

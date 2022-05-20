@@ -1,0 +1,24 @@
+
+.. _namespace_sparsebase__object:
+
+Namespace sparsebase::object
+============================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1object_1_1AbstractObject`
+
+- :ref:`exhale_class_classsparsebase_1_1object_1_1Graph`
+
+- :ref:`exhale_class_classsparsebase_1_1object_1_1Object`

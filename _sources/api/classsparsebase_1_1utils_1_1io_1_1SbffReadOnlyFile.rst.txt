@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1io_1_1SbffReadOnlyFile:
+
+Class SbffReadOnlyFile
+======================
+
+- Defined in :ref:`file_src_sparsebase_utils_io_sparse_file_format.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::io::SbffReadOnlyFile
+   :members:
+   :protected-members:
+   :undoc-members:

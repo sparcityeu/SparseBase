@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1ReaderException:
+
+Class ReaderException
+=====================
+
+- Defined in :ref:`file_src_sparsebase_utils_exception.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::Exception`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1Exception`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::ReaderException
+   :members:
+   :protected-members:
+   :undoc-members:

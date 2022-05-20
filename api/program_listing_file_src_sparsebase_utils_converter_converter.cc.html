@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File converter.cc &mdash; SparseBase v0.2.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File converter.cc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_src_sparsebase_utils_converter_converter.cc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-converter-cc">
+<span id="program-listing-file-src-sparsebase-utils-converter-converter-cc"></span><h1>Program Listing for File converter.cc<a class="headerlink" href="#program-listing-for-file-converter-cc" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_src_sparsebase_utils_converter_converter.cc.html#file-src-sparsebase-utils-converter-converter-cc"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/sparsebase/utils/converter/converter.cc</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/utils/converter/converter.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/format/format.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;set&gt;</span><span class="cp"></span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">converter</span> <span class="p">{</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span>
+                       <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span>
+                           <span class="n">EdgeConditional</span><span class="p">,</span> <span class="n">ConditionalConversionFunction</span><span class="o">&gt;&gt;&gt;&gt;</span> <span class="o">*</span>
+<span class="n">Converter</span><span class="o">::</span><span class="n">get_conversion_map</span><span class="p">(</span><span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">is_move_conversion</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">conditional_move_map_</span><span class="p">;</span>
+  <span class="k">else</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">conditional_map_</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">Format</span> <span class="o">*</span><span class="n">CsrCooFunctionConditional</span><span class="p">(</span><span class="n">Format</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="o">*</span><span class="n">csr</span> <span class="o">=</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">dimensions</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="n">n</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="n">IDType</span> <span class="n">m</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="n">NNZType</span> <span class="n">nnz</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_num_nnz</span><span class="p">();</span>
+
+  <span class="k">auto</span> <span class="n">col</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IDType</span><span class="p">[</span><span class="n">nnz</span><span class="p">];</span>
+  <span class="k">auto</span> <span class="n">row</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IDType</span><span class="p">[</span><span class="n">nnz</span><span class="p">];</span>
+  <span class="k">auto</span> <span class="n">csr_row_ptr</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_row_ptr</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">csr_col</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_col</span><span class="p">();</span>
+
+  <span class="n">IDType</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">IDType</span> <span class="n">start</span> <span class="o">=</span> <span class="n">csr_row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">IDType</span> <span class="n">end</span> <span class="o">=</span> <span class="n">csr_row_ptr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">j</span> <span class="o">=</span> <span class="n">start</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">row</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+      <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nnz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">csr_col</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="c1">// if (csr-&gt;vals != nullptr)</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="n">vals</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+  <span class="k">if</span> <span class="nf">constexpr</span> <span class="p">(</span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">()</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">vals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ValueType</span><span class="p">[</span><span class="n">nnz</span><span class="p">];</span>
+      <span class="k">auto</span> <span class="n">csr_vals</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">();</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">NNZType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nnz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">csr_vals</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">vals</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">auto</span> <span class="o">*</span><span class="n">coo</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">nnz</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">kOwned</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">coo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">Format</span> <span class="o">*</span><span class="n">CsrCooMoveConditionalFunction</span><span class="p">(</span><span class="n">Format</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="o">*</span><span class="n">csr</span> <span class="o">=</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">col</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">release_col</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">release_vals</span><span class="p">();</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">dimensions</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="n">n</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="n">IDType</span> <span class="n">m</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="n">NNZType</span> <span class="n">nnz</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_num_nnz</span><span class="p">();</span>
+
+  <span class="k">auto</span> <span class="n">row</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IDType</span><span class="p">[</span><span class="n">nnz</span><span class="p">];</span>
+  <span class="k">auto</span> <span class="n">csr_row_ptr</span> <span class="o">=</span> <span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_row_ptr</span><span class="p">();</span>
+
+  <span class="n">IDType</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">IDType</span> <span class="n">start</span> <span class="o">=</span> <span class="n">csr_row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">IDType</span> <span class="n">end</span> <span class="o">=</span> <span class="n">csr_row_ptr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">j</span> <span class="o">=</span> <span class="n">start</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">row</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+      <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// if (csr-&gt;vals != nullptr)</span>
+  <span class="k">auto</span> <span class="o">*</span><span class="n">coo</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">nnz</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">kOwned</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">coo</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">Format</span> <span class="o">*</span><span class="n">CooCsrFunctionConditional</span><span class="p">(</span><span class="n">Format</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="o">*</span><span class="n">coo</span> <span class="o">=</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">dimensions</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="n">n</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="n">IDType</span> <span class="n">m</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="n">NNZType</span> <span class="n">nnz</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_num_nnz</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">coo_col</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_col</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">coo_row</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_row</span><span class="p">();</span>
+  <span class="n">NNZType</span> <span class="o">*</span><span class="n">row_ptr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NNZType</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="n">col</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IDType</span><span class="p">[</span><span class="n">nnz</span><span class="p">];</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="n">vals</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">row_ptr</span><span class="p">,</span> <span class="n">row_ptr</span> <span class="o">+</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">col</span> <span class="o">+</span> <span class="n">nnz</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nnz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">coo_col</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">row_ptr</span><span class="p">[</span><span class="n">coo_row</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="n">row_ptr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="nf">constexpr</span> <span class="p">(</span><span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">()</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">vals</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ValueType</span><span class="p">[</span><span class="n">nnz</span><span class="p">];</span>
+      <span class="k">auto</span> <span class="n">coo_vals</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">();</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">vals</span> <span class="o">+</span> <span class="n">nnz</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">NNZType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nnz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">coo_vals</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">vals</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">kOwned</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">csr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">Format</span> <span class="o">*</span><span class="n">CooCsrMoveConditionalFunction</span><span class="p">(</span><span class="n">Format</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="o">*</span><span class="n">coo</span> <span class="o">=</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">dimensions</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="n">n</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="n">IDType</span> <span class="n">m</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="n">NNZType</span> <span class="n">nnz</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_num_nnz</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">coo_row</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">get_row</span><span class="p">();</span>
+  <span class="n">NNZType</span> <span class="o">*</span><span class="n">row_ptr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NNZType</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="n">col</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">release_col</span><span class="p">();</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="n">vals</span> <span class="o">=</span> <span class="n">coo</span><span class="o">-&gt;</span><span class="n">release_vals</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">row_ptr</span><span class="p">,</span> <span class="n">row_ptr</span> <span class="o">+</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nnz</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">row_ptr</span><span class="p">[</span><span class="n">coo_row</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">++</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">IDType</span> <span class="n">i</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="n">row_ptr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span>
+      <span class="k">new</span> <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">kOwned</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">csr</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">Converter</span> <span class="o">*</span><span class="n">ConverterOrderOne</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="n">ConverterOrderOne</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">ConverterOrderOne</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">Reset</span><span class="p">()</span> <span class="p">{</span>
+<span class="cp">#ifdef CUDA</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">format</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDAArray</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">converter</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">ArrayCUDAArrayConditionalFunction</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">});</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">format</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDAArray</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">converter</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDAArrayArrayConditionalFunction</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">});</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">ConverterOrderOne</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">ConverterOrderOne</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">Reset</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">Converter</span> <span class="o">*</span><span class="n">ConverterOrderTwo</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="n">ConverterOrderTwo</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">ConverterOrderTwo</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">Reset</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CooCsrFunctionConditional</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">});</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CsrCooFunctionConditional</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">});</span>
+<span class="cp">#ifdef CUDA</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">format</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">format</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">converter</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDACsrCUDACsrConditionalFunction</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span>
+                                                         <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="n">converter</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDAPeerToPeer</span><span class="p">);</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">format</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">converter</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CsrCUDACsrConditionalFunction</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span>
+                                                     <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">});</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">format</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">converter</span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">CUDACsrCsrConditionalFunction</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span>
+                                                     <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">});</span>
+<span class="cp">#endif</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CooCsrMoveConditionalFunction</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">},</span>
+      <span class="nb">true</span><span class="p">);</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+      <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">(),</span>
+      <span class="n">CsrCooMoveConditionalFunction</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">,</span>
+      <span class="p">[](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="p">},</span>
+      <span class="nb">true</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="n">ConverterOrderTwo</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">ConverterOrderTwo</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="o">-&gt;</span><span class="n">Reset</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">Converter</span><span class="o">::</span><span class="n">RegisterConditionalConversionFunction</span><span class="p">(</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">from_type</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">to_type</span><span class="p">,</span>
+    <span class="n">ConditionalConversionFunction</span> <span class="n">conv_func</span><span class="p">,</span> <span class="n">EdgeConditional</span> <span class="n">edge_condition</span><span class="p">,</span>
+    <span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">map</span> <span class="o">=</span> <span class="n">get_conversion_map</span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">(</span><span class="n">from_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">map</span><span class="o">-&gt;</span><span class="n">emplace</span><span class="p">(</span>
+        <span class="n">from_type</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">EdgeConditional</span><span class="p">,</span> <span class="n">ConditionalConversionFunction</span><span class="o">&gt;&gt;&gt;</span><span class="p">());</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">count</span><span class="p">(</span><span class="n">to_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="o">&lt;</span><span class="n">EdgeConditional</span><span class="p">,</span> <span class="n">ConditionalConversionFunction</span><span class="o">&gt;</span><span class="p">(</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">EdgeConditional</span><span class="o">&gt;</span><span class="p">(</span><span class="n">edge_condition</span><span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ConditionalConversionFunction</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conv_func</span><span class="p">)));</span>
+    <span class="c1">//(*map)[from_type].emplace(to_type, {make_tuple&lt;EdgeConditional,</span>
+    <span class="c1">// ConversionFunction&gt;(std::forward&lt;EdgeConditional&gt;(edge_condition),</span>
+    <span class="c1">// std::forward&lt;ConversionFunction&gt;(conv_func))});</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="o">&lt;</span><span class="n">EdgeConditional</span><span class="p">,</span> <span class="n">ConditionalConversionFunction</span><span class="o">&gt;</span><span class="p">(</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">EdgeConditional</span><span class="o">&gt;</span><span class="p">(</span><span class="n">edge_condition</span><span class="p">),</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ConditionalConversionFunction</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conv_func</span><span class="p">)));</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Format</span> <span class="o">*</span><span class="n">Converter</span><span class="o">::</span><span class="n">Convert</span><span class="p">(</span><span class="n">Format</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">to_type</span><span class="p">,</span>
+                           <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">to_context</span><span class="p">,</span>
+                           <span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">to_type</span> <span class="o">==</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">get_format_id</span><span class="p">()</span> <span class="o">&amp;&amp;</span>
+      <span class="n">source</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">IsEquivalent</span><span class="p">(</span><span class="n">to_context</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">source</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="n">ConditionalConversionFunction</span> <span class="n">conv_func</span> <span class="o">=</span>
+        <span class="n">GetConversionFunction</span><span class="p">(</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_format_id</span><span class="p">(),</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">(),</span>
+                              <span class="n">to_type</span><span class="p">,</span> <span class="n">to_context</span><span class="p">,</span> <span class="n">is_move_conversion</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">conv_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">to_context</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(...)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="n">ConversionException</span><span class="p">(</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_format_id</span><span class="p">().</span><span class="n">name</span><span class="p">(),</span> <span class="n">to_type</span><span class="p">.</span><span class="n">name</span><span class="p">());</span>
+    <span class="c1">// mechanism</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*template &lt;typename IDType, typename NNZType, typename ValueType&gt;</span>
+<span class="cm">template &lt;typename FormatType&gt;</span>
+<span class="cm">FormatType* Converter&lt;IDType,NNZType,ValueType&gt;::ConvertAs(Format *source) {</span>
+<span class="cm">    auto* res = this-&gt;Convert(source, FormatType::get_format_id_static());</span>
+<span class="cm">    return res-&gt;template As&lt;FormatType&gt;();</span>
+<span class="cm">}*/</span>
+<span class="n">ConditionalConversionFunction</span> <span class="n">Converter</span><span class="o">::</span><span class="n">GetConversionFunction</span><span class="p">(</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">from_type</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">from_context</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">to_type</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">to_context</span><span class="p">,</span>
+    <span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">map</span> <span class="o">=</span> <span class="n">get_conversion_map</span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">conditional_function_tuple</span> <span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">])</span> <span class="p">{</span>
+      <span class="k">auto</span> <span class="n">conditional</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conditional_function_tuple</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">conditional</span><span class="p">(</span><span class="n">from_context</span><span class="p">,</span> <span class="n">to_context</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conditional_function_tuple</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">throw</span> <span class="n">ConversionException</span><span class="p">(</span><span class="n">from_type</span><span class="p">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">to_type</span><span class="p">.</span><span class="n">name</span><span class="p">());</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(...)</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="n">ConversionException</span><span class="p">(</span><span class="n">from_type</span><span class="p">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">to_type</span><span class="p">.</span><span class="n">name</span><span class="p">());</span>
+    <span class="c1">// mechanism</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*&gt;</span>
+<span class="n">Converter</span><span class="o">::</span><span class="n">CanConvert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">from_type</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">from_context</span><span class="p">,</span>
+                      <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">to_type</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*&gt;</span> <span class="o">&amp;</span><span class="n">to_contexts</span><span class="p">,</span>
+                      <span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">map</span> <span class="o">=</span> <span class="n">get_conversion_map</span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">from_type</span><span class="p">)</span> <span class="o">!=</span> <span class="n">map</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">())</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">find</span><span class="p">(</span><span class="n">to_type</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">end</span><span class="p">())</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">condition_function_pair</span> <span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">to_context</span> <span class="p">:</span> <span class="n">to_contexts</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">condition_function_pair</span><span class="p">)(</span><span class="n">from_context</span><span class="p">,</span> <span class="n">to_context</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*&gt;</span><span class="p">(</span>
+                <span class="nb">true</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">to_context</span><span class="p">));</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*&gt;</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">bool</span> <span class="n">Converter</span><span class="o">::</span><span class="n">CanConvert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">from_type</span><span class="p">,</span>
+                           <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">from_context</span><span class="p">,</span>
+                           <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">to_type</span><span class="p">,</span>
+                           <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">to_context</span><span class="p">,</span>
+                           <span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">map</span> <span class="o">=</span> <span class="n">get_conversion_map</span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">from_type</span><span class="p">)</span> <span class="o">!=</span> <span class="n">map</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">())</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">((</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">find</span><span class="p">(</span><span class="n">to_type</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">end</span><span class="p">())</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">condition_function_pair</span> <span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">condition_function_pair</span><span class="p">)(</span><span class="n">from_context</span><span class="p">,</span> <span class="n">to_context</span><span class="p">))</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Format</span> <span class="o">*&gt;</span>
+<span class="n">Converter</span><span class="o">::</span><span class="n">ApplyConversionSchema</span><span class="p">(</span><span class="n">ConversionSchemaConditional</span> <span class="n">cs</span><span class="p">,</span>
+                                 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Format</span> <span class="o">*&gt;</span> <span class="n">packed_sfs</span><span class="p">,</span>
+                                 <span class="kt">bool</span> <span class="n">is_move_conversion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Format</span> <span class="o">*&gt;</span> <span class="n">ret</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cs</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">conversion</span> <span class="o">=</span> <span class="n">cs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conversion</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">Convert</span><span class="p">(</span><span class="n">packed_sfs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conversion</span><span class="p">),</span>
+                                  <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conversion</span><span class="p">),</span> <span class="n">is_move_conversion</span><span class="p">));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">packed_sfs</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Converter</span><span class="o">::~</span><span class="n">Converter</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="cp">#if !defined(_HEADER_ONLY)</span>
+<span class="cp">#include</span> <span class="cpf">&quot;init/converter.inc&quot;</span><span class="cp"></span>
+<span class="cp">#endif</span>
+
+<span class="p">}</span> <span class="c1">// namespace sparsebase::utils::converter</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

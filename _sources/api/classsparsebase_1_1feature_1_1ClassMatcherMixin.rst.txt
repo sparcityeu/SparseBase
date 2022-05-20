@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1feature_1_1ClassMatcherMixin:
+
+Template Class ClassMatcherMixin
+================================
+
+- Defined in :ref:`file_src_sparsebase_feature_feature.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::feature::ClassMatcherMixin
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,40 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1Exception:
+
+Class Exception
+===============
+
+- Defined in :ref:`file_src_sparsebase_utils_exception.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public exception``
+
+
+Derived Types
+*************
+
+- ``public sparsebase::utils::ConversionException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`)
+- ``public sparsebase::utils::CUDADeviceException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1CUDADeviceException`)
+- ``public sparsebase::utils::FeatureException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureException`)
+- ``public sparsebase::utils::FeatureParamsException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureParamsException`)
+- ``public sparsebase::utils::FunctionNotFoundException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionNotFoundException`)
+- ``public sparsebase::utils::InvalidDataMember`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1InvalidDataMember`)
+- ``public sparsebase::utils::NoConverterException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1NoConverterException`)
+- ``public sparsebase::utils::ReaderException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ReaderException`)
+- ``public sparsebase::utils::TypeException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1TypeException`)
+- ``public sparsebase::utils::WriterException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1WriterException`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::Exception
+   :members:
+   :protected-members:
+   :undoc-members:

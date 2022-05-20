@@ -1,0 +1,49 @@
+
+.. _namespace_sparsebase__utils:
+
+Namespace sparsebase::utils
+===========================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase__utils__converter`
+
+- :ref:`namespace_sparsebase__utils__io`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1CUDADeviceException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Exception`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureParamsException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionNotFoundException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1InvalidDataMember`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1NoConverterException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ReaderException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1TypeException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1WriterException`

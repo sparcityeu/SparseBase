@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; SparseBase v0.1.5 documentation</title>
+  <title>Getting Started &mdash; SparseBase v0.2.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -21,7 +21,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Explanations" href="explanations/index.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
     <link rel="prev" title="Welcome to SparseBase’s documentation!" href="../index.html" /> 
 </head>
 
@@ -44,26 +44,30 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation-building">Installation &amp; Building</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiling">Compiling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specifying-explicit-instantiation-types">Specifying explicit instantiation types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#header-only">Header-only</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling">Compiling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#adding-sparsebase-through-cmake">Adding SparseBase through CMake</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#linking-to-sparsebase-at-compile-time">Linking to SparseBase at compile time</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-sparsebase-through-cmake">Adding SparseBase through CMake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linking-to-sparsebase-at-compile-time">Linking to SparseBase at compile time</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tests">Tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#formatting">Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#including-sparsebase">Including SparseBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-format-object">Creating a Format Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#input">Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#casting-formats">Casting Formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-formats">Converting Formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ownership">Ownership</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-graphs">Working with Graphs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ordering">Ordering</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#creating-a-sparseformat-object">Creating a SparseFormat Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#input">Input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#converting-formats">Converting Formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-graphs">Working with Graphs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ordering">Ordering</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to_guides/index.html">How To Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/library_root.html">Library API</a></li>
@@ -101,41 +105,77 @@
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h3>
 <p>Compilers listed below are the ones we used during development and testing.
-Other compilers are not supported at the current release.
+Other compilers may work but are not officially supported at the moment.
 Lowest versions are included based on the feature sets of the tools/compilers
 and not all of them are tested.
-We suggest using more recent versions when possible.</p>
+We suggest using the most recent versions when possible.</p>
 <ul class="simple">
 <li><p>Supported Compilers:</p>
 <ul>
 <li><p>clang++ (version 6 or above)</p></li>
 <li><p>g++ (version 7 or above)</p></li>
+<li><p>MSYS2 g++ (<a class="reference external" href="https://packages.msys2.org/package/mingw-w64-x86_64-gcc?repo=mingw64">mingw-w64-x86_64-gcc</a>)</p></li>
 </ul>
 </li>
 <li><p>Build tools:</p>
 <ul>
 <li><p>cmake (version 3.0 or above)</p></li>
-<li><p>GNU make (version 4.1 or above)</p></li>
+<li><p>GNU make (version 4.1 or above) or ninja (version 1.11 or above)</p></li>
 </ul>
 </li>
 </ul>
-<blockquote>
-<div><p>We had some trouble with g++ version 11 on GNU/Linux.
-For now, we suggest using clang++ or a different version of g++ on GNU/Linux.</p>
-</div></blockquote>
-</section>
 </section>
 <section id="compiling">
-<h2>Compiling<a class="headerlink" href="#compiling" title="Permalink to this headline"></a></h2>
+<h3>Compiling<a class="headerlink" href="#compiling" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>A version of the header-only release can be obtained in the releases section on Github
+(no compilation needed)
+along with a documentation pdf and license information.
+We still suggest compiling and using a non-header-only build if possible
+for faster compile times on your projects.</p>
+</div></blockquote>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
-cmake -DCMAKE_BUILD_TYPE<span class="o">=</span>Release ..
+cmake -DCMAKE_BUILD_TYPE<span class="o">=</span>Release -DCUDA<span class="o">={</span><span class="nv">$CUDA</span><span class="o">}</span> ..
 make
 </pre></div>
 </div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">${CUDA}</span></code> is <code class="docutils literal notranslate"><span class="pre">ON</span></code> if CUDA support is needed and <code class="docutils literal notranslate"><span class="pre">OFF</span></code> otherwise.</p>
 <p>This will generate the library as a static library. In addition, the example codes are compiled and their binaries are located in <code class="docutils literal notranslate"><span class="pre">build/examples</span></code>.</p>
 <p>Due to optimizations and templates, this process might take several minutes.</p>
+</section>
+<section id="specifying-explicit-instantiation-types">
+<h3>Specifying explicit instantiation types<a class="headerlink" href="#specifying-explicit-instantiation-types" title="Permalink to this headline"></a></h3>
+<p>Most classes in the library are templated over four template parameter types:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IDType</span></code>: data type that will contain IDs of element in a format object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NNZType</span></code>: data type that will contain numbers of non-zeros in a format object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueType</span></code>: data type that will contain values stored inside format objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FloatType</span></code>: data type that will contain floating point values (e.g., degree distributions).</p></li>
+</ol>
+<p>When generating the build system, you can specify a list of data types for each one of these template parameters. Explicit instantiations of all the classes in the library will be created to satisfy the power set of all the types you passed. You can specify the data types using CMake cache variables that you pass as semi-colon-seperated, quotation-enclosed lists. For example, the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake -DID_TYPES<span class="o">=</span><span class="s2">&quot;unsigned int; unsigned long long&quot;</span> -DNNZ_TYPES<span class="o">=</span><span class="s2">&quot;unsigned long long; short&quot;</span> -DVALUE_TYPES<span class="o">=</span><span class="s2">&quot;float&quot;</span> -DFLOAT_TYPES<span class="o">=</span><span class="s2">&quot;double; float&quot;</span> ..
+</pre></div>
+</div>
+<p>specifies the data types to be used with each of the four template parameter types stated above.</p>
+<p>Alternatively, you can edit the <code class="docutils literal notranslate"><span class="pre">CMakeCache.txt</span></code> file located in the build directory. Note that this file is generated after creating the build system (after executing <code class="docutils literal notranslate"><span class="pre">cmake</span></code>).</p>
+</section>
+<section id="header-only">
+<h3>Header-only<a class="headerlink" href="#header-only" title="Permalink to this headline"></a></h3>
+<p>Additionally, the library has a header-only setting, in which none of the classes of the library will be explicitly instantiated at library-build time. Building the library to be header-only can be done as shown:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span>mkdir build &amp;&amp; cd build
+cmake -D_HEADER_ONLY=ON -DCMAKE_BUILD_TYPE=Release -DCUDA=${CUDA} ..
+make
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">${CUDA}</span></code> is <code class="docutils literal notranslate"><span class="pre">ON</span></code> if CUDA support is needed and <code class="docutils literal notranslate"><span class="pre">OFF</span></code> otherwise.</p>
+<blockquote>
+<div><p>Note: if the library is installed with <code class="docutils literal notranslate"><span class="pre">${CUDA}=ON</span></code>, the user code must be compiled using <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>.</p>
+</div></blockquote>
+<p>This will prepare the library for installation and compile the example codes located in <code class="docutils literal notranslate"><span class="pre">build/examples</span></code>.</p>
+</section>
+</section>
 <section id="installation">
-<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h3>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
 <p>To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
 cmake --install .
@@ -149,10 +189,13 @@ cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
 <p><strong>Note:</strong> We suggest using <strong>absolute paths</strong> for prefixes as relative paths have been known to cause problems from time to time.</p>
 </section>
 <section id="usage">
-<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h3>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
 <p>SparseBase can be easily added to your project either through CMake’s <code class="docutils literal notranslate"><span class="pre">find_package()</span></code> command, or by directly linking it at compilation time.</p>
 <section id="adding-sparsebase-through-cmake">
-<h4>Adding SparseBase through CMake<a class="headerlink" href="#adding-sparsebase-through-cmake" title="Permalink to this headline"></a></h4>
+<h3>Adding SparseBase through CMake<a class="headerlink" href="#adding-sparsebase-through-cmake" title="Permalink to this headline"></a></h3>
+<blockquote>
+<div><p>In the commands below replace 0.1.5 with the version of SparseBase you installed.</p>
+</div></blockquote>
 <p>If you installed SparseBase to the default system directory, use the following the command in your <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file to add the library to your project:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">sparsebase</span> <span class="s">0.1.5</span> <span class="s">REQUIRED</span><span class="p">)</span>
 </pre></div>
@@ -167,16 +210,23 @@ cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
 </div>
 </section>
 <section id="linking-to-sparsebase-at-compile-time">
-<h4>Linking to SparseBase at compile time<a class="headerlink" href="#linking-to-sparsebase-at-compile-time" title="Permalink to this headline"></a></h4>
-<p>You can link SparseBase directly to your targets by passing the appropriate flag for your compiler. For example, for <code class="docutils literal notranslate"><span class="pre">g++</span></code>, add the <code class="docutils literal notranslate"><span class="pre">-lsparsebase</span></code> flag:</p>
+<h3>Linking to SparseBase at compile time<a class="headerlink" href="#linking-to-sparsebase-at-compile-time" title="Permalink to this headline"></a></h3>
+<p>If the library is not built in header-only mode, you must link it to your targets by passing the appropriate flag for your compiler. For example, for <code class="docutils literal notranslate"><span class="pre">g++</span></code>, add the <code class="docutils literal notranslate"><span class="pre">-lsparsebase</span></code> flag:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ source.cpp -lsparsebase
 </pre></div>
 </div>
-<p>If the library was installed to a different location, say <code class="docutils literal notranslate"><span class="pre">/custom/location/</span></code>, then make sure to guide the compiler to the locations of the headers and the binary:</p>
+<p>If the library was installed to location other than the system-default, say <code class="docutils literal notranslate"><span class="pre">/custom/location/</span></code>, then make sure to guide the compiler to the locations of the headers and the binary:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ source.cpp -I/custom/location/include -L/custom/location/lib -lsparsebase
 </pre></div>
 </div>
-</section>
+<p>On the other hand, if the library was compiled in header-only mode, then you do not need to provide a linking flag. For instance, instead of the two commands used above for compilation, you can simply use the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ source.cpp
+</pre></div>
+</div>
+<p>And if the library is not installed in the system-default location:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ source.cpp -I/custom/location/include -L/custom/location/lib
+</pre></div>
+</div>
 </section>
 <section id="tests">
 <h3>Tests<a class="headerlink" href="#tests" title="Permalink to this headline"></a></h3>
@@ -201,17 +251,28 @@ make format
 </pre></div>
 </div>
 </section>
+<section id="including-sparsebase">
+<h3>Including SparseBase<a class="headerlink" href="#including-sparsebase" title="Permalink to this headline"></a></h3>
+<p>SparseBase can be included using the <code class="docutils literal notranslate"><span class="pre">sparsebase.h</span></code> header file.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparsebase.h&quot;</span><span class="cp"></span>
+</pre></div>
+</div>
+<p>If desired users can include individual namespaces using their respective headers.
+This can be useful to reduce compile times if the header only build is being used.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/utils/io/reader.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/preprocess/preprocess.h&quot;</span><span class="cp"></span>
+</pre></div>
+</div>
 </section>
-<section id="creating-a-sparseformat-object">
-<h2>Creating a SparseFormat Object<a class="headerlink" href="#creating-a-sparseformat-object" title="Permalink to this headline"></a></h2>
+<section id="creating-a-format-object">
+<h3>Creating a Format Object<a class="headerlink" href="#creating-a-format-object" title="Permalink to this headline"></a></h3>
 <p>Currently two sparse data formats are supported:</p>
 <ul class="simple">
 <li><p>COO (Coordinate List)</p></li>
 <li><p>CSR (Compressed Sparse Row)</p></li>
 </ul>
 <p>In the code snippet below you can see the creation of a CSR type object
-which only contains connectivity information. As a result the value type and parameter
-are set as <code class="docutils literal notranslate"><span class="pre">void</span></code> and `nullptr respectively.</p>
+which only contains connectivity information. As a result the value parameter is set to nullptr</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">row_ptr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
 <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">col</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">};</span>
 
@@ -219,10 +280,14 @@ are set as <code class="docutils literal notranslate"><span class="pre">void</sp
 <span class="c1">// First is IDType which is related to the size of the dimensions</span>
 <span class="c1">// Second is NumNonZerosType which is related to the number of non-zeros stored</span>
 <span class="c1">// Third is ValueType which determines the type of the stored values</span>
-<span class="c1">// In this example ValueType is set to void since we are not storing any values</span>
-<span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">&gt;</span> <span class="n">csr</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">csr</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>In the example, we are not using any values but we still set the ValueType parameter to <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">int</span></code>.
+Due to how the internal memory management system works, these types can not be set to <code class="docutils literal notranslate"><span class="pre">void</span></code>.
+In this case, the actual type used does not matter as long as it is one of the supported types.</p>
+</div></blockquote>
 <p>In the code snippet below you can see the creation of a COO type object which also contains value information.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">row</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">};</span>
 <span class="kt">int</span> <span class="n">col</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
@@ -234,88 +299,119 @@ are set as <code class="docutils literal notranslate"><span class="pre">void</sp
 </div>
 </section>
 <section id="input">
-<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline"></a></h2>
+<h3>Input<a class="headerlink" href="#input" title="Permalink to this headline"></a></h3>
 <p>Currently, we support two sparse data file formats:</p>
 <ul class="simple">
 <li><p>Matrix Market Files (.mtx)</p></li>
-<li><p>Undirected Edge List Files (.uedgelist)</p></li>
+<li><p>Edge List Files</p></li>
 </ul>
-<p>We can perform a read operation on these formats as shown below: (use <code class="docutils literal notranslate"><span class="pre">UedgeListReader</span></code> for .uedgelist files)</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
+<p>We can perform a read operation on these formats as shown below:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Reading a mtx file into a COO format</span>
+<span class="k">auto</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">coo</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">ReadCOO</span><span class="p">();</span>
 
-<span class="k">auto</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
-<span class="k">auto</span> <span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">ReadCOO</span><span class="p">();</span>
+<span class="c1">// Reading an edge list file into a CSR format</span>
+<span class="k">auto</span> <span class="n">reader2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">EdgeListReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">reader2</span><span class="o">-&gt;</span><span class="n">ReadCSR</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>There are certain limitations to readers, which will be addressed in future releases:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">UedgeListReader</span></code> can only read to CSR format</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MTXReader</span></code> can only read to COO format</p></li>
-<li><p>Reading multiple tensors, matrices or graphs from a single file is not supported.</p></li>
-</ul>
+</section>
+<section id="casting-formats">
+<h3>Casting Formats<a class="headerlink" href="#casting-formats" title="Permalink to this headline"></a></h3>
+<p>Many function in the library return generic <code class="docutils literal notranslate"><span class="pre">Format</span></code> pointers to ensure flexibility.
+These pointers can easily be converted into concrete versions using the <code class="docutils literal notranslate"><span class="pre">As&lt;&gt;()</span></code> function of the
+<code class="docutils literal notranslate"><span class="pre">Format</span></code> class.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Consider the scenario where you obtained a generic pointer from a function</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*</span> <span class="n">format</span> <span class="o">=</span> <span class="p">...;</span>
+
+<span class="c1">// If the type of this pointer is known, then you can simply use the As function</span>
+<span class="c1">// If the type is not known you can use the converters described in the next section</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;*</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">format</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="p">();</span>
+</pre></div>
+</div>
 </section>
 <section id="converting-formats">
-<h2>Converting Formats<a class="headerlink" href="#converting-formats" title="Permalink to this headline"></a></h2>
+<h3>Converting Formats<a class="headerlink" href="#converting-formats" title="Permalink to this headline"></a></h3>
 <p>As explained in the previous section, readers will read to different formats.</p>
-<p>However, we can convert the data into the format we desire using <code class="docutils literal notranslate"><span class="pre">SparseConverter</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_converter.h&quot;</span><span class="cp"></span>
+<p>However, we can convert the data into the format we desire using <code class="docutils literal notranslate"><span class="pre">Converter</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Consider the scenario where you obtained a COO and want to convert it to a CSR</span>
+<span class="k">auto</span> <span class="n">coo</span> <span class="o">=</span> <span class="p">...;</span> 
 
-<span class="k">auto</span> <span class="n">converter</span> <span class="o">=</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">SparseConverter</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
-<span class="k">auto</span> <span class="n">converted</span> <span class="o">=</span> <span class="n">converter</span><span class="p">.</span><span class="n">Convert</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">kCSRFormat</span><span class="p">);</span>
-<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;*&gt;</span><span class="p">(</span><span class="n">converted</span><span class="p">);</span>
+<span class="c1">// Converter instances automatically select the correct conversion function and apply it</span>
+<span class="k">auto</span> <span class="n">converter</span> <span class="o">=</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">converter</span><span class="o">::</span><span class="n">Converter</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="c1">// Since we don&#39;t want the result to be in a device, we will use a default CPUContext here</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span> <span class="n">cpu_context</span><span class="p">;</span>
+
+<span class="c1">// Convert&lt;&gt;() function will convert to the desired format and cast the pointer to the right type</span>
+<span class="c1">// The final parameter being true indicates a move conversion will be performed</span>
+<span class="c1">// This will be faster but will invalidate the original coo matrix</span>
+<span class="c1">// If both the coo and csr are needed you should pass false here</span>
+<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">converter</span><span class="p">.</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">cpu_context</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
 </pre></div>
 </div>
+<blockquote>
+<div><p>If the source and destination formats are the same the converter will simply do nothing.</p>
+</div></blockquote>
+</section>
+<section id="ownership">
+<h3>Ownership<a class="headerlink" href="#ownership" title="Permalink to this headline"></a></h3>
+<p>SparseBase allows users to choose whether they want to take responsibility of managing the memory.
+By default the data stored inside <code class="docutils literal notranslate"><span class="pre">Format</span></code> instances are considered owned by the instance and as a
+result will be deallocated when the instance is deleted. This can be avoided either by creating the
+instance with the <code class="docutils literal notranslate"><span class="pre">kNotOwned</span></code> parameter or by manually releasing the arrays from the instance.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Arrays owned and deallocated automatically by the Format instance</span>
+<span class="k">auto</span><span class="o">*</span> <span class="n">csr_owned</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">kOwned</span><span class="p">);</span>
+
+<span class="c1">// Users can release the arrays to prevent this deallocation</span>
+<span class="k">auto</span><span class="o">*</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">csr_owned</span><span class="o">-&gt;</span><span class="n">release_vals</span><span class="p">();</span>
+
+<span class="c1">// Arrays owned and deallocated by the user</span>
+<span class="k">auto</span><span class="o">*</span> <span class="n">csr_not_owned</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">row_ptr</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">kNotOwned</span><span class="p">);</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>Format instances created within the library (for example when a matrix is read from a file using an MTXReader)
+will almost always be owned by the instance. The user can release the arrays manually as discussed
+above if this is not desired.</p>
+</div></blockquote>
 </section>
 <section id="working-with-graphs">
-<h2>Working with Graphs<a class="headerlink" href="#working-with-graphs" title="Permalink to this headline"></a></h2>
+<h3>Working with Graphs<a class="headerlink" href="#working-with-graphs" title="Permalink to this headline"></a></h3>
 <p>Graphs can be created using any SparseFormat as the connectivity information of the graph.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_object.h&quot;</span><span class="cp"></span>
-
-<span class="k">auto</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
 <span class="k">auto</span> <span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">ReadCOO</span><span class="p">();</span>
-<span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">Graph</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">object</span><span class="o">::</span><span class="n">Graph</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Alternatively we can create a graph by directly passing the reader.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_reader.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_object.h&quot;</span><span class="cp"></span>
-
- <span class="n">sparsebase</span><span class="o">::</span><span class="n">Graph</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">g</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">object</span><span class="o">::</span><span class="n">Graph</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">g</span><span class="p">;</span>
  <span class="n">g</span><span class="p">.</span><span class="n">read_connectivity_to_coo</span><span class="p">(</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_name</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.</p>
 </section>
 <section id="ordering">
-<h2>Ordering<a class="headerlink" href="#ordering" title="Permalink to this headline"></a></h2>
-<p>Ordering can be handled using the <code class="docutils literal notranslate"><span class="pre">ReorderInstance</span></code> class. Note that this class takes a <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> as a template parameter.
-As of the current version three such <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> classes exist <code class="docutils literal notranslate"><span class="pre">RCMReorder</span></code>, <code class="docutils literal notranslate"><span class="pre">DegreeReorder</span></code>, <code class="docutils literal notranslate"><span class="pre">GenericReorder</span></code>.</p>
+<h3>Ordering<a class="headerlink" href="#ordering" title="Permalink to this headline"></a></h3>
+<p>Various orderings can be generated for a graph using the <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> classes.
+Currently these include <code class="docutils literal notranslate"><span class="pre">RCMReoder</span></code> and <code class="docutils literal notranslate"><span class="pre">DegreeReorder</span></code>. There is also a <code class="docutils literal notranslate"><span class="pre">GenericReorder</span></code> class
+allowing the users to define their own custom orderings. For more details, please see the examples
+in the Github repository.</p>
 <p>Below you can see an example of an RCM reordering of a graph.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_preprocess.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_format.h&quot;</span><span class="cp"></span>
-
-<span class="n">sparsebase</span><span class="o">::</span><span class="n">ReorderInstance</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">RCMReorder</span><span class="o">&gt;</span> <span class="n">orderer</span><span class="p">;</span>
-<span class="n">sparsebase</span><span class="o">::</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">con</span> <span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="n">get_connectivity</span><span class="p">();</span>
-<span class="n">vertex_type</span> <span class="o">*</span> <span class="n">order</span> <span class="o">=</span> <span class="n">orderer</span><span class="p">.</span><span class="n">GetReorder</span><span class="p">(</span><span class="n">con</span><span class="p">);</span>
-</pre></div>
-</div>
-<p>For these operations, we also support an alternative syntax (without the template parameter) using the <code class="docutils literal notranslate"><span class="pre">RCMReorderInstance</span></code> and <code class="docutils literal notranslate"><span class="pre">DegreeReorderInstance</span></code> wrapper classes.</p>
-<p>Below you can see this alternative syntax being used to reorder the same graph.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">RCMReorderInstance</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">orderer</span><span class="p">;</span>
-<span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">con</span> <span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="n">get_connectivity</span><span class="p">();</span>
-<span class="n">vertex_type</span> <span class="o">*</span> <span class="n">order</span> <span class="o">=</span> <span class="n">orderer</span><span class="p">.</span><span class="n">GetReorder</span><span class="p">(</span><span class="n">con</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span><span class="o">::</span><span class="n">RCMReorder</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">orderer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="o">*</span> <span class="n">con</span> <span class="o">=</span> <span class="n">g</span><span class="p">.</span><span class="n">get_connectivity</span><span class="p">();</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span> <span class="n">cpu_context</span><span class="p">;</span>
+<span class="n">vertex_type</span> <span class="o">*</span> <span class="n">order</span> <span class="o">=</span> <span class="n">orderer</span><span class="p">.</span><span class="n">GetReorder</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="p">{</span><span class="o">&amp;</span><span class="n">cpu_context</span><span class="p">});</span>
 </pre></div>
 </div>
 <p>Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
-So by default, reordering won’t actually mutate the graph. If the user wishes to do so, they can use the <code class="docutils literal notranslate"><span class="pre">TransformInstance</span></code> class</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_preprocess.h&quot;</span><span class="cp"></span>
-
-<span class="n">sparsebase</span><span class="o">::</span><span class="n">TransformInstance</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">Transform</span><span class="o">&gt;</span> <span class="n">transformer</span><span class="p">;</span>
-<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">.</span><span class="n">GetTransformation</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="n">order</span><span class="p">);</span>
+So by default, reordering won’t actually mutate the graph. If the user wishes to do so, they can use the <code class="docutils literal notranslate"><span class="pre">Transform</span></code> class
+to mutate the graph.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span><span class="o">::</span><span class="n">Transform</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">transformer</span><span class="p">(</span><span class="n">order</span><span class="p">);</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span> <span class="o">*</span><span class="n">result</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">.</span><span class="n">GetTransformation</span><span class="p">(</span><span class="n">con</span><span class="p">,</span> <span class="p">{</span><span class="o">&amp;</span><span class="n">cpu_context</span><span class="p">});</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 
@@ -324,7 +420,7 @@ So by default, reordering won’t actually mutate the graph. If the user wishes 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to SparseBase’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="explanations/index.html" class="btn btn-neutral float-right" title="Explanations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

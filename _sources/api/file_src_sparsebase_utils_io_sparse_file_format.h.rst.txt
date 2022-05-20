@@ -1,0 +1,77 @@
+
+.. _file_src_sparsebase_utils_io_sparse_file_format.h:
+
+File sparse_file_format.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils_io>` (``src/sparsebase/utils/io``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/io/sparse_file_format.h``)
+-------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_io_sparse_file_format.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``climits``
+
+- ``iostream``
+
+- ``sparsebase/external/json/json.hpp``
+
+- ``string``
+
+- ``type_traits``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_utils_io_reader.cc`
+
+- :ref:`file_src_sparsebase_utils_io_writer.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+- :ref:`namespace_sparsebase__utils__io`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1io_1_1SbffObject`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1SbffArray`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1SbffReadOnlyFile`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1SbffWriteFile`
+

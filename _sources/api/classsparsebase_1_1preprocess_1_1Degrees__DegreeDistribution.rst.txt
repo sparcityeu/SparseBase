@@ -1,0 +1,35 @@
+.. _exhale_class_classsparsebase_1_1preprocess_1_1Degrees__DegreeDistribution:
+
+Template Class Degrees_DegreeDistribution
+=========================================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structsparsebase_1_1preprocess_1_1Degrees__DegreeDistribution_1_1Params`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::preprocess::FeaturePreprocessType< std::unordered_map< std::type_index, std::any > >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1FeaturePreprocessType`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::preprocess::Degrees_DegreeDistribution
+   :members:
+   :protected-members:
+   :undoc-members:

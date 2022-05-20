@@ -1,0 +1,26 @@
+.. _exhale_struct_structsparsebase_1_1context_1_1Context:
+
+Struct Context
+==============
+
+- Defined in :ref:`file_src_sparsebase_context_context.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::context::ContextImplementation< CPUContext >`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`)
+- ``public sparsebase::context::ContextImplementation< ContextType >`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::context::Context
+   :members:
+   :protected-members:
+   :undoc-members:

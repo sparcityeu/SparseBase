@@ -1,0 +1,27 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1converter_1_1Converter:
+
+Class Converter
+===============
+
+- Defined in :ref:`file_src_sparsebase_utils_converter_converter.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::utils::converter::ConverterImpl< ConverterOrderOne< ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterImpl`)
+- ``public sparsebase::utils::converter::ConverterImpl< ConverterOrderTwo< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterImpl`)
+- ``public sparsebase::utils::converter::ConverterImpl< ConverterType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterImpl`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::converter::Converter
+   :members:
+   :protected-members:
+   :undoc-members:

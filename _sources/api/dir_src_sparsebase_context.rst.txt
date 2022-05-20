@@ -1,0 +1,21 @@
+.. _dir_src_sparsebase_context:
+
+
+Directory context
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase>` (``src/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase/context``
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_context_context.cc`
+- :ref:`file_src_sparsebase_context_context.h`
+
+

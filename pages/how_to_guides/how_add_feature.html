@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to: add a new feature &mdash; SparseBase v0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to: add a new reordering algorithm" href="how_add_reordering.html" />
+    <link rel="prev" title="How To Guides" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">How To Guides</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to: add a new feature</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-new-class-for-the-feature">1. Create a new class for the feature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-struct-containing-the-parameters-you-need-and-initialize-them-in-the-constructor">2. Create a struct containing the parameters you need, and initialize them in the constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implement-all-virtual-functions-that-are-implemented-by-extractabletype-interface">3. Implement all virtual functions that are implemented by ExtractableType interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add-implementations-for-the-feature-class">4. Add implementations for the feature class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#register-the-implementations-you-wrote-to-the-correct-formats">5. Register the implementations you wrote to the correct formats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add-explicit-template-instantiations">6. Add explicit template instantiations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="how_add_reordering.html">How to: add a new reordering algorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">How To Guides</a> &raquo;</li>
+      <li>How to: add a new feature</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/how_to_guides/how_add_feature.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-add-a-new-feature">
+<h1>How to: add a new feature<a class="headerlink" href="#how-to-add-a-new-feature" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>Adding new features to SparseBase is very simple. It consists of six steps:</p>
+<ol class="arabic simple">
+<li><p>create a new class for your feature. It must inherit from the base <code class="docutils literal notranslate"><span class="pre">FeaturePreprocessType</span></code> class.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FeaturePreprocessType</span></code> implements the <code class="docutils literal notranslate"><span class="pre">ExtractableType</span></code> interface thus all virtual functions defined by <code class="docutils literal notranslate"><span class="pre">ExtractableType</span></code> must be implemented. <code class="docutils literal notranslate"><span class="pre">ExtractableType</span></code> provides a seamless interface for feature extraction.</p></li>
+<li><p>Inside the class, create a new struct that will contain the parameters needed by your feature, and initialize it in the constructor. Note: This step is only needed if your feature requires parameters to work with.</p></li>
+<li><p>Add implementation functions that will carry out the feature.</p></li>
+<li><p>Register the implementation functions in the constructor.</p></li>
+<li><p>Add explicit template instantiations of your class to the python script.</p></li>
+</ol>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>The following example demonstrates the process of creating a new feature <code class="docutils literal notranslate"><span class="pre">Fearture</span></code>.</p>
+<ul class="simple">
+<li><p>This feature requires two float parameters for execution, <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code>.</p></li>
+<li><p>It has two implementations. One that operates on a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> format, and another that operates on a <code class="docutils literal notranslate"><span class="pre">COO</span></code> format.</p></li>
+</ul>
+<section id="create-a-new-class-for-the-feature">
+<h3>1. Create a new class for the feature<a class="headerlink" href="#create-a-new-class-for-the-feature" title="Permalink to this headline"></a></h3>
+<p>In the header file <code class="docutils literal notranslate"><span class="pre">sparsebase/include/sparse_preprocess.hpp</span></code>, add the definition of your class. It must be templated on four types <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueType</span></code>, and <code class="docutils literal notranslate"><span class="pre">FeatureType</span></code> which define the data types of the <code class="docutils literal notranslate"><span class="pre">Format</span></code> and the return type of the feature class. <code class="docutils literal notranslate"><span class="pre">Feature</span></code> must inherit from the class <code class="docutils literal notranslate"><span class="pre">FeaturePreprocessType</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Feature</span> <span class="o">:</span> <span class="n">FeaturePreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="p">,</span> <span class="n">FeatureType</span><span class="o">&gt;</span> <span class="p">{</span>
+
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-struct-containing-the-parameters-you-need-and-initialize-them-in-the-constructor">
+<h3>2. Create a struct containing the parameters you need, and initialize them in the constructor<a class="headerlink" href="#create-a-struct-containing-the-parameters-you-need-and-initialize-them-in-the-constructor" title="Permalink to this headline"></a></h3>
+<p>Inside the class, create a new struct inheriting from <code class="docutils literal notranslate"><span class="pre">PreprocessParams</span></code>. Its members will be whichever parameters that your feature will require. We will call this struct <code class="docutils literal notranslate"><span class="pre">FeatureParams</span></code>. We add <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> to it.
+Furthermore, create an instance of the struct you just defined and also create a <code class="docutils literal notranslate"><span class="pre">std::unordered_map&lt;std::type_index,</span> <span class="pre">PreprocessParams&gt;</span></code> that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the <code class="docutils literal notranslate"><span class="pre">feature</span></code> namespace.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Feature</span> <span class="o">:</span> <span class="n">FeaturePreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="p">,</span> <span class="n">FeatureType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="nl">FeatureParams</span> <span class="p">:</span> <span class="n">Preprocess</span> <span class="p">{</span>
+		<span class="kt">float</span> <span class="n">alpha</span><span class="p">;</span>
+		<span class="kt">float</span> <span class="n">beta</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Inside the constructor, you will take the parameters from the user, add them to an instance of the struct you just created, and set the data member <code class="docutils literal notranslate"><span class="pre">params_</span></code>, which your class inherited from <code class="docutils literal notranslate"><span class="pre">ExtractableType</span></code>, to the newly added struct.
+Furthermore, fill the unordered_map <code class="docutils literal notranslate"><span class="pre">pmap_</span></code> which is also inherited from <code class="docutils literal notranslate"><span class="pre">ExtractableType</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Feature</span> <span class="o">:</span> <span class="n">FeaturePreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="p">,</span> <span class="n">FeatureType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">// ...</span>
+	<span class="n">Feature</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">){</span>
+		<span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span> <span class="o">=</span> <span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FeatureParams</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">FeatureParams</span><span class="p">{</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">});</span>
+        <span class="n">pmap_</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">get_feature_id_static</span><span class="p">(),</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span><span class="p">);</span>
+	<span class="c1">// ...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="implement-all-virtual-functions-that-are-implemented-by-extractabletype-interface">
+<h3>3. Implement all virtual functions that are implemented by ExtractableType interface<a class="headerlink" href="#implement-all-virtual-functions-that-are-implemented-by-extractabletype-interface" title="Permalink to this headline"></a></h3>
+<p>Some of the <code class="docutils literal notranslate"><span class="pre">virtual</span></code> functions are implemented in <code class="docutils literal notranslate"><span class="pre">FeaturePreprocessType</span></code>, however not all. Some need to be implemented by the developer:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Feature</span> <span class="o">:</span> <span class="n">FeaturePreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="p">,</span> <span class="n">FeatureType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">// ...</span>
+    <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">any</span><span class="o">&gt;</span> <span class="n">Extract</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span> <span class="o">*</span> <span class="n">format</span><span class="p">);</span>
+    <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="o">&gt;</span> <span class="n">get_sub_ids</span><span class="p">();</span>
+    <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ExtractableType</span><span class="o">*&gt;</span> <span class="n">get_subs</span><span class="p">();</span>
+	<span class="c1">// ...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The Extract function is used by the <code class="docutils literal notranslate"><span class="pre">feature::Extractor</span></code> to call the implementation functions that are registered in the constructor. <code class="docutils literal notranslate"><span class="pre">feature::Extractor::Extract</span></code> function will first try to merge feature implementations, using the <code class="docutils literal notranslate"><span class="pre">ClassMatcherMixin</span></code> and then call the <code class="docutils literal notranslate"><span class="pre">Extract</span></code> function for each chosen class. Therefore, in this function the user must either call <code class="docutils literal notranslate"><span class="pre">FunctionMatcherMixin::Execute</span></code> directly or make a call to such a function.</p>
+<p><code class="docutils literal notranslate"><span class="pre">get_subs()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_sub_ids()</span></code> functions are used by the <code class="docutils literal notranslate"><span class="pre">feature::Extractor</span></code> to break apart and merge feature computations. The latter is used to return instances of all the features that are implemented by this class and the latter return the ids of those features. These are needed to find the most optimal implementation for the features registered by the user for extraction. For the classes that implement a single feature implementing the above functions is very straightforward since the <code class="docutils literal notranslate"><span class="pre">get_subs()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_sub_ids()</span></code> functions return info related to the class itself. For classes that implement multiple features simultaneously make sure that these functions return the correct information in the correct order. The <code class="docutils literal notranslate"><span class="pre">type_index</span></code> vectors must be sorted for the <code class="docutils literal notranslate"><span class="pre">feature::Extractor</span></code> to work properly.</p>
+</section>
+<section id="add-implementations-for-the-feature-class">
+<h3>4. Add implementations for the feature class<a class="headerlink" href="#add-implementations-for-the-feature-class" title="Permalink to this headline"></a></h3>
+<p>Add implementation functions that will carry out the computations for the feature to the file <code class="docutils literal notranslate"><span class="pre">sparsebase/src/sparse_preprocess.cc</span></code>. Each function will be specific for an input <code class="docutils literal notranslate"><span class="pre">Format</span></code>. These functions should match the function signature provided in <code class="docutils literal notranslate"><span class="pre">FunctionMatcherMixin</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">PreprocessFunction</span> <span class="o">=</span> <span class="n">ReturnType</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span> <span class="o">*&gt;</span><span class="p">,</span> <span class="n">PreprocessParams</span> <span class="o">*</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Not that the functions must also be <em>static</em>. This is required to enable the mechanism of choosing the correct implementation function for the input <code class="docutils literal notranslate"><span class="pre">Format</span></code>.</p>
+<p>The parameters that your function will take are:</p>
+<ol class="arabic simple">
+<li><p>A vector of pointers at <code class="docutils literal notranslate"><span class="pre">Format</span></code> objects.</p></li>
+<li><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">PreprocessParams</span></code> struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your feature.</p></li>
+</ol>
+<p>For our example, we add two functions, <code class="docutils literal notranslate"><span class="pre">FeatureCSR()</span></code> and <code class="docutils literal notranslate"><span class="pre">FeatureCOO()</span></code>:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Feature</span> <span class="o">:</span> <span class="n">FeaturePreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="p">,</span> <span class="n">FeatureType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">//.......</span>
+	<span class="k">static</span> <span class="n">FeatureType</span><span class="o">*</span> <span class="n">FeatureCSR</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;*&gt;</span> <span class="n">input_sf</span><span class="p">,</span> <span class="n">PreprocessParams</span><span class="o">*</span> <span class="n">params</span><span class="p">){</span>
+		<span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NumNonZerosType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+		<span class="n">FeatureParams</span><span class="o">*</span> <span class="n">params</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+		<span class="c1">// ... carry out feature extraction</span>
+		<span class="k">return</span> <span class="n">feature</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">static</span> <span class="n">FeatureType</span><span class="o">*</span> <span class="n">FeatureCOO</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseFormat</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;*&gt;</span> <span class="n">input_sf</span><span class="p">,</span> <span class="n">PreprocessParams</span><span class="o">*</span> <span class="n">params</span><span class="p">){</span>
+		<span class="k">auto</span> <span class="n">coo</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+		<span class="n">FeatureParams</span><span class="o">*</span> <span class="n">params</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">FeatureParams</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+		<span class="c1">// ... carry out feature extraction</span>
+		<span class="k">return</span> <span class="n">feature</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// .......</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="register-the-implementations-you-wrote-to-the-correct-formats">
+<h3>5. Register the implementations you wrote to the correct formats<a class="headerlink" href="#register-the-implementations-you-wrote-to-the-correct-formats" title="Permalink to this headline"></a></h3>
+<p>Inside the constructor, register the functions you made to the correct <code class="docutils literal notranslate"><span class="pre">Format</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">FeatureType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Feature</span> <span class="o">:</span> <span class="n">FeaturePreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="p">,</span> <span class="n">FeatureType</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="c1">// ...</span>
+	<span class="n">Feature</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">){</span>
+		<span class="c1">// ...</span>
+		<span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">({</span><span class="n">kCSRFormat</span><span class="p">},</span> <span class="n">FeatureCSR</span><span class="p">);</span>
+		<span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">({</span><span class="n">kCOOFormat</span><span class="p">},</span> <span class="n">FeatureCOO</span><span class="p">);</span>
+		<span class="c1">// ...</span>
+	<span class="c1">// ...</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</section>
+<section id="add-explicit-template-instantiations">
+<h3>6. Add explicit template instantiations<a class="headerlink" href="#add-explicit-template-instantiations" title="Permalink to this headline"></a></h3>
+<p>For the compiled version of the library, you must add explicit instantiations of your class depending on the data types you are going to use for <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueType</span></code>, and <code class="docutils literal notranslate"><span class="pre">FeatureType</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">template</span> <span class="k">class</span> <span class="nc">Feature</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">float</span><span class="p">,</span> <span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>For this purpose you must edit <code class="docutils literal notranslate"><span class="pre">generate_explicit_instantiations.py</span></code> accordingly.</p>
+<p>Now, you can easily extract your feature as following:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_preprocess.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/sparse_feature.h&quot;</span><span class="cp"></span>
+ 
+<span class="kt">float</span> <span class="n">alpha</span><span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">feature</span><span class="o">::</span><span class="n">Extractor</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">&gt;</span> <span class="n">engine</span><span class="p">;</span>
+<span class="n">engine</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">feature</span><span class="o">::</span><span class="n">Feature</span><span class="p">(</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span><span class="o">::</span><span class="n">Feature</span><span class="p">{</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">}));</span>
+<span class="k">auto</span> <span class="n">raws</span> <span class="o">=</span> <span class="n">engine</span><span class="p">.</span><span class="n">Extract</span><span class="p">(</span><span class="n">coo</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="How To Guides" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="how_add_reordering.html" class="btn btn-neutral float-right" title="How to: add a new reordering algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

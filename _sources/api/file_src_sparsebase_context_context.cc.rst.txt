@@ -1,0 +1,46 @@
+
+.. _file_src_sparsebase_context_context.cc:
+
+File context.cc
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_context>` (``src/sparsebase/context``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/context/context.cc``)
+--------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_context_context.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``context.h`` (:ref:`file_src_sparsebase_context_context.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__context`
+

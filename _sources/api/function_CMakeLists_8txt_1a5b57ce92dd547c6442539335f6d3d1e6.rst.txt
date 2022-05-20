@@ -1,0 +1,13 @@
+.. _exhale_function_CMakeLists_8txt_1a5b57ce92dd547c6442539335f6d3d1e6:
+
+Function list(JOIN NNZ_TYPES ", ")
+==================================
+
+- Defined in :ref:`file_src_CMakeLists.txt`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: list(JOIN NNZ_TYPES ", ")

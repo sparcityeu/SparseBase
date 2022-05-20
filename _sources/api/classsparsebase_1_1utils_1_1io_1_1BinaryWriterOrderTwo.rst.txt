@@ -1,0 +1,27 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo:
+
+Template Class BinaryWriterOrderTwo
+===================================
+
+- Defined in :ref:`file_src_sparsebase_utils_io_writer.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public sparsebase::utils::io::Writer`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1Writer`)
+- ``public sparsebase::utils::io::WritesCOO< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1WritesCOO`)
+- ``public sparsebase::utils::io::WritesCSR< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1WritesCSR`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::io::BinaryWriterOrderTwo
+   :members:
+   :protected-members:
+   :undoc-members:

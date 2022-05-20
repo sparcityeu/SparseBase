@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File format.h &mdash; SparseBase v0.2.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File format.h</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_src_sparsebase_format_format.h.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-format-h">
+<span id="program-listing-file-src-sparsebase-format-format-h"></span><h1>Program Listing for File format.h<a class="headerlink" href="#program-listing-for-file-format-h" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_src_sparsebase_format_format.h.html#file-src-sparsebase-format-format-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/sparsebase/format/format.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_</span>
+<span class="cp">#define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_</span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/context/context.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/utils/exception.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;fstream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;functional&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;typeindex&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;typeinfo&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">sparsebase</span> <span class="p">{</span>
+
+<span class="k">namespace</span> <span class="n">format</span> <span class="p">{</span>
+
+<span class="k">enum</span> <span class="n">Ownership</span> <span class="p">{</span>
+  <span class="n">kNotOwned</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="n">kOwned</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="k">struct</span> <span class="n">Deleter</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="n">T</span> <span class="o">*</span><span class="n">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">obj</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span>
+      <span class="k">delete</span> <span class="n">obj</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="kt">long</span> <span class="kt">long</span> <span class="n">dim</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="k">struct</span> <span class="n">Deleter2D</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="n">T</span> <span class="o">*</span><span class="n">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">long</span> <span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">delete</span><span class="p">[]</span> <span class="n">obj</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">delete</span><span class="p">[]</span> <span class="n">obj</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span> <span class="k">struct</span> <span class="n">BlankDeleter</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="n">T</span> <span class="o">*</span><span class="n">obj</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="k">typedef</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">DimensionType</span><span class="p">;</span>
+
+
+<span class="k">class</span> <span class="nc">Format</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">get_format_id</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">Format</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">Format</span> <span class="o">*</span><span class="nf">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">get_dimensions</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">DimensionType</span> <span class="nf">get_num_nnz</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">DimensionType</span> <span class="nf">get_order</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">get_context</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">get_context_type</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+
+  <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="o">*</span><span class="n">As</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">get_format_id</span><span class="p">()</span> <span class="o">==</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">(</span><span class="k">typeid</span><span class="p">(</span><span class="n">T</span><span class="p">)))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">T</span> <span class="o">*&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">throw</span> <span class="n">utils</span><span class="o">::</span><span class="n">TypeException</span><span class="p">(</span><span class="n">get_format_id</span><span class="p">().</span><span class="n">name</span><span class="p">(),</span> <span class="k">typeid</span><span class="p">(</span><span class="n">T</span><span class="p">).</span><span class="n">name</span><span class="p">());</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">FormatType</span><span class="o">&gt;</span> <span class="k">class</span> <span class="nc">FormatImplementation</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Format</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">get_dimensions</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">dimension_</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">virtual</span> <span class="n">DimensionType</span> <span class="n">get_num_nnz</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">nnz_</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">virtual</span> <span class="n">DimensionType</span> <span class="n">get_order</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">order_</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">virtual</span> <span class="n">context</span><span class="o">::</span><span class="n">Context</span> <span class="o">*</span><span class="n">get_context</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">context_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span> <span class="p">}</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">get_format_id</span><span class="p">()</span> <span class="k">final</span> <span class="p">{</span> <span class="k">return</span> <span class="k">typeid</span><span class="p">(</span><span class="n">FormatType</span><span class="p">);</span> <span class="p">}</span>
+
+  <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">get_format_id_static</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="k">typeid</span><span class="p">(</span><span class="n">FormatType</span><span class="p">);</span> <span class="p">}</span>
+
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">type_index</span> <span class="n">get_context_type</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">context_</span><span class="o">-&gt;</span><span class="n">get_context_type_member</span><span class="p">();</span>
+  <span class="p">}</span>
+
+<span class="k">protected</span><span class="o">:</span>
+  <span class="n">DimensionType</span> <span class="n">order_</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DimensionType</span><span class="o">&gt;</span> <span class="n">dimension_</span><span class="p">;</span>
+  <span class="n">DimensionType</span> <span class="n">nnz_</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="o">&gt;</span> <span class="n">context_</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">COO</span> <span class="o">:</span> <span class="k">public</span> <span class="n">FormatImplementation</span><span class="o">&lt;</span><span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">COO</span><span class="p">(</span><span class="n">IDType</span> <span class="n">n</span><span class="p">,</span> <span class="n">IDType</span> <span class="n">m</span><span class="p">,</span> <span class="n">NNZType</span> <span class="n">nnz</span><span class="p">,</span> <span class="n">IDType</span> <span class="o">*</span><span class="n">row</span><span class="p">,</span> <span class="n">IDType</span> <span class="o">*</span><span class="n">col</span><span class="p">,</span>
+      <span class="n">ValueType</span> <span class="o">*</span><span class="n">vals</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">ignore_sort</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+  <span class="n">COO</span><span class="p">(</span><span class="k">const</span> <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">COO</span><span class="p">(</span><span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;&amp;</span><span class="p">);</span>
+  <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span>
+  <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">COO</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">Format</span> <span class="o">*</span><span class="nf">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">COO</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="nf">get_col</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="nf">get_row</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="nf">get_vals</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="n">IDType</span> <span class="o">*</span><span class="nf">release_col</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="nf">release_row</span><span class="p">();</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="nf">release_vals</span><span class="p">();</span>
+
+  <span class="kt">void</span> <span class="nf">set_row</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">set_col</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">set_vals</span><span class="p">(</span><span class="n">ValueType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">RowIsOwned</span><span class="p">();</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">ColIsOwned</span><span class="p">();</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">ValsIsOwned</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">col_</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">row_</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">ValueType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">vals_</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Array</span> <span class="o">:</span> <span class="k">public</span> <span class="n">FormatImplementation</span><span class="o">&lt;</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">Array</span><span class="p">(</span><span class="n">DimensionType</span> <span class="n">nnz</span><span class="p">,</span> <span class="n">ValueType</span> <span class="o">*</span><span class="n">row_ptr</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+  <span class="n">Array</span><span class="p">(</span><span class="k">const</span> <span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">Array</span><span class="p">(</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;&amp;</span><span class="p">);</span>
+  <span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Array</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">Format</span> <span class="o">*</span><span class="nf">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">Array</span><span class="p">();</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="nf">get_vals</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="n">ValueType</span> <span class="o">*</span><span class="nf">release_vals</span><span class="p">();</span>
+
+  <span class="kt">void</span> <span class="nf">set_vals</span><span class="p">(</span><span class="n">ValueType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">ValsIsOwned</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">ValueType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">vals_</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">CSR</span> <span class="o">:</span> <span class="k">public</span> <span class="n">FormatImplementation</span><span class="o">&lt;</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">CSR</span><span class="p">(</span><span class="n">IDType</span> <span class="n">n</span><span class="p">,</span> <span class="n">IDType</span> <span class="n">m</span><span class="p">,</span> <span class="n">NNZType</span> <span class="o">*</span><span class="n">row_ptr</span><span class="p">,</span> <span class="n">IDType</span> <span class="o">*</span><span class="n">col</span><span class="p">,</span> <span class="n">ValueType</span> <span class="o">*</span><span class="n">vals</span><span class="p">,</span>
+      <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">ignore_sort</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+  <span class="n">CSR</span><span class="p">(</span><span class="k">const</span> <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">CSR</span><span class="p">(</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;&amp;</span><span class="p">);</span>
+  <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span>
+  <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">);</span>
+  <span class="n">Format</span> <span class="o">*</span><span class="nf">Clone</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">CSR</span><span class="p">();</span>
+  <span class="n">NNZType</span> <span class="o">*</span><span class="nf">get_row_ptr</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="nf">get_col</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="nf">get_vals</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="n">NNZType</span> <span class="o">*</span><span class="nf">release_row_ptr</span><span class="p">();</span>
+  <span class="n">IDType</span> <span class="o">*</span><span class="nf">release_col</span><span class="p">();</span>
+  <span class="n">ValueType</span> <span class="o">*</span><span class="nf">release_vals</span><span class="p">();</span>
+
+  <span class="kt">void</span> <span class="nf">set_row_ptr</span><span class="p">(</span><span class="n">NNZType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">set_col</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">set_vals</span><span class="p">(</span><span class="n">ValueType</span> <span class="o">*</span><span class="p">,</span> <span class="n">Ownership</span> <span class="n">own</span> <span class="o">=</span> <span class="n">kNotOwned</span><span class="p">);</span>
+
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">ColIsOwned</span><span class="p">();</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">RowPtrIsOwned</span><span class="p">();</span>
+  <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">ValsIsOwned</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">NNZType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">NNZType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">row_ptr_</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">col_</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="p">[],</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">ValueType</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;&gt;</span> <span class="n">vals_</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="p">}</span> <span class="c1">// namespace format</span>
+
+<span class="p">}</span> <span class="c1">// namespace sparsebase</span>
+<span class="cp">#ifdef _HEADER_ONLY</span>
+<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/format/format.cc&quot;</span><span class="cp"></span>
+<span class="cp">#ifdef CUDA</span>
+<span class="cp">#include</span> <span class="cpf">&quot;cuda/format.cu&quot;</span><span class="cp"></span>
+<span class="cp">#endif</span>
+<span class="cp">#endif</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

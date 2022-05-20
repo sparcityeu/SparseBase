@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1format_1_1BlankDeleter:
+
+Template Struct BlankDeleter
+============================
+
+- Defined in :ref:`file_src_sparsebase_format_format.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::format::BlankDeleter
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,62 @@
+
+.. _file_src_sparsebase_format_format.cc:
+
+File format.cc
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_format>` (``src/sparsebase/format``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/format/format.cc``)
+------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_format_format.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``fstream``
+
+- ``init/format.inc``
+
+- ``iostream``
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/utils/converter/converter.h`` (:ref:`file_src_sparsebase_utils_converter_converter.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``string``
+
+- ``vector``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__format`
+

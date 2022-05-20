@@ -1,0 +1,31 @@
+.. _exhale_struct_structsparsebase_1_1preprocess_1_1DegreeReorder_1_1DegreeReorderParams:
+
+Struct DegreeReorder::DegreeReorderParams
+=========================================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classsparsebase_1_1preprocess_1_1DegreeReorder`.
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::preprocess::PreprocessParams`` (:ref:`exhale_struct_structsparsebase_1_1preprocess_1_1PreprocessParams`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::preprocess::DegreeReorder::DegreeReorderParams
+   :members:
+   :protected-members:
+   :undoc-members:

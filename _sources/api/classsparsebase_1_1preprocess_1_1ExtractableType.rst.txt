@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1preprocess_1_1ExtractableType:
+
+Class ExtractableType
+=====================
+
+- Defined in :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public sparsebase::preprocess::ConverterMixin< ExtractableType >`` (:ref:`exhale_class_classsparsebase_1_1preprocess_1_1ConverterMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::preprocess::ExtractableType
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,28 @@
+.. _exhale_class_classsparsebase_1_1format_1_1Format:
+
+Class Format
+============
+
+- Defined in :ref:`file_src_sparsebase_format_format.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::format::FormatImplementation< Array< ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+- ``public sparsebase::format::FormatImplementation< COO< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+- ``public sparsebase::format::FormatImplementation< CSR< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+- ``public sparsebase::format::FormatImplementation< FormatType >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::format::Format
+   :members:
+   :protected-members:
+   :undoc-members:

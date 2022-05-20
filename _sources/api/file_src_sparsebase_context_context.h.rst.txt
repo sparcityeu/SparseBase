@@ -1,0 +1,69 @@
+
+.. _file_src_sparsebase_context_context.h:
+
+File context.h
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_context>` (``src/sparsebase/context``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/context/context.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_context_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``typeindex``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_context_context.cc`
+
+- :ref:`file_src_sparsebase_format_format.h`
+
+- :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__context`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1context_1_1Context`
+
+- :ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`
+
+- :ref:`exhale_struct_structsparsebase_1_1context_1_1CPUContext`
+

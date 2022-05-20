@@ -11,27 +11,52 @@ Directories
 .. toctree::
    :maxdepth: 5
 
-   dir_sparsebase.rst
+   dir_src.rst
 
 .. toctree::
    :maxdepth: 5
 
-   dir_sparsebase_include.rst
+   dir_src_sparsebase.rst
 
 .. toctree::
    :maxdepth: 5
 
-   dir_sparsebase_include_sparsebase.rst
+   dir_src_sparsebase_context.rst
 
 .. toctree::
    :maxdepth: 5
 
-   dir_sparsebase_src.rst
+   dir_src_sparsebase_feature.rst
 
 .. toctree::
    :maxdepth: 5
 
-   dir_sparsebase_src_init.rst
+   dir_src_sparsebase_format.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_object.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_preprocess.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_utils.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_utils_converter.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_utils_io.rst
 
 Files
 *****
@@ -40,89 +65,99 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_CMakeLists.txt.rst
+   file_src_CMakeLists.txt.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_sparse_converter.cc.rst
+   file_src_sparsebase_context_context.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_include_sparsebase_sparse_converter.h.rst
+   file_src_sparsebase_context_context.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_init_sparse_converter.inc.rst
+   file_src_sparsebase_utils_converter_converter.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_include_sparsebase_sparse_exception.h.rst
+   file_src_sparsebase_utils_converter_converter.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_sparse_format.cc.rst
+   file_src_sparsebase_utils_exception.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_include_sparsebase_sparse_format.h.rst
+   file_src_sparsebase_feature_feature.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_init_sparse_format.inc.rst
+   file_src_sparsebase_feature_feature.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_sparse_object.cc.rst
+   file_src_sparsebase_format_format.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_include_sparsebase_sparse_object.h.rst
+   file_src_sparsebase_format_format.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_init_sparse_object.inc.rst
+   file_src_sparsebase_object_object.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_sparse_preprocess.cc.rst
+   file_src_sparsebase_object_object.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_include_sparsebase_sparse_preprocess.h.rst
+   file_src_sparsebase_preprocess_preprocess.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_init_sparse_preprocess.inc.rst
+   file_src_sparsebase_preprocess_preprocess.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_init_sparse_preprocess_instance.inc.rst
+   file_src_sparsebase_utils_io_reader.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_sparse_reader.cc.rst
+   file_src_sparsebase_utils_io_reader.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_include_sparsebase_sparse_reader.h.rst
+   file_src_sparsebase_utils_io_sparse_file_format.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_sparsebase_src_init_sparse_reader.inc.rst
+   file_src_sparsebase_sparsebase.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_io_writer.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_io_writer.h.rst

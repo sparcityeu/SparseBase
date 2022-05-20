@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feature Extraction from a Matrix Market File &mdash; SparseBase v0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Explanations" href="../explanations/index.html" />
+    <link rel="prev" title="Reordering a graph" href="001_reordering.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="001_reordering.html">Reordering a graph</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Feature Extraction from a Matrix Market File</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#objective">Objective</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#steps">Steps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#read-the-graph-from-disk">1. Read the graph from disk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init-the-extractor-and-define-the-features-to-be-extracted">2. Init the Extractor and define the features to be extracted</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extract-features-from-the-format">3. Extract Features from the Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compile-the-program-and-execute-it">4. Compile the program and execute it</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+      <li>Feature Extraction from a Matrix Market File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/tutorials/002_feature_extraction.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="feature-extraction-from-a-matrix-market-file">
+<h1>Feature Extraction from a Matrix Market File<a class="headerlink" href="#feature-extraction-from-a-matrix-market-file" title="Permalink to this headline"></a></h1>
+<section id="objective">
+<h2>Objective<a class="headerlink" href="#objective" title="Permalink to this headline"></a></h2>
+<p>Read a matrix-market file and extract features from it.</p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>In this tutorial, you will use SparseBase to do the following:</p>
+<ol class="arabic simple">
+<li><p>Read a matrix-market file.</p></li>
+<li><p>Create a FeatureExtractor and add features to extract, for this tutorial we use <code class="docutils literal notranslate"><span class="pre">Degrees</span></code> and <code class="docutils literal notranslate"><span class="pre">DegreeDistribution</span></code>.</p></li>
+<li><p>Extract features and cast them to correct primitive types.</p></li>
+</ol>
+</section>
+<section id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline"></a></h2>
+<p>Start by navigating to the directory <code class="docutils literal notranslate"><span class="pre">tutorials/002_feature_extraction/start_here/</span></code>. Open the file <code class="docutils literal notranslate"><span class="pre">tutorial_002.cc</span></code> using a code editor and follow along with the tutorial. The file contains some boilerplate code that includes the appropriate headers, creates some type definitions, and uses the <code class="docutils literal notranslate"><span class="pre">sparsebase</span></code> and <code class="docutils literal notranslate"><span class="pre">format</span></code> namespace.</p>
+<p>The completed tutorial can be found in <code class="docutils literal notranslate"><span class="pre">tutorials/002_feature_extraction/solved/solved.cc</span></code>. We will use the matrix-market file <code class="docutils literal notranslate"><span class="pre">examples/data/ash958.mtx</span></code>.</p>
+</section>
+<section id="steps">
+<h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline"></a></h2>
+<section id="read-the-graph-from-disk">
+<h3>1. Read the graph from disk<a class="headerlink" href="#read-the-graph-from-disk" title="Permalink to this headline"></a></h3>
+<p>Begin your main program by reading the matrix-market file into a <code class="docutils literal notranslate"><span class="pre">COO</span></code> object using a <code class="docutils literal notranslate"><span class="pre">MTXReader</span></code> object.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// The name of the matrix-market file</span>
+<span class="n">string</span> <span class="n">file_name</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="c1">// Initialize a reader object with the matrix-market file inputted</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">utils</span><span class="o">::</span><span class="n">io</span><span class="o">::</span><span class="n">MTXReader</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="n">reader</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="p">);</span>
+<span class="c1">// Read the matrix in to a COO representation</span>
+<span class="n">COO</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span> <span class="n">value_type</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">coo</span> <span class="o">=</span> <span class="n">reader</span><span class="p">.</span><span class="n">ReadCOO</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The three templated type parameters of the <code class="docutils literal notranslate"><span class="pre">COO</span></code> and <code class="docutils literal notranslate"><span class="pre">MTXReader</span></code> objects determine the data types that will store the IDs, the number of non-zeros, and the values of the weights of the format, respectively.</p>
+<p>You will find that these three template types are used by most classes of the library.</p>
+</section>
+<section id="init-the-extractor-and-define-the-features-to-be-extracted">
+<h3>2. Init the Extractor and define the features to be extracted<a class="headerlink" href="#init-the-extractor-and-define-the-features-to-be-extracted" title="Permalink to this headline"></a></h3>
+<p>Next, intialize the extractor and add features to be extracted (note that the class/features must extend the ExtractableType interface):</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create an extractor with the correct types of your COO (data) and your expected feature type</span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">feature</span><span class="o">::</span><span class="n">Extractor</span> <span class="n">engine</span> <span class="o">=</span>
+    <span class="n">sparsebase</span><span class="o">::</span><span class="n">feature</span><span class="o">::</span><span class="n">FeatureExtractor</span><span class="o">&lt;</span><span class="n">vertex_type</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">,</span>
+        <span class="n">value_type</span><span class="p">,</span> <span class="n">feature_type</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="c1">//add all the feature you want to extract to the extractor</span>
+<span class="n">engine</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">feature</span><span class="o">::</span><span class="n">Feature</span><span class="p">(</span><span class="n">degrees</span><span class="p">{}));</span>
+<span class="n">engine</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">feature</span><span class="o">::</span><span class="n">Feature</span><span class="p">(</span><span class="n">degree_dist</span><span class="p">{}));</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Add</span></code> function first checks if the passed feature is actually a class that calculates more than one feature. The <code class="docutils literal notranslate"><span class="pre">get_sub_ids()</span></code> function returns the list of features that the current class computes as <code class="docutils literal notranslate"><span class="pre">Extractable</span></code> types. Then it adds these classes if they are not already added to the <code class="docutils literal notranslate"><span class="pre">FeatureExtractor</span></code>.</p>
+<p>Print out the added features.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// print features to be extracted</span>
+<span class="k">auto</span> <span class="n">fs</span> <span class="o">=</span> <span class="n">engine</span><span class="p">.</span><span class="n">GetList</span><span class="p">();</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Features that will be extracted: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">fs</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">f</span><span class="p">.</span><span class="n">name</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="extract-features-from-the-format">
+<h3>3. Extract Features from the Format<a class="headerlink" href="#extract-features-from-the-format" title="Permalink to this headline"></a></h3>
+<p>Define a <code class="docutils literal notranslate"><span class="pre">context</span></code> that selects the architecture in which the computations will occur.
+Then use the <code class="docutils literal notranslate"><span class="pre">Extract</span></code> function of the <code class="docutils literal notranslate"><span class="pre">FeatureExtractor</span></code> to get the features as a <code class="docutils literal notranslate"><span class="pre">map</span></code>.
+The map is of type <code class="docutils literal notranslate"><span class="pre">std::unordered_map&lt;std::type,</span> <span class="pre">std::any&gt;</span></code>. The features are accessed by calling the respective <code class="docutils literal notranslate"><span class="pre">::get_feature_id_static()</span></code> member function.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a context, CPUcontext for this case.</span>
+<span class="c1">// The contexts defines the architecture that the computation will take place in.</span>
+<span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span> <span class="n">cpu_context</span><span class="p">;</span>
+<span class="c1">// extract features</span>
+<span class="k">auto</span> <span class="n">raws</span> <span class="o">=</span> <span class="n">engine</span><span class="p">.</span><span class="n">Extract</span><span class="p">(</span><span class="n">coo</span><span class="p">,</span> <span class="p">{</span><span class="o">&amp;</span><span class="n">cpu_context</span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The extract function, if possible, merges the computation for the features by finding a class that provides the merged version of the calculations.
+For this tutorial we will add <code class="docutils literal notranslate"><span class="pre">Degrees</span></code> and <code class="docutils literal notranslate"><span class="pre">DegreeDistribution</span></code> classes separately and observe that the <code class="docutils literal notranslate"><span class="pre">Degrees_DegreeDistribution</span></code> class will be used. This means the <code class="docutils literal notranslate"><span class="pre">ClassMatcherMixin</span></code> merged the two features into single class that has an efficient implementation.</p>
+<p>After the extraction, cast the features to their raw/original type by first using the <code class="docutils literal notranslate"><span class="pre">std::type</span></code> of the feature to access it from the map. Then cast it to the correct primitive type by using <code class="docutils literal notranslate"><span class="pre">std::any_cast</span></code>.
+Note that all the computations takes place using c arrays of the respective primitive type thanks to the highly templated design of the library.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;#features extracted: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">raws</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="k">auto</span> <span class="n">dgrs</span> <span class="o">=</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">any_cast</span><span class="o">&lt;</span><span class="n">vertex_type</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">raws</span><span class="p">[</span><span class="n">degrees</span><span class="o">::</span><span class="n">get_feature_id_static</span><span class="p">()]);</span>
+<span class="k">auto</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">any_cast</span><span class="o">&lt;</span><span class="n">feature_type</span> <span class="o">*&gt;</span><span class="p">(</span>
+    <span class="n">raws</span><span class="p">[</span><span class="n">degree_dist</span><span class="o">::</span><span class="n">get_feature_id_static</span><span class="p">()]);</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;vertex 0 =&gt; degree: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">dgrs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;dst[0] &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">dst</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="compile-the-program-and-execute-it">
+<h3>4. Compile the program and execute it<a class="headerlink" href="#compile-the-program-and-execute-it" title="Permalink to this headline"></a></h3>
+<p>Compile the code using <code class="docutils literal notranslate"><span class="pre">g++</span></code>. We assume SparseBase has already been installed in the compiled setting (as opposed to header-only installation).</p>
+<p>While in the directory <code class="docutils literal notranslate"><span class="pre">tutorials/002_feature_extraction/start_here</span></code>, execute the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>g++ -std<span class="o">=</span>c++17 tutorial_002.cc -lsparsebase -fopenmp -std<span class="o">=</span>c++17 -o feature.out
+./feature.out ../../../examples/data/ash958.mtx
+</pre></div>
+</div>
+<p>You should see something similar to the following output:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">COO</span> <span class="n">arrays</span> <span class="n">must</span> <span class="n">be</span> <span class="n">sorted</span><span class="p">.</span> <span class="n">Sorting</span><span class="p">...</span>
+
+<span class="n">Features</span> <span class="n">that</span> <span class="n">will</span> <span class="n">be</span> <span class="nl">extracted</span><span class="p">:</span> 
+<span class="n">N10sparsebase10preprocess18DegreeDistributionIjjfdEE</span>
+<span class="n">N10sparsebase10preprocess7DegreesIjjfEE</span>
+
+<span class="nl">Here</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">remaining</span> <span class="nl">size</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">N10sparsebase10preprocess7DegreesIjjfEE</span>
+<span class="n">N10sparsebase10preprocess18DegreeDistributionIjjfdEE</span>
+
+<span class="mi">2</span> <span class="mi">2</span> <span class="mh">0x7ff74bc05f00</span>
+<span class="n">result</span> <span class="nl">size</span><span class="p">:</span> <span class="mi">1</span>
+
+
+<span class="n">Classes</span> <span class="nl">used</span><span class="p">:</span>
+<span class="n">N10sparsebase10preprocess26Degrees_DegreeDistributionIjjfdEE</span>
+
+<span class="cp">#features extracted: 2</span>
+<span class="n">vertex</span> <span class="mi">0</span> <span class="o">=&gt;</span> <span class="nl">degree</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">dst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="mf">0.00104384</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="001_reordering.html" class="btn btn-neutral float-left" title="Reordering a graph" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../explanations/index.html" class="btn btn-neutral float-right" title="Explanations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

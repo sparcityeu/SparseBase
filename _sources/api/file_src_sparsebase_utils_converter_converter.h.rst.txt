@@ -1,0 +1,96 @@
+
+.. _file_src_sparsebase_utils_converter_converter.h:
+
+File converter.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils_converter>` (``src/sparsebase/utils/converter``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/converter/converter.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_converter_converter.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``functional``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``tuple``
+
+- ``unordered_map``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_format_format.cc`
+
+- :ref:`file_src_sparsebase_preprocess_preprocess.h`
+
+- :ref:`file_src_sparsebase_preprocess_preprocess.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_converter_converter.cc`
+
+- :ref:`file_src_sparsebase_utils_io_reader.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+- :ref:`namespace_sparsebase__utils__converter`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1Converter`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterImpl`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterOrderOne`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1converter_1_1ConverterOrderTwo`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_converter_8h_1a858a51c708d447a78b721fee189f9eff`
+
+- :ref:`exhale_typedef_converter_8h_1acdbb230e66cf6913f44b62f17764928e`
+
+- :ref:`exhale_typedef_converter_8h_1a5dde7b70f3e94c7027301a4fffda65e5`
+

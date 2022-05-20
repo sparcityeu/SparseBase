@@ -1,0 +1,30 @@
+.. _dir_src_sparsebase:
+
+
+Directory sparsebase
+====================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src>` (``src``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase``
+
+Subdirectories
+--------------
+
+- :ref:`dir_src_sparsebase_context`
+- :ref:`dir_src_sparsebase_feature`
+- :ref:`dir_src_sparsebase_format`
+- :ref:`dir_src_sparsebase_object`
+- :ref:`dir_src_sparsebase_preprocess`
+- :ref:`dir_src_sparsebase_utils`
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+

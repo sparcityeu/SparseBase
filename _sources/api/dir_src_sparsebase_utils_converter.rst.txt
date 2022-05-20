@@ -1,0 +1,21 @@
+.. _dir_src_sparsebase_utils_converter:
+
+
+Directory converter
+===================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase/utils/converter``
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_utils_converter_converter.cc`
+- :ref:`file_src_sparsebase_utils_converter_converter.h`
+
+

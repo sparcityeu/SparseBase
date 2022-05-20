@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1io_1_1WritesCSR:
+
+Template Class WritesCSR
+========================
+
+- Defined in :ref:`file_src_sparsebase_utils_io_writer.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public sparsebase::utils::io::BinaryWriterOrderTwo< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::io::WritesCSR
+   :members:
+   :protected-members:
+   :undoc-members:

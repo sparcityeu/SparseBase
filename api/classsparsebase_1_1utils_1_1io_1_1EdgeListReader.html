@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Class EdgeListReader &mdash; SparseBase v0.2.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Template Class MTXReader" href="classsparsebase_1_1utils_1_1io_1_1MTXReader.html" />
+    <link rel="prev" title="Template Class BinaryWriterOrderTwo" href="classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Template Class EdgeListReader</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1utils_1_1io_1_1EdgeListReader.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="template-class-edgelistreader">
+<span id="exhale-class-classsparsebase-1-1utils-1-1io-1-1edgelistreader"></span><h1>Template Class EdgeListReader<a class="headerlink" href="#template-class-edgelistreader" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_utils_io_reader.h.html#file-src-sparsebase-utils-io-reader-h"><span class="std std-ref">File reader.h</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
+<section id="base-types">
+<h3>Base Types<a class="headerlink" href="#base-types" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::utils::io::Reader</span></code> (<a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1Reader.html#exhale-class-classsparsebase-1-1utils-1-1io-1-1reader"><span class="std std-ref">Class Reader</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::utils::io::ReadsCSR&lt;</span> <span class="pre">IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1ReadsCSR.html#exhale-class-classsparsebase-1-1utils-1-1io-1-1readscsr"><span class="std std-ref">Template Class ReadsCSR</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::utils::io::ReadsCOO&lt;</span> <span class="pre">IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1ReadsCOO.html#exhale-class-classsparsebase-1-1utils-1-1io-1-1readscoo"><span class="std std-ref">Template Class ReadsCOO</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE">
+<span id="_CPPv3I000EN10sparsebase5utils2io14EdgeListReaderE"></span><span id="_CPPv2I000EN10sparsebase5utils2io14EdgeListReaderE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1utils_1_1io_1_1EdgeListReader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">io</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">EdgeListReader</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">io</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1Reader.html#_CPPv4N10sparsebase5utils2io6ReaderE" title="sparsebase::utils::io::Reader"><span class="n"><span class="pre">Reader</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">io</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1ReadsCSR.html#_CPPv4I000EN10sparsebase5utils2io8ReadsCSRE" title="sparsebase::utils::io::ReadsCSR"><span class="n"><span class="pre">ReadsCSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">io</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1ReadsCOO.html#_CPPv4I000EN10sparsebase5utils2io8ReadsCOOE" title="sparsebase::utils::io::ReadsCOO"><span class="n"><span class="pre">ReadsCOO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="Permalink to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classsparsebase_1_1utils_1_1io_1_1Reader.html#classsparsebase_1_1utils_1_1io_1_1Reader"><span class="std std-ref">Reader</span></a> for the Edge List file format. </p>
+<p>Reads files of the following format:<ul class="simple">
+<li><p>Each line contains 2 ids (vertices for a graph, cols/rows for a matrix) followed by an optional weight</p></li>
+<li><p>Delimiters should be spaces or tabs</p></li>
+<li><p>Each line represents a connection between the specified ids with the given weight </p></li>
+</ul>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils2io14EdgeListReader14EdgeListReaderENSt6stringEbbbbb">
+<span id="_CPPv3N10sparsebase5utils2io14EdgeListReader14EdgeListReaderENSt6stringEbbbbb"></span><span id="_CPPv2N10sparsebase5utils2io14EdgeListReader14EdgeListReaderENSt6stringEbbbbb"></span><span id="sparsebase::utils::io::EdgeListReader::EdgeListReader__ss.b.b.b.b.b"></span><span class="target" id="classsparsebase_1_1utils_1_1io_1_1EdgeListReader_1a1df5667c04594cd24ff0bee357533dbf"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EdgeListReader</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">remove_duplicates</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">remove_self_edges</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">read_undirected_</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">square</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils2io14EdgeListReader14EdgeListReaderENSt6stringEbbbbb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#classsparsebase_1_1utils_1_1io_1_1EdgeListReader"><span class="std std-ref">EdgeListReader</span></a> class </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – path to the file to be read </p></li>
+<li><p><strong>weighted</strong> – should be set to true if the file contains weights </p></li>
+<li><p><strong>remove_duplicates</strong> – if set to true duplicate connections will be removed </p></li>
+<li><p><strong>remove_self_edges</strong> – if set to true connections from any vertex to itself will be removed </p></li>
+<li><p><strong>read_undirected_</strong> – if set to true for any entry (u,v) both (u,v) and (v,u) will be read </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase5utils2io14EdgeListReader7ReadCSREv">
+<span id="_CPPv3NK10sparsebase5utils2io14EdgeListReader7ReadCSREv"></span><span id="_CPPv2NK10sparsebase5utils2io14EdgeListReader7ReadCSREv"></span><span id="sparsebase::utils::io::EdgeListReader::ReadCSRC"></span><span class="target" id="classsparsebase_1_1utils_1_1io_1_1EdgeListReader_1a40c9256fa3cff91185951f82ff0ca1bf"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadCSR</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase5utils2io14EdgeListReader7ReadCSREv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Reads the file to a CSR instance and returns a pointer to it. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase5utils2io14EdgeListReader7ReadCOOEv">
+<span id="_CPPv3NK10sparsebase5utils2io14EdgeListReader7ReadCOOEv"></span><span id="_CPPv2NK10sparsebase5utils2io14EdgeListReader7ReadCOOEv"></span><span id="sparsebase::utils::io::EdgeListReader::ReadCOOC"></span><span class="target" id="classsparsebase_1_1utils_1_1io_1_1EdgeListReader_1a1a105e9a6550b515d16abc2484f6636c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5utils2io14EdgeListReaderE" title="sparsebase::utils::io::EdgeListReader::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadCOO</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase5utils2io14EdgeListReader7ReadCOOEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Reads the file to a COO instance and returns a pointer to it. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils2io14EdgeListReaderD0Ev">
+<span id="_CPPv3N10sparsebase5utils2io14EdgeListReaderD0Ev"></span><span id="_CPPv2N10sparsebase5utils2io14EdgeListReaderD0Ev"></span><span id="sparsebase::utils::io::EdgeListReader::~EdgeListReader"></span><span class="target" id="classsparsebase_1_1utils_1_1io_1_1EdgeListReader_1ae178f532b63a4f2667017ceb77241e05"></span><span class="sig-name descname"><span class="n"><span class="pre">~EdgeListReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N10sparsebase5utils2io14EdgeListReaderD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1utils_1_1io_1_1BinaryWriterOrderTwo.html" class="btn btn-neutral float-left" title="Template Class BinaryWriterOrderTwo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1utils_1_1io_1_1MTXReader.html" class="btn btn-neutral float-right" title="Template Class MTXReader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

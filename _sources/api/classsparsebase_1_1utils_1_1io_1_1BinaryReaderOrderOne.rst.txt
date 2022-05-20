@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryReaderOrderOne:
+
+Template Class BinaryReaderOrderOne
+===================================
+
+- Defined in :ref:`file_src_sparsebase_utils_io_reader.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public sparsebase::utils::io::Reader`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1Reader`)
+- ``public sparsebase::utils::io::ReadsArray< T >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1ReadsArray`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::io::BinaryReaderOrderOne
+   :members:
+   :protected-members:
+   :undoc-members:

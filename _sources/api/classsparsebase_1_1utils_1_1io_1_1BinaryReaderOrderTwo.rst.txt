@@ -1,0 +1,27 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1io_1_1BinaryReaderOrderTwo:
+
+Template Class BinaryReaderOrderTwo
+===================================
+
+- Defined in :ref:`file_src_sparsebase_utils_io_reader.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public sparsebase::utils::io::Reader`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1Reader`)
+- ``public sparsebase::utils::io::ReadsCSR< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1ReadsCSR`)
+- ``public sparsebase::utils::io::ReadsCOO< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1io_1_1ReadsCOO`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::io::BinaryReaderOrderTwo
+   :members:
+   :protected-members:
+   :undoc-members:

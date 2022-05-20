@@ -1,0 +1,25 @@
+.. _exhale_struct_structsparsebase_1_1context_1_1ContextImplementation:
+
+Template Struct ContextImplementation
+=====================================
+
+- Defined in :ref:`file_src_sparsebase_context_context.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::context::Context`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1Context`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::context::ContextImplementation
+   :members:
+   :protected-members:
+   :undoc-members:
