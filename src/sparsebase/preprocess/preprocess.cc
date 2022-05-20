@@ -657,6 +657,8 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
     const DegreeDistribution &d) {
+  this->SetConverter(
+          utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = d.params_;
   this->pmap_ = d.pmap_;
@@ -799,6 +801,8 @@ Degrees<IDType, NNZType, ValueType>::Degrees() {
 template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(
     const Degrees<IDType, NNZType, ValueType> &d) {
+  this->SetConverter(
+          utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = d.params_;
   this->pmap_ = d.pmap_;
@@ -807,6 +811,8 @@ Degrees<IDType, NNZType, ValueType>::Degrees(
 template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(
     const std::shared_ptr<DegreesParams> r) {
+  this->SetConverter(
+          utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = r;
   this->pmap_[get_feature_id_static()] = r;
@@ -896,6 +902,8 @@ template <typename IDType, typename NNZType, typename ValueType,
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     Degrees_DegreeDistribution(const Degrees_DegreeDistribution<
                                IDType, NNZType, ValueType, FeatureType> &d) {
+  this->SetConverter(
+          utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = d.params_;
   this->pmap_ = d.pmap_;
@@ -905,6 +913,8 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     Degrees_DegreeDistribution(const std::shared_ptr<Params> r) {
+  this->SetConverter(
+          utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   Register();
   this->params_ = r;
   this->pmap_[get_feature_id_static()] = r;
