@@ -41,13 +41,13 @@ vertex_type *degree_reorder_csr(std::vector<format::Format *> formats,
     sorted[ec + mr[ec]] = u;
     mr[ec]++;
   }
-  auto * inverse_permutation = new vertex_type[n];
-  for (vertex_type i = 0; i < n; i++){
-      inverse_permutation[sorted[i]] = i;
+  auto *inverse_permutation = new vertex_type[n];
+  for (vertex_type i = 0; i < n; i++) {
+    inverse_permutation[sorted[i]] = i;
   }
   delete[] mr;
   delete[] counts;
-  delete [] sorted;
+  delete[] sorted;
   return inverse_permutation;
 }
 int main(int argc, char *argv[]) {
@@ -98,9 +98,9 @@ int main(int argc, char *argv[]) {
   cout << "********************************" << endl;
 
   cout << "Checking the correctness of the ordering..." << endl;
-  auto * permutation = new vertex_type[n];
-  for (vertex_type i = 0; i < n; i++){
-      permutation[order[i]] = i;
+  auto *permutation = new vertex_type[n];
+  for (vertex_type i = 0; i < n; i++) {
+    permutation[order[i]] = i;
   }
   bool order_is_correct = true;
   set<vertex_type> check;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     } else {
       order_is_correct = false;
     }
-    vertex_type v = permutation[new_u+1];
+    vertex_type v = permutation[new_u + 1];
     if (xadj[u + 1] - xadj[u] > xadj[v + 1] - xadj[v]) {
       cout << "Degree Order is incorrect!" << endl;
       order_is_correct = false;
@@ -127,10 +127,10 @@ int main(int argc, char *argv[]) {
   if (order_is_correct) {
     cout << "Order is correct." << endl;
   } else {
-      cout << "Degree Order is incorrect!" << endl;
-      return 1;
+    cout << "Degree Order is incorrect!" << endl;
+    return 1;
   }
-  delete [] permutation;
+  delete[] permutation;
 
   preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
   format::Format *csr = transformer.GetTransformation(con, {&cpu_context});

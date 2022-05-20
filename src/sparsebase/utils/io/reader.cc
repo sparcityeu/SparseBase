@@ -22,13 +22,12 @@ namespace io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 EdgeListReader<IDType, NNZType, ValueType>::EdgeListReader(
-    std::string filename, bool weighted, bool remove_duplicates, bool remove_self_edges, bool read_undirected, bool square)
+    std::string filename, bool weighted, bool remove_duplicates,
+    bool remove_self_edges, bool read_undirected, bool square)
     : filename_(filename), weighted_(weighted),
       remove_duplicates_(remove_duplicates),
-      remove_self_edges_(remove_self_edges),
-      read_undirected_(read_undirected),
-      square_(square)
-{}
+      remove_self_edges_(remove_self_edges), read_undirected_(read_undirected),
+      square_(square) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
@@ -41,7 +40,6 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
     IDType n = 0;
     NNZType nnz = 0;
 
-
     std::vector<std::tuple<IDType, IDType, ValueType>> edges;
     // vertices are 0-based
     while (infile >> u >> v) {
@@ -53,74 +51,74 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       if (u != v || !remove_self_edges_) {
         edges.push_back(std::tuple<IDType, IDType, ValueType>(u, v, w));
 
-        if(read_undirected_)
+        if (read_undirected_)
           edges.push_back(std::tuple<IDType, IDType, ValueType>(v, u, w));
 
-        n = std::max(n, u+1);
-        m = std::max(m, v+1);
-
+        n = std::max(n, u + 1);
+        m = std::max(m, v + 1);
       }
-
     }
 
-    if(square_){
-      n = std::max(n,m);
+    if (square_) {
+      n = std::max(n, m);
       m = n;
     }
 
     sort(edges.begin(), edges.end(),
-         [](const std::tuple<IDType, IDType, ValueType>& t1,
-            const std::tuple<IDType, IDType, ValueType> t2){
-      if(std::get<0>(t1) == std::get<0>(t2)){
-        return std::get<1>(t1) < std::get<1>(t2);
-      } else {
-        return std::get<0>(t1) < std::get<0>(t2);
-      }
-    });
+         [](const std::tuple<IDType, IDType, ValueType> &t1,
+            const std::tuple<IDType, IDType, ValueType> t2) {
+           if (std::get<0>(t1) == std::get<0>(t2)) {
+             return std::get<1>(t1) < std::get<1>(t2);
+           } else {
+             return std::get<0>(t1) < std::get<0>(t2);
+           }
+         });
 
-    if(remove_duplicates_){
-      auto unique_it = unique(edges.begin(), edges.end(),
-                              [](const std::tuple<IDType, IDType, ValueType>& t1,
-                                 const std::tuple<IDType, IDType, ValueType> t2){
-        return (std::get<0>(t1) == std::get<0>(t2)) && (std::get<1>(t1) == std::get<1>(t2));
-      });
+    if (remove_duplicates_) {
+      auto unique_it =
+          unique(edges.begin(), edges.end(),
+                 [](const std::tuple<IDType, IDType, ValueType> &t1,
+                    const std::tuple<IDType, IDType, ValueType> t2) {
+                   return (std::get<0>(t1) == std::get<0>(t2)) &&
+                          (std::get<1>(t1) == std::get<1>(t2));
+                 });
       edges.erase(unique_it, edges.end());
     }
 
     nnz = edges.size();
 
-    IDType* row = new IDType[nnz];
-    IDType* col = new IDType[nnz];
-    ValueType* vals = nullptr;
-    if(weighted_){
+    IDType *row = new IDType[nnz];
+    IDType *col = new IDType[nnz];
+    ValueType *vals = nullptr;
+    if (weighted_) {
       vals = new ValueType[nnz];
     }
 
-    for(IDType i=0; i<nnz; i++){
+    for (IDType i = 0; i < nnz; i++) {
       row[i] = std::get<0>(edges[i]);
       col[i] = std::get<1>(edges[i]);
 
-      if(weighted_)
+      if (weighted_)
         vals[i] = std::get<2>(edges[i]);
     }
 
-    return new format::COO<IDType, NNZType, ValueType>(n,m,nnz,row,col,vals,format::kOwned);
+    return new format::COO<IDType, NNZType, ValueType>(n, m, nnz, row, col,
+                                                       vals, format::kOwned);
 
   } else {
     throw ReaderException("file does not exist!");
   }
-
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType> *
 EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
-  converter::ConverterOrderTwo<IDType,NNZType, ValueType> converterObj;
+  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
-  return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(coo, &cpu_context);
+  return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(
+      coo, &cpu_context);
 }
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 EdgeListReader<IDType, NNZType, ValueType>::~EdgeListReader(){};
@@ -130,7 +128,7 @@ MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
                                                  bool weighted,
                                                  bool convert_to_zero_index)
     : filename_(filename), weighted_(weighted),
-      convert_to_zero_index_(convert_to_zero_index){}
+      convert_to_zero_index_(convert_to_zero_index) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
@@ -158,7 +156,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
           ValueType w;
           fin >> m >> n >> w;
 
-          if(convert_to_zero_index_){
+          if (convert_to_zero_index_) {
             n--;
             m--;
           }
@@ -181,7 +179,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         IDType m, n;
         fin >> m >> n;
 
-        if(convert_to_zero_index_){
+        if (convert_to_zero_index_) {
           n--;
           m--;
         }
@@ -203,15 +201,14 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
-  converter::ConverterOrderTwo<IDType,NNZType, ValueType> converterObj;
+  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
-  return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(coo, &cpu_context);
+  return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(
+      coo, &cpu_context);
 }
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 MTXReader<IDType, NNZType, ValueType>::~MTXReader(){};
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
@@ -231,15 +228,15 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.nrows()-1, pigo_coo.ncols()-1, pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
-        pigo_coo.w(), format::kOwned);
+        pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
+        pigo_coo.y(), pigo_coo.w(), format::kOwned);
   } else {
     pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
               ValueType *>
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.nrows()-1, pigo_coo.ncols()-1, pigo_coo.m(), pigo_coo.x(), pigo_coo.y(),
-        pigo_coo.w(), format::kOwned);
+        pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
+        pigo_coo.y(), pigo_coo.w(), format::kOwned);
   }
 
   if (convert_to_zero_index_) {
@@ -255,7 +252,9 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   return coo;
 #else
 
-  std::cerr << "Warning: PIGO suppport is not compiled in this build of sparsebase (your system might not be supported)." << std::endl;
+  std::cerr << "Warning: PIGO suppport is not compiled in this build of "
+               "sparsebase (your system might not be supported)."
+            << std::endl;
   std::cerr << "Defaulting to sequential reader" << std::endl;
   MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
   return reader.ReadCOO();
@@ -289,18 +288,23 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         coo(filename_, pigo::EDGE_LIST);
     return new format::COO<IDType, NNZType, ValueType>(
-        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
+        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
+        format::kOwned);
   } else {
     pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
               ValueType *>
         coo(filename_, pigo::EDGE_LIST);
     return new format::COO<IDType, NNZType, ValueType>(
-        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(), format::kOwned);
+        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
+        format::kOwned);
   }
 #else
-  std::cerr << "Warning: PIGO suppport is not compiled in this build of sparsebase (your system might not be supported)." << std::endl;
+  std::cerr << "Warning: PIGO suppport is not compiled in this build of "
+               "sparsebase (your system might not be supported)."
+            << std::endl;
   std::cerr << "Defaulting to sequential reader" << std::endl;
-  EdgeListReader<IDType, NNZType, ValueType> reader(filename_, weighted_, true, true, false);
+  EdgeListReader<IDType, NNZType, ValueType> reader(filename_, weighted_, true,
+                                                    true, false);
   return reader.ReadCOO();
 #endif
 }
@@ -309,9 +313,6 @@ template <typename IDType, typename NNZType, typename ValueType>
 PigoEdgeListReader<IDType, NNZType, ValueType>::PigoEdgeListReader(
     std::string filename, bool weighted)
     : filename_(filename), weighted_(weighted) {}
-
-
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 BinaryReaderOrderTwo<IDType, NNZType, ValueType>::BinaryReaderOrderTwo(
@@ -391,10 +392,9 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 }
 
 #if !defined(_HEADER_ONLY)
-#include "init/reader.inc"
 #include "init/external/pigo.inc"
+#include "init/reader.inc"
 #endif
-
 
 } // namespace io
 
