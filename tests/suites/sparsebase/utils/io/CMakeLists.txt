@@ -1,0 +1,9 @@
+add_executable(sparsebase_utils_io_reader_tests.test reader_tests.cc)
+target_link_libraries(sparsebase_utils_io_reader_tests.test  sparsebase)
+target_link_libraries(sparsebase_utils_io_reader_tests.test  gtest gtest_main)
+add_test(NAME sparsebase_utils_io_reader_tests.test COMMAND sparsebase_utils_io_reader_tests.test)
+
+add_executable(sparsebase_utils_io_writer_tests.test writer_tests.cc)
+target_link_libraries(sparsebase_utils_io_writer_tests.test  sparsebase)
+target_link_libraries(sparsebase_utils_io_writer_tests.test  gtest gtest_main)
+add_test(NAME sparsebase_utils_io_writer_tests.test COMMAND sparsebase_utils_io_writer_tests.test)
