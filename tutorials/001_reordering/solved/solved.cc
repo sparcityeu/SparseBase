@@ -15,7 +15,7 @@ int main(int argc, char * argv[]){
         std::cout << "Please enter the name of the edgelist file as a parameter\n";
         return 1;
     }
-    // The name of the matrix-market file in disk
+    // The name of the edge list file in disk
     std::string filename(argv[1]); 
     // Create a reader object and set the name of the file it will read
     utils::io::EdgeListReader<IDType, NNZType, ValueType> reader(filename);
