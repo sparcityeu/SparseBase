@@ -154,7 +154,7 @@ make format
 SparseBase can be included using the ``sparsebase.h`` header file.
 
 ```cpp
-#include "sparsebase/sparsebase.h"
+#include "sparsebase.h"
 ```
 
 If desired users can include individual namespaces using their respective headers. 
