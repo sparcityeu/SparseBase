@@ -6,7 +6,7 @@ else()
   cmake_policy(VERSION 3.18)
 endif()
 
-project( SparseBase_project VERSION 0.2.1 )
+project( SparseBase_project VERSION 0.2.2 )
 option(RUN_TESTS "Enable running tests" OFF)
 option(_HEADER_ONLY "Use the library as a header only library?" OFF)
 option(CUDA "Enable CUDA" OFF)
@@ -108,5 +108,15 @@ write_basic_package_version_file(
 install(
     FILES   "${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfig.cmake"
             "${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sparsebase"
+)
+
+# install license
+install(
+    FILES LICENSE
+    DESTINATION include/sparsebase
+)
+install(
+    FILES LICENSE
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sparsebase"
 )

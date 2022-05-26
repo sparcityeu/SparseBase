@@ -1,7 +1,11 @@
-//
-// Created by Amro on 3/31/2022.
-//
-
+/*******************************************************
+ * Copyright (c) 2022, SparseBase
+ * All rights reserved.
+ *
+ * This file is distributed under MIT license.
+ * The complete license agreement can be obtained at:
+ * https://github.com/SU-HPC/sparsebase/blob/main/LICENSE
+ ********************************************************/
 #ifndef SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 #define SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 
