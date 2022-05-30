@@ -1,5 +1,5 @@
 /*******************************************************
- * Copyright (c) 2022, SparseBase
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
  * All rights reserved.
  *
  * This file is distributed under MIT license.
