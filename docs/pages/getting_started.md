@@ -72,7 +72,7 @@ Where `${CUDA}` is `ON` if CUDA support is needed and `OFF` otherwise.
 This will prepare the library for installation and compile the example codes located in `build/examples`.
 
 
-## Installation
+### Installation
 
 To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:
 ```bash
