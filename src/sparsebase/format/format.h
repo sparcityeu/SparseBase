@@ -1,3 +1,11 @@
+/*******************************************************
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
+ * All rights reserved.
+ *
+ * This file is distributed under MIT license.
+ * The complete license agreement can be obtained at:
+ * https://github.com/SU-HPC/sparsebase/blob/main/LICENSE
+ ********************************************************/
 #ifndef SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
 #define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
 
