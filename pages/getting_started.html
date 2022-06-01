@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; SparseBase v0.2.1 documentation</title>
+  <title>Getting Started &mdash; SparseBase v0.2.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -47,9 +47,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#compiling">Compiling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#specifying-explicit-instantiation-types">Specifying explicit instantiation types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#header-only">Header-only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#adding-sparsebase-through-cmake">Adding SparseBase through CMake</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#linking-to-sparsebase-at-compile-time">Linking to SparseBase at compile time</a></li>
@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="how_to_guides/index.html">How To Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/library_root.html">Library API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License (MIT)</a></li>
 </ul>
 
         </div>
@@ -173,9 +174,8 @@ make
 </div></blockquote>
 <p>This will prepare the library for installation and compile the example codes located in <code class="docutils literal notranslate"><span class="pre">build/examples</span></code>.</p>
 </section>
-</section>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h3>
 <p>To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
 cmake --install .
@@ -187,6 +187,7 @@ cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
 </pre></div>
 </div>
 <p><strong>Note:</strong> We suggest using <strong>absolute paths</strong> for prefixes as relative paths have been known to cause problems from time to time.</p>
+</section>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
