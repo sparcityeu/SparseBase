@@ -203,7 +203,7 @@ public:
 protected:
   using PreprocessingImpl::PreprocessingImpl;
   //! Map between `Key` objects and function pointer `Function` objects.
-  ConversionMap _map_to_function;
+  ConversionMap map_to_function_;
   //! Determines the exact Function and format conversions needed to carry out
   //! preprocessing
   /*!
