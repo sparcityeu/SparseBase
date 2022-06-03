@@ -31,10 +31,10 @@ bool FunctionMatcherMixin<
     ReturnType, Preprocess, Function, Key, KeyHash,
     KeyEqualTo>::RegisterFunctionNoOverride(const Key &key_of_function,
                                             const Function &func_ptr) {
-  if (_map_to_function.find(key_of_function) != _map_to_function.end()) {
+  if (map_to_function_.find(key_of_function) != map_to_function_.end()) {
     return false; // function already exists for this Key
   } else {
-    _map_to_function[key_of_function] = func_ptr;
+    map_to_function_[key_of_function] = func_ptr;
     return true;
   }
 }
@@ -45,17 +45,17 @@ void FunctionMatcherMixin<
     ReturnType, Preprocess, Function, Key, KeyHash,
     KeyEqualTo>::RegisterFunction(const Key &key_of_function,
                                   const Function &func_ptr) {
-  _map_to_function[key_of_function] = func_ptr;
+  map_to_function_[key_of_function] = func_ptr;
 }
 template <typename ReturnType, class Preprocess, typename Function,
           typename Key, typename KeyHash, typename KeyEqualTo>
 bool FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash,
                           KeyEqualTo>::UnregisterFunction(const Key &
                                                               key_of_function) {
-  if (_map_to_function.find(key_of_function) == _map_to_function.end()) {
+  if (map_to_function_.find(key_of_function) == map_to_function_.end()) {
     return false; // function already exists for this Key
   } else {
-    _map_to_function.erase(key_of_function);
+    map_to_function_.erase(key_of_function);
     return true;
   }
 }
@@ -228,7 +228,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
                                                 std::vector<context::Context *>
                                                     contexts,
                                                 F format, SF... formats) {
-  ConversionMap map = this->_map_to_function;
+  ConversionMap map = this->map_to_function_;
   // pack the Formats into a vector
   std::vector<format::Format *> packed_formats =
       PackObjects(format, formats...);
