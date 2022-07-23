@@ -4,7 +4,7 @@
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
- * https://github.com/SU-HPC/sparsebase/blob/main/LICENSE
+ * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
 #ifndef SPARSEBASE_SPARSEBASE_PREPROCESS_CUDA_PREPROCESS_H_
 #define SPARSEBASE_SPARSEBASE_PREPROCESS_CUDA_PREPROCESS_H_
