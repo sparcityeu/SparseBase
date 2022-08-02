@@ -6,12 +6,12 @@ It is designed with HPC (High Performance Computing) usage at the forefront. It 
 
 The library is still in early stages of development. As a result, the API is not stable and likely to change in the near future.
 
-:rocket: [Installation & Basic Usage](https://su-hpc.github.io/sparsebase/pages/getting_started.html)
+:rocket: [Installation & Basic Usage](https://sparcityeu.github.io/sparsebase/pages/getting_started.html)
 
-:computer: [Source Code](https://github.com/SU-HPC/sparsebase)
+:computer: [Source Code](https://github.com/sparcityeu/sparsebase)
 
-:books: [Documentation](https://su-hpc.github.io/sparsebase/)
+:books: [Documentation](https://sparcityeu.github.io/sparsebase/)
 
-:scroll: [License](https://github.com/SU-HPC/sparsebase/blob/main/LICENSE)
+:scroll: [License](https://sparcityeu.github.io/sparsebase/pages/license.html)
 
-:heart: [Contribution Guide](https://su-hpc.github.io/sparsebase/pages/contributing/index.html)
+:heart: [Contribution Guide](https://sparcityeu.github.io/sparsebase/pages/contributing/index.html)
