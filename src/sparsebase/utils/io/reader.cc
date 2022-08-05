@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <sstream>
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
@@ -390,6 +391,91 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 
   return new format::Array<T>(size, arr, format::kOwned);
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+TNSReader<IDType, NNZType, ValueType>::TNSReader(std::string filename,
+                                                 bool weighted,
+                                                 bool convert_to_zero_index)
+    : filename_(filename), weighted_(weighted),
+      convert_to_zero_index_(convert_to_zero_index) {}
+
+template <typename IDType, typename NNZType, typename ValueType>
+format::HigherOrderCOO<IDType, NNZType, ValueType> *
+TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
+  // Open the file:
+
+  std::ifstream fin(filename_);
+
+  if (fin.is_open()) {
+
+    // Declare variables: (check the types here)
+
+    NNZType L = 0;
+    DimensionType N = 0;
+
+    while (fin.peek() == '#')
+      fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::string line;
+    std::getline(fin, line);
+
+    std::stringstream ss(line);
+    std::string z;
+    while(ss >> z)
+      N++;
+    N--;
+
+    while (fin.peek() != EOF){
+      if (fin.peek() != '#'){
+        L++;
+      }
+      fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    L++;
+
+    format::DimensionType* dimension = new format::DimensionType[N];
+
+    IDType **indices = new IDType*[N];
+    for(DimensionType i=0; i<N; i++)
+      indices[i] = new IDType[L];
+
+    fin.clear();
+    fin.seekg(0);
+
+    if constexpr (!std::is_same_v<void, ValueType>) {
+      ValueType *vals = new ValueType[L];
+
+      for (NNZType l = 0; l < L; l++) {
+
+        while (fin.peek() == '#')
+          fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        for(DimensionType j = 0; j < N; j++)
+          fin >> indices[j][l];
+
+        if (convert_to_zero_index_) {
+          for(DimensionType j = 0; j < N; j++)
+            indices[j][l]--;
+        }
+
+        fin >> vals[l];
+      }
+
+      auto higher_order_coo = new format::HigherOrderCOO<IDType, NNZType, ValueType>(N, dimension, L, indices, vals, format::kNotOwned);
+      return higher_order_coo;
+
+      } else {
+        // TODO: Add an exception class for this
+        throw ReaderException("Weight type for weighted graphs can not be void");
+      }
+
+  } else {
+    throw ReaderException("file does not exists!!");
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+TNSReader<IDType, NNZType, ValueType>::~TNSReader(){};
 
 #if !defined(_HEADER_ONLY)
 #include "init/external/pigo.inc"

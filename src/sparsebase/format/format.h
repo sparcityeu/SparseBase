@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -278,6 +278,40 @@ public:
 protected:
   std::unique_ptr<NNZType[], std::function<void(NNZType *)>> row_ptr_;
   std::unique_ptr<IDType[], std::function<void(IDType *)>> col_;
+  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class HigherOrderCOO
+    : public FormatImplementation<HigherOrderCOO<IDType, NNZType, ValueType>> {
+public:
+  HigherOrderCOO(DimensionType order, DimensionType *dimensions, NNZType nnz,
+                 IDType **indices, ValueType *vals, Ownership own = kNotOwned,
+                 bool ignore_sort = false);
+
+  // HigherOrderCOO(const HigherOrderCOO<IDType, NNZType, ValueType> &);
+  // HigherOrderCOO(HigherOrderCOO<IDType, NNZType, ValueType> &&);
+
+  // HigherOrderCOO<IDType, NNZType, ValueType> & operator=(const
+  // HigherOrderCOO<IDType, NNZType, ValueType> &);
+
+  Format *Clone() const override;
+  virtual ~HigherOrderCOO();
+
+  IDType **get_indices() const;
+  ValueType *get_vals() const;
+
+  // IDType **release_indices();
+  // ValueType *release_vals();
+
+  // void set_indices(IDType **, Ownership own = kNotOwned);
+  // void set_vals(ValueType *, Ownership own = kNotOwned);
+
+  // virtual bool IndicesIsOwned();
+  // virtual bool ValsIsOwned();
+
+protected:
+  std::unique_ptr<IDType *, std::function<void(IDType **)>> indices_;
   std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
 };
 

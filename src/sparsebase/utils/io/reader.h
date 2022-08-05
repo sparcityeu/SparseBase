@@ -53,6 +53,14 @@ public:
   virtual format::Array<T> *ReadArray() const = 0;
 };
 
+//! Interface for readers that can return a HigherOrderCOO instance
+template <typename IDType, typename NNZType, typename ValueType>
+class ReadsHigherOrderCOO {
+public:
+  //! Reads the file to a COO instance and returns a pointer to it
+  virtual format::HigherOrderCOO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const = 0;
+};
+
 //! Reader for the Edge List file format
 /*!
  * Reads files of the following format:
@@ -194,6 +202,29 @@ public:
 
 private:
   std::string filename_;
+};
+
+//! Reader for the .TNS Format
+template <typename IDType, typename NNZType, typename ValueType>
+class TNSReader : public Reader,
+                  public ReadsHigherOrderCOO<IDType, NNZType, ValueType> {
+public:
+  /*!
+   * Constructor for the TNSReader class
+   * @param filename path to the file to be read
+   * @param weighted should be set to true if the file contains weights
+   * @param convert_to_zero_index if set to true the indices will be converted
+   * such that they start from 0 instead of 1
+   */
+  explicit TNSReader(std::string filename, bool weighted = false,
+                     bool convert_to_zero_index = true);
+  format::HigherOrderCOO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const override;
+  ~TNSReader() override;
+
+private:
+  std::string filename_;
+  bool weighted_;
+  bool convert_to_zero_index_;
 };
 
 } // namespace io

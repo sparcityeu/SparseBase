@@ -1,12 +1,11 @@
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/utils/exception.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
-#include "sparsebase/utils/exception.h"
 
 using namespace sparsebase::utils;
 
@@ -563,6 +562,48 @@ template <typename ValueType> bool Array<ValueType>::ValsIsOwned() {
           typeid(BlankDeleter<ValueType>));
 }
 template <typename ValueType> Array<ValueType>::~Array() {}
+
+template <typename IDType, typename NNZType, typename ValueType>
+HigherOrderCOO<IDType, NNZType, ValueType>::HigherOrderCOO(
+    DimensionType order, DimensionType *dimensions, NNZType nnz,
+    IDType **indices, ValueType *vals, Ownership own, bool ignore_sort)
+    : indices_(indices, BlankDeleter<IDType *>()),
+      vals_(vals, BlankDeleter<ValueType>()) {
+  this->nnz_ = nnz;
+  this->order_ = order;
+  this->dimension_.insert(this->dimension_.begin(), dimensions,
+                          dimensions + order);
+
+  if (own == kOwned) {
+    this->indices_ = std::unique_ptr<IDType *, std::function<void(IDType **)>>(
+        indices, BlankDeleter<IDType *>());
+    this->vals_ =
+        std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
+            vals, Deleter<ValueType>());
+  }
+  this->context_ = std::unique_ptr<sparsebase::context::Context>(
+      new sparsebase::context::CPUContext);
+
+  // TODO : Sorting Tensor
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *HigherOrderCOO<IDType, NNZType, ValueType>::Clone() const {
+  return nullptr;
+  // return new HigherOrderCOO(*this);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+HigherOrderCOO<IDType, NNZType, ValueType>::~HigherOrderCOO(){};
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType **HigherOrderCOO<IDType, NNZType, ValueType>::get_indices() const {
+  return indices_.get();
+}
+template <typename IDType, typename NNZType, typename ValueType>
+ValueType *HigherOrderCOO<IDType, NNZType, ValueType>::get_vals() const {
+  return vals_.get();
+}
+
 #if !defined(_HEADER_ONLY)
 #include "init/format.inc"
 #endif
