@@ -758,7 +758,7 @@ typedef enum BitMapSize{
 template <typename IDType, typename NNZType, typename ValueType>
 class GrayReorder : public ReorderPreprocessType<IDType> {
     struct GrayReorderParams : PreprocessParams {
-      int resolution; //32 will be the max, because 2^32
+      int resolution;
       int nnz_threshold;
       int sparse_density_group_size;
     };
