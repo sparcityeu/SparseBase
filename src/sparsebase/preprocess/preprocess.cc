@@ -1033,6 +1033,640 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
                               FeatureType>::get_feature_id_static(),
            std::forward<FeatureType *>(dist)}};
 }
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::NumSlices() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<NumSlicesParams>(new NumSlicesParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::NumSlices(
+    const NumSlices &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::NumSlices(
+    const std::shared_ptr<NumSlicesParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<FeatureType *>(GetNumSlices(format, c))}};
+};
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<std::type_index>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(NumSlices<IDType, NNZType, ValueType, FeatureType>)};
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<ExtractableType *>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new NumSlices<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::type_index NumSlices<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(NumSlices<IDType, NNZType, ValueType, FeatureType>);
+}
+
+
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType *>
+NumSlices<IDType, NNZType, ValueType, FeatureType>::GetNumSlicesCached(Format *format,
+                   std::vector<context::Context *> contexts) {
+
+  NumSlicesParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumSlices<IDType, NNZType, ValueType, FeatureType>::GetNumSlices(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  NumSlicesParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumSlices<IDType, NNZType, ValueType, FeatureType>::GetNumSlices(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumSlices<IDType, NNZType, ValueType, FeatureType>::GetNumSlicesCOO(std::vector<Format *> formats,
+                PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  std::cout << order << " " << dim[0];
+
+  FeatureType * num_slices = new FeatureType[1];
+
+  for (int i = 0; i < order - 1; i++)
+  {
+    for (int j = i + 1; j < order; j++)
+    {
+      FeatureType mult = 1;
+      for (int k = 0; k < order; k++)
+      {
+        if (k != i && k != j)
+          mult *= dim.at(k);
+      }
+      num_slices[0] += mult;
+    }
+  }
+
+  return num_slices;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+ FeatureType *
+NumSlices<IDType, NNZType, ValueType, FeatureType>::GetNumSlicesHigherOrderCOO(std::vector<Format *> formats,
+                           PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  int order = hocoo->get_order();
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+
+  FeatureType * num_slices = new FeatureType[1];
+
+  num_slices[0] = 0;
+  for (int i = 0; i < order - 1; i++)
+  {
+    for (int j = i + 1; j < order; j++)
+    {
+      FeatureType mult = 1;
+      for (int k = 0; k < order; k++)
+      {
+        if (k != i && k != j)
+          mult *= dim.at(k);
+      }
+      num_slices[0] += mult;
+    }
+  }
+
+  return num_slices;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void NumSlices<IDType, NNZType, ValueType, FeatureType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNumSlicesCOO);
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNumSlicesHigherOrderCOO);
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::NumFibers() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<NumFibersParams>(new NumFibersParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::NumFibers(
+    const NumFibers &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::NumFibers(
+    const std::shared_ptr<NumFibersParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<FeatureType *>(GetNumFibers(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<std::type_index>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(NumFibers<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<ExtractableType *>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new NumFibers<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::type_index NumFibers<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(NumFibers<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType *>
+NumFibers<IDType, NNZType, ValueType, FeatureType>::GetNumFibersCached(Format *format,
+                   std::vector<context::Context *> contexts) {
+
+  NumFibersParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumFibers<IDType, NNZType, ValueType, FeatureType>::GetNumFibers(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  NumFibersParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumFibers<IDType, NNZType, ValueType, FeatureType>::GetNumFibers(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+ FeatureType *
+NumFibers<IDType, NNZType, ValueType, FeatureType>::GetNumFibersCOO(std::vector<Format *> formats,
+                PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  FeatureType * num_fibers = new FeatureType[1];
+
+  for (int i = 0; i < order; i++)
+  {
+    FeatureType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_fibers[0] += mult;
+  }
+  return num_fibers;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+ FeatureType *
+NumFibers<IDType, NNZType, ValueType, FeatureType>::GetNumFibersHigherOrderCOO(std::vector<Format *> formats,
+                           PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  int order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+
+  FeatureType * num_fibers = new FeatureType[1];
+
+  num_fibers[0] = 0;
+  for (int i = 0; i < order; i++)
+  {
+    FeatureType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+
+    num_fibers[0] += mult;
+  }
+
+  return num_fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void NumFibers<IDType, NNZType, ValueType, FeatureType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNumFibersCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNumFibersHigherOrderCOO);
+}
+
+// NNZ
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::NnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<NnzPerFiberParams>(new NnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::NnzPerFiber(
+    const NnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::NnzPerFiber(
+    const std::shared_ptr<NnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<FeatureType *>(GetNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<std::type_index>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(NnzPerFiber<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<ExtractableType *>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new NnzPerFiber<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::type_index NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(NnzPerFiber<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType *>
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetNnzPerFiberCached(Format *format,
+                                                                           std::vector<context::Context *> contexts) {
+
+  NnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  NnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetNnzPerFiberCOO(std::vector<Format *> formats,
+                                                                        PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  FeatureType * num_fibers = new FeatureType[1];
+
+  for (int i = 0; i < order; i++)
+  {
+    FeatureType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_fibers[0] += mult;
+  }
+  return num_fibers;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                                   PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  int order = hocoo->get_order();
+  NumFibers<IDType, NNZType, ValueType, >
+
+  FeatureType * nnz_per_fiber = new FeatureType[];
+
+  int start_index = 0;
+  for (int i = 0; i < order; i++)
+  {
+    int x1 = (i + 1) % order;
+    int x2 = (x1+ 1) % order;
+
+    int x1_dim = dim[x1];
+    int x2_dim = dim[x2];
+
+    int *x1_indices = T->indices[x1];
+    int *x2_indices = T->indices[x2];
+
+    int *x1x2_fibers = nnzPerFiber + start_index;
+    for(int j=0; j<T->nnz; j++){
+      x1x2_fibers[x1_indices[j] + x2_indices[j] * x1_dim]++;
+    }
+    start_index += x1_dim*x2_dim;
+  }
+
+  return num_fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void NnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNnzPerFiberCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNnzPerFiberHigherOrderCOO);
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::NumNnzFibers() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<NumNnzFibersParams>(new NumNnzFibersParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::NumNnzFibers(
+    const NumNnzFibers &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::NumNnzFibers(
+    const std::shared_ptr<NumNnzFibersParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<FeatureType *>(GetNumNnzFibers(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<std::type_index>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(NumNnzFibers<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<ExtractableType *>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new NumNnzFibers<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::type_index NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(NumNnzFibers<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType *>
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::GetNumNnzFibersCached(Format *format,
+                                                                       std::vector<context::Context *> contexts) {
+
+  NumNnzFibersParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::GetNumNnzFibers(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  NumNnzFibersParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::GetNumNnzFibers(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::GetNumNnzFibersCOO(std::vector<Format *> formats,
+                                                                    PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  FeatureType * num_fibers = new FeatureType[1];
+
+  for (int i = 0; i < order; i++)
+  {
+    FeatureType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_fibers[0] += mult;
+  }
+  return num_fibers;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FeatureType *
+NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::GetNumNnzFibersHigherOrderCOO(std::vector<Format *> formats,
+                                                                               PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  int order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+
+  FeatureType * num_fibers = new FeatureType[1];
+
+  num_fibers[0] = 0;
+  for (int i = 0; i < order; i++)
+  {
+    FeatureType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+
+    num_fibers[0] += mult;
+  }
+
+  return num_fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNumNnzFibersCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetNumNnzFibersHigherOrderCOO);
+}
+
 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"

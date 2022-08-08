@@ -223,7 +223,7 @@ public:
 
 private:
   std::string filename_;
-  bool weighted_;
+  bool weighted_; // change to store_values
   bool convert_to_zero_index_;
 };
 

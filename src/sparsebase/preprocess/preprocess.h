@@ -749,6 +749,168 @@ protected:
   void Register();
 };
 
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NumSlices : public FeaturePreprocessType<FeatureType *> {
+
+public:
+  struct NumSlicesParams : PreprocessParams {};
+
+  NumSlices();
+
+  NumSlices(const NumSlices &d);
+
+  NumSlices(
+      const std::shared_ptr<NumSlicesParams> p);
+
+  std::unordered_map<std::type_index, std::any>
+  Extract(
+      format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+  ~NumSlices() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType *>
+  GetNumSlicesCached(Format *format,
+                     std::vector<context::Context *> contexts);
+
+  FeatureType *
+  GetNumSlices(
+      Format *format, std::vector<context::Context *> contexts) ;
+
+  FeatureType *
+  GetNumSlices(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType *
+  GetNumSlicesCOO(std::vector<Format *> formats,
+                  PreprocessParams *params);
+
+  static FeatureType *
+  GetNumSlicesHigherOrderCOO(std::vector<Format *> formats,
+                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NumFibers : public FeaturePreprocessType<FeatureType *> {
+
+public:
+  struct NumFibersParams : PreprocessParams {};
+
+  NumFibers();
+
+  NumFibers(const NumFibers &d);
+  NumFibers(const std::shared_ptr<NumFibersParams> p);
+
+  std::unordered_map<std::type_index, std::any>
+  Extract(
+      format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~NumFibers() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType *>
+  GetNumFibersCached(Format *format,
+                     std::vector<context::Context *> contexts);
+  FeatureType *
+  GetNumFibers(
+      Format *format, std::vector<context::Context *> contexts);
+
+
+  FeatureType *
+  GetNumFibers(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType *
+  GetNumFibersCOO(std::vector<Format *> formats,
+                  PreprocessParams *params);
+
+  static FeatureType *
+  GetNumFibersHigherOrderCOO(std::vector<Format *> formats,
+                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NumNnzFibers : public FeaturePreprocessType<FeatureType *> {
+
+public:
+  struct NumNnzFibersParams : PreprocessParams {};
+
+  NumNnzFibers();
+
+  NumNnzFibers(const NumNnzFibers &d);
+
+  NumNnzFibers(const std::shared_ptr<NumNnzFibersParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~NumNnzFibers() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType *>
+  GetNumNnzFibersCached(Format *format,
+                     std::vector<context::Context *> contexts);
+  FeatureType *
+  GetNumNnzFibers(
+      Format *format, std::vector<context::Context *> contexts);
+
+  FeatureType *
+  GetNumNnzFibers(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType *
+  GetNumNnzFibersCOO(std::vector<Format *> formats,
+                  PreprocessParams *params);
+
+  static FeatureType *
+  GetNumNnzFibersHigherOrderCOO(std::vector<Format *> formats,
+                             PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+
+
+
+
+
+
+
+
+
+
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"

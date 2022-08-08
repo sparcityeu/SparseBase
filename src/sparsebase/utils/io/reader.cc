@@ -443,6 +443,7 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
     fin.seekg(0);
 
     if constexpr (!std::is_same_v<void, ValueType>) {
+      // under constexp & weighted:
       ValueType *vals = new ValueType[L];
 
       for (NNZType l = 0; l < L; l++) {
@@ -451,14 +452,30 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
           fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         for(DimensionType j = 0; j < N; j++)
-          fin >> indices[j][l];
+          fin >> indices[j][l] - convert_to_zero_index_;
 
+        //Delete
         if (convert_to_zero_index_) {
           for(DimensionType j = 0; j < N; j++)
             indices[j][l]--;
         }
-
+        // if constexpr here
         fin >> vals[l];
+      }
+
+      //Move the content of the loop above
+      for(int n=0;n<N;n++) {
+        IDType* curr_indices = indices[n];
+        IDType max = curr_indices[0];
+        for(int l=0; l<L; l++){
+          if(curr_indices[l] > max)
+            max = curr_indices[l];
+        }
+
+        if(convert_to_zero_index_)
+          dimension[n] = max + 1;
+        else
+          dimension[n] = max;
       }
 
       auto higher_order_coo = new format::HigherOrderCOO<IDType, NNZType, ValueType>(N, dimension, L, indices, vals, format::kNotOwned);
