@@ -577,8 +577,8 @@ HigherOrderCOO<IDType, NNZType, ValueType>::HigherOrderCOO(
   if (own == kOwned) {
     this->indices_ = std::unique_ptr<IDType *, std::function<void(IDType **)>>(
         indices, [&] (IDType** indices) {
-          for (int i =0; i < this->dimension_.size(); i++) delete [] this->indices_[i];
-          delete [] this->indices_;
+          for (int i =0; i < this->dimension_.size(); i++) delete[] this->indices_.get()[i];
+          delete[] this->indices_.get();
         });
     this->vals_ =
         std::unique_ptr<ValueType[], std::function<void(ValueType *)>>(
