@@ -777,12 +777,12 @@ public:
   ~NumSlices() = default;
 
   std::tuple<std::vector<format::Format *>, FeatureType *>
-  GetNumSlicesCached(Format *format,
+  GetNumSlicesCached(format::Format *format,
                      std::vector<context::Context *> contexts);
 
   FeatureType *
   GetNumSlices(
-      Format *format, std::vector<context::Context *> contexts) ;
+      format::Format *format, std::vector<context::Context *> contexts);
 
   FeatureType *
   GetNumSlices(
@@ -790,11 +790,11 @@ public:
       std::vector<context::Context *> contexts);
 
   static FeatureType *
-  GetNumSlicesCOO(std::vector<Format *> formats,
+  GetNumSlicesCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
   static FeatureType *
-  GetNumSlicesHigherOrderCOO(std::vector<Format *> formats,
+  GetNumSlicesHigherOrderCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
 protected:
@@ -828,11 +828,11 @@ public:
   ~NumFibers() = default;
 
   std::tuple<std::vector<format::Format *>, FeatureType *>
-  GetNumFibersCached(Format *format,
+  GetNumFibersCached(format::Format *format,
                      std::vector<context::Context *> contexts);
   FeatureType *
   GetNumFibers(
-      Format *format, std::vector<context::Context *> contexts);
+      format::Format *format, std::vector<context::Context *> contexts);
 
 
   FeatureType *
@@ -841,11 +841,11 @@ public:
       std::vector<context::Context *> contexts);
 
   static FeatureType *
-  GetNumFibersCOO(std::vector<Format *> formats,
+  GetNumFibersCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
   static FeatureType *
-  GetNumFibersHigherOrderCOO(std::vector<Format *> formats,
+  GetNumFibersHigherOrderCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
 protected:
@@ -878,11 +878,11 @@ public:
   ~NumNnzFibers() = default;
 
   std::tuple<std::vector<format::Format *>, FeatureType *>
-  GetNumNnzFibersCached(Format *format,
+  GetNumNnzFibersCached(format::Format *format,
                      std::vector<context::Context *> contexts);
   FeatureType *
   GetNumNnzFibers(
-      Format *format, std::vector<context::Context *> contexts);
+      format::Format *format, std::vector<context::Context *> contexts);
 
   FeatureType *
   GetNumNnzFibers(
@@ -890,11 +890,11 @@ public:
       std::vector<context::Context *> contexts);
 
   static FeatureType *
-  GetNumNnzFibersCOO(std::vector<Format *> formats,
+  GetNumNnzFibersCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
   static FeatureType *
-  GetNumNnzFibersHigherOrderCOO(std::vector<Format *> formats,
+  GetNumNnzFibersHigherOrderCOO(std::vector<format::Format *> formats,
                              PreprocessParams *params);
 
 protected:
@@ -902,6 +902,53 @@ protected:
 };
 
 
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NnzPerFiber : public FeaturePreprocessType<NNZType *> {
+
+public:
+  struct NnzPerFiberParams : PreprocessParams {};
+
+  NnzPerFiber();
+
+  NnzPerFiber(const NnzPerFiber &d);
+
+  NnzPerFiber(
+      const std::shared_ptr<NnzPerFiberParams> p);
+
+  std::unordered_map<std::type_index, std::any>
+  Extract(
+      format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+  ~NnzPerFiber() = default;
+
+  std::tuple<std::vector<format::Format *>, NNZType *>
+  GetNnzPerFiberCached(format::Format *format,
+                       std::vector<context::Context *> contexts);
+
+  NNZType *
+  GetNnzPerFiber(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  NNZType *
+  GetNnzPerFiber(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static NNZType *
+  GetNnzPerFiberHigherOrderCOO(std::vector<format::Format *> formats,
+                               PreprocessParams *params);
+
+protected:
+  void Register();
+};
 
 
 
