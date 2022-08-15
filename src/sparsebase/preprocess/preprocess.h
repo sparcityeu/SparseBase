@@ -793,12 +793,12 @@ protected:
 };
 
 
+
+} // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"
 #ifdef CUDA
 #include "cuda/preprocess.cu"
 #endif
 #endif
-
-} // namespace sparsebase::preprocess
 #endif // SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_

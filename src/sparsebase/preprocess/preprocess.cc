@@ -11,9 +11,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <typeindex>
-#include <typeinfo>
-#include <any>
 
 using namespace sparsebase::format;
 
