@@ -749,7 +749,7 @@ protected:
   void Register();
 };
 
-typedef enum BitMapSize{
+enum BitMapSize{
   BitSize16 = 16,
   BitSize32 = 32/*,
   BitSize64 = 64*/ //at the moment, using 64 bits is not working as intended
