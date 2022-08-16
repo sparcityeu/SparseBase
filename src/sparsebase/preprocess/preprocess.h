@@ -751,7 +751,7 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-class NumSlices : public FeaturePreprocessType<FeatureType *> {
+class NumSlices : public FeaturePreprocessType<FeatureType> {
 
 public:
   struct NumSlicesParams : PreprocessParams {};
@@ -776,24 +776,24 @@ public:
   std::type_index get_feature_id_static();
   ~NumSlices() = default;
 
-  std::tuple<std::vector<format::Format *>, FeatureType *>
+  std::tuple<std::vector<format::Format *>, FeatureType>
   GetNumSlicesCached(format::Format *format,
                      std::vector<context::Context *> contexts);
 
-  FeatureType *
+  FeatureType
   GetNumSlices(
       format::Format *format, std::vector<context::Context *> contexts);
 
-  FeatureType *
+  FeatureType
   GetNumSlices(
       object::Graph<IDType, NNZType, ValueType> *obj,
       std::vector<context::Context *> contexts);
 
-  static FeatureType *
+  static FeatureType
   GetNumSlicesCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
-  static FeatureType *
+  static FeatureType
   GetNumSlicesHigherOrderCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
@@ -803,7 +803,7 @@ protected:
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-class NumFibers : public FeaturePreprocessType<FeatureType *> {
+class NumFibers : public FeaturePreprocessType<FeatureType> {
 
 public:
   struct NumFibersParams : PreprocessParams {};
@@ -827,80 +827,30 @@ public:
 
   ~NumFibers() = default;
 
-  std::tuple<std::vector<format::Format *>, FeatureType *>
+  std::tuple<std::vector<format::Format *>, FeatureType>
   GetNumFibersCached(format::Format *format,
                      std::vector<context::Context *> contexts);
-  FeatureType *
+  FeatureType
   GetNumFibers(
       format::Format *format, std::vector<context::Context *> contexts);
 
 
-  FeatureType *
+  FeatureType
   GetNumFibers(
       object::Graph<IDType, NNZType, ValueType> *obj,
       std::vector<context::Context *> contexts);
 
-  static FeatureType *
+  static FeatureType
   GetNumFibersCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
-  static FeatureType *
+  static FeatureType
   GetNumFibersHigherOrderCOO(std::vector<format::Format *> formats,
                   PreprocessParams *params);
 
 protected:
   void Register();
 };
-
-template <typename IDType, typename NNZType, typename ValueType,
-          typename FeatureType>
-class NumNnzFibers : public FeaturePreprocessType<FeatureType *> {
-
-public:
-  struct NumNnzFibersParams : PreprocessParams {};
-
-  NumNnzFibers();
-
-  NumNnzFibers(const NumNnzFibers &d);
-
-  NumNnzFibers(const std::shared_ptr<NumNnzFibersParams> p);
-
-  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
-
-  std::vector<std::type_index>
-  get_sub_ids();
-
-  std::vector<ExtractableType *>
-  get_subs();
-
-  std::type_index get_feature_id_static();
-
-  ~NumNnzFibers() = default;
-
-  std::tuple<std::vector<format::Format *>, FeatureType *>
-  GetNumNnzFibersCached(format::Format *format,
-                     std::vector<context::Context *> contexts);
-  FeatureType *
-  GetNumNnzFibers(
-      format::Format *format, std::vector<context::Context *> contexts);
-
-  FeatureType *
-  GetNumNnzFibers(
-      object::Graph<IDType, NNZType, ValueType> *obj,
-      std::vector<context::Context *> contexts);
-
-  static FeatureType *
-  GetNumNnzFibersCOO(std::vector<format::Format *> formats,
-                  PreprocessParams *params);
-
-  static FeatureType *
-  GetNumNnzFibersHigherOrderCOO(std::vector<format::Format *> formats,
-                             PreprocessParams *params);
-
-protected:
-  void Register();
-};
-
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
@@ -950,12 +900,427 @@ protected:
   void Register();
 };
 
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NnzPerSlice : public FeaturePreprocessType<NNZType *> {
+
+public:
+  struct NnzPerSliceParams : PreprocessParams {};
+
+  NnzPerSlice();
+
+  NnzPerSlice(const NnzPerSlice &d);
+
+  NnzPerSlice(
+      const std::shared_ptr<NnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any>
+  Extract(
+      format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+  ~NnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, NNZType *>
+  GetNnzPerSliceCached(format::Format *format,
+                       std::vector<context::Context *> contexts);
+
+  NNZType *
+  GetNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  NNZType *
+  GetNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static NNZType *
+  GetNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                               PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NumNnzFibers : public FeaturePreprocessType<FeatureType> {
+
+public:
+  struct NumNnzFibersParams : PreprocessParams {};
+
+  NumNnzFibers();
+
+  NumNnzFibers(const NumNnzFibers &d);
+
+  NumNnzFibers(const std::shared_ptr<NumNnzFibersParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~NumNnzFibers() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType>
+  GetNumNnzFibersCached(format::Format *format,
+                        std::vector<context::Context *> contexts);
+  FeatureType
+  GetNumNnzFibers(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  FeatureType
+  GetNumNnzFibers(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType
+  GetNumNnzFibersCOO(std::vector<format::Format *> formats,
+                     PreprocessParams *params);
+
+  static FeatureType
+  GetNumNnzFibersHigherOrderCOO(std::vector<format::Format *> formats,
+                                PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+class NumNnzSlices : public FeaturePreprocessType<FeatureType> {
+
+public:
+  struct NumNnzSlicesParams : PreprocessParams {};
+
+  NumNnzSlices();
+
+  NumNnzSlices(const NumNnzSlices &d);
+
+  NumNnzSlices(const std::shared_ptr<NumNnzSlicesParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~NumNnzSlices() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType>
+  GetNumNnzSlicesCached(format::Format *format,
+                        std::vector<context::Context *> contexts);
+  FeatureType
+  GetNumNnzSlices(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  FeatureType
+  GetNumNnzSlices(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType
+  GetNumNnzSlicesCOO(std::vector<format::Format *> formats,
+                     PreprocessParams *params);
+
+  static FeatureType
+  GetNumNnzSlicesHigherOrderCOO(std::vector<format::Format *> formats,
+                                PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class MaxNnzPerSlice : public FeaturePreprocessType<NNZType> {
+
+public:
+  struct MaxNnzPerSliceParams : PreprocessParams {};
+
+  MaxNnzPerSlice();
+
+  MaxNnzPerSlice(const MaxNnzPerSlice &d);
+
+  MaxNnzPerSlice(const std::shared_ptr<MaxNnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~MaxNnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, NNZType>
+  GetMaxNnzPerSliceCached(format::Format *format,
+                          std::vector<context::Context *> contexts);
+  NNZType
+  GetMaxNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  NNZType
+  GetMaxNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static NNZType
+  GetMaxNnzPerSliceCOO(std::vector<format::Format *> formats,
+                       PreprocessParams *params);
+
+  static NNZType
+  GetMaxNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                                  PreprocessParams *params);
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class MinNnzPerSlice : public FeaturePreprocessType<NNZType> {
+
+public:
+  struct MinNnzPerSliceParams : PreprocessParams {};
+
+  MinNnzPerSlice();
+
+  MinNnzPerSlice(const MinNnzPerSlice &d);
+
+  MinNnzPerSlice(const std::shared_ptr<MinNnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~MinNnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, NNZType>
+  GetMinNnzPerSliceCached(format::Format *format,
+                          std::vector<context::Context *> contexts);
+  NNZType
+  GetMinNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  NNZType
+  GetMinNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static NNZType
+  GetMinNnzPerSliceCOO(std::vector<format::Format *> formats,
+                       PreprocessParams *params);
+
+  static NNZType
+  GetMinNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class AvgNnzPerSlice : public FeaturePreprocessType<FeatureType> {
+
+public:
+  struct AvgNnzPerSliceParams : PreprocessParams {};
+
+  AvgNnzPerSlice();
+
+  AvgNnzPerSlice(const AvgNnzPerSlice &d);
+
+  AvgNnzPerSlice(const std::shared_ptr<AvgNnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~AvgNnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType>
+  GetAvgNnzPerSliceCached(format::Format *format,
+                          std::vector<context::Context *> contexts);
+  FeatureType
+  GetAvgNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  FeatureType
+  GetAvgNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType
+  GetAvgNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class DevNnzPerSlice : public FeaturePreprocessType<NNZType> {
+
+public:
+  struct DevNnzPerSliceParams : PreprocessParams {};
+
+  DevNnzPerSlice();
+
+  DevNnzPerSlice(const DevNnzPerSlice &d);
+
+  DevNnzPerSlice(const std::shared_ptr<DevNnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~DevNnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, NNZType>
+  GetDevNnzPerSliceCached(format::Format *format,
+                          std::vector<context::Context *> contexts);
+  NNZType
+  GetDevNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  NNZType
+  GetDevNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static NNZType
+  GetDevNnzPerSliceCOO(std::vector<format::Format *> formats,
+                       PreprocessParams *params);
+
+  static NNZType
+  GetDevNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
 
 
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class StdNnzPerSlice : public FeaturePreprocessType<FeatureType> {
 
+public:
+  struct StdNnzPerSliceParams : PreprocessParams {};
 
+  StdNnzPerSlice();
 
+  StdNnzPerSlice(const StdNnzPerSlice &d);
 
+  StdNnzPerSlice(const std::shared_ptr<StdNnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~StdNnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType>
+  GetStdNnzPerSliceCached(format::Format *format,
+                          std::vector<context::Context *> contexts);
+  FeatureType
+  GetStdNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  FeatureType
+  GetStdNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType
+  GetStdNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+class CovNnzPerSlice : public FeaturePreprocessType<FeatureType> {
+
+public:
+  struct CovNnzPerSliceParams : PreprocessParams {};
+
+  CovNnzPerSlice();
+
+  CovNnzPerSlice(const CovNnzPerSlice &d);
+
+  CovNnzPerSlice(const std::shared_ptr<CovNnzPerSliceParams> p);
+
+  std::unordered_map<std::type_index, std::any> Extract(format::Format *format, std::vector<context::Context *> c);
+
+  std::vector<std::type_index>
+  get_sub_ids();
+
+  std::vector<ExtractableType *>
+  get_subs();
+
+  std::type_index get_feature_id_static();
+
+  ~CovNnzPerSlice() = default;
+
+  std::tuple<std::vector<format::Format *>, FeatureType>
+  GetCovNnzPerSliceCached(format::Format *format,
+                          std::vector<context::Context *> contexts);
+  FeatureType
+  GetCovNnzPerSlice(
+      format::Format *format, std::vector<context::Context *> contexts);
+
+  FeatureType
+  GetCovNnzPerSlice(
+      object::Graph<IDType, NNZType, ValueType> *obj,
+      std::vector<context::Context *> contexts);
+
+  static FeatureType
+  GetCovNnzPerSliceHigherOrderCOO(std::vector<format::Format *> formats,
+                                  PreprocessParams *params);
+
+protected:
+  void Register();
+};
 
 
 } // namespace sparsebase::preprocess
