@@ -411,7 +411,7 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
     // Declare variables: (check the types here)
 
     NNZType L = 0;
-    DimensionType N = 0;
+    format::DimensionType N = 0;
 
     while (fin.peek() == '#')
       fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -436,7 +436,7 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
     format::DimensionType* dimension = new format::DimensionType[N];
 
     IDType **indices = new IDType*[N];
-    for(DimensionType i=0; i<N; i++)
+    for(format::DimensionType i=0; i<N; i++)
       indices[i] = new IDType[L];
 
     fin.clear();
@@ -451,12 +451,12 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
         while (fin.peek() == '#')
           fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-        for(DimensionType j = 0; j < N; j++)
-          fin >> indices[j][l] - convert_to_zero_index_;
+        for(format::DimensionType j = 0; j < N; j++)
+          fin >> indices[j][l] ;
 
         //Delete
         if (convert_to_zero_index_) {
-          for(DimensionType j = 0; j < N; j++)
+          for(format::DimensionType j = 0; j < N; j++)
             indices[j][l]--;
         }
         // if constexpr here
