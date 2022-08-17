@@ -1171,7 +1171,7 @@ NumSlices<IDType, NNZType, ValueType, FeatureType>::GetNumSlicesHigherOrderCOO(s
                            PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
   std::vector<DimensionType> dim = hocoo->get_dimensions();
 
   FeatureType num_slices = 0;
@@ -1322,7 +1322,7 @@ NumFibers<IDType, NNZType, ValueType, FeatureType>::GetNumFibersHigherOrderCOO(s
                            PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
 
@@ -1626,6 +1626,148 @@ void NnzPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
 
 //</NnzPerSlice>
 
+//<FibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::FibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<FibersPerSliceParams>(new FibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::FibersPerSlice(
+    const FibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::FibersPerSlice(
+    const std::shared_ptr<FibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType *>(GetFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<std::type_index>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(FibersPerSlice<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::vector<ExtractableType *>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new FibersPerSlice<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::type_index FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(FibersPerSlice<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+std::tuple<std::vector<format::Format *>, NNZType *>
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetFibersPerSliceCached(Format *format,
+                                                                                 std::vector<context::Context *> contexts) {
+
+  FibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NNZType *
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  FibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts, format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NNZType *
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+NNZType *
+FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                         PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  NNZType nnz = hocoo->get_num_nnz();
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, FeatureType> num_slices;
+  sparsebase::context::CPUContext cpu_context;
+
+  FeatureType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+  NNZType * fibers_per_slice = new NNZType[num_slices_feature];
+
+  std::vector<DimensionType> dimensions = hocoo->get_dimensions();
+
+  NNZType offset = 0;
+  for (DimensionType x1 = 0; x1 < order; x1++)
+  {
+    IDType *x1_indices = hocoo->get_indices()[x1];
+    NNZType *x1_slices = fibers_per_slice + offset;
+
+    for (NNZType j = 0; j < nnz; j++)
+    {
+      x1_slices[x1_indices[j]]++;
+    }
+    offset += dimensions[x1];
+  }
+
+  return fibers_per_slice;
+}
+
+template <typename IDType, typename NNZType, typename ValueType,
+          typename FeatureType>
+void FibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetFibersPerSliceHigherOrderCOO);
+}
+
+//</FibersPerSlice>
+
+
+
+
+
+
 //<NumNnzFibers>
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -1748,7 +1890,7 @@ NumNnzFibers<IDType, NNZType, ValueType, FeatureType>::GetNumNnzFibersHigherOrde
                                                                                PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -1899,7 +2041,7 @@ NumNnzSlices<IDType, NNZType, ValueType, FeatureType>::GetNumNnzSlicesHigherOrde
                                                                                      PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2038,7 +2180,7 @@ MaxNnzPerSlice<IDType, NNZType, ValueType>::GetMaxNnzPerSliceHigherOrderCOO(std:
                                                                             PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2178,7 +2320,7 @@ MinNnzPerSlice<IDType, NNZType, ValueType>::GetMinNnzPerSliceHigherOrderCOO(std:
                                                                             PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2295,7 +2437,7 @@ AvgNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAvgNnzPerSliceHigher
                                                                                          PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2433,7 +2575,7 @@ DevNnzPerSlice<IDType, NNZType, ValueType>::GetDevNnzPerSliceHigherOrderCOO(std:
                                                                             PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2552,7 +2694,7 @@ StdNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetStdNnzPerSliceHigher
                                                                                          PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2681,7 +2823,7 @@ CovNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetCovNnzPerSliceHigher
                                                                                          PreprocessParams *params) {
   auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
 
-  int order = hocoo->get_order();
+  DimensionType order = hocoo->get_order();
 
   std::vector<DimensionType> dim = hocoo->get_dimensions();
   sparsebase::context::CPUContext cpu_context;
@@ -2720,6 +2862,2016 @@ void CovNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
 //</CovNnzPerSlice>
 
 
+//<AdjNnzPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::AdjNnzPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<AdjNnzPerSliceParams>(new AdjNnzPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::AdjNnzPerSlice(
+    const AdjNnzPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::AdjNnzPerSlice(
+    const std::shared_ptr<AdjNnzPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetAdjNnzPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerSliceCached(Format *format,
+                                                                                 std::vector<context::Context *> contexts) {
+
+  AdjNnzPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  AdjNnzPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                         PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerSlice<IDType, NNZType, ValueType, NNZType> nnz_per_slice;
+  NNZType * nnz_per_slice_feature = nnz_per_slice.GetNnzPerSlice(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzSlices<IDType, NNZType, ValueType, NNZType> num_nnz_slices;
+  NNZType num_nnz_slices_feature = num_nnz_slices.GetNumNnzSlices(hocoo, {&cpu_context});
+
+  NNZType start_index = 0;
+  NNZType sum_diff = 0;
+  for (DimensionType i = 0; i < order; i++)
+  {
+    NNZType *curr_slices = nnz_per_slice_feature + start_index;
+
+    DimensionType j = 0;
+    DimensionType lim = dim[i] - 1;
+
+    while (j < lim)
+    {
+      DimensionType old_j = j;
+      while (j < lim && curr_slices[j] <= curr_slices[j + 1])
+        j++;
+
+      sum_diff += curr_slices[j] - curr_slices[old_j];
+
+      old_j = j;
+      while (j < lim && curr_slices[j] > curr_slices[j + 1])
+        j++;
+      sum_diff += curr_slices[old_j] - curr_slices[j];
+    }
+
+    start_index += dim[i];
+  }
+  return ((FeatureType) sum_diff) / ((FeatureType) num_nnz_slices_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void AdjNnzPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetAdjNnzPerSliceHigherOrderCOO);
+}
+
+//</AdjNnzPerSlice>
+
+//<MaxNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::MaxNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<MaxNnzPerFiberParams>(new MaxNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::MaxNnzPerFiber(
+    const MaxNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::MaxNnzPerFiber(
+    const std::shared_ptr<MaxNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetMaxNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::get_sub_ids() {
+  return {typeid(MaxNnzPerFiber<IDType, NNZType, ValueType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType *>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::get_subs() {
+  return {
+      new MaxNnzPerFiber<IDType, NNZType, ValueType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index MaxNnzPerFiber<IDType, NNZType, ValueType>::get_feature_id_static() {
+  return typeid(MaxNnzPerFiber<IDType, NNZType, ValueType>);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, NNZType>
+MaxNnzPerFiber<IDType, NNZType, ValueType>::GetMaxNnzPerFiberCached(Format *format,
+                                                                    std::vector<context::Context *> contexts) {
+
+  MaxNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxNnzPerFiber<IDType, NNZType, ValueType>::GetMaxNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  MaxNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxNnzPerFiber<IDType, NNZType, ValueType>::GetMaxNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxNnzPerFiber<IDType, NNZType, ValueType>::GetMaxNnzPerFiberCOO(std::vector<Format *> formats,
+                                                                 PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  NNZType num_Fibers = 0;
+
+  for (int i = 0; i < order; i++)
+  {
+    NNZType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_Fibers += mult;
+  }
+  return num_Fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxNnzPerFiber<IDType, NNZType, ValueType>::GetMaxNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                            PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  return *std::max_element(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void MaxNnzPerFiber<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMaxNnzPerFiberCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMaxNnzPerFiberHigherOrderCOO);
+}
+
+//</MaxNnzPerFiber>
+
+
+
+//<MinNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType>
+MinNnzPerFiber<IDType, NNZType, ValueType>::MinNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<MinNnzPerFiberParams>(new MinNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MinNnzPerFiber<IDType, NNZType, ValueType>::MinNnzPerFiber(
+    const MinNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MinNnzPerFiber<IDType, NNZType, ValueType>::MinNnzPerFiber(
+    const std::shared_ptr<MinNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any>
+MinNnzPerFiber<IDType, NNZType, ValueType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetMinNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index>
+MinNnzPerFiber<IDType, NNZType, ValueType>::get_sub_ids() {
+  return {typeid(MinNnzPerFiber<IDType, NNZType, ValueType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType *>
+MinNnzPerFiber<IDType, NNZType, ValueType>::get_subs() {
+  return {
+      new MinNnzPerFiber<IDType, NNZType, ValueType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index MinNnzPerFiber<IDType, NNZType, ValueType>::get_feature_id_static() {
+  return typeid(MinNnzPerFiber<IDType, NNZType, ValueType>);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, NNZType>
+MinNnzPerFiber<IDType, NNZType, ValueType>::GetMinNnzPerFiberCached(Format *format,
+                                                                    std::vector<context::Context *> contexts) {
+
+  MinNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinNnzPerFiber<IDType, NNZType, ValueType>::GetMinNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  MinNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinNnzPerFiber<IDType, NNZType, ValueType>::GetMinNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinNnzPerFiber<IDType, NNZType, ValueType>::GetMinNnzPerFiberCOO(std::vector<Format *> formats,
+                                                                 PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  NNZType num_Fibers = 0;
+
+  for (int i = 0; i < order; i++)
+  {
+    NNZType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_Fibers += mult;
+  }
+  return num_Fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinNnzPerFiber<IDType, NNZType, ValueType>::GetMinNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                            PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  return *std::min_element(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void MinNnzPerFiber<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMinNnzPerFiberCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMinNnzPerFiberHigherOrderCOO);
+}
+
+//</MinNnzPerFiber>
+
+//<AvgNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::AvgNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<AvgNnzPerFiberParams>(new AvgNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::AvgNnzPerFiber(
+    const AvgNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::AvgNnzPerFiber(
+    const std::shared_ptr<AvgNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetAvgNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAvgNnzPerFiberCached(Format *format,
+                                                                                 std::vector<context::Context *> contexts) {
+
+  AvgNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAvgNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  AvgNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAvgNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAvgNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                                         PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzFibers<IDType, NNZType, ValueType, NNZType> num_nnz_fibers;
+  NNZType num_nnz_fibers_feature = num_nnz_fibers.GetNumNnzFibers(hocoo, {&cpu_context});
+
+  return std::accumulate(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature, 0) / ((FeatureType) num_nnz_fibers_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void AvgNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetAvgNnzPerFiberHigherOrderCOO);
+}
+
+//</AvgNnzPerFiber>
+
+//<DevNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType>
+DevNnzPerFiber<IDType, NNZType, ValueType>::DevNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<DevNnzPerFiberParams>(new DevNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+DevNnzPerFiber<IDType, NNZType, ValueType>::DevNnzPerFiber(
+    const DevNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+DevNnzPerFiber<IDType, NNZType, ValueType>::DevNnzPerFiber(
+    const std::shared_ptr<DevNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any>
+DevNnzPerFiber<IDType, NNZType, ValueType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetDevNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index>
+DevNnzPerFiber<IDType, NNZType, ValueType>::get_sub_ids() {
+  return {typeid(DevNnzPerFiber<IDType, NNZType, ValueType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType *>
+DevNnzPerFiber<IDType, NNZType, ValueType>::get_subs() {
+  return {
+      new DevNnzPerFiber<IDType, NNZType, ValueType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index DevNnzPerFiber<IDType, NNZType, ValueType>::get_feature_id_static() {
+  return typeid(DevNnzPerFiber<IDType, NNZType, ValueType>);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, NNZType>
+DevNnzPerFiber<IDType, NNZType, ValueType>::GetDevNnzPerFiberCached(Format *format,
+                                                                    std::vector<context::Context *> contexts) {
+
+  DevNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevNnzPerFiber<IDType, NNZType, ValueType>::GetDevNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  DevNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevNnzPerFiber<IDType, NNZType, ValueType>::GetDevNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevNnzPerFiber<IDType, NNZType, ValueType>::GetDevNnzPerFiberCOO(std::vector<Format *> formats,
+                                                                 PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  NNZType num_Fibers = 0;
+
+  for (int i = 0; i < order; i++)
+  {
+    NNZType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_Fibers += mult;
+  }
+  return num_Fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevNnzPerFiber<IDType, NNZType, ValueType>::GetDevNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                            PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  return (*std::max_element(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature))
+         - (*std::min_element(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void DevNnzPerFiber<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetDevNnzPerFiberCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetDevNnzPerFiberHigherOrderCOO);
+}
+
+//</DevNnzPerFiber>
+
+
+//<StdNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::StdNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<StdNnzPerFiberParams>(new StdNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::StdNnzPerFiber(
+    const StdNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::StdNnzPerFiber(
+    const std::shared_ptr<StdNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetStdNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetStdNnzPerFiberCached(Format *format,
+                                                                                 std::vector<context::Context *> contexts) {
+
+  StdNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetStdNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  StdNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetStdNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetStdNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                                         PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzFibers<IDType, NNZType, ValueType, NNZType> num_nnz_fibers;
+  NNZType num_nnz_fibers_feature = num_nnz_fibers.GetNumNnzFibers(hocoo, {&cpu_context});
+
+  if (num_fibers_feature == 1) {
+    return (FeatureType) 0.0;
+  }
+  // Calculate the mean
+  const FeatureType mean = std::accumulate(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature , 0.0) / num_nnz_fibers_feature;
+
+  // Now calculate the variance
+  auto variance_func = [&mean, &num_nnz_fibers_feature](FeatureType accumulator, const FeatureType& val) {
+    return accumulator + (val > 0) * ((val - mean)*(val - mean) / (num_nnz_fibers_feature - 1));
+  };
+
+  return sqrt(std::accumulate(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature, 0.0, variance_func));
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void StdNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetStdNnzPerFiberHigherOrderCOO);
+}
+
+//</StdNnzPerFiber>
+
+
+//<CovNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::CovNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<CovNnzPerFiberParams>(new CovNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::CovNnzPerFiber(
+    const CovNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::CovNnzPerFiber(
+    const std::shared_ptr<CovNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetCovNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetCovNnzPerFiberCached(Format *format,
+                                                                                 std::vector<context::Context *> contexts) {
+
+  CovNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetCovNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  CovNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetCovNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetCovNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                                         PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzFibers<IDType, NNZType, ValueType, NNZType> num_nnz_fibers;
+  NNZType num_nnz_fibers_feature = num_nnz_fibers.GetNumNnzFibers(hocoo, {&cpu_context});
+
+  if (num_fibers_feature == 1) {
+    return (FeatureType) 0.0;
+  }
+  // Calculate the mean
+  const FeatureType mean = std::accumulate(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature , 0.0) / num_nnz_fibers_feature;
+
+  // Now calculate the variance
+  auto variance_func = [&mean, &num_nnz_fibers_feature](FeatureType accumulator, const FeatureType& val) {
+    return accumulator + (val > 0) * ((val - mean)*(val - mean) / (num_nnz_fibers_feature - 1));
+  };
+
+  return sqrt(std::accumulate(nnz_per_fiber_feature, nnz_per_fiber_feature + num_fibers_feature, 0.0, variance_func)) / mean;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void CovNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetCovNnzPerFiberHigherOrderCOO);
+}
+
+//</CovNnzPerFiber>
+
+
+//<AdjNnzPerFiber>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::AdjNnzPerFiber() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<AdjNnzPerFiberParams>(new AdjNnzPerFiberParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::AdjNnzPerFiber(
+    const AdjNnzPerFiber &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::AdjNnzPerFiber(
+    const std::shared_ptr<AdjNnzPerFiberParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetAdjNnzPerFiber(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerFiberCached(Format *format,
+                                                                                 std::vector<context::Context *> contexts) {
+
+  AdjNnzPerFiberParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerFiber(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  AdjNnzPerFiberParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerFiber(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::GetAdjNnzPerFiberHigherOrderCOO(std::vector<Format *> formats,
+                                                                                         PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumFibers<IDType, NNZType, ValueType, NNZType> num_fibers;
+  NNZType num_fibers_feature = num_fibers.GetNumFibers(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NnzPerFiber<IDType, NNZType, ValueType, NNZType> nnz_per_fiber;
+  NNZType * nnz_per_fiber_feature = nnz_per_fiber.GetNnzPerFiber(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzFibers<IDType, NNZType, ValueType, NNZType> num_nnz_fibers;
+  NNZType num_nnz_fibers_feature = num_nnz_fibers.GetNumNnzFibers(hocoo, {&cpu_context});
+
+  NNZType start_index = 0;
+  NNZType sum_diff = 0;
+  for (DimensionType i = 0; i < order; i++)
+  {
+    DimensionType x1 = (i + 1) % order;
+    DimensionType x2 = (x1 + 1) % order;
+
+    // int last_row_ind = (dim[x1]) * (dim[x2] - 1); // TT: It was unused! What was it ?
+    NNZType *cur_fibers = nnz_per_fiber_feature + start_index;
+
+    for (NNZType j = 0; j < dim[x2] - 1; j++)
+    {
+      for (NNZType z = 0; z < dim[x1]; z++)
+      {
+        sum_diff += cur_fibers[z] > cur_fibers[z + 1] ?  cur_fibers[z] - cur_fibers[z + 1] :  cur_fibers[z + 1] - cur_fibers[z] ;
+      }
+      cur_fibers += dim[x1];
+    }
+    for (NNZType z = 0; z < dim[x1]; z++)
+    {
+      sum_diff += cur_fibers[z] > cur_fibers[z + 1] ?  cur_fibers[z] - cur_fibers[z + 1] :  cur_fibers[z + 1] - cur_fibers[z] ;
+    }
+    start_index += dim[x1] * dim[x2];
+  }
+
+  return sum_diff / ((FeatureType) num_nnz_fibers_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void AdjNnzPerFiber<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetAdjNnzPerFiberHigherOrderCOO);
+}
+
+//</AdjNnzPerFiber>
+
+//<MaxFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::MaxFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<MaxFibersPerSliceParams>(new MaxFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::MaxFibersPerSlice(
+    const MaxFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::MaxFibersPerSlice(
+    const std::shared_ptr<MaxFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetMaxFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::get_sub_ids() {
+  return {typeid(MaxFibersPerSlice<IDType, NNZType, ValueType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType *>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::get_subs() {
+  return {
+      new MaxFibersPerSlice<IDType, NNZType, ValueType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index MaxFibersPerSlice<IDType, NNZType, ValueType>::get_feature_id_static() {
+  return typeid(MaxFibersPerSlice<IDType, NNZType, ValueType>);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, NNZType>
+MaxFibersPerSlice<IDType, NNZType, ValueType>::GetMaxFibersPerSliceCached(Format *format,
+                                                                          std::vector<context::Context *> contexts) {
+
+  MaxFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxFibersPerSlice<IDType, NNZType, ValueType>::GetMaxFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  MaxFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxFibersPerSlice<IDType, NNZType, ValueType>::GetMaxFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxFibersPerSlice<IDType, NNZType, ValueType>::GetMaxFibersPerSliceCOO(std::vector<Format *> formats,
+                                                                       PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  NNZType num_Fibers = 0;
+
+  for (int i = 0; i < order; i++)
+  {
+    NNZType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_Fibers += mult;
+  }
+  return num_Fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MaxFibersPerSlice<IDType, NNZType, ValueType>::GetMaxFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                  PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  return *std::max_element(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void MaxFibersPerSlice<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMaxFibersPerSliceCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMaxFibersPerSliceHigherOrderCOO);
+}
+
+//</MaxFibersPerSlice>
+
+
+
+//<MinFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType>
+MinFibersPerSlice<IDType, NNZType, ValueType>::MinFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<MinFibersPerSliceParams>(new MinFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MinFibersPerSlice<IDType, NNZType, ValueType>::MinFibersPerSlice(
+    const MinFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+MinFibersPerSlice<IDType, NNZType, ValueType>::MinFibersPerSlice(
+    const std::shared_ptr<MinFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any>
+MinFibersPerSlice<IDType, NNZType, ValueType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetMinFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index>
+MinFibersPerSlice<IDType, NNZType, ValueType>::get_sub_ids() {
+  return {typeid(MinFibersPerSlice<IDType, NNZType, ValueType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType *>
+MinFibersPerSlice<IDType, NNZType, ValueType>::get_subs() {
+  return {
+      new MinFibersPerSlice<IDType, NNZType, ValueType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index MinFibersPerSlice<IDType, NNZType, ValueType>::get_feature_id_static() {
+  return typeid(MinFibersPerSlice<IDType, NNZType, ValueType>);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, NNZType>
+MinFibersPerSlice<IDType, NNZType, ValueType>::GetMinFibersPerSliceCached(Format *format,
+                                                                          std::vector<context::Context *> contexts) {
+
+  MinFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinFibersPerSlice<IDType, NNZType, ValueType>::GetMinFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  MinFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinFibersPerSlice<IDType, NNZType, ValueType>::GetMinFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinFibersPerSlice<IDType, NNZType, ValueType>::GetMinFibersPerSliceCOO(std::vector<Format *> formats,
+                                                                       PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  NNZType num_Fibers = 0;
+
+  for (int i = 0; i < order; i++)
+  {
+    NNZType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_Fibers += mult;
+  }
+  return num_Fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+MinFibersPerSlice<IDType, NNZType, ValueType>::GetMinFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                  PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  return *std::min_element(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void MinFibersPerSlice<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMinFibersPerSliceCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetMinFibersPerSliceHigherOrderCOO);
+}
+
+//</MinFibersPerSlice>
+
+//<AvgFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::AvgFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<AvgFibersPerSliceParams>(new AvgFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::AvgFibersPerSlice(
+    const AvgFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::AvgFibersPerSlice(
+    const std::shared_ptr<AvgFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetAvgFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAvgFibersPerSliceCached(Format *format,
+                                                                                       std::vector<context::Context *> contexts) {
+
+  AvgFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAvgFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  AvgFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAvgFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAvgFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                               PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzSlices<IDType, NNZType, ValueType, NNZType> num_nnz_slices;
+  NNZType num_nnz_slices_feature = num_nnz_slices.GetNumNnzSlices(hocoo, {&cpu_context});
+
+  return std::accumulate(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature, 0) / ((FeatureType) num_nnz_slices_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void AvgFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetAvgFibersPerSliceHigherOrderCOO);
+}
+
+//</AvgFibersPerSlice>
+
+//<DevFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType>
+DevFibersPerSlice<IDType, NNZType, ValueType>::DevFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<DevFibersPerSliceParams>(new DevFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+DevFibersPerSlice<IDType, NNZType, ValueType>::DevFibersPerSlice(
+    const DevFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+DevFibersPerSlice<IDType, NNZType, ValueType>::DevFibersPerSlice(
+    const std::shared_ptr<DevFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::type_index, std::any>
+DevFibersPerSlice<IDType, NNZType, ValueType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetDevFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<std::type_index>
+DevFibersPerSlice<IDType, NNZType, ValueType>::get_sub_ids() {
+  return {typeid(DevFibersPerSlice<IDType, NNZType, ValueType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<ExtractableType *>
+DevFibersPerSlice<IDType, NNZType, ValueType>::get_subs() {
+  return {
+      new DevFibersPerSlice<IDType, NNZType, ValueType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::type_index DevFibersPerSlice<IDType, NNZType, ValueType>::get_feature_id_static() {
+  return typeid(DevFibersPerSlice<IDType, NNZType, ValueType>);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>, NNZType>
+DevFibersPerSlice<IDType, NNZType, ValueType>::GetDevFibersPerSliceCached(Format *format,
+                                                                          std::vector<context::Context *> contexts) {
+
+  DevFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevFibersPerSlice<IDType, NNZType, ValueType>::GetDevFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  DevFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevFibersPerSlice<IDType, NNZType, ValueType>::GetDevFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevFibersPerSlice<IDType, NNZType, ValueType>::GetDevFibersPerSliceCOO(std::vector<Format *> formats,
+                                                                       PreprocessParams *params) {
+  auto coo = formats[0]->As<COO<IDType, NNZType, ValueType>>();
+
+  int order = coo->get_order();
+  std::vector<DimensionType> dim = coo->get_dimensions();
+
+  NNZType num_Fibers = 0;
+
+  for (int i = 0; i < order; i++)
+  {
+    NNZType mult = 1;
+    for (int j = 0; j < order; j++)
+      if (j != i)
+        mult *= dim[j];
+    num_Fibers += mult;
+  }
+  return num_Fibers;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+NNZType
+DevFibersPerSlice<IDType, NNZType, ValueType>::GetDevFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                  PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  return (*std::max_element(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature))
+         - (*std::min_element(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature));
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void DevFibersPerSlice<IDType, NNZType, ValueType>::Register() {
+  this->RegisterFunction(
+      {COO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetDevFibersPerSliceCOO);
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetDevFibersPerSliceHigherOrderCOO);
+}
+
+//</DevFibersPerSlice>
+
+
+//<StdFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::StdFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<StdFibersPerSliceParams>(new StdFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::StdFibersPerSlice(
+    const StdFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::StdFibersPerSlice(
+    const std::shared_ptr<StdFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetStdFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetStdFibersPerSliceCached(Format *format,
+                                                                                       std::vector<context::Context *> contexts) {
+
+  StdFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetStdFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  StdFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetStdFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetStdFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                               PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzSlices<IDType, NNZType, ValueType, NNZType> num_nnz_slices;
+  NNZType num_nnz_slices_feature = num_nnz_slices.GetNumNnzSlices(hocoo, {&cpu_context});
+
+  if (num_slices_feature == 1) {
+    return (FeatureType) 0.0;
+  }
+  // Calculate the mean
+  const FeatureType mean = std::accumulate(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature , 0.0) / num_nnz_slices_feature;
+
+  // Now calculate the variance
+  auto variance_func = [&mean, &num_nnz_slices_feature](FeatureType accumulator, const FeatureType& val) {
+    return accumulator + (val > 0) * ((val - mean)*(val - mean) / (num_nnz_slices_feature - 1));
+  };
+
+  return sqrt(std::accumulate(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature, 0.0, variance_func));
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void StdFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetStdFibersPerSliceHigherOrderCOO);
+}
+
+//</StdFibersPerSlice>
+
+
+//<CovFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::CovFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<CovFibersPerSliceParams>(new CovFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::CovFibersPerSlice(
+    const CovFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::CovFibersPerSlice(
+    const std::shared_ptr<CovFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetCovFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetCovFibersPerSliceCached(Format *format,
+                                                                                       std::vector<context::Context *> contexts) {
+
+  CovFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetCovFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  CovFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetCovFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetCovFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                               PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzSlices<IDType, NNZType, ValueType, NNZType> num_nnz_slices;
+  NNZType num_nnz_slices_feature = num_nnz_slices.GetNumNnzSlices(hocoo, {&cpu_context});
+
+  if (num_slices_feature == 1) {
+    return (FeatureType) 0.0;
+  }
+  // Calculate the mean
+  const FeatureType mean = std::accumulate(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature , 0.0) / num_nnz_slices_feature;
+
+  // Now calculate the variance
+  auto variance_func = [&mean, &num_nnz_slices_feature](FeatureType accumulator, const FeatureType& val) {
+    return accumulator + (val > 0) * ((val - mean)*(val - mean) / (num_nnz_slices_feature - 1));
+  };
+
+  return sqrt(std::accumulate(fibers_per_slice_feature, fibers_per_slice_feature + num_slices_feature, 0.0, variance_func)) / mean;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void CovFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetCovFibersPerSliceHigherOrderCOO);
+}
+
+//</CovFibersPerSlice>
+
+//<AdjFibersPerSlice>
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::AdjFibersPerSlice() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ =
+      std::shared_ptr<AdjFibersPerSliceParams>(new AdjFibersPerSliceParams());
+  this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::AdjFibersPerSlice(
+    const AdjFibersPerSlice &d) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = d.params_;
+  this->pmap_ = d.pmap_;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::AdjFibersPerSlice(
+    const std::shared_ptr<AdjFibersPerSliceParams> p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  Register();
+  this->params_ = p;
+  this->pmap_[get_feature_id_static()] = p;
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::unordered_map<std::type_index, std::any>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Extract(
+    format::Format *format, std::vector<context::Context *> c) {
+  return {{this->get_feature_id(),
+           std::forward<NNZType>(GetAdjFibersPerSlice(format, c))}};
+};
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<std::type_index>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
+  return {typeid(    AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::vector<ExtractableType *>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_subs() {
+  return {
+      new     AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>(*this)};
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::type_index     AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+  return typeid(    AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+std::tuple<std::vector<format::Format *>, FeatureType>
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjFibersPerSliceCached(Format *format,
+                                                                                       std::vector<context::Context *> contexts) {
+
+  AdjFibersPerSliceParams params;
+  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+                             format);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjFibersPerSlice(
+    Format *format, std::vector<context::Context *> contexts) {
+
+  AdjFibersPerSliceParams params;
+  return this->Execute(&params, (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjFibersPerSlice(
+    object::Graph<IDType, NNZType, ValueType> *obj,
+    std::vector<context::Context *> contexts) {
+
+  Format *format = obj->get_connectivity_to_coo();
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+                       format); // func(sfs, this->params_.get());
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+FeatureType
+AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::GetAdjFibersPerSliceHigherOrderCOO(std::vector<Format *> formats,
+                                                                                               PreprocessParams *params) {
+  auto hocoo = formats[0]->As<HigherOrderCOO<IDType, NNZType, ValueType>>();
+
+  DimensionType order = hocoo->get_order();
+
+  std::vector<DimensionType> dim = hocoo->get_dimensions();
+  sparsebase::context::CPUContext cpu_context;
+
+  sparsebase::preprocess::NumSlices<IDType, NNZType, ValueType, NNZType> num_slices;
+  NNZType num_slices_feature = num_slices.GetNumSlices(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::FibersPerSlice<IDType, NNZType, ValueType, NNZType> fibers_per_slice;
+  NNZType * fibers_per_slice_feature = fibers_per_slice.GetFibersPerSlice(hocoo, {&cpu_context});
+
+  sparsebase::preprocess::NumNnzSlices<IDType, NNZType, ValueType, NNZType> num_nnz_slices;
+  NNZType num_nnz_slices_feature = num_nnz_slices.GetNumNnzSlices(hocoo, {&cpu_context});
+
+  NNZType start_index = 0;
+  NNZType sum_diff = 0;
+  for (DimensionType i = 0; i < order; i++)
+  {
+    NNZType *curr_slices = fibers_per_slice_feature + start_index;
+
+    DimensionType j = 0;
+    DimensionType lim = dim[i] - 1;
+
+    while (j < lim)
+    {
+      DimensionType old_j = j;
+      while (j < lim && curr_slices[j] <= curr_slices[j + 1])
+        j++;
+
+      sum_diff += curr_slices[j] - curr_slices[old_j];
+
+      old_j = j;
+      while (j < lim && curr_slices[j] > curr_slices[j + 1])
+        j++;
+      sum_diff += curr_slices[old_j] - curr_slices[j];
+    }
+
+    start_index += dim[i];
+  }
+  return ((FeatureType) sum_diff) / ((FeatureType) num_nnz_slices_feature);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
+void AdjFibersPerSlice<IDType, NNZType, ValueType, FeatureType>::Register() {
+
+  this->RegisterFunction(
+      {HigherOrderCOO<IDType, NNZType, ValueType>::get_format_id_static()},
+      GetAdjFibersPerSliceHigherOrderCOO);
+}
+
+//</AdjFibersPerSlice>
 
 
 #if !defined(_HEADER_ONLY)
