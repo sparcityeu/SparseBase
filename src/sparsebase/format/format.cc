@@ -587,8 +587,50 @@ HigherOrderCOO<IDType, NNZType, ValueType>::HigherOrderCOO(
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
       new sparsebase::context::CPUContext);
 
-  // TODO : Sorting Tensor
-  // Use STD:SORT
+  bool not_sorted = false;
+  if (!ignore_sort) {
+    for (DimensionType i = 1; i < nnz; i++) {
+      for(DimensionType j = 0; j < order; j++){
+        if(indices[j][i-1] > indices[j][i]){
+          not_sorted = true;
+          break;
+        }
+        else if(indices[j][i-1] < indices[j][i]){
+          break;
+        }
+      }
+
+      if(not_sorted) break;
+    }
+  }
+
+  if (not_sorted) {
+    std::cerr << "HigherOrderCOO arrays must be sorted. Sorting..." << std::endl;
+    std::vector<std::tuple<IDType, IDType, ValueType>> sort_vec;
+
+    for (DimensionType i = 0; i < nnz; i++) {
+      ValueType value = (vals != nullptr) ? vals[i] : 0;
+      sort_vec.emplace_back(row[i], col[i], value);
+    }
+    std::sort(sort_vec.begin(), sort_vec.end(),
+              [](std::tuple<IDType, IDType, ValueType> t1,
+                 std::tuple<IDType, IDType, ValueType> t2) {
+                if (std::get<0>(t1) == std::get<0>(t2)) {
+                  return std::get<1>(t1) < std::get<1>(t2);
+                }
+                return std::get<0>(t1) < std::get<0>(t2);
+              });
+
+    for (DimensionType i = 0; i < nnz; i++) {
+      auto &t = sort_vec[i];
+      row[i] = std::get<0>(t);
+      col[i] = std::get<1>(t);
+
+      if (vals != nullptr) {
+        vals[i] = std::get<2>(t);
+      }
+    }
+  }
 
 }
 template <typename IDType, typename NNZType, typename ValueType>
