@@ -469,10 +469,7 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
             max = curr_indices[l];
         }
 
-        if(convert_to_zero_index_)
-          dimension[n] = max + 1;
-        else
-          dimension[n] = max;
+        dimension[n] = max + convert_to_zero_index_;
       }
 
       auto higher_order_coo = new format::HigherOrderCOO<IDType, NNZType, ValueType>(N, dimension, L, indices, vals, format::kNotOwned);
