@@ -189,8 +189,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         col[l] = n;
       }
 
-      auto coo = new format::COO<IDType, NNZType, ValueType>(
-          M, N, L, row, col, nullptr, format::kOwned);
+      auto coo = new format::COO<IDType, NNZType, ValueType>(M, N, L, row, col, nullptr, format::kOwned);
       return coo;
     }
   } else {
@@ -393,10 +392,10 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-TNSReader<IDType, NNZType, ValueType>::TNSReader(std::string filename,
-                                                 bool weighted,
+TNSReader<IDType, NNZType, ValueType>::TNSReader(std::string filename, bool store_values,
                                                  bool convert_to_zero_index)
-    : filename_(filename), weighted_(weighted),
+    : filename_(filename),
+      store_values_(store_values),
       convert_to_zero_index_(convert_to_zero_index) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -442,9 +441,15 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
     fin.clear();
     fin.seekg(0);
 
-    if constexpr (!std::is_same_v<void, ValueType>) {
-      // under constexp & weighted:
-      ValueType *vals = new ValueType[L];
+    ValueType* vals;
+
+    if(store_values_){
+      if constexpr (std::is_same_v<void, ValueType>) {
+        throw ReaderException(
+            "Value type can not be void if store_values option is true.");
+      }
+
+      vals = new ValueType[L];
 
       for (NNZType l = 0; l < L; l++) {
 
@@ -453,13 +458,35 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
 
         for(format::DimensionType j = 0; j < N; j++) {
           fin >> indices[j][l];
+
+          if(dimension[j] < indices[j][l])
+            dimension[j] = indices[j][l];
+
           indices[j][l] -= convert_to_zero_index_;
         }
 
-        // if constexpr here
-        fin >> vals[l];
-      }
 
+        fin >> vals[l];
+        }
+      } else {
+        for (NNZType l = 0; l < L; l++) {
+
+          while (fin.peek() == '#')
+            fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+          for(format::DimensionType j = 0; j < N; j++) {
+            fin >> indices[j][l];
+
+            if(dimension[j] < indices[j][l])
+              dimension[j] = indices[j][l];
+
+            indices[j][l] -= convert_to_zero_index_;
+          }
+
+          fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+      }
+/*
       //Move the content of the loop above
       for(DimensionType n=0;n<N;n++) {
         IDType* curr_indices = indices[n];
@@ -471,19 +498,12 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
 
         dimension[n] = max + convert_to_zero_index_;
       }
-
+      */
       auto higher_order_coo = new format::HigherOrderCOO<IDType, NNZType, ValueType>(N, dimension, L, indices, vals, format::kNotOwned);
       return higher_order_coo;
-
-      } else {
-        // TODO: Add an exception class for this
-        throw ReaderException("Weight type for weighted graphs can not be void");
-      }
-
-  } else {
-    throw ReaderException("file does not exists!!");
+    }
   }
-}
+
 
 template <typename IDType, typename NNZType, typename ValueType>
 TNSReader<IDType, NNZType, ValueType>::~TNSReader(){};

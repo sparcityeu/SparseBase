@@ -216,14 +216,14 @@ public:
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
    */
-  explicit TNSReader(std::string filename, bool weighted = false,
+  explicit TNSReader(std::string filename, bool store_values = true,
                      bool convert_to_zero_index = true);
   format::HigherOrderCOO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const override;
   ~TNSReader() override;
 
 private:
   std::string filename_;
-  bool weighted_; // change to store_values
+  bool store_values_; // change to store_values
   bool convert_to_zero_index_;
 };
 

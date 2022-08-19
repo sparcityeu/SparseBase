@@ -591,11 +591,8 @@ HigherOrderCOO<IDType, NNZType, ValueType>::HigherOrderCOO(
   if (!ignore_sort) {
     for (DimensionType i = 1; i < nnz; i++) {
       for(DimensionType j = 0; j < order; j++){
-        if(indices[j][i-1] > indices[j][i]){
-          not_sorted = true;
-          break;
-        }
-        else if(indices[j][i-1] < indices[j][i]){
+        if(indices[j][i-1] != indices[j][i]){
+          not_sorted = indices[j][i-1] > indices[j][i];
           break;
         }
       }
@@ -606,28 +603,37 @@ HigherOrderCOO<IDType, NNZType, ValueType>::HigherOrderCOO(
 
   if (not_sorted) {
     std::cerr << "HigherOrderCOO arrays must be sorted. Sorting..." << std::endl;
-    std::vector<std::tuple<IDType, IDType, ValueType>> sort_vec;
+    std::vector<std::tuple<std::vector<IDType>, ValueType>> sort_vec;
 
     for (DimensionType i = 0; i < nnz; i++) {
       ValueType value = (vals != nullptr) ? vals[i] : 0;
-      sort_vec.emplace_back(row[i], col[i], value);
+
+      std::vector<IDType> c_indices;
+      for(DimensionType j=0; j<order; j++)
+        c_indices.push_back(indices[j][i]);
+
+      sort_vec.emplace_back(c_indices, value);
     }
+
     std::sort(sort_vec.begin(), sort_vec.end(),
-              [](std::tuple<IDType, IDType, ValueType> t1,
-                 std::tuple<IDType, IDType, ValueType> t2) {
-                if (std::get<0>(t1) == std::get<0>(t2)) {
-                  return std::get<1>(t1) < std::get<1>(t2);
-                }
-                return std::get<0>(t1) < std::get<0>(t2);
+              [order](std::tuple<std::vector<IDType>, ValueType> t1,
+                 std::tuple<std::vector<IDType>, ValueType> t2) {
+
+              for(DimensionType j = 0; j < order; j++){
+                  if(std::get<0>(t1)[j] != std::get<0>(t2)[j])
+                    return std::get<0>(t1)[j] < std::get<0>(t2)[j];
+              }
+              return false;
               });
 
     for (DimensionType i = 0; i < nnz; i++) {
       auto &t = sort_vec[i];
-      row[i] = std::get<0>(t);
-      col[i] = std::get<1>(t);
+      for(DimensionType j = 0; j < order; j++){
+        indices[j][i] = std::get<0>(t)[j];
+      }
 
       if (vals != nullptr) {
-        vals[i] = std::get<2>(t);
+        vals[i] = std::get<1>(t);
       }
     }
   }
