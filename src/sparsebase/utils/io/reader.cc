@@ -441,7 +441,7 @@ TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
     fin.clear();
     fin.seekg(0);
 
-    ValueType* vals;
+    ValueType* vals = nullptr;
 
     if(store_values_){
       if constexpr (std::is_same_v<void, ValueType>) {
