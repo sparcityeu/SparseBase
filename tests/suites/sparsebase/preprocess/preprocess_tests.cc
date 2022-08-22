@@ -320,6 +320,17 @@ TEST(RCMReorderTest, BasicTest) {
   check_reorder(order, n);
 }
 
+TEST(GrayReorderTest, BasicTestBitSize16) {
+  sparsebase::preprocess::GrayReorder<int, int, int> reorder(sparsebase::preprocess::BitSize16, 100, 10);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  check_reorder(order, n);
+}
+TEST(GrayReorderTest, BasicTestBitSize32) {
+  sparsebase::preprocess::GrayReorder<int, int, int> reorder(sparsebase::preprocess::BitSize32, 100, 10);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context});
+  check_reorder(order, n);
+}
+
 TEST(TransformTest, ConversionNoParam) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
