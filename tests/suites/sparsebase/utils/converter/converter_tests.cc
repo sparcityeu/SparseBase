@@ -162,3 +162,53 @@ TEST(ConverterOrderTwo, CSRToCSR) {
     EXPECT_EQ(csr2->get_row_ptr()[i], csr_row_ptr[i]);
   }
 }
+
+TEST(Converter, ClearingAllFunctions){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+      converterOrderTwo;
+  sparsebase::context::CPUContext cpu_context;
+
+  converterOrderTwo.ClearConversionFunctions();
+  EXPECT_THROW((converterOrderTwo.Convert<sparsebase::format::COO<int, int, int>>(&csr, &cpu_context)), sparsebase::utils::ConversionException);
+  converterOrderTwo
+      .RegisterConditionalConversionFunction(
+          sparsebase::format::CSR<int, int, int>::get_format_id_static(),
+          sparsebase::format::COO<int, int, int>::get_format_id_static(),
+          [](sparsebase::format::Format *, sparsebase::context::Context*) -> sparsebase::format::Format* {return nullptr;},
+          [](sparsebase::context::Context*, sparsebase::context::Context*) -> bool { return true; });
+  EXPECT_EQ(
+      (converterOrderTwo.Convert(
+          &csr, sparsebase::format::COO<int, int, int>::get_format_id_static(),
+          &cpu_context)),
+      nullptr);
+}
+
+TEST(Converter, ClearingASingleDirection){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+      converterOrderTwo;
+  sparsebase::context::CPUContext cpu_context;
+
+  converterOrderTwo.ClearConversionFunctions(
+      sparsebase::format::COO<int, int, int>::get_format_id_static(),
+      sparsebase::format::CSR<int, int, int>::get_format_id_static());
+  EXPECT_NO_THROW((converterOrderTwo.Convert<sparsebase::format::COO<int, int, int>>(&csr, &cpu_context)));
+  converterOrderTwo.ClearConversionFunctions(
+      sparsebase::format::CSR<int, int, int>::get_format_id_static(),
+      sparsebase::format::COO<int, int, int>::get_format_id_static());
+  EXPECT_THROW((converterOrderTwo.Convert<sparsebase::format::COO<int, int, int>>(&csr, &cpu_context)), sparsebase::utils::ConversionException);
+  converterOrderTwo
+      .RegisterConditionalConversionFunction(
+          sparsebase::format::CSR<int, int, int>::get_format_id_static(),
+          sparsebase::format::COO<int, int, int>::get_format_id_static(),
+          [](sparsebase::format::Format *, sparsebase::context::Context*) -> sparsebase::format::Format* {return nullptr;},
+          [](sparsebase::context::Context*, sparsebase::context::Context*) -> bool { return true; });
+  EXPECT_EQ(
+      (converterOrderTwo.Convert(
+          &csr, sparsebase::format::COO<int, int, int>::get_format_id_static(),
+          &cpu_context)),
+      nullptr);
+}
