@@ -114,7 +114,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(
     std::string filename) {
-  utils::io::MTXReader<VertexID, NumEdges, Weight> reader(filename);
+  utils::io::MTXReader<VertexID, NumEdges, Weight> reader(filename, false);
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
