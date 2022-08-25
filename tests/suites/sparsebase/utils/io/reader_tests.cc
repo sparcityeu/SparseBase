@@ -27,6 +27,28 @@ const std::string mtx_data_with_values =
 5 4 0.5
 )";
 
+const std::string mtx_data_one_col_with_values =
+    R"(%%MatrixMarket matrix coordinate pattern symmetric
+%This is a comment
+10 1 5
+2 1 0.1
+4 1 0.3
+5 1 0.2
+6 1 0.4
+9 1 0.5
+)";
+
+const std::string mtx_data_one_row_with_values =
+    R"(%%MatrixMarket matrix coordinate pattern symmetric
+%This is a comment
+1 10 5
+1 2 0.1
+1 4 0.3
+1 5 0.2
+1 6 0.4
+1 9 0.5
+)";
+
 const std::string edge_list_data = R"(1 0
 3 0
 2 1
@@ -45,8 +67,57 @@ const std::string edge_list_data_with_values = R"(1 0 0.1
 // (With the convert_to_zero_index option set to true for mtx)
 int row[5]{1, 2, 3, 4, 4};
 int col[5]{0, 1, 0, 2, 3};
+int one_row_one_col[5]{1, 3, 4, 5, 8};
+float one_row_one_col_vals[10]{0, 0.1, 0, 0.3, 0.2, 0.4, 0, 0, 0.5, 0};
+int one_row_one_col_length = 10;
 float vals[5]{0.1, 0.3, 0.2, 0.4, 0.5};
 
+TEST(MTXReader, Array) {
+
+  // Write the mtx data to a file
+  std::ofstream ofs("one_col.mtx");
+  ofs << mtx_data_one_col_with_values;
+  ofs.close();
+
+  ofs.open("one_row.mtx");
+  ofs << mtx_data_one_row_with_values;
+  ofs.close();
+
+  // Read one column file
+  sparsebase::utils::io::MTXReader<int, int, float> reader("one_col.mtx", true);
+  auto array = reader.ReadArray();
+
+  // Check the dimensions
+  EXPECT_EQ(array->get_dimensions()[0], one_row_one_col_length);
+  EXPECT_EQ(array->get_num_nnz(), one_row_one_col_length);
+
+  // Check that the arrays are populated
+  EXPECT_NE(array->get_vals(), nullptr);
+  for (int i= 0; i< 10; i++) std::cout << array->get_vals()[i] <<" ";
+  std::cout << std::endl;
+
+  // Check the integrity and order of data
+  for (int i =0; i< one_row_one_col_length; i++){
+    EXPECT_EQ(array->get_vals()[i], one_row_one_col_vals[i]);
+  }
+
+  // Read one row file
+  sparsebase::utils::io::MTXReader<int, int, float> reader2("one_row.mtx", true);
+  auto array2 = reader2.ReadArray();
+
+  //// Check the dimensions
+  EXPECT_EQ(array2->get_dimensions()[0], one_row_one_col_length);
+  EXPECT_EQ(array2->get_num_nnz(), one_row_one_col_length);
+
+  //// Check that the arrays are populated
+  EXPECT_NE(array2->get_vals(), nullptr);
+
+  //// Check the integrity and order of data
+  for (int i =0; i< one_row_one_col_length; i++){
+    EXPECT_EQ(array2->get_vals()[i], one_row_one_col_vals[i]);
+  }
+
+}
 TEST(MTXReader, Basics) {
 
   // Write the mtx data to a file

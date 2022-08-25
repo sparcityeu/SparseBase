@@ -198,6 +198,27 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+format::Array<ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+  auto coo = ReadCOO();
+  if (coo->get_dimensions()[0] != 1 && coo->get_dimensions()[1] != 1)
+    throw ReaderException("Trying to read a 2D matrix into dense array");
+  auto n = coo->get_dimensions()[0];
+  auto m = coo->get_dimensions()[1];
+  auto coo_col = coo->get_col();
+  auto coo_row = coo->get_row();
+  auto coo_vals = coo->get_vals();
+  auto num_nnz = coo->get_num_nnz();
+  ValueType *vals = new ValueType[std::max<IDType>(n, m)]();
+  IDType curr_row = 0;
+  IDType curr_col = 0;
+  for (IDType nnz = 0; nnz < num_nnz; nnz++){
+    vals[coo_col[nnz]+coo_row[nnz]] = coo_vals[nnz];
+  }
+  return new format::Array<ValueType>(std::max(n,m), vals, sparsebase::format::kOwned);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
@@ -215,6 +236,13 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
     std::string filename, bool weighted, bool convert_to_zero_index)
     : filename_(filename), weighted_(weighted),
       convert_to_zero_index_(convert_to_zero_index) {}
+
+template <typename IDType, typename NNZType, typename ValueType>
+format::Array<ValueType> *
+PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
+  return reader.ReadArray();
+}
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
