@@ -7,16 +7,16 @@
 // These are known to be equivalent (converted using scipy)
 const int n = 12;
 const int m = 9;
-const int nnz = 6;
-int coo_row[6] {0, 0, 1, 3, 10, 11};
-int coo_col[6] {0, 2, 1, 3, 8, 7};
-int coo_vals[6]{3, 5, 7, 9, 11, 13};
-int csr_row_ptr[13]{0, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 6};
-int csr_col[6]{0, 2, 1, 3, 8, 7};
-int csr_vals[6]{3, 5, 7, 9, 11, 13};
-int csc_col_ptr[13]{0, 1, 2, 3, 4, 4, 4, 4, 5, 6, 6, 6, 6};
-int csc_row[6]{0, 1, 0, 3, 11, 10};
-int csc_vals[6]{3, 7, 5, 9, 13, 11};
+const int nnz = 7;
+int coo_row[7] {0, 0, 1, 3, 5, 10, 11};
+int coo_col[7] {0, 2, 1, 3, 3, 8, 7};
+int coo_vals[7]{3, 5, 7, 9, 15, 11, 13};
+int csr_row_ptr[13]{0, 2, 3, 3, 4, 4, 5, 5, 5, 5, 5, 6, 7};
+int csr_col[7]{0, 2, 1, 3, 3, 8, 7};
+int csr_vals[7]{3, 5, 7, 9, 15, 11, 13};
+int csc_col_ptr[13]{0, 1, 2, 3, 5, 5, 5, 5, 6, 7, 7, 7, 7};
+int csc_row[7]{0, 1, 0, 3, 5, 11, 10};
+int csc_vals[7]{3, 7, 5, 9, 15, 13, 11};
 
 TEST(ConverterOrderTwo, CSRToCOO) {
   sparsebase::format::CSR<int, int, int> csr(
