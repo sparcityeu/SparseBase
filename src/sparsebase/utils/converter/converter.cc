@@ -149,6 +149,80 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+Format *CooCscFunctionConditional(Format *source, context::Context *context) {
+  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
+
+  std::vector<DimensionType> dimensions = coo->get_dimensions();
+  IDType n = dimensions[0];
+  IDType m = dimensions[1];
+  NNZType nnz = coo->get_num_nnz();
+  auto coo_col = coo->get_col();
+  auto coo_row = coo->get_row();
+  auto coo_vals = coo->get_vals();
+  NNZType *col_ptr = new NNZType[n + 1];
+  NNZType * col_counter = new NNZType[n]();
+  IDType *row = new IDType[nnz];
+  ValueType *vals;
+  if constexpr (!std::is_same_v<void, ValueType>) {
+    if (coo->get_vals() != nullptr) {
+      vals = new ValueType[nnz];
+    } else {
+      vals = nullptr;
+    }
+  } else {
+    vals = nullptr;
+  }
+
+  std::fill(col_ptr, col_ptr + n + 1, 0);
+  std::fill(row, row + nnz, 0);
+
+  for (IDType i = 0; i < nnz; i++) {
+    col_ptr[coo_col[i]+1]++;
+  }
+  for (IDType i = 1; i <= n; i++) {
+    col_ptr[i] += col_ptr[i - 1];
+  }
+
+  for (IDType i = 0; i < nnz; i++) {
+    auto this_nnz_col = coo_col[i];
+    auto this_nnz_row = coo_row[i];
+    row[col_ptr[this_nnz_col]+col_counter[this_nnz_col]++] = this_nnz_row;
+    if constexpr (!std::is_same_v<void, ValueType>) {
+      if (coo_vals != nullptr) {
+        vals[col_ptr[this_nnz_col]+col_counter[this_nnz_col]-1] = coo_vals[i];
+      }
+    }
+  }
+#pragma omp parallel for default(none) shared(col_ptr, row, vals, n)
+      for (IDType i = 0; i < n; i++) {
+        NNZType start = col_ptr[i];
+        NNZType end = col_ptr[i + 1];
+
+        if (end - start <= 1) {
+          continue;
+        }
+
+        std::vector<std::pair<IDType, ValueType>> sort_vec;
+        for (NNZType j = start; j < end; j++) {
+          ValueType val = (vals != nullptr) ? vals[j] : 0;
+          sort_vec.emplace_back(row[j], val);
+        }
+        std::sort(sort_vec.begin(), sort_vec.end(),
+                  std::less<std::pair<IDType, ValueType>>());
+        for (NNZType j = start; j < end; j++) {
+          if (vals != nullptr) {
+            vals[j] = sort_vec[j - start].second;
+          }
+          row[j] = sort_vec[j - start].first;
+        }
+      }
+
+  auto csc =
+      new CSC<IDType, NNZType, ValueType>(n, m, col_ptr, row, vals, kOwned, false);
+  return csc;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
   auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
 
@@ -223,6 +297,11 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCooFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; });
+  this->RegisterConditionalConversionFunction(
+      COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      CSC<IDType, NNZType, ValueType>::get_format_id_static(),
+      CooCscFunctionConditional<IDType, NNZType, ValueType>,
+      [](context::Context *, context::Context *) -> bool { return true; });
 #ifdef CUDA
   this->RegisterConditionalConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
@@ -253,6 +332,12 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
+      [](context::Context *, context::Context *) -> bool { return true; },
+      true);
+  this->RegisterConditionalConversionFunction(
+      COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      CSC<IDType, NNZType, ValueType>::get_format_id_static(),
+      CooCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; },
       true);
 }

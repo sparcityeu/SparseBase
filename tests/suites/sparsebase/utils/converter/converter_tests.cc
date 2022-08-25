@@ -8,12 +8,15 @@
 const int n = 12;
 const int m = 9;
 const int nnz = 6;
-int coo_row[6]{0, 0, 1, 3, 10, 11};
-int coo_col[6]{0, 2, 1, 3, 8, 7};
+int coo_row[6] {0, 0, 1, 3, 10, 11};
+int coo_col[6] {0, 2, 1, 3, 8, 7};
 int coo_vals[6]{3, 5, 7, 9, 11, 13};
 int csr_row_ptr[13]{0, 2, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 6};
 int csr_col[6]{0, 2, 1, 3, 8, 7};
 int csr_vals[6]{3, 5, 7, 9, 11, 13};
+int csc_col_ptr[13]{0, 1, 2, 3, 4, 4, 4, 4, 5, 6, 6, 6, 6};
+int csc_row[6]{0, 1, 0, 3, 11, 10};
+int csc_vals[6]{3, 7, 5, 9, 13, 11};
 
 TEST(ConverterOrderTwo, CSRToCOO) {
   sparsebase::format::CSR<int, int, int> csr(
@@ -108,6 +111,56 @@ TEST(ConverterOrderTwo, COOToCSR) {
   // All values should be equal
   for (int i = 0; i < (n + 1); i++) {
     EXPECT_EQ(csr2->get_row_ptr()[i], csr_row_ptr[i]);
+  }
+}
+
+TEST(ConverterOrderTwo, COOToCSC) {
+  sparsebase::format::COO<int, int, int> coo(
+      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+      converterOrderTwo;
+  sparsebase::context::CPUContext cpu_context;
+
+  // Testing non-move converter (deep copy)
+  auto csc = converterOrderTwo.Convert<sparsebase::format::CSC<int, int, int>>(
+      &coo, &cpu_context, false);
+
+  // None of the pointers should be the same due to deep copy
+  EXPECT_NE(csc->get_col_ptr(), coo.get_col());
+  EXPECT_NE(csc->get_row(), coo.get_row());
+  EXPECT_NE(csc->get_vals(), coo.get_vals());
+
+  // All values should be equal however
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(csc->get_row()[i], csc_row[i]);
+    EXPECT_EQ(csc->get_vals()[i], csc_vals[i]);
+  }
+
+  // All values should be equal however
+  for (int i = 0; i < (n + 1); i++) {
+    EXPECT_EQ(csc->get_col_ptr()[i], csc_col_ptr[i]);
+  }
+
+  // Testing move converter (no arrays can be shallow copied)
+  auto csc2 = converterOrderTwo.Convert<sparsebase::format::CSC<int, int, int>>(
+      &coo, &cpu_context, true);
+
+  // Particularly, these two arrays should have been moved
+  EXPECT_NE(csc2->get_row(), coo.get_row());
+  EXPECT_NE(csc2->get_vals(), coo.get_vals());
+
+  // row_ptr array should be constructed from scratch
+  EXPECT_NE(csc2->get_col_ptr(), coo.get_col());
+
+  // All values should be equal
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(csc2->get_row()[i], csc_row[i]);
+    EXPECT_EQ(csc2->get_vals()[i], csc_vals[i]);
+  }
+
+  // All values should be equal
+  for (int i = 0; i < (n + 1); i++) {
+    EXPECT_EQ(csc2->get_col_ptr()[i], csc_col_ptr[i]);
   }
 }
 
