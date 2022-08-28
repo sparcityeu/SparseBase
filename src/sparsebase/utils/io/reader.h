@@ -122,6 +122,8 @@ public:
   ~MTXReader() override;
 
 private:
+  format::Array<ValueType> *ReadCoordinateIntoArray() const;
+  format::Array<ValueType> *ReadArrayIntoArray() const;
   std::string filename_;
   bool weighted_;
   bool convert_to_zero_index_;
