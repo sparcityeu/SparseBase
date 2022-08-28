@@ -20,6 +20,7 @@ namespace utils {
 
 namespace io {
 
+#define MMX_PREFIX "%%MatrixMarket"
 template <typename IDType, typename NNZType, typename ValueType>
 EdgeListReader<IDType, NNZType, ValueType>::EdgeListReader(
     std::string filename, bool weighted, bool remove_duplicates,
@@ -199,10 +200,24 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
+  std::ifstream fin(filename_);
+
+  // Ignore headers and comments:
+  while (fin.peek() == '%')
+    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  // Declare variables: (check the types here)
+
+  // check that it has 1 row/column
+  format::DimensionType M, N, L;
+
+  fin >> M >> N >> L;
+  if (M != 1 && N != 1) {
+    throw ReaderException("Trying to read a 2D matrix with multiple rows "
+                          "and multiple columns into dense array");
+  }
+  fin.close();
   auto coo = ReadCOO();
-  if (coo->get_dimensions()[0] != 1 && coo->get_dimensions()[1] != 1)
-    throw ReaderException("Trying to read a 2D matrix into dense array");
   auto n = coo->get_dimensions()[0];
   auto m = coo->get_dimensions()[1];
   auto coo_col = coo->get_col();
@@ -212,10 +227,75 @@ MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
   ValueType *vals = new ValueType[std::max<IDType>(n, m)]();
   IDType curr_row = 0;
   IDType curr_col = 0;
-  for (IDType nnz = 0; nnz < num_nnz; nnz++){
-    vals[coo_col[nnz]+coo_row[nnz]] = coo_vals[nnz];
+  for (IDType nnz = 0; nnz < num_nnz; nnz++) {
+    vals[coo_col[nnz] + coo_row[nnz]] = coo_vals[nnz];
   }
-  return new format::Array<ValueType>(std::max(n,m), vals, sparsebase::format::kOwned);
+  return new format::Array<ValueType>(std::max(n, m), vals,
+                                      sparsebase::format::kOwned);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+format::Array<ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
+  std::ifstream fin(filename_);
+  // Ignore headers and comments:
+  while (fin.peek() == '%')
+    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  // Declare variables: (check the types here)
+
+  // check that it has 1 row/column
+  format::DimensionType M, N;
+
+  fin >> M >> N;
+
+  if (M != 1 && N != 1) {
+    throw ReaderException("Trying to read a 2D matrix with multiple rows "
+                          "and multiple columns into dense array");
+  }
+  format::DimensionType total_values = M * N;
+  NNZType nnz_counter = 0;
+  ValueType *vals = new ValueType[total_values];
+  for (format::DimensionType l = 0; l < total_values; l++) {
+    ValueType w;
+    fin >> w;
+
+    vals[l] = w;
+    nnz_counter += w != 0;
+  }
+
+  auto array = new format::Array<ValueType>(nnz_counter, vals, format::kOwned);
+  return array;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+format::Array<ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+  std::ifstream fin(filename_);
+
+  if (fin.is_open()) {
+    std::string line_string;
+    std::getline(fin, line_string);
+    // parse first line
+    std::stringstream line_ss(line_string);
+    std::string prefix, object, format, field, symmetry;
+    line_ss >> prefix >> object >> format >> field >> symmetry;
+    if (prefix != MMX_PREFIX)
+      throw ReaderException("Wrong prefix in a matrix market file");
+    // check object
+    if (format == "coordinate") {
+      fin.close();
+      return ReadCoordinateIntoArray();
+    } else if (format == "array") {
+      fin.close();
+      return ReadArrayIntoArray();
+    } else {
+      throw ReaderException(
+          "Wrong format value while reading matrix market file\n");
+    }
+
+  } else {
+    throw ReaderException("Wrong matrix market file name\n");
+  }
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
