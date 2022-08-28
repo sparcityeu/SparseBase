@@ -49,6 +49,38 @@ const std::string mtx_data_one_row_with_values =
 1 9 0.5
 )";
 
+const std::string mtx_array_data_one_col_with_values =
+    R"(%%MatrixMarket matrix array pattern symmetric
+%This is a comment
+10 1
+0
+0.1
+0
+0.3
+0.2
+0.4
+0
+0
+0.5
+0
+)";
+
+const std::string mtx_array_data_one_row_with_values =
+    R"(%%MatrixMarket matrix array pattern symmetric
+%This is a comment
+1 10
+0
+0.1
+0
+0.3
+0.2
+0.4
+0
+0
+0.5
+0
+)";
+
 const std::string edge_list_data = R"(1 0
 3 0
 2 1
@@ -72,19 +104,10 @@ float one_row_one_col_vals[10]{0, 0.1, 0, 0.3, 0.2, 0.4, 0, 0, 0.5, 0};
 int one_row_one_col_length = 10;
 float vals[5]{0.1, 0.3, 0.2, 0.4, 0.5};
 
-TEST(MTXReader, Array) {
-
-  // Write the mtx data to a file
-  std::ofstream ofs("one_col.mtx");
-  ofs << mtx_data_one_col_with_values;
-  ofs.close();
-
-  ofs.open("one_row.mtx");
-  ofs << mtx_data_one_row_with_values;
-  ofs.close();
+void checkArrayReading(std::string filename){
 
   // Read one column file
-  sparsebase::utils::io::MTXReader<int, int, float> reader("one_col.mtx", true);
+  sparsebase::utils::io::MTXReader<int, int, float> reader(filename, true);
   auto array = reader.ReadArray();
 
   // Check the dimensions
@@ -100,24 +123,40 @@ TEST(MTXReader, Array) {
   for (int i =0; i< one_row_one_col_length; i++){
     EXPECT_EQ(array->get_vals()[i], one_row_one_col_vals[i]);
   }
+}
+TEST(MTXReader, ArrayOneCol) {
 
-  // Read one row file
-  sparsebase::utils::io::MTXReader<int, int, float> reader2("one_row.mtx", true);
-  auto array2 = reader2.ReadArray();
+  std::ofstream ofs("one_col.mtx");
+  ofs << mtx_data_one_col_with_values;
+  ofs.close();
+  // Write the mtx data to a file
+  checkArrayReading("one_col.mtx");
+}
 
-  //// Check the dimensions
-  EXPECT_EQ(array2->get_dimensions()[0], one_row_one_col_length);
-  EXPECT_EQ(array2->get_num_nnz(), one_row_one_col_length);
-
-  //// Check that the arrays are populated
-  EXPECT_NE(array2->get_vals(), nullptr);
-
-  //// Check the integrity and order of data
-  for (int i =0; i< one_row_one_col_length; i++){
-    EXPECT_EQ(array2->get_vals()[i], one_row_one_col_vals[i]);
-  }
+TEST(MTXReader, ArrayOneRow) {
+  std::ofstream ofs("one_row.mtx");
+  ofs << mtx_data_one_row_with_values;
+  ofs.close();
+  // Write the mtx data to a file
+  checkArrayReading("one_row.mtx");
 
 }
+TEST(MTXReader, ArrayOneRowArray) {
+  std::ofstream ofs("one_row_array.mtx");
+  ofs << mtx_array_data_one_row_with_values;
+  ofs.close();
+  // Write the mtx data to a file
+  checkArrayReading("one_row_array.mtx");
+}
+
+TEST(MTXReader, ArrayOneColArray) {
+  std::ofstream ofs("one_col_array.mtx");
+  ofs << mtx_array_data_one_col_with_values;
+  ofs.close();
+  // Write the mtx data to a file
+  checkArrayReading("one_col_array.mtx");
+}
+
 TEST(MTXReader, Basics) {
 
   // Write the mtx data to a file
