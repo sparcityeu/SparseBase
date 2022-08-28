@@ -253,17 +253,19 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
                           "and multiple columns into dense array");
   }
   format::DimensionType total_values = M * N;
-  NNZType nnz_counter = 0;
+  // TODO
+  // Currently num_nnz is defined all wrong. Once it's fixed add back nnz_counter
+  //NNZType nnz_counter = 0;
   ValueType *vals = new ValueType[total_values];
   for (format::DimensionType l = 0; l < total_values; l++) {
     ValueType w;
     fin >> w;
 
     vals[l] = w;
-    nnz_counter += w != 0;
+    //nnz_counter += w != 0;
   }
 
-  auto array = new format::Array<ValueType>(nnz_counter, vals, format::kOwned);
+  auto array = new format::Array<ValueType>(/*nnz_counter*/total_values, vals, format::kOwned);
   return array;
 }
 
