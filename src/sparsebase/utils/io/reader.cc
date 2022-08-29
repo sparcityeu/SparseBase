@@ -221,7 +221,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
   if (fin.is_open()) {
     // Declare variables: (check the types here)
-    format::DimensionType M, N, L, num_nnz;
+    format::DimensionType M, N, L;
 
     // Ignore headers and comments:
     while (fin.peek() == '%')
@@ -229,18 +229,40 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
     fin >> M >> N >> L;
 
-    if (options_.symmetry == MTXSymmetryOptions::symmetric) num_nnz=L*2;
-    else num_nnz = L;
+    ValueType *vals = nullptr;
+    if (options_.symmetry == MTXSymmetryOptions::general) {
+      IDType *row = new IDType[L];
+      IDType *col = new IDType[L];
+      if (weighted_) {
+        if constexpr (!std::is_same_v<void, ValueType>) {
+          vals = new ValueType[L];
+          for (NNZType l = 0; l < L; l++) {
+            IDType m, n;
+            ValueType w;
+            fin >> m >> n >> w;
 
-    IDType *row = new IDType[num_nnz];
-    IDType *col = new IDType[num_nnz];
-    if (weighted_) {
-      if constexpr (!std::is_same_v<void, ValueType>) {
-        ValueType *vals = new ValueType[num_nnz];
+            if (convert_to_zero_index_) {
+              n--;
+              m--;
+            }
+
+            row[l] = m;
+            col[l] = n;
+            vals[l] = w;
+          }
+
+          auto coo = new format::COO<IDType, NNZType, ValueType>(
+              M, N, L, row, col, vals, format::kOwned);
+          return coo;
+        } else {
+          // TODO: Add an exception class for this
+          throw ReaderException(
+              "Weight type for weighted graphs can not be void");
+        }
+      } else {
         for (NNZType l = 0; l < L; l++) {
           IDType m, n;
-          ValueType w;
-          fin >> m >> n >> w;
+          fin >> m >> n;
 
           if (convert_to_zero_index_) {
             n--;
@@ -249,42 +271,64 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
           row[l] = m;
           col[l] = n;
-          vals[l] = w;
-          if (options_.symmetry == MTXSymmetryOptions::symmetric){
-            row[num_nnz/2+l] = n;
-            col[num_nnz/2+l] = m;
-            vals[num_nnz/2+l] = w;
-          }
         }
 
         auto coo = new format::COO<IDType, NNZType, ValueType>(
-            M, N, num_nnz, row, col, vals, format::kOwned);
+            M, N, L, row, col, nullptr, format::kOwned);
         return coo;
-      } else {
-        // TODO: Add an exception class for this
-        throw ReaderException(
-            "Weight type for weighted graphs can not be void");
       }
     } else {
+      IDType *row = new IDType[L * 2];
+      IDType *col = new IDType[L * 2];
+      NNZType actual_nnzs = 0;
+      IDType m, n;
+      ValueType w;
+      if (weighted_) {
+        if constexpr (!std::is_same_v<void, ValueType>) {
+          vals = new ValueType[L * 2];
+        }
+      }
       for (NNZType l = 0; l < L; l++) {
-        IDType m, n;
         fin >> m >> n;
+        if (weighted_)
+          fin >> w;
 
         if (convert_to_zero_index_) {
           n--;
           m--;
         }
-
-        row[l] = m;
-        col[l] = n;
-          if (options_.symmetry == MTXSymmetryOptions::symmetric){
-            row[num_nnz/2+l] = n;
-            col[num_nnz/2+l] = m;
-          }
+        row[actual_nnzs] = m;
+        col[actual_nnzs] = n;
+        if (weighted_)
+          vals[actual_nnzs] = w;
+        actual_nnzs++;
+        if (m != n) {
+          row[actual_nnzs] = n;
+          col[actual_nnzs] = m;
+          if (weighted_)
+            vals[actual_nnzs] = w;
+          actual_nnzs++;
+        }
       }
-
+      IDType *actual_rows = row;
+      IDType *actual_cols = col;
+      ValueType *actual_vals = vals;
+      if (actual_nnzs != L * 2) {
+        actual_rows = new IDType[actual_nnzs];
+        actual_cols = new IDType[actual_nnzs];
+        memcpy(actual_rows, row, actual_nnzs * sizeof(IDType));
+        memcpy(actual_cols, col, actual_nnzs * sizeof(IDType));
+        delete[] row;
+        delete[] col;
+        if (weighted_) {
+          actual_vals = new ValueType[actual_nnzs];
+          memcpy(actual_vals, vals, actual_nnzs * sizeof(ValueType));
+          delete[] vals;
+        }
+      }
       auto coo = new format::COO<IDType, NNZType, ValueType>(
-          M, N, num_nnz, row, col, nullptr, format::kOwned);
+          M, N, actual_nnzs, actual_rows, actual_cols, actual_vals,
+          format::kOwned);
       return coo;
     }
   } else {
