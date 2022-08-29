@@ -221,7 +221,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
   if (fin.is_open()) {
     // Declare variables: (check the types here)
-    format::DimensionType M, N, L;
+    format::DimensionType M, N, L, num_nnz;
 
     // Ignore headers and comments:
     while (fin.peek() == '%')
@@ -229,11 +229,14 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
     fin >> M >> N >> L;
 
-    IDType *row = new IDType[L];
-    IDType *col = new IDType[L];
+    if (options_.symmetry == MTXSymmetryOptions::symmetric) num_nnz=L*2;
+    else num_nnz = L;
+
+    IDType *row = new IDType[num_nnz];
+    IDType *col = new IDType[num_nnz];
     if (weighted_) {
       if constexpr (!std::is_same_v<void, ValueType>) {
-        ValueType *vals = new ValueType[L];
+        ValueType *vals = new ValueType[num_nnz];
         for (NNZType l = 0; l < L; l++) {
           IDType m, n;
           ValueType w;
@@ -247,10 +250,15 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
           row[l] = m;
           col[l] = n;
           vals[l] = w;
+          if (options_.symmetry == MTXSymmetryOptions::symmetric){
+            row[num_nnz/2+l] = n;
+            col[num_nnz/2+l] = m;
+            vals[num_nnz/2+l] = w;
+          }
         }
 
         auto coo = new format::COO<IDType, NNZType, ValueType>(
-            M, N, L, row, col, vals, format::kOwned);
+            M, N, num_nnz, row, col, vals, format::kOwned);
         return coo;
       } else {
         // TODO: Add an exception class for this
@@ -269,10 +277,14 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
         row[l] = m;
         col[l] = n;
+          if (options_.symmetry == MTXSymmetryOptions::symmetric){
+            row[num_nnz/2+l] = n;
+            col[num_nnz/2+l] = m;
+          }
       }
 
       auto coo = new format::COO<IDType, NNZType, ValueType>(
-          M, N, L, row, col, nullptr, format::kOwned);
+          M, N, num_nnz, row, col, nullptr, format::kOwned);
       return coo;
     }
   } else {
