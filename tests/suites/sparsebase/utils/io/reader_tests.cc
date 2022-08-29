@@ -6,7 +6,7 @@
 #include <unordered_set>
 
 const std::string mtx_data =
-    R"(%%MatrixMarket matrix coordinate pattern symmetric
+    R"(%%MatrixMarket matrix coordinate pattern general
 %This is a comment
 5 5 5
 2 1
@@ -17,7 +17,7 @@ const std::string mtx_data =
 )";
 
 const std::string mtx_data_with_values =
-    R"(%%MatrixMarket matrix coordinate pattern symmetric
+    R"(%%MatrixMarket matrix coordinate pattern general
 %This is a comment
 5 5 5
 2 1 0.1
@@ -28,7 +28,7 @@ const std::string mtx_data_with_values =
 )";
 
 const std::string mtx_data_one_col_with_values =
-    R"(%%MatrixMarket matrix coordinate pattern symmetric
+    R"(%%MatrixMarket matrix coordinate pattern general
 %This is a comment
 10 1 5
 2 1 0.1
@@ -39,7 +39,7 @@ const std::string mtx_data_one_col_with_values =
 )";
 
 const std::string mtx_data_one_row_with_values =
-    R"(%%MatrixMarket matrix coordinate pattern symmetric
+    R"(%%MatrixMarket matrix coordinate pattern general
 %This is a comment
 1 10 5
 1 2 0.1
@@ -50,7 +50,7 @@ const std::string mtx_data_one_row_with_values =
 )";
 
 const std::string mtx_array_data_one_col_with_values =
-    R"(%%MatrixMarket matrix array pattern symmetric
+    R"(%%MatrixMarket matrix array pattern general
 %This is a comment
 10 1
 0
@@ -66,7 +66,7 @@ const std::string mtx_array_data_one_col_with_values =
 )";
 
 const std::string mtx_array_data_one_row_with_values =
-    R"(%%MatrixMarket matrix array pattern symmetric
+    R"(%%MatrixMarket matrix array pattern general
 %This is a comment
 1 10
 0
