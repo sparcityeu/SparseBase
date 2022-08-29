@@ -122,11 +122,40 @@ public:
   ~MTXReader() override;
 
 private:
+  enum MTXObjectOptions {
+    matrix,
+    vector
+  };
+  enum MTXFormatOptions {
+    coordinate,
+    array
+  };
+  enum MTXFieldOptions {
+    real,
+    double_field,
+    complex,
+    integer,
+    pattern
+  };
+  enum MTXSymmetryOptions {
+    general,
+    symmetric,
+    skew_symmetric,
+    hermitian
+  };
+  struct MTXOptions {
+    MTXObjectOptions object;
+    MTXFormatOptions format;
+    MTXFieldOptions field;
+    MTXSymmetryOptions symmetry;
+  };
+  MTXOptions ParseHeader(std::string header_line) const;
   format::Array<ValueType> *ReadCoordinateIntoArray() const;
   format::Array<ValueType> *ReadArrayIntoArray() const;
   std::string filename_;
   bool weighted_;
   bool convert_to_zero_index_;
+  MTXOptions options_;
 };
 
 /*!

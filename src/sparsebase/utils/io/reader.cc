@@ -129,8 +129,90 @@ MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
                                                  bool weighted,
                                                  bool convert_to_zero_index)
     : filename_(filename), weighted_(weighted),
-      convert_to_zero_index_(convert_to_zero_index) {}
+      convert_to_zero_index_(convert_to_zero_index) {
+  std::ifstream fin(filename_);
 
+  if (fin.is_open()) {
+    std::string header_line;
+    std::getline(fin, header_line);
+    // parse first line
+    options_ = ParseHeader(header_line);
+  } else {
+    throw ReaderException("Wrong matrix market file name\n");
+  }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+typename MTXReader<IDType, NNZType, ValueType>::MTXOptions
+MTXReader<IDType, NNZType, ValueType>::ParseHeader(
+    std::string header_line) const {
+  std::stringstream line_ss(header_line);
+  MTXOptions options;
+  std::string prefix, object, format, field, symmetry;
+  line_ss >> prefix >> object >> format >> field >> symmetry;
+  if (prefix != MMX_PREFIX)
+    throw ReaderException("Wrong prefix in a matrix market file");
+  // parsing Object option
+  if (object == "matrix") {
+    options.object =
+        MTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
+  } else if (object == "vector") {
+    options.object =
+        MTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
+  } else {
+    throw ReaderException(
+        "Illegal value for the 'object' option in matrix market header");
+  }
+  // parsing format option
+  if (format == "array") {
+    options.format =
+        MTXReader<IDType, NNZType, ValueType>::MTXFormatOptions::array;
+  } else if (format == "coordinate") {
+    options.format =
+        MTXReader<IDType, NNZType, ValueType>::MTXFormatOptions::coordinate;
+  } else {
+    throw ReaderException(
+        "Illegal value for the 'format' option in matrix market header");
+  }
+  // parsing field option
+  if (field == "real") {
+    options.field =
+        MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::real;
+  } else if (field == "double") {
+    options.field =
+        MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::double_field;
+  } else if (field == "complex") {
+    options.field =
+        MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
+  } else if (field == "integer") {
+    options.field =
+        MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
+  } else if (field == "pattern") {
+    options.field =
+        MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::pattern;
+  } else {
+    throw ReaderException(
+        "Illegal value for the 'field' option in matrix market header");
+  }
+  // parsing symmetry
+  if (symmetry == "general") {
+    options.symmetry =
+        MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::general;
+  } else if (symmetry == "symmetric") {
+    options.symmetry =
+        MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::symmetric;
+  } else if (symmetry == "skew-symmetric") {
+    options.symmetry = MTXReader<IDType, NNZType,
+                                 ValueType>::MTXSymmetryOptions::skew_symmetric;
+  } else if (symmetry == "hermitian") {
+    options.symmetry =
+        MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::hermitian;
+  } else {
+    throw ReaderException(
+        "Illegal value for the 'symmetry' option in matrix market header");
+  }
+  return options;
+}
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
@@ -272,31 +354,14 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
-  std::ifstream fin(filename_);
-
-  if (fin.is_open()) {
-    std::string line_string;
-    std::getline(fin, line_string);
-    // parse first line
-    std::stringstream line_ss(line_string);
-    std::string prefix, object, format, field, symmetry;
-    line_ss >> prefix >> object >> format >> field >> symmetry;
-    if (prefix != MMX_PREFIX)
-      throw ReaderException("Wrong prefix in a matrix market file");
-    // check object
-    if (format == "coordinate") {
-      fin.close();
-      return ReadCoordinateIntoArray();
-    } else if (format == "array") {
-      fin.close();
-      return ReadArrayIntoArray();
-    } else {
-      throw ReaderException(
-          "Wrong format value while reading matrix market file\n");
-    }
-
+  // check object
+  if (options_.format == MTXFormatOptions::coordinate) {
+    return ReadCoordinateIntoArray();
+  } else if (options_.format == MTXFormatOptions::array) {
+    return ReadArrayIntoArray();
   } else {
-    throw ReaderException("Wrong matrix market file name\n");
+    throw ReaderException(
+        "Wrong format value while reading matrix market file\n");
   }
 }
 
