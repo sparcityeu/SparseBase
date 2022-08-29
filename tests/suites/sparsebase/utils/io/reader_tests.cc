@@ -16,8 +16,30 @@ const std::string mtx_data =
 5 4
 )";
 
+const std::string mtx_symm_data =
+    R"(%%MatrixMarket matrix coordinate pattern symmetric
+%This is a comment
+5 5 5
+2 1 
+4 1 
+3 2 
+5 3 
+5 4 
+)";
+
 const std::string mtx_data_with_values =
-    R"(%%MatrixMarket matrix coordinate pattern general
+    R"(%%MatrixMarket matrix coordinate real general
+%This is a comment
+5 5 5
+2 1 0.1
+4 1 0.2
+3 2 0.3
+5 3 0.4
+5 4 0.5
+)";
+
+const std::string mtx_symm_data_with_values =
+    R"(%%MatrixMarket matrix coordinate real symmetric
 %This is a comment
 5 5 5
 2 1 0.1
@@ -28,7 +50,7 @@ const std::string mtx_data_with_values =
 )";
 
 const std::string mtx_data_one_col_with_values =
-    R"(%%MatrixMarket matrix coordinate pattern general
+    R"(%%MatrixMarket matrix coordinate real general
 %This is a comment
 10 1 5
 2 1 0.1
@@ -39,7 +61,7 @@ const std::string mtx_data_one_col_with_values =
 )";
 
 const std::string mtx_data_one_row_with_values =
-    R"(%%MatrixMarket matrix coordinate pattern general
+    R"(%%MatrixMarket matrix coordinate real general
 %This is a comment
 1 10 5
 1 2 0.1
@@ -50,7 +72,7 @@ const std::string mtx_data_one_row_with_values =
 )";
 
 const std::string mtx_array_data_one_col_with_values =
-    R"(%%MatrixMarket matrix array pattern general
+    R"(%%MatrixMarket matrix array real general
 %This is a comment
 10 1
 0
@@ -66,7 +88,7 @@ const std::string mtx_array_data_one_col_with_values =
 )";
 
 const std::string mtx_array_data_one_row_with_values =
-    R"(%%MatrixMarket matrix array pattern general
+    R"(%%MatrixMarket matrix array real general
 %This is a comment
 1 10
 0
@@ -103,6 +125,10 @@ int one_row_one_col[5]{1, 3, 4, 5, 8};
 float one_row_one_col_vals[10]{0, 0.1, 0, 0.3, 0.2, 0.4, 0, 0, 0.5, 0};
 int one_row_one_col_length = 10;
 float vals[5]{0.1, 0.3, 0.2, 0.4, 0.5};
+int row_ptr_symm[6]   {0,    2,        4,        6,        8,       10};
+int row_symm[10]  {0,   0,   1,   1,   2,   2,   3,   3,   4,   4};
+int col_symm[10]  {1,   3,   0,   2,   1,   4,   0,   4,   2,   3};
+float vals_symm[10]{0.1, 0.2, 0.1, 0.3, 0.3, 0.4, 0.2, 0.5, 0.4, 0.5};
 
 void checkArrayReading(std::string filename){
 
@@ -157,7 +183,7 @@ TEST(MTXReader, ArrayOneColArray) {
   checkArrayReading("one_col_array.mtx");
 }
 
-TEST(MTXReader, Basics) {
+TEST(MTXReader, BasicsGeneral) {
 
   // Write the mtx data to a file
   std::ofstream ofs("test.mtx");
@@ -208,6 +234,60 @@ TEST(MTXReader, Basics) {
     EXPECT_EQ(coo2->get_row()[i], row[i]);
     EXPECT_EQ(coo2->get_col()[i], col[i]);
     EXPECT_EQ(coo2->get_vals()[i], vals[i]);
+  }
+}
+
+TEST(MTXReader, BasicsSymmetric) {
+
+  // Write the mtx data to a file
+  std::ofstream ofs("test_symm.mtx");
+  ofs << mtx_symm_data;
+  ofs.close();
+
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_symm_values.mtx");
+  ofs2 << mtx_symm_data_with_values;
+  ofs2.close();
+
+  // Read non-weighted file using sparsebase
+  sparsebase::utils::io::MTXReader<int, int, int> reader("test_symm.mtx");
+  auto coo = reader.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo->get_dimensions()[0], 5);
+  EXPECT_EQ(coo->get_dimensions()[1], 5);
+  EXPECT_EQ(coo->get_num_nnz(), 10);
+
+  // Check that the arrays are populated
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 10; i++) {
+    EXPECT_EQ(coo->get_row()[i], row_symm[i]);
+    EXPECT_EQ(coo->get_col()[i], col_symm[i]);
+  }
+
+  // Read the weighted file using sparsebase
+  sparsebase::utils::io::MTXReader<int, int, float> reader2("test_symm_values.mtx",
+                                                            true);
+  auto coo2 = reader2.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo2->get_dimensions()[0], 5);
+  EXPECT_EQ(coo2->get_dimensions()[1], 5);
+  EXPECT_EQ(coo2->get_num_nnz(), 10);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo2->get_vals(), nullptr);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(coo2->get_row()[i], row_symm[i]);
+    EXPECT_EQ(coo2->get_col()[i], col_symm[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals_symm[i]);
   }
 }
 
