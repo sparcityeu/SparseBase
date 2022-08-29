@@ -19,7 +19,8 @@ const std::string mtx_data =
 const std::string mtx_symm_data =
     R"(%%MatrixMarket matrix coordinate pattern symmetric
 %This is a comment
-5 5 5
+5 5 6
+1 1
 2 1 
 4 1 
 3 2 
@@ -41,7 +42,8 @@ const std::string mtx_data_with_values =
 const std::string mtx_symm_data_with_values =
     R"(%%MatrixMarket matrix coordinate real symmetric
 %This is a comment
-5 5 5
+5 5 6
+1 1 0.7
 2 1 0.1
 4 1 0.2
 3 2 0.3
@@ -125,10 +127,10 @@ int one_row_one_col[5]{1, 3, 4, 5, 8};
 float one_row_one_col_vals[10]{0, 0.1, 0, 0.3, 0.2, 0.4, 0, 0, 0.5, 0};
 int one_row_one_col_length = 10;
 float vals[5]{0.1, 0.3, 0.2, 0.4, 0.5};
-int row_ptr_symm[6]   {0,    2,        4,        6,        8,       10};
-int row_symm[10]  {0,   0,   1,   1,   2,   2,   3,   3,   4,   4};
-int col_symm[10]  {1,   3,   0,   2,   1,   4,   0,   4,   2,   3};
-float vals_symm[10]{0.1, 0.2, 0.1, 0.3, 0.3, 0.4, 0.2, 0.5, 0.4, 0.5};
+int row_ptr_symm[6]{0,             3,        5,        7,        9,       11};
+int row_symm[11]   {0,   0,   0,   1,   1,   2,   2,   3,   3,   4,   4};
+int col_symm[11]   {0,   1,   3,   0,   2,   1,   4,   0,   4,   2,   3};
+float vals_symm[11]{0.7, 0.1, 0.2, 0.1, 0.3, 0.3, 0.4, 0.2, 0.5, 0.4, 0.5};
 
 void checkArrayReading(std::string filename){
 
@@ -256,14 +258,14 @@ TEST(MTXReader, BasicsSymmetric) {
   // Check the dimensions
   EXPECT_EQ(coo->get_dimensions()[0], 5);
   EXPECT_EQ(coo->get_dimensions()[1], 5);
-  EXPECT_EQ(coo->get_num_nnz(), 10);
+  EXPECT_EQ(coo->get_num_nnz(), 11);
 
   // Check that the arrays are populated
   EXPECT_NE(coo->get_row(), nullptr);
   EXPECT_NE(coo->get_col(), nullptr);
 
   // Check the integrity and order of data
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 11; i++) {
     EXPECT_EQ(coo->get_row()[i], row_symm[i]);
     EXPECT_EQ(coo->get_col()[i], col_symm[i]);
   }
@@ -276,7 +278,7 @@ TEST(MTXReader, BasicsSymmetric) {
   // Check the dimensions
   EXPECT_EQ(coo2->get_dimensions()[0], 5);
   EXPECT_EQ(coo2->get_dimensions()[1], 5);
-  EXPECT_EQ(coo2->get_num_nnz(), 10);
+  EXPECT_EQ(coo2->get_num_nnz(), 11);
 
   // vals array should not be empty or null (same for the other arrays)
   EXPECT_NE(coo2->get_vals(), nullptr);
@@ -284,7 +286,7 @@ TEST(MTXReader, BasicsSymmetric) {
   EXPECT_NE(coo2->get_col(), nullptr);
 
   // Check the integrity and order of data
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 11; i++) {
     EXPECT_EQ(coo2->get_row()[i], row_symm[i]);
     EXPECT_EQ(coo2->get_col()[i], col_symm[i]);
     EXPECT_EQ(coo2->get_vals()[i], vals_symm[i]);
