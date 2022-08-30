@@ -110,12 +110,10 @@ public:
   /*!
    * Constructor for the MTXReader class
    * @param filename path to the file to be read
-   * @param weighted should be set to true if the file contains weights
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
    */
-  explicit MTXReader(std::string filename, bool weighted = false,
-                     bool convert_to_zero_index = true);
+  explicit MTXReader(std::string filename, bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::Array<ValueType> *ReadArray() const override;
@@ -153,7 +151,6 @@ private:
   format::Array<ValueType> *ReadCoordinateIntoArray() const;
   format::Array<ValueType> *ReadArrayIntoArray() const;
   std::string filename_;
-  bool weighted_;
   bool convert_to_zero_index_;
   MTXOptions options_;
 };

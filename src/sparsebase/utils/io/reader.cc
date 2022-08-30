@@ -126,9 +126,8 @@ EdgeListReader<IDType, NNZType, ValueType>::~EdgeListReader(){};
 
 template <typename IDType, typename NNZType, typename ValueType>
 MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
-                                                 bool weighted,
                                                  bool convert_to_zero_index)
-    : filename_(filename), weighted_(weighted),
+    : filename_(filename),
       convert_to_zero_index_(convert_to_zero_index) {
   std::ifstream fin(filename_);
 
@@ -159,6 +158,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (object == "vector") {
     options.object =
         MTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
+    throw ReaderException("Matrix market reader does not currently support reading vectors.");
   } else {
     throw ReaderException(
         "Illegal value for the 'object' option in matrix market header");
@@ -184,6 +184,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (field == "complex") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
+    throw ReaderException("Matrix market reader does not currently support complex numbers.");
   } else if (field == "integer") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
@@ -207,6 +208,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (symmetry == "hermitian") {
     options.symmetry =
         MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::hermitian;
+    throw ReaderException("Matrix market reader does not currently support hermitian symmetry.");
   } else {
     throw ReaderException(
         "Illegal value for the 'symmetry' option in matrix market header");
@@ -228,12 +230,12 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
       fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     fin >> M >> N >> L;
-
+    bool weighted = options_.field != MTXFieldOptions::pattern;
     ValueType *vals = nullptr;
     if (options_.symmetry == MTXSymmetryOptions::general) {
       IDType *row = new IDType[L];
       IDType *col = new IDType[L];
-      if (weighted_) {
+      if (weighted) {
         if constexpr (!std::is_same_v<void, ValueType>) {
           vals = new ValueType[L];
           for (NNZType l = 0; l < L; l++) {
@@ -277,20 +279,20 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
             M, N, L, row, col, nullptr, format::kOwned);
         return coo;
       }
-    } else {
+    } else if (options_.symmetry == MTXSymmetryOptions::symmetric || options_.symmetry == MTXSymmetryOptions::skew_symmetric) {
       IDType *row = new IDType[L * 2];
       IDType *col = new IDType[L * 2];
       NNZType actual_nnzs = 0;
       IDType m, n;
       ValueType w;
-      if (weighted_) {
+      if (weighted) {
         if constexpr (!std::is_same_v<void, ValueType>) {
           vals = new ValueType[L * 2];
         }
       }
       for (NNZType l = 0; l < L; l++) {
         fin >> m >> n;
-        if (weighted_)
+        if (weighted)
           fin >> w;
 
         if (convert_to_zero_index_) {
@@ -299,13 +301,13 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         }
         row[actual_nnzs] = m;
         col[actual_nnzs] = n;
-        if (weighted_)
+        if (weighted)
           vals[actual_nnzs] = w;
         actual_nnzs++;
         if (m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
-          if (weighted_)
+          if (weighted)
             vals[actual_nnzs] = w;
           actual_nnzs++;
         }
@@ -320,7 +322,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         memcpy(actual_cols, col, actual_nnzs * sizeof(IDType));
         delete[] row;
         delete[] col;
-        if (weighted_) {
+        if (weighted) {
           actual_vals = new ValueType[actual_nnzs];
           memcpy(actual_vals, vals, actual_nnzs * sizeof(ValueType));
           delete[] vals;
@@ -330,6 +332,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
           M, N, actual_nnzs, actual_rows, actual_cols, actual_vals,
           format::kOwned);
       return coo;
+    } else {
+      throw ReaderException("Reader only supports general, symmetric, and skew-symmetric symmetry options");
     }
   } else {
     throw ReaderException("file does not exists!!");
@@ -487,7 +491,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
                "sparsebase (your system might not be supported)."
             << std::endl;
   std::cerr << "Defaulting to sequential reader" << std::endl;
-  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
+  MTXReader<IDType, NNZType, ValueType> reader(filename_);
   return reader.ReadCOO();
 #endif
 }
