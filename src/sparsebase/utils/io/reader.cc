@@ -218,6 +218,9 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+  if (options_.format == MTXFormatOptions::array){
+    throw ReaderException("Library does not yet support reading 2D matrices from matrix market files in the 'array' format");
+  }
   // Open the file:
   std::ifstream fin(filename_);
 
