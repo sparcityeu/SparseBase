@@ -520,6 +520,28 @@ protected:
                                       PreprocessParams *);
 };
 
+template <typename IDType, typename NNZType, typename ValueType>
+class InverseTransformOrderOne : public TransformPreprocessType<IDType, NNZType, ValueType> {
+public:
+  InverseTransformOrderOne(IDType *);
+  struct InverseTransformOrderOneParams : PreprocessParams {
+    IDType *order;
+    explicit InverseTransformOrderOneParams(IDType *order) : order(order){};
+  };
+
+protected:
+  //! An implementation function that will transform a CSR format into another
+  //! CSR
+  /*!
+   *
+   * @param formats a vector containing a single Format object of type Array
+   * @param params a polymorphic pointer at a `TransformParams` object
+   * @return a transformed Format object of type CSR
+   */
+  static format::Format *InverselyTransformArray(std::vector<format::Format *> formats,
+                                      PreprocessParams *);
+};
+
 //! A class that does feature extraction.
 /*!
  * An ExtractableType class that has a Converter and the function matching

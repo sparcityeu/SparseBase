@@ -21,6 +21,12 @@ int cols[nnz] = {1, 2, 0, 0};
 int rows[nnz] = {0, 0, 1, 2};
 float distribution[n] = {2.0 / nnz, 1.0 / nnz, 1.0 / nnz};
 int degrees[n] = {2, 1, 1};
+
+int inverse_perm_array[3] = {2, 0, 1};
+float original_array[3] = {0.0, 0.1, 0.2};
+float reordered_array[3] = {0.1, 0.2, 0.0};
+format::Array<float> orig_arr(n, original_array, format::kNotOwned);
+format::Array<float> inv_arr(n, reordered_array, format::kNotOwned);
 format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, nullptr,
                                       format::kNotOwned);
 format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, nullptr,
@@ -91,6 +97,15 @@ void confirm_renumbered_csr(V *xadj, V *renumbered_xadj, E *adj,
          edge < renumbered_xadj[inverse_order[i] + 1]; edge++) {
       EXPECT_NE(edges.find(renumbered_adj[edge]), edges.end());
     }
+  }
+}
+TEST(ArrayTransform, Basic){
+  context::CPUContext cpu_context;
+  InverseTransformOrderOne<int, int, float> inverse_transform(inverse_perm_array);
+  format::Format* inv_inversed_arr_fp = inverse_transform.GetTransformation(&inv_arr, {&cpu_context});
+  format::Array<float> *inv_inversed_arr = inv_inversed_arr_fp->As<format::Array<float>>();
+  for (int i = 0; i < n; i++){
+    EXPECT_EQ(inv_inversed_arr->get_vals()[i], original_array[i]);
   }
 }
 TEST(TypeIndexHash, Basic) {
