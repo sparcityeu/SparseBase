@@ -101,6 +101,15 @@ void confirm_renumbered_csr(V *xadj, V *renumbered_xadj, E *adj,
 }
 TEST(ArrayTransform, Basic){
   context::CPUContext cpu_context;
+  TransformOrderOne<int, int, float> transform(inverse_perm_array);
+  format::Format* inv_arr_fp = transform.GetTransformation(&orig_arr, {&cpu_context});
+  format::Array<float> *inv_arr = inv_arr_fp->As<format::Array<float>>();
+  for (int i = 0; i < n; i++){
+    EXPECT_EQ(inv_arr->get_vals()[i], reordered_array[i]);
+  }
+}
+TEST(ArrayTransform, Inverse){
+  context::CPUContext cpu_context;
   InverseTransformOrderOne<int, int, float> inverse_transform(inverse_perm_array);
   format::Format* inv_inversed_arr_fp = inverse_transform.GetTransformation(&inv_arr, {&cpu_context});
   format::Array<float> *inv_inversed_arr = inv_inversed_arr_fp->As<format::Array<float>>();

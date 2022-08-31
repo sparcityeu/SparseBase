@@ -521,6 +521,35 @@ Format *InverseTransformOrderOne<IDType, NNZType, ValueType>::InverselyTransform
   Array<ValueType> *arr = new Array<ValueType>(length, nvals, kOwned);
   return arr;
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+TransformOrderOne<IDType, NNZType, ValueType>::TransformOrderOne(IDType *order) {
+  this->SetConverter(
+      utils::converter::ConverterOrderOne<ValueType>{});
+  this->RegisterFunction(
+      {Array<ValueType>::get_format_id_static()}, TransformArray);
+  this->params_ = std::unique_ptr<TransformOrderOneParams>(new TransformOrderOneParams(order));
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *TransformOrderOne<IDType, NNZType, ValueType>::TransformArray(
+    std::vector<Format *> formats, PreprocessParams *params) {
+  auto *sp = formats[0]->As<Array<ValueType>>();
+  auto order = static_cast<TransformOrderOneParams *>(params)->order;
+  std::vector<DimensionType> dimensions = sp->get_dimensions();
+  IDType length = dimensions[0];
+  ValueType *vals = sp->get_vals();
+  ValueType *nvals = new ValueType[length]();
+  IDType* inv_order = new IDType[length];
+  for (IDType i = 0; i < length; i++){
+    inv_order[order[i]] = i;
+  }
+
+  for (IDType i = 0; i < length; i++){
+    nvals[i] = vals[inv_order[i]];
+  }
+  Array<ValueType> *arr = new Array<ValueType>(length, nvals, kOwned);
+  return arr;
+}
 template <typename IDType, typename NNZType, typename ValueType>
 Transform<IDType, NNZType, ValueType>::Transform(IDType *order) {
   this->SetConverter(
