@@ -64,6 +64,52 @@ TEST(ConverterOrderTwo, CSRToCOO) {
   std::cout << "End of test" << std::endl;
 }
 
+TEST(ConverterOrderTwo, CSRToCSC) {
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+      converterOrderTwo;
+  sparsebase::context::CPUContext cpu_context;
+
+  // Testing non-move converter (deep copy)
+  std::cout << "Testing non-move converter (deep copy)" << std::endl;
+  auto csc = converterOrderTwo.Convert<sparsebase::format::CSC<int, int, int>>(
+      &csr, &cpu_context, false);
+
+  // None of the pointers should be the same due to deep copy
+  EXPECT_NE(csc->get_row(), csr.get_row_ptr());
+  EXPECT_NE(csc->get_col_ptr(), csr.get_col());
+  EXPECT_NE(csc->get_vals(), csr.get_vals());
+
+  // All values should be equal however
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(csc->get_row()[i], csc_row[i]);
+    EXPECT_EQ(csc->get_col_ptr()[i], csc_col_ptr[i]);
+    EXPECT_EQ(csc->get_vals()[i], csc_vals[i]);
+  }
+
+  // Testing move converter (some arrays can be shallow copied)
+  std::cout << "Testing move converter" << std::endl;
+  auto csc2 = converterOrderTwo.Convert<sparsebase::format::CSC<int, int, int>>(
+      &csr, &cpu_context, true);
+
+  // Particularly, these two arrays should have been moved
+  EXPECT_NE(csc2->get_col_ptr(), csr.get_col());
+  EXPECT_NE(csc2->get_vals(), csr.get_vals());
+
+  // row array should be constructed from scratch
+  EXPECT_NE(csc2->get_row(), csr.get_row_ptr());
+
+  // All values should be equal
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(csc2->get_row()[i], csc_row[i]);
+    EXPECT_EQ(csc2->get_col_ptr()[i], csc_col_ptr[i]);
+    EXPECT_EQ(csc2->get_vals()[i], csc_vals[i]);
+  }
+
+  std::cout << "End of test" << std::endl;
+}
+
 TEST(ConverterOrderTwo, COOToCSR) {
   sparsebase::format::COO<int, int, int> coo(
       n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
