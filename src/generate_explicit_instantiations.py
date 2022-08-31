@@ -146,7 +146,7 @@ class preprocess_init(explicit_initialization):
                         self.out_stream.write(PREFIX+"DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"Degrees_DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"JaccardWeights<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform', 'Degrees'], self.out_stream)
+        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform', 'Degrees', 'InverseTransformOrderOne'], self.out_stream)
 
 class converter_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):

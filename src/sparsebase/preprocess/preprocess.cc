@@ -498,6 +498,30 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+InverseTransformOrderOne<IDType, NNZType, ValueType>::InverseTransformOrderOne(IDType *order) {
+  this->SetConverter(
+      utils::converter::ConverterOrderOne<ValueType>{});
+  this->RegisterFunction(
+      {Array<ValueType>::get_format_id_static()}, InverselyTransformArray);
+  this->params_ = std::unique_ptr<InverseTransformOrderOneParams>(new InverseTransformOrderOneParams(order));
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Format *InverseTransformOrderOne<IDType, NNZType, ValueType>::InverselyTransformArray(
+    std::vector<Format *> formats, PreprocessParams *params) {
+  auto *sp = formats[0]->As<Array<ValueType>>();
+  auto order = static_cast<InverseTransformOrderOneParams *>(params)->order;
+  std::vector<DimensionType> dimensions = sp->get_dimensions();
+  IDType length = dimensions[0];
+  ValueType *vals = sp->get_vals();
+  ValueType *nvals = new ValueType[length]();
+
+  for (IDType i = 0; i < length; i++){
+    nvals[i] = vals[order[i]];
+  }
+  Array<ValueType> *arr = new Array<ValueType>(length, nvals, kOwned);
+  return arr;
+}
+template <typename IDType, typename NNZType, typename ValueType>
 Transform<IDType, NNZType, ValueType>::Transform(IDType *order) {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
