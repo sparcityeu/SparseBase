@@ -130,7 +130,7 @@ public:
  * \tparam FormatType used for CRTP, should be a concrete format class
  * (for example: CSR<int,int,int>)
  */
-template <typename FormatType> class FormatImplementation : public Format {
+template <typename FormatType, typename Base = Format> class FormatImplementation : public Base {
 public:
   virtual std::vector<DimensionType> get_dimensions() const {
     return dimension_;
@@ -141,7 +141,7 @@ public:
 
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
-  std::type_index get_format_id() final { return typeid(FormatType); }
+  virtual std::type_index get_format_id() { return typeid(FormatType); }
 
   //! A static variant of the get_format_id() function
   static std::type_index get_format_id_static() { return typeid(FormatType); }
@@ -155,6 +155,15 @@ protected:
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
   std::unique_ptr<sparsebase::context::Context> context_;
+};
+
+template <typename ValueType>
+class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Format> {
+
+};
+template <typename IDType, typename NNZType, typename ValueType>
+class FormatOrderTwo : public FormatImplementation<FormatOrderTwo<IDType, NNZType, ValueType>, Format> {
+
 };
 
 //! Coordinate List Sparse Data Format
@@ -173,7 +182,7 @@ protected:
  * doi: 10.1109/TPAS.1963.291477.
  */
 template <typename IDType, typename NNZType, typename ValueType>
-class COO : public FormatImplementation<COO<IDType, NNZType, ValueType>> {
+class COO : public FormatImplementation<COO<IDType, NNZType, ValueType>, FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col,
       ValueType *vals, Ownership own = kNotOwned, bool ignore_sort = false);
@@ -212,7 +221,7 @@ protected:
  * @tparam ValueType type that the array stores
  */
 template <typename ValueType>
-class Array : public FormatImplementation<Array<ValueType>> {
+class Array : public FormatImplementation<Array<ValueType>, FormatOrderOne<ValueType>> {
 public:
   Array(DimensionType nnz, ValueType *row_ptr, Ownership own = kNotOwned);
   Array(const Array<ValueType> &);
@@ -249,7 +258,7 @@ protected:
  * in Algorithms and Architectures. CiteSeerX 10.1.1.211.5256.
  */
 template <typename IDType, typename NNZType, typename ValueType>
-class CSR : public FormatImplementation<CSR<IDType, NNZType, ValueType>> {
+class CSR : public FormatImplementation<CSR<IDType, NNZType, ValueType>, FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
       Ownership own = kNotOwned, bool ignore_sort = false);
