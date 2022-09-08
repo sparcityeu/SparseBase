@@ -10,7 +10,6 @@
 #define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
 
 #include "sparsebase/config.h"
-#include "sparsebase/format/format.h"
 #include <functional>
 #include <tuple>
 #include <unordered_map>
@@ -19,6 +18,22 @@
 #include "sparsebase/utils/converter/cuda/converter.cuh"
 #endif
 
+namespace sparsebase {
+namespace utils {
+namespace converter {
+class Converter;
+template <class ConverterType> 
+class ConverterImpl;
+template <typename IDType, typename NNZType, typename ValueType>
+class ConverterOrderTwo;
+template <typename ValueType>
+class ConverterOrderOne;
+    
+} // namespace converter
+} // namespace utils
+} // namespace sparsebase
+
+#include "sparsebase/format/format.h"
 namespace sparsebase {
 
 namespace utils {
@@ -171,43 +186,6 @@ public:
   virtual void Reset();
 };
 
-template <typename T>
-struct type_unwrapper;
-
-template <template <typename...> class C, typename... Ts>
-struct type_unwrapper<C<Ts...>>
-{
-    static constexpr std::size_t type_count = sizeof...(Ts);
-
-    template <std::size_t N>
-    using param_t = typename std::tuple_element<N, std::tuple<Ts...>>::type;
-};
-
-template < template <typename, typename, typename> class ToType, typename IDType, typename NNZType, typename ValueType>
-ToType<IDType, NNZType, ValueType>*
-ConvertOrderTwo(format::Format *source,
-        context::Context *to_context, bool is_move_conversion = false) {
-  static_assert(std::is_base_of<format::Format, ToType<IDType, NNZType, ValueType>>::value,
-                "T must be a format::Format");
-  ConverterOrderTwo<IDType, NNZType, ValueType> converter;
-  auto f = converter.Convert(
-      source, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
-      to_context, is_move_conversion);
-  return static_cast<ToType<IDType, NNZType, ValueType>*>(f);
-}
-
-template < template <typename> class ToType, typename ValueType>
-ToType<ValueType>*
-ConvertOrderOne(format::Format *source,
-        context::Context *to_context, bool is_move_conversion = false) {
-  static_assert(std::is_base_of<format::Format, ToType<ValueType>>::value,
-                "T must be a format::Format");
-  ConverterOrderOne<ValueType> converter;
-  auto f = converter.Convert(
-      source, ToType<ValueType>::get_format_id_static(),
-      to_context, is_move_conversion);
-  return static_cast<ToType<ValueType>*>(f);
-}
 
 
 } // namespace converter
