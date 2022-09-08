@@ -159,11 +159,21 @@ protected:
 
 template <typename ValueType>
 class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Format> {
-
+  public:
+  template <template <typename> typename ToType>
+  ToType<ValueType> *Convert(
+                             context::Context *to_context,
+                             bool is_move_conversion = false);
 };
 template <typename IDType, typename NNZType, typename ValueType>
-class FormatOrderTwo : public FormatImplementation<FormatOrderTwo<IDType, NNZType, ValueType>, Format> {
-
+class FormatOrderTwo
+    : public FormatImplementation<FormatOrderTwo<IDType, NNZType, ValueType>,
+                                  Format> {
+  public:
+  template <template <typename, typename, typename> class ToType>
+  ToType<IDType, NNZType, ValueType> *Convert(
+                                              context::Context *to_context,
+                                              bool is_move_conversion = false);
 };
 
 //! Coordinate List Sparse Data Format
@@ -292,6 +302,45 @@ protected:
 
 } // namespace format
 
+} // namespace sparsebase
+#include "sparsebase/utils/converter/converter.h"
+
+namespace sparsebase {
+namespace format {
+template <typename ValueType>
+template <template <typename> class ToType>
+ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
+    context::Context *to_context,
+    bool is_move_conversion) {
+  static_assert(std::is_base_of<format::FormatOrderOne<ValueType>,
+                                ToType<ValueType>>::value,
+                "T must be a format::Format");
+  sparsebase::utils::converter::ConverterOrderOne<ValueType> converter;
+  return converter
+      .Convert(this, ToType<ValueType>::get_format_id_static(), to_context,
+               is_move_conversion)
+      ->template As<ToType<ValueType>>();
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+template <template <typename, typename, typename> class ToType>
+ToType<IDType, NNZType, ValueType> *
+FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
+    context::Context *to_context,
+    bool is_move_conversion) {
+  static_assert(
+      std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
+                      ToType<IDType, NNZType, ValueType>>::value,
+      "T must be an order two format");
+  sparsebase::utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>
+      converter;
+  return converter
+      .Convert(this,
+               ToType<IDType, NNZType, ValueType>::get_format_id_static(),
+               to_context, is_move_conversion)
+      ->template As<ToType<IDType, NNZType, ValueType>>();
+}
+} // namespace format
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/format/format.cc"
