@@ -248,6 +248,19 @@ TEST(MTXReader, ArrayOneColArray) {
   checkArrayReading("one_col_array.mtx");
 }
 
+// TODO Add this back once void as a value type is legal again
+//TEST(MTXReader, ReadingWeightedIntoVoidValues) {
+//
+//  // Write the mtx data with values to a file
+//  std::ofstream ofs2("test_values.mtx");
+//  ofs2 << mtx_data_with_values;
+//  ofs2.close();
+//
+//  // Read the weighted file using sparsebase
+//  EXPECT_THROW((sparsebase::utils::io::MTXReader<int, int, void>(
+//                   "test_values.mtx", true)),
+//               sparsebase::utils::ReaderException);
+//}
 TEST(MTXReader, BasicsGeneral) {
 
   // Write the mtx data to a file
