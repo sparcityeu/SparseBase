@@ -749,6 +749,14 @@ protected:
   void Register();
 };
 
+template <typename IDType>
+class PartitionPreprocessType : public FunctionMatcherMixin<IDType *>{
+public:
+  PartitionPreprocessType();
+  IDType* Partition(format::Format* format, PreprocessParams* params);
+};
+
+
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"

@@ -44,7 +44,7 @@ if(NOT ${_HEADER_ONLY})
     # Location of the headers at install time
     $<INSTALL_INTERFACE:include>)
   target_compile_features(sparsebase PUBLIC cxx_std_17)
-  target_link_libraries(sparsebase OpenMP::OpenMP_CXX)
+  target_link_libraries(sparsebase INTERFACE OpenMP::OpenMP_CXX)
 else()
   add_library(sparsebase INTERFACE)
   target_compile_features(sparsebase INTERFACE cxx_std_17)
@@ -57,6 +57,15 @@ else()
     # Location of the headers at install time
     $<INSTALL_INTERFACE:include>)
 endif()
+
+### External Libraries
+
+if(METIS_USE)
+  target_link_directories(sparsebase INTERFACE ${METIS_LIB_DIR})
+  target_include_directories(sparsebase INTERFACE ${METIS_INC_DIR})
+  target_link_libraries(sparsebase INTERFACE metis)
+endif()
+
 ### Installation plan
 set(SINGLE_HEADER_FILE 
   sparsebase/sparsebase.h

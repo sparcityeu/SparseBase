@@ -1034,6 +1034,14 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
            std::forward<FeatureType *>(dist)}};
 }
 
+template <typename IDType>
+PartitionPreprocessType<IDType>::PartitionPreprocessType() = default;
+
+template <typename IDType>
+IDType *PartitionPreprocessType<IDType>::Partition() {
+  return nullptr;
+}
+
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"
 #endif
