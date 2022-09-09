@@ -178,16 +178,19 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   if (field == "real") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::real;
+    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
   } else if (field == "double") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::double_field;
+    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
   } else if (field == "complex") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
-    throw ReaderException("Matrix market reader does not currently support complex numbers.");
+    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
   } else if (field == "integer") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
+    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
   } else if (field == "pattern") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::pattern;
