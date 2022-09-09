@@ -11,6 +11,9 @@ int coo_vals[4]{4, 5, 7, 9};
 int csr_row_ptr[5]{0, 2, 3, 3, 4};
 int csr_col[4]{0, 2, 1, 3};
 int csr_vals[4]{4, 5, 7, 9};
+int csc_col_ptr[5]{0, 1, 2, 3, 4};
+int csc_row[4]{0, 1, 0, 3};
+int csc_vals[4]{4, 7, 5, 9};
 
 TEST(CSR, Basics) {
   // Construct the CSR
@@ -33,6 +36,27 @@ TEST(CSR, Basics) {
   }
 }
 
+TEST(CSC, Basics) {
+  // Construct the CSR
+  sparsebase::format::CSC<int, int, int> csc(4, 4, csc_col_ptr, csc_row,
+                                             csc_vals);
+
+  // Check the dimensions
+  EXPECT_EQ(csc.get_num_nnz(), 4);
+  std::vector<sparsebase::format::DimensionType> expected_dimensions{4, 4};
+  EXPECT_EQ(csc.get_dimensions(), expected_dimensions);
+
+  // Check the arrays
+  for (int i = 0; i < 4; i++) {
+    EXPECT_EQ(csc.get_row()[i], csc_row[i]);
+    EXPECT_EQ(csc.get_vals()[i], csc_vals[i]);
+  }
+
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(csc.get_col_ptr()[i], csc_col_ptr[i]);
+  }
+}
+
 TEST(COO, Basics) {
   sparsebase::format::COO<int, int, int> coo(4, 4, 4, coo_row, coo_col,
                                              coo_vals);
@@ -49,6 +73,69 @@ TEST(COO, Basics) {
     EXPECT_EQ(coo.get_vals()[i], coo_vals[i]);
   }
 }
+
+TEST(FormatOrderTwo, ConvertSameFormat) {
+  // Construct the CSR
+  sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
+                                             csr_vals);
+
+  sparsebase::context::CPUContext cpu_context;
+  sparsebase::format::CSR<int, int, int>* csr_converted = csr.Convert<sparsebase::format::CSR>(&cpu_context);
+  EXPECT_EQ(csr_converted, &csr);
+  // Check the dimensions
+  EXPECT_EQ(csr_converted->get_num_nnz(), 4);
+  std::vector<sparsebase::format::DimensionType> expected_dimensions{4, 4};
+  EXPECT_EQ(csr_converted->get_dimensions(), expected_dimensions);
+
+  // Check the arrays
+  for (int i = 0; i < 4; i++) {
+    EXPECT_EQ(csr_converted->get_col()[i], csr_col[i]);
+    EXPECT_EQ(csr_converted->get_vals()[i], csr_vals[i]);
+  }
+
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(csr_converted->get_row_ptr()[i], csr_row_ptr[i]);
+  }
+}
+
+TEST(FormatOrderTwo, ConvertDifferentFormat) {
+  // Construct the CSR
+  sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
+                                             csr_vals);
+
+  sparsebase::context::CPUContext cpu_context;
+  sparsebase::format::COO<int, int, int>* coo_converted = csr.Convert<sparsebase::format::COO>(&cpu_context);
+  // Check the dimensions
+  EXPECT_EQ(coo_converted->get_num_nnz(), 4);
+  std::vector<sparsebase::format::DimensionType> expected_dimensions{4, 4};
+  EXPECT_EQ(coo_converted->get_dimensions(), expected_dimensions);
+
+  // Check the arrays
+  for (int i = 0; i < 4; i++) {
+    EXPECT_EQ(coo_converted->get_row()[i], coo_row[i]);
+    EXPECT_EQ(coo_converted->get_col()[i], coo_col[i]);
+    EXPECT_EQ(coo_converted->get_vals()[i], coo_vals[i]);
+  }
+}
+
+TEST(FormatOrderOne, Convert) {
+  sparsebase::format::Array<int> array(4, coo_vals,
+                                       sparsebase::format::kNotOwned);
+
+  sparsebase::context::CPUContext cpu_context;
+  sparsebase::format::Array<int>* conv_arr = array.Convert<sparsebase::format::Array>(&cpu_context);
+  EXPECT_EQ(conv_arr, &array);
+  // Check the dimensions
+  EXPECT_EQ(conv_arr->get_num_nnz(), 4);
+  std::vector<sparsebase::format::DimensionType> expected_dimensions{4};
+  EXPECT_EQ(conv_arr->get_dimensions(), expected_dimensions);
+
+  // Check the array
+  for (int i = 0; i < 4; i++) {
+    EXPECT_EQ(conv_arr->get_vals()[i], coo_vals[i]);
+  }
+}
+
 
 TEST(Array, Basics) {
   sparsebase::format::Array<int> array(4, coo_vals,
@@ -89,6 +176,32 @@ TEST(CSR, Ownership) {
   // the memory
   delete csr_not_owned;
   delete csr_owned;
+}
+
+TEST(CSC, Ownership) {
+
+  // Ownership model is designed to work with dynamic memory
+  // So we copy our static arrays to dynamic ones
+  // If static arrays are to be used, kNotOwned should always be used
+  int *new_csc_col_ptr = new int[5];
+  int *new_csc_row = new int[4];
+  int *new_csc_vals = new int[4];
+  std::copy(csc_col_ptr, csc_col_ptr + 5, new_csc_col_ptr);
+  std::copy(csc_row, csc_row + 4, new_csc_row);
+  std::copy(csc_vals, csc_vals + 4, new_csc_vals);
+
+  // Construct the cscs
+  auto *csc_owned = new sparsebase::format::CSC<int, int, int>(
+      4, 4, new_csc_col_ptr, new_csc_row, new_csc_vals,
+      sparsebase::format::kOwned);
+  auto *csc_not_owned = new sparsebase::format::CSC<int, int, int>(
+      4, 4, new_csc_col_ptr, new_csc_row, new_csc_vals,
+      sparsebase::format::kNotOwned);
+
+  // Deleting both should not cause an issue since only one should deallocate
+  // the memory
+  delete csc_not_owned;
+  delete csc_owned;
 }
 
 TEST(COO, Ownership) {
@@ -163,6 +276,38 @@ TEST(CSR, Release) {
   delete[] col;
   delete[] vals;
 }
+
+TEST(CSC, Release) {
+
+  // Ownership model is designed to work with dynamic memory
+  // So we copy our static arrays to dynamic ones
+  // If static arrays are to be used, kNotOwned should always be used
+  int *new_csc_col_ptr = new int[5];
+  int *new_csc_row = new int[4];
+  int *new_csc_vals = new int[4];
+  std::copy(csc_col_ptr, csc_col_ptr + 5, new_csc_col_ptr);
+  std::copy(csc_row, csc_row + 4, new_csc_row);
+  std::copy(csc_vals, csc_vals + 4, new_csc_vals);
+
+  // Construct an owned CSC
+  auto *csc_owned = new sparsebase::format::CSC<int, int, int>(
+      4, 4, new_csc_col_ptr, new_csc_row, new_csc_vals,
+      sparsebase::format::kOwned);
+
+  // Release the arrays
+  auto *col_ptr = csc_owned->release_col_ptr();
+  auto *row = csc_owned->release_row();
+  auto *vals = csc_owned->release_vals();
+
+  // Deleting the CSC should not deallocate arrays
+  delete csc_owned;
+
+  // To check delete them manually
+  delete[] col_ptr;
+  delete[] row;
+  delete[] vals;
+}
+
 
 TEST(COO, Release) {
 
