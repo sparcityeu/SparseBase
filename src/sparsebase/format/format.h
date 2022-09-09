@@ -169,7 +169,7 @@ class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Fo
    * object and return a pointer to the new object.
    */
     template <template <typename> typename ToType>
-    ToType<ValueType> *Convert(context::Context *to_context,
+    ToType<ValueType> *Convert(context::Context *to_context=nullptr,
                                bool is_move_conversion = false);
 };
 template <typename IDType, typename NNZType, typename ValueType>
@@ -187,7 +187,7 @@ class FormatOrderTwo
    */
     template <template <typename, typename, typename> class ToType>
     ToType<IDType, NNZType, ValueType> *
-    Convert(context::Context *to_context, bool is_move_conversion = false);
+    Convert(context::Context *to_context=nullptr, bool is_move_conversion = false);
 };
 
 //! Coordinate List Sparse Data Format
@@ -380,8 +380,10 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
                                 ToType<ValueType>>::value,
                 "T must be a format::Format");
   sparsebase::utils::converter::ConverterOrderOne<ValueType> converter;
+  context::Context *actual_context =
+      to_context == nullptr ?  this->get_context() : to_context;
   return converter
-      .Convert(this, ToType<ValueType>::get_format_id_static(), to_context,
+      .Convert(this, ToType<ValueType>::get_format_id_static(), actual_context,
                is_move_conversion)
       ->template As<ToType<ValueType>>();
 }
@@ -397,9 +399,11 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
       "T must be an order two format");
   sparsebase::utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>
       converter;
+  context::Context* actual_context =
+      to_context == nullptr ?  this->get_context() : to_context;
   return converter
       .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
-               to_context, is_move_conversion)
+               actual_context, is_move_conversion)
       ->template As<ToType<IDType, NNZType, ValueType>>();
 }
 
