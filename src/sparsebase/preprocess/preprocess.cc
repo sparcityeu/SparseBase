@@ -498,18 +498,18 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-InverseTransformOrderOne<IDType, NNZType, ValueType>::InverseTransformOrderOne(IDType *order) {
+InversePermuteOrderOne<IDType, NNZType, ValueType>::InversePermuteOrderOne(IDType *order) {
   this->SetConverter(
       utils::converter::ConverterOrderOne<ValueType>{});
   this->RegisterFunction(
-      {Array<ValueType>::get_format_id_static()}, InverselyTransformArray);
-  this->params_ = std::unique_ptr<InverseTransformOrderOneParams>(new InverseTransformOrderOneParams(order));
+      {Array<ValueType>::get_format_id_static()}, InverselyPermuteArray);
+  this->params_ = std::unique_ptr<InversePermuteOrderOneParams>(new InversePermuteOrderOneParams(order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *InverseTransformOrderOne<IDType, NNZType, ValueType>::InverselyTransformArray(
+format::FormatOrderOne<ValueType> *InversePermuteOrderOne<IDType, NNZType, ValueType>::InverselyPermuteArray(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<Array<ValueType>>();
-  auto order = static_cast<InverseTransformOrderOneParams *>(params)->order;
+  auto order = static_cast<InversePermuteOrderOneParams *>(params)->order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType length = dimensions[0];
   ValueType *vals = sp->get_vals();
@@ -523,18 +523,18 @@ Format *InverseTransformOrderOne<IDType, NNZType, ValueType>::InverselyTransform
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-TransformOrderOne<IDType, NNZType, ValueType>::TransformOrderOne(IDType *order) {
+PermuteOrderOne<IDType, NNZType, ValueType>::PermuteOrderOne(IDType *order) {
   this->SetConverter(
       utils::converter::ConverterOrderOne<ValueType>{});
   this->RegisterFunction(
-      {Array<ValueType>::get_format_id_static()}, TransformArray);
-  this->params_ = std::unique_ptr<TransformOrderOneParams>(new TransformOrderOneParams(order));
+      {Array<ValueType>::get_format_id_static()}, PermuteArray);
+  this->params_ = std::unique_ptr<PermuteOrderOneParams>(new PermuteOrderOneParams(order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *TransformOrderOne<IDType, NNZType, ValueType>::TransformArray(
+format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, NNZType, ValueType>::PermuteArray(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<Array<ValueType>>();
-  auto order = static_cast<TransformOrderOneParams *>(params)->order;
+  auto order = static_cast<PermuteOrderOneParams *>(params)->order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType length = dimensions[0];
   ValueType *vals = sp->get_vals();
@@ -551,21 +551,20 @@ Format *TransformOrderOne<IDType, NNZType, ValueType>::TransformArray(
   return arr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Transform<IDType, NNZType, ValueType>::Transform(IDType *order) {
+Permute<IDType, NNZType, ValueType>::Permute(IDType *order) {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, TransformCSR);
-  this->params_ = std::unique_ptr<TransformParams>(new TransformParams(order));
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteCSR);
+  this->params_ = std::unique_ptr<PermuteParams>(new PermuteParams(order));
 }
+template <typename InputFormatType, typename ReturnFormtType>
+TransformPreprocessType<InputFormatType, ReturnFormtType>::~TransformPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
-TransformPreprocessType<IDType, NNZType,
-                        ValueType>::~TransformPreprocessType() = default;
-template <typename IDType, typename NNZType, typename ValueType>
-Format *Transform<IDType, NNZType, ValueType>::TransformCSR(
+format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, ValueType>::PermuteCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
-  auto order = static_cast<TransformParams *>(params)->order;
+  auto order = static_cast<PermuteParams *>(params)->order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
@@ -602,33 +601,37 @@ Format *Transform<IDType, NNZType, ValueType>::TransformCSR(
   return csr;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<format::Format *>, format::Format *>
-TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
-    Format *csr, std::vector<context::Context *> contexts) {
+template <typename InputFormatType, typename ReturnFormatType>
+std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
+    format::Format *format, std::vector<context::Context *> contexts) {
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
   return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts,
-                             csr);
+                             format);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<format::Format *>, format::Format *>
-TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
-    Format *csr, PreprocessParams *params,
+template <typename InputFormatType, typename ReturnFormatType>
+std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
+    format::Format  *format, PreprocessParams *params,
     std::vector<context::Context *> contexts) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, csr);
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  return this->CachedExecute(params, (this->sc_.get()), contexts, format);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
-    Format *csr, std::vector<context::Context *> contexts) {
-  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, csr);
+template <typename InputFormatType, typename ReturnFormatType>
+ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+    format::Format *format, std::vector<context::Context *> contexts) {
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, format);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
-    Format *csr, PreprocessParams *params,
+template <typename InputFormatType, typename ReturnFormatType>
+ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+    format::Format  *format, PreprocessParams *params,
     std::vector<context::Context *> contexts) {
-  return this->Execute(params, (this->sc_.get()), contexts, csr);
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  return this->Execute(params, (this->sc_.get()), contexts, format);
 }
 
 template <typename FeatureType>
