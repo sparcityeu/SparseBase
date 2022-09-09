@@ -160,20 +160,34 @@ protected:
 template <typename ValueType>
 class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Format> {
   public:
-  template <template <typename> typename ToType>
-  ToType<ValueType> *Convert(
-                             context::Context *to_context,
-                             bool is_move_conversion = false);
+  //! Converts `this` to a FormatOrderOne object of type ToType<ValueType>
+  /*!
+   * \param to_context context used to carry out the conversion.
+   * \param is_move_conversion whether to carry out a move conversion.
+   * \return If `this` is of type `ToType<ValueType>` then it returns the same object
+   * but as a different type. If not, it will convert `this` to a new FormatOrderOne 
+   * object and return a pointer to the new object.
+   */
+    template <template <typename> typename ToType>
+    ToType<ValueType> *Convert(context::Context *to_context,
+                               bool is_move_conversion = false);
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
     : public FormatImplementation<FormatOrderTwo<IDType, NNZType, ValueType>,
                                   Format> {
   public:
-  template <template <typename, typename, typename> class ToType>
-  ToType<IDType, NNZType, ValueType> *Convert(
-                                              context::Context *to_context,
-                                              bool is_move_conversion = false);
+  //! Converts `this` to a FormatOrderTwo object of type ToType<IDType, NNZType, ValueType>
+  /*!
+   * \param to_context context used to carry out the conversion.
+   * \param is_move_conversion whether to carry out a move conversion.
+   * \return If `this` is of type `ToType<ValueType>` then it returns the same object
+   * but as a different type. If not, it will convert `this` to a new FormatOrderOne 
+   * object and return a pointer to the new object.
+   */
+    template <template <typename, typename, typename> class ToType>
+    ToType<IDType, NNZType, ValueType> *
+    Convert(context::Context *to_context, bool is_move_conversion = false);
 };
 
 //! Coordinate List Sparse Data Format
@@ -303,15 +317,16 @@ protected:
 } // namespace format
 
 } // namespace sparsebase
+
 #include "sparsebase/utils/converter/converter.h"
 
 namespace sparsebase {
 namespace format {
+
 template <typename ValueType>
 template <template <typename> class ToType>
 ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
-    context::Context *to_context,
-    bool is_move_conversion) {
+    context::Context *to_context, bool is_move_conversion) {
   static_assert(std::is_base_of<format::FormatOrderOne<ValueType>,
                                 ToType<ValueType>>::value,
                 "T must be a format::Format");
@@ -326,8 +341,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 template <template <typename, typename, typename> class ToType>
 ToType<IDType, NNZType, ValueType> *
 FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
-    context::Context *to_context,
-    bool is_move_conversion) {
+    context::Context *to_context, bool is_move_conversion) {
   static_assert(
       std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
                       ToType<IDType, NNZType, ValueType>>::value,
@@ -335,12 +349,13 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
   sparsebase::utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>
       converter;
   return converter
-      .Convert(this,
-               ToType<IDType, NNZType, ValueType>::get_format_id_static(),
+      .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                to_context, is_move_conversion)
       ->template As<ToType<IDType, NNZType, ValueType>>();
 }
+
 } // namespace format
+
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/format/format.cc"

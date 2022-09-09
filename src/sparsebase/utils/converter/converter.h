@@ -18,6 +18,7 @@
 #include "sparsebase/utils/converter/cuda/converter.cuh"
 #endif
 
+// Forward declerations for the `Convert` functions in sparsebase/format/format.h
 namespace sparsebase {
 namespace utils {
 namespace converter {
