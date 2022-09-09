@@ -142,11 +142,16 @@ class preprocess_init(explicit_initialization):
         for vertex_type in vertex_types:
             for nnz_type in nnz_types:
                 for value_type in value_types:
+                    format_order_two = "FormatOrderTwo<"+vertex_type+","+nnz_type+","+value_type+">"
+                    self.out_stream.write(PREFIX+"TransformPreprocessType<"+format_order_two+','+format_order_two+">;")
                     for dist_type in float_types:
                         self.out_stream.write(PREFIX+"DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"Degrees_DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
                         self.out_stream.write(PREFIX+"JaccardWeights<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'TransformPreprocessType', 'Transform', 'Degrees', 'TransformOrderOne', 'InverseTransformOrderOne'], self.out_stream)
+        for value_type in value_types:
+            format_order_one = "FormatOrderOne<"+value_type+">"
+            self.out_stream.write(PREFIX+"TransformPreprocessType<"+format_order_one+','+format_order_one+">;")
+        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'Permute', 'Degrees', 'PermuteOrderOne', 'InversePermuteOrderOne'], self.out_stream)
 
 class converter_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):

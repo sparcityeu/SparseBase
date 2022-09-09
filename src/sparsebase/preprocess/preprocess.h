@@ -436,9 +436,16 @@ protected:
 };
 
 //! Transforms a format according to an inverse permutation of its rows/columns
-template <typename IDType, typename NNZType, typename ValueType>
-class TransformPreprocessType : public FunctionMatcherMixin<format::Format *> {
+template <typename InputFormatType, typename ReturnFormatType>
+class TransformPreprocessType : public FunctionMatcherMixin<ReturnFormatType *> {
 public:
+  TransformPreprocessType(){
+    static_assert(
+        std::is_base_of<format::Format, InputFormatType>::value,
+        "TransformationPreprocessType must take as input a Format object");
+    static_assert(std::is_base_of<format::Format, ReturnFormatType>::value,
+                  "TransformationPreprocessType must return a Format object");
+  }
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -448,7 +455,7 @@ public:
    * transformation.
    * @return a transformed Format object
    */
-  format::Format *GetTransformation(format::Format *csr,
+  ReturnFormatType *GetTransformation(format::Format *csr,
                                     std::vector<context::Context *>);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
@@ -460,7 +467,7 @@ public:
    * transformation.
    * @return a transformed Format object
    */
-  format::Format *GetTransformation(format::Format *csr,
+  ReturnFormatType *GetTransformation(format::Format *csr,
                                     PreprocessParams *params,
                                     std::vector<context::Context *>);
   //! Transforms `format` to a new format according to an inverse permutation
@@ -476,7 +483,7 @@ public:
    * converted, the output pointer will point at nullptr. The second element is
    * a transformed Format object.
    */
-  std::tuple<std::vector<format::Format *>, format::Format *>
+  std::tuple<std::vector<format::Format *>, ReturnFormatType *>
   GetTransformationCached(format::Format *csr, std::vector<context::Context *>);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
@@ -492,19 +499,21 @@ public:
    * converted, the output pointer will point at nullptr. The second element is
    * a transformed Format object.
    */
-  std::tuple<std::vector<format::Format *>, format::Format *>
+  std::tuple<std::vector<format::Format *>, ReturnFormatType *>
   GetTransformationCached(format::Format *csr, PreprocessParams *params,
                           std::vector<context::Context *>);
   virtual ~TransformPreprocessType();
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class Transform : public TransformPreprocessType<IDType, NNZType, ValueType> {
+class Permute : public TransformPreprocessType<
+                    format::FormatOrderTwo<IDType, NNZType, ValueType>,
+                    format::FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
-  Transform(IDType *);
-  struct TransformParams : PreprocessParams {
+  Permute(IDType *);
+  struct PermuteParams : PreprocessParams {
     IDType *order;
-    explicit TransformParams(IDType *order) : order(order){};
+    explicit PermuteParams(IDType *order) : order(order){};
   };
 
 protected:
@@ -516,17 +525,19 @@ protected:
    * @param params a polymorphic pointer at a `TransformParams` object
    * @return a transformed Format object of type CSR
    */
-  static format::Format *TransformCSR(std::vector<format::Format *> formats,
+  static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteCSR(std::vector<format::Format *> formats,
                                       PreprocessParams *);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class InverseTransformOrderOne : public TransformPreprocessType<IDType, NNZType, ValueType> {
+class InversePermuteOrderOne
+    : public TransformPreprocessType<format::FormatOrderOne<ValueType>,
+                                     format::FormatOrderOne<ValueType>> {
 public:
-  InverseTransformOrderOne(IDType *);
-  struct InverseTransformOrderOneParams : PreprocessParams {
+  InversePermuteOrderOne(IDType *);
+  struct InversePermuteOrderOneParams : PreprocessParams {
     IDType *order;
-    explicit InverseTransformOrderOneParams(IDType *order) : order(order){};
+    explicit InversePermuteOrderOneParams(IDType *order) : order(order){};
   };
 
 protected:
@@ -538,17 +549,19 @@ protected:
    * @param params a polymorphic pointer at a `TransformParams` object
    * @return a transformed Format object of type CSR
    */
-  static format::Format *InverselyTransformArray(std::vector<format::Format *> formats,
+  static format::FormatOrderOne<ValueType> *InverselyPermuteArray(std::vector<format::Format *> formats,
                                       PreprocessParams *);
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class TransformOrderOne : public TransformPreprocessType<IDType, NNZType, ValueType> {
+class PermuteOrderOne
+    : public TransformPreprocessType<format::FormatOrderOne<ValueType>,
+                                     format::FormatOrderOne<ValueType>> {
 public:
-  TransformOrderOne(IDType *);
-  struct TransformOrderOneParams : PreprocessParams {
+  PermuteOrderOne(IDType *);
+  struct PermuteOrderOneParams : PreprocessParams {
     IDType *order;
-    explicit TransformOrderOneParams(IDType *order) : order(order){};
+    explicit PermuteOrderOneParams(IDType *order) : order(order){};
   };
 
 protected:
@@ -560,7 +573,7 @@ protected:
    * @param params a polymorphic pointer at a `TransformParams` object
    * @return a transformed Format object of type CSR
    */
-  static format::Format *TransformArray(std::vector<format::Format *> formats,
+  static format::FormatOrderOne<ValueType> *PermuteArray(std::vector<format::Format *> formats,
                                       PreprocessParams *);
 };
 
