@@ -331,7 +331,7 @@ protected:
  * in Algorithms and Architectures. CiteSeerX 10.1.1.211.5256.
  */
 template <typename IDType, typename NNZType, typename ValueType>
-class CSC : public FormatImplementation<CSC<IDType, NNZType, ValueType>> {
+class CSC : public FormatImplementation<CSC<IDType, NNZType, ValueType>, FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
   CSC(IDType n, IDType m, NNZType *col_ptr, IDType *col, ValueType *vals,
       Ownership own = kNotOwned, bool ignore_sort = false);
