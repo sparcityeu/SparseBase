@@ -136,10 +136,10 @@ private:
     pattern
   };
   enum MTXSymmetryOptions {
-    general,
-    symmetric,
-    skew_symmetric,
-    hermitian
+    general = 0,
+    symmetric = 1,
+    skew_symmetric = 2,
+    hermitian = 3
   };
   struct MTXOptions {
     MTXObjectOptions object;
@@ -150,7 +150,10 @@ private:
   MTXOptions ParseHeader(std::string header_line) const;
   format::Array<ValueType> *ReadCoordinateIntoArray() const;
   format::Array<ValueType> *ReadArrayIntoArray() const;
+  template <bool weighted>
   format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
+  template <bool weighted, int symm>
+  format::COO<IDType, NNZType, ValueType> *ReadCoordinateIntoCOO() const;
   std::string filename_;
   bool convert_to_zero_index_;
   MTXOptions options_;
