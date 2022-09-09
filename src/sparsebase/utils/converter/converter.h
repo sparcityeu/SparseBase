@@ -186,8 +186,6 @@ public:
   virtual void Reset();
 };
 
-
-
 } // namespace converter
 
 } // namespace utils
