@@ -39,6 +39,69 @@ const std::string mtx_data_with_values =
 5 4 0.5
 )";
 
+const std::string mtx_data_with_values_array =
+    R"(%%MatrixMarket matrix array real general
+%This is a comment
+5 5
+0
+0
+0
+0
+0
+0.1
+0
+0
+0
+0
+0
+0.3
+0
+0
+0
+0.2
+0
+0
+0
+0
+0
+0
+0.4
+0.5
+0
+)";
+
+const std::string mtx_data_array =
+    R"(%%MatrixMarket matrix array real general
+%This is a comment
+5 5
+0
+0
+0
+0
+0
+0.1
+0
+0
+0
+0
+0
+0.3
+0
+0
+0
+0.2
+0
+0
+0
+0
+0
+0
+0.4
+0.5
+0
+)";
+
+
 const std::string mtx_symm_data_with_values =
     R"(%%MatrixMarket matrix coordinate real symmetric
 %This is a comment
@@ -238,6 +301,61 @@ TEST(MTXReader, BasicsGeneral) {
     EXPECT_EQ(coo2->get_vals()[i], vals[i]);
   }
 }
+
+TEST(MTXReader, BasicsArray) {
+
+  // Write the mtx data to a file
+  std::ofstream ofs("test_arr.mtx");
+  ofs << mtx_data_array;
+  ofs.close();
+
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_arr_values.mtx");
+  ofs2 << mtx_data_with_values_array;
+  ofs2.close();
+
+  // Read non-weighted file using sparsebase
+  sparsebase::utils::io::MTXReader<int, int, int> reader("test.mtx");
+  auto coo = reader.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo->get_dimensions()[0], 5);
+  EXPECT_EQ(coo->get_dimensions()[1], 5);
+  EXPECT_EQ(coo->get_num_nnz(), 5);
+
+  // Check that the arrays are populated
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(coo->get_row()[i], row[i]);
+    EXPECT_EQ(coo->get_col()[i], col[i]);
+  }
+
+  // Read the weighted file using sparsebase
+  sparsebase::utils::io::MTXReader<int, int, float> reader2("test_values.mtx",
+                                                            true);
+  auto coo2 = reader2.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo2->get_dimensions()[0], 5);
+  EXPECT_EQ(coo2->get_dimensions()[1], 5);
+  EXPECT_EQ(coo2->get_num_nnz(), 5);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo2->get_vals(), nullptr);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(coo2->get_row()[i], row[i]);
+    EXPECT_EQ(coo2->get_col()[i], col[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals[i]);
+  }
+}
+
 
 TEST(MTXReader, BasicsSymmetric) {
 

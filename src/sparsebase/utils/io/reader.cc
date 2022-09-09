@@ -215,11 +215,62 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   }
   return options;
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+format::COO<IDType, NNZType, ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
+  std::ifstream fin(filename_);
+  // Ignore headers and comments:
+  while (fin.peek() == '%')
+    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  // Declare variables: (check the types here)
+  bool weighted = false;
+  if (this->options_.field != MTXReader::MTXFieldOptions::pattern)
+    weighted = true;
+
+  format::DimensionType M, N;
+
+  fin >> M >> N;
+
+  format::DimensionType total_values = M * N;
+  IDType *long_rows = new IDType[total_values];
+  IDType *long_cols = new IDType[total_values];
+  ValueType *long_vals = nullptr;
+  if (!weighted)
+    long_vals= new ValueType[total_values];
+  NNZType num_nnz = 0;
+  for (format::DimensionType l = 0; l < total_values; l++) {
+    ValueType w;
+    fin >> w;
+
+    if (w != 0){
+      long_cols[num_nnz] = l/N;
+      long_rows[num_nnz] = l%N;
+      if (weighted)
+        long_vals[num_nnz] = w;
+      num_nnz++;
+
+    }
+    //nnz_counter += w != 0;
+  }
+
+  IDType *row = new IDType[num_nnz];
+  IDType *col = new IDType[num_nnz];
+  memcpy(row, long_rows, num_nnz*sizeof(IDType));
+  memcpy(col, long_cols, num_nnz*sizeof(IDType));
+  ValueType *vals = nullptr;
+  if (weighted) {
+    vals = new ValueType[num_nnz];
+    memcpy(vals, long_vals, num_nnz * sizeof(ValueType));
+  }
+
+  return new format::COO<IDType, NNZType, ValueType>(N, M, num_nnz, row, col, vals, format::kOwned);
+}
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   if (options_.format == MTXFormatOptions::array){
-    throw ReaderException("Library does not yet support reading 2D matrices from matrix market files in the 'array' format");
+    return this->ReadArrayIntoCOO();
   }
   // Open the file:
   std::ifstream fin(filename_);

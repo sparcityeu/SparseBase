@@ -150,6 +150,7 @@ private:
   MTXOptions ParseHeader(std::string header_line) const;
   format::Array<ValueType> *ReadCoordinateIntoArray() const;
   format::Array<ValueType> *ReadArrayIntoArray() const;
+  format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
   std::string filename_;
   bool convert_to_zero_index_;
   MTXOptions options_;
