@@ -220,6 +220,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+template <bool weighted>
 format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   std::ifstream fin(filename_);
@@ -227,9 +228,6 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   while (fin.peek() == '%')
     fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   // Declare variables: (check the types here)
-  bool weighted = false;
-  if (this->options_.field != MTXReader::MTXFieldOptions::pattern)
-    weighted = true;
 
   format::DimensionType M, N;
 
@@ -272,9 +270,79 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+  bool weighted = options_.field != MTXFieldOptions::pattern;
   if (options_.format == MTXFormatOptions::array){
-    return this->ReadArrayIntoCOO();
+    if (weighted)
+      return this->ReadArrayIntoCOO<true>();
+    else
+      return this->ReadArrayIntoCOO<false>();
+  } else if (options_.format == MTXFormatOptions::coordinate){
+    if (weighted){
+      if (options_.symmetry == MTXSymmetryOptions::general)
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::general>();
+      else if (options_.symmetry == MTXSymmetryOptions::symmetric)
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::symmetric>();
+      else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::skew_symmetric>();
+      else
+        throw ReaderException(
+            "Can't read matrix market symmetry options besides general, symmetric, and skew_symmetric");
+    } else {
+      if (options_.symmetry == MTXSymmetryOptions::general)
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::general>();
+      else if (options_.symmetry == MTXSymmetryOptions::symmetric)
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::symmetric>();
+      else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::skew_symmetric>();
+      else
+        throw ReaderException(
+            "Can't read matrix market symmetry options besides general, symmetric, and skew_symmetric");
+    }
+  } else {
+    throw ReaderException("Can't read matrix market formats besides array and coordinate");
   }
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+format::Array<ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
+  std::ifstream fin(filename_);
+
+  // Ignore headers and comments:
+  while (fin.peek() == '%')
+    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  // Declare variables: (check the types here)
+
+  // check that it has 1 row/column
+  format::DimensionType M, N, L;
+
+  fin >> M >> N >> L;
+  if (M != 1 && N != 1) {
+    throw ReaderException("Trying to read a 2D matrix with multiple rows "
+                          "and multiple columns into dense array");
+  }
+  fin.close();
+  auto coo = ReadCOO();
+  auto n = coo->get_dimensions()[0];
+  auto m = coo->get_dimensions()[1];
+  auto coo_col = coo->get_col();
+  auto coo_row = coo->get_row();
+  auto coo_vals = coo->get_vals();
+  auto num_nnz = coo->get_num_nnz();
+  ValueType *vals = new ValueType[std::max<IDType>(n, m)]();
+  IDType curr_row = 0;
+  IDType curr_col = 0;
+  for (IDType nnz = 0; nnz < num_nnz; nnz++) {
+    vals[coo_col[nnz] + coo_row[nnz]] = coo_vals[nnz];
+  }
+  return new format::Array<ValueType>(std::max(n, m), vals,
+                                      sparsebase::format::kOwned);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+template <bool weighted, int symm>
+format::COO<IDType, NNZType, ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
@@ -287,9 +355,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
       fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     fin >> M >> N >> L;
-    bool weighted = options_.field != MTXFieldOptions::pattern;
     ValueType *vals = nullptr;
-    if (options_.symmetry == MTXSymmetryOptions::general) {
+    if (symm == (int)MTXSymmetryOptions::general) {
       IDType *row = new IDType[L];
       IDType *col = new IDType[L];
       if (weighted) {
@@ -336,7 +403,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
             M, N, L, row, col, nullptr, format::kOwned);
         return coo;
       }
-    } else if (options_.symmetry == MTXSymmetryOptions::symmetric || options_.symmetry == MTXSymmetryOptions::skew_symmetric) {
+    } else if (symm == (int)MTXSymmetryOptions::symmetric || symm == (int)MTXSymmetryOptions::skew_symmetric) {
       IDType *row = new IDType[L * 2];
       IDType *col = new IDType[L * 2];
       NNZType actual_nnzs = 0;
@@ -361,7 +428,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         if (weighted)
           vals[actual_nnzs] = w;
         actual_nnzs++;
-        if (m != n) {
+        if (symm == (int)MTXSymmetryOptions::skew_symmetric || m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
           if (weighted)
@@ -372,7 +439,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
       IDType *actual_rows = row;
       IDType *actual_cols = col;
       ValueType *actual_vals = vals;
-      if (actual_nnzs != L * 2) {
+      if (symm == (int)MTXSymmetryOptions::symmetric && actual_nnzs != L * 2) {
         actual_rows = new IDType[actual_nnzs];
         actual_cols = new IDType[actual_nnzs];
         memcpy(actual_rows, row, actual_nnzs * sizeof(IDType));
@@ -396,43 +463,6 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
     throw ReaderException("file does not exists!!");
   }
 }
-
-template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
-  std::ifstream fin(filename_);
-
-  // Ignore headers and comments:
-  while (fin.peek() == '%')
-    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  // Declare variables: (check the types here)
-
-  // check that it has 1 row/column
-  format::DimensionType M, N, L;
-
-  fin >> M >> N >> L;
-  if (M != 1 && N != 1) {
-    throw ReaderException("Trying to read a 2D matrix with multiple rows "
-                          "and multiple columns into dense array");
-  }
-  fin.close();
-  auto coo = ReadCOO();
-  auto n = coo->get_dimensions()[0];
-  auto m = coo->get_dimensions()[1];
-  auto coo_col = coo->get_col();
-  auto coo_row = coo->get_row();
-  auto coo_vals = coo->get_vals();
-  auto num_nnz = coo->get_num_nnz();
-  ValueType *vals = new ValueType[std::max<IDType>(n, m)]();
-  IDType curr_row = 0;
-  IDType curr_col = 0;
-  for (IDType nnz = 0; nnz < num_nnz; nnz++) {
-    vals[coo_col[nnz] + coo_row[nnz]] = coo_vals[nnz];
-  }
-  return new format::Array<ValueType>(std::max(n, m), vals,
-                                      sparsebase::format::kOwned);
-}
-
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
