@@ -152,7 +152,7 @@ private:
   format::Array<ValueType> *ReadArrayIntoArray() const;
   template <bool weighted>
   format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
-  template <bool weighted, int symm>
+  template <bool weighted, int symm, bool conv_to_zero>
   format::COO<IDType, NNZType, ValueType> *ReadCoordinateIntoCOO() const;
   std::string filename_;
   bool convert_to_zero_index_;

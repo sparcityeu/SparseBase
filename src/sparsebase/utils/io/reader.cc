@@ -237,7 +237,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   IDType *long_rows = new IDType[total_values];
   IDType *long_cols = new IDType[total_values];
   ValueType *long_vals = nullptr;
-  if (!weighted)
+  if constexpr (!weighted)
     long_vals= new ValueType[total_values];
   NNZType num_nnz = 0;
   for (format::DimensionType l = 0; l < total_values; l++) {
@@ -247,7 +247,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
     if (w != 0){
       long_cols[num_nnz] = l/N;
       long_rows[num_nnz] = l%N;
-      if (weighted)
+      if constexpr (weighted)
         long_vals[num_nnz] = w;
       num_nnz++;
 
@@ -260,7 +260,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   memcpy(row, long_rows, num_nnz*sizeof(IDType));
   memcpy(col, long_cols, num_nnz*sizeof(IDType));
   ValueType *vals = nullptr;
-  if (weighted) {
+  if constexpr (weighted) {
     vals = new ValueType[num_nnz];
     memcpy(vals, long_vals, num_nnz * sizeof(ValueType));
   }
@@ -279,21 +279,39 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   } else if (options_.format == MTXFormatOptions::coordinate){
     if (weighted){
       if (options_.symmetry == MTXSymmetryOptions::general)
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::general>();
+        if (this->convert_to_zero_index_)
+          return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::general, true>();
+        else
+          return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::general, false>();
       else if (options_.symmetry == MTXSymmetryOptions::symmetric)
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::symmetric>();
+        if (this->convert_to_zero_index_)
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::symmetric, true>();
+        else
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::symmetric, false>();
       else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::skew_symmetric>();
+        if (this->convert_to_zero_index_)
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::skew_symmetric, true>();
+        else
+        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::skew_symmetric, false>();
       else
         throw ReaderException(
             "Can't read matrix market symmetry options besides general, symmetric, and skew_symmetric");
     } else {
       if (options_.symmetry == MTXSymmetryOptions::general)
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::general>();
+        if (this->convert_to_zero_index_)
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::general, true>();
+        else
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::general, false>();
       else if (options_.symmetry == MTXSymmetryOptions::symmetric)
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::symmetric>();
+        if (this->convert_to_zero_index_)
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::symmetric, true>();
+        else
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::symmetric, false>();
       else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::skew_symmetric>();
+        if (this->convert_to_zero_index_)
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::skew_symmetric, true>();
+        else
+        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::skew_symmetric, false>();
       else
         throw ReaderException(
             "Can't read matrix market symmetry options besides general, symmetric, and skew_symmetric");
@@ -340,7 +358,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-template <bool weighted, int symm>
+template <bool weighted, int symm, bool conv_to_zero>
 format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
   // Open the file:
@@ -356,10 +374,10 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
 
     fin >> M >> N >> L;
     ValueType *vals = nullptr;
-    if (symm == (int)MTXSymmetryOptions::general) {
+    if constexpr (symm == (int)MTXSymmetryOptions::general) {
       IDType *row = new IDType[L];
       IDType *col = new IDType[L];
-      if (weighted) {
+      if constexpr (weighted) {
         if constexpr (!std::is_same_v<void, ValueType>) {
           vals = new ValueType[L];
           for (NNZType l = 0; l < L; l++) {
@@ -367,7 +385,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
             ValueType w;
             fin >> m >> n >> w;
 
-            if (convert_to_zero_index_) {
+            if constexpr (conv_to_zero) {
               n--;
               m--;
             }
@@ -390,7 +408,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
           IDType m, n;
           fin >> m >> n;
 
-          if (convert_to_zero_index_) {
+          if constexpr (conv_to_zero) {
             n--;
             m--;
           }
@@ -403,35 +421,40 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
             M, N, L, row, col, nullptr, format::kOwned);
         return coo;
       }
-    } else if (symm == (int)MTXSymmetryOptions::symmetric || symm == (int)MTXSymmetryOptions::skew_symmetric) {
+    } else if constexpr (symm == (int)MTXSymmetryOptions::symmetric || symm == (int)MTXSymmetryOptions::skew_symmetric) {
       IDType *row = new IDType[L * 2];
       IDType *col = new IDType[L * 2];
       NNZType actual_nnzs = 0;
       IDType m, n;
       ValueType w;
-      if (weighted) {
+      if constexpr (weighted) {
         if constexpr (!std::is_same_v<void, ValueType>) {
           vals = new ValueType[L * 2];
         }
       }
       for (NNZType l = 0; l < L; l++) {
         fin >> m >> n;
-        if (weighted)
+        if constexpr (weighted)
           fin >> w;
 
-        if (convert_to_zero_index_) {
+        if constexpr (conv_to_zero) {
           n--;
           m--;
         }
         row[actual_nnzs] = m;
         col[actual_nnzs] = n;
-        if (weighted)
+        if constexpr (weighted)
           vals[actual_nnzs] = w;
         actual_nnzs++;
-        if (symm == (int)MTXSymmetryOptions::skew_symmetric || m != n) {
+        bool check_diagonal;
+        if constexpr (symm == (int)MTXSymmetryOptions::skew_symmetric)
+          check_diagonal = false;
+        else
+          check_diagonal = true;
+        if (check_diagonal && m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
-          if (weighted)
+          if constexpr (weighted)
             vals[actual_nnzs] = w;
           actual_nnzs++;
         }
@@ -446,7 +469,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
         memcpy(actual_cols, col, actual_nnzs * sizeof(IDType));
         delete[] row;
         delete[] col;
-        if (weighted) {
+        if constexpr (weighted) {
           actual_vals = new ValueType[actual_nnzs];
           memcpy(actual_vals, vals, actual_nnzs * sizeof(ValueType));
           delete[] vals;
@@ -503,9 +526,9 @@ format::Array<ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
   // check object
   if (options_.format == MTXFormatOptions::coordinate) {
-    return ReadCoordinateIntoArray();
+      return ReadCoordinateIntoArray();
   } else if (options_.format == MTXFormatOptions::array) {
-    return ReadArrayIntoArray();
+      return ReadArrayIntoArray();
   } else {
     throw ReaderException(
         "Wrong format value while reading matrix market file\n");
