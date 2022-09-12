@@ -257,12 +257,12 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
 
   IDType *row = new IDType[num_nnz];
   IDType *col = new IDType[num_nnz];
-  memcpy(row, long_rows, num_nnz*sizeof(IDType));
-  memcpy(col, long_cols, num_nnz*sizeof(IDType));
+  std::copy(long_rows, long_rows+num_nnz, row);
+  std::copy(long_cols, long_cols+num_nnz, col);
   ValueType *vals = nullptr;
   if constexpr (weighted) {
     vals = new ValueType[num_nnz];
-    memcpy(vals, long_vals, num_nnz * sizeof(ValueType));
+    std::copy(long_vals, long_vals+num_nnz, vals);
   }
 
   return new format::COO<IDType, NNZType, ValueType>(N, M, num_nnz, row, col, vals, format::kOwned);
@@ -465,13 +465,13 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
       if (symm == (int)MTXSymmetryOptions::symmetric && actual_nnzs != L * 2) {
         actual_rows = new IDType[actual_nnzs];
         actual_cols = new IDType[actual_nnzs];
-        memcpy(actual_rows, row, actual_nnzs * sizeof(IDType));
-        memcpy(actual_cols, col, actual_nnzs * sizeof(IDType));
+        std::copy(row, row+actual_nnzs, actual_rows);
+        std::copy(col, col+actual_nnzs, actual_cols);
         delete[] row;
         delete[] col;
         if constexpr (weighted) {
           actual_vals = new ValueType[actual_nnzs];
-          memcpy(actual_vals, vals, actual_nnzs * sizeof(ValueType));
+          std::copy(vals, vals+actual_nnzs, actual_vals);
           delete[] vals;
         }
       }
