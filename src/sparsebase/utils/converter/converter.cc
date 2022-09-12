@@ -480,6 +480,27 @@ bool Converter::CanConvert(std::type_index from_type,
   }
   return false;
 }
+
+  void Converter::ClearConversionFunctions(std::type_index from_type, std::type_index to_type, bool move_conversion){
+    auto map = get_conversion_map(move_conversion);
+    if (map->find(from_type) != map->end()){
+      if ((*map)[from_type].find(to_type)!= (*map)[from_type].end()){
+        (*map)[from_type].erase(to_type);
+        if ((*map)[from_type].size() == 0) map->erase(from_type);
+      }
+    }
+  }
+  
+  /*! Removes all conversion functions from the current converter
+   */
+  void Converter::ClearConversionFunctions(bool move_conversion){
+    auto map = get_conversion_map(move_conversion);
+    map->clear();
+  }
+  
+  /*! Removes all move conversion functions from the current converter
+   */
+  void ClearMoveConversionFunctions(std::type_index from_type, std::type_index to_type);
 std::vector<Format *>
 Converter::ApplyConversionSchema(ConversionSchemaConditional cs,
                                  std::vector<Format *> packed_sfs,
