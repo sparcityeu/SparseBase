@@ -88,8 +88,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
-            << this->connectivity_->get_dimensions()[1] << std::endl;
+  //std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  //          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
@@ -97,8 +97,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
-            << this->connectivity_->get_dimensions()[1] << std::endl;
+  ///std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  ///          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
@@ -108,18 +108,18 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
-            << this->connectivity_->get_dimensions()[1] << std::endl;
+  ///std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  ///          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(
     std::string filename) {
-  utils::io::MTXReader<VertexID, NumEdges, Weight> reader(filename);
+  utils::io::MTXReader<VertexID, NumEdges, Weight> reader(filename, false);
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
-            << this->connectivity_->get_dimensions()[1] << std::endl;
+  ///std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  ///          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph() {}
