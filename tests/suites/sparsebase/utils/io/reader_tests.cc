@@ -559,7 +559,7 @@ TEST(PigoEdgeListReader, Basics) {
   ofs2.close();
 
   sparsebase::utils::io::PigoEdgeListReader<int, int, int> reader(
-      "test_pigo.edges");
+      "test_pigo.edges", false);
   auto coo = reader.ReadCOO();
 
   // Check the dimensions (double the edges due to undirected read)

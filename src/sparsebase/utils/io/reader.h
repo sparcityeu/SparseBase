@@ -171,7 +171,7 @@ class PigoMTXReader : public Reader,
                       public ReadsCSR<IDType, NNZType, ValueType>,
                       public ReadsArray<ValueType> {
 public:
-  PigoMTXReader(std::string filename, bool weighted = false,
+  PigoMTXReader(std::string filename, bool weighted,
                 bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
@@ -195,7 +195,7 @@ class PigoEdgeListReader : public Reader,
                            public ReadsCSR<IDType, NNZType, ValueType>,
                            public ReadsCOO<IDType, NNZType, ValueType> {
 public:
-  PigoEdgeListReader(std::string filename, bool weighted = false);
+  PigoEdgeListReader(std::string filename, bool weighted);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   virtual ~PigoEdgeListReader() = default;
