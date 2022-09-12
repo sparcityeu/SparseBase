@@ -183,7 +183,7 @@ class format_init(explicit_initialization):
             for c in single_order_classes:
                 self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
         self.out_stream.write('\n\n')
-        print_implementations(['CSR', 'COO'], self.out_stream)
+        print_implementations(['CSR', 'COO', 'CSC'], self.out_stream)
 
 class reader_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
