@@ -34,6 +34,7 @@ struct PreprocessParams {};
 
 //! A generic type for all preprocessing types
 class PreprocessType {
+  typedef PreprocessParams ParamsType;
 protected:
   //! Polymorphic pointer at a PreprocessParams object
   std::unique_ptr<PreprocessParams> params_;
@@ -417,7 +418,10 @@ class RCMReorder : public ReorderPreprocessType<IDType> {
   typedef typename std::make_signed<IDType>::type SignedID;
 
 public:
+  struct RCMReorderParams : PreprocessParams {};
+  typedef RCMReorderParams ParamsType;
   RCMReorder();
+  RCMReorder(ParamsType p);
 
 protected:
   static IDType peripheral(NNZType *xadj, IDType *adj, IDType n, IDType start,
@@ -515,6 +519,7 @@ public:
     IDType *order;
     explicit PermuteParams(IDType *order) : order(order){};
   };
+  typedef PermuteParams ParamsType;
 
 protected:
   //! An implementation function that will transform a CSR format into another
@@ -539,6 +544,7 @@ public:
     IDType *order;
     explicit InversePermuteOrderOneParams(IDType *order) : order(order){};
   };
+  typedef InversePermuteOrderOneParams ParamsType;
 
 protected:
   //! An implementation function that will transform a CSR format into another
@@ -553,7 +559,7 @@ protected:
                                       PreprocessParams *);
 };
 
-template <typename IDType, typename NNZType, typename ValueType>
+template <typename IDType, typename ValueType>
 class PermuteOrderOne
     : public TransformPreprocessType<format::FormatOrderOne<ValueType>,
                                      format::FormatOrderOne<ValueType>> {
@@ -563,6 +569,7 @@ public:
     IDType *order;
     explicit PermuteOrderOneParams(IDType *order) : order(order){};
   };
+  typedef PermuteOrderOneParams ParamsType;
 
 protected:
   //! An implementation function that will transform a CSR format into another
@@ -602,6 +609,8 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class JaccardWeights : public FunctionMatcherMixin<format::Format *> {
 public:
+  struct JaccardWeightsParams : PreprocessParams{};
+  typedef JaccardWeightsParams ParamsType;
   JaccardWeights();
   //! Take a single Format object representating a graph and get the Jaccard
   //! Weights as a 1D format object
@@ -643,6 +652,7 @@ class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
 
 public:
   struct DegreeDistributionParams : PreprocessParams {};
+  typedef DegreeDistributionParams ParamsType;
   DegreeDistribution();
   DegreeDistribution(const DegreeDistribution &);
   DegreeDistribution(std::shared_ptr<DegreeDistributionParams>);
@@ -717,6 +727,7 @@ class Degrees : public FeaturePreprocessType<IDType *> {
 
 public:
   struct DegreesParams : PreprocessParams {};
+  typedef DegreesParams ParamsType;
   Degrees();
   Degrees(const Degrees<IDType, NNZType, ValueType> &d);
   Degrees(std::shared_ptr<DegreesParams>);
@@ -761,6 +772,7 @@ class Degrees_DegreeDistribution
     : public FeaturePreprocessType<
           std::unordered_map<std::type_index, std::any>> {
   struct Params : PreprocessParams {};
+  typedef Params ParamsType;
 
 public:
   Degrees_DegreeDistribution();

@@ -389,6 +389,15 @@ RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+RCMReorder<IDType, NNZType, ValueType>::RCMReorder(RCMReorderParams p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+
+}
 template <typename IDType, typename NNZType, typename ValueType>
 IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
                                                           IDType *adj, IDType n,
@@ -522,16 +531,16 @@ format::FormatOrderOne<ValueType> *InversePermuteOrderOne<IDType, NNZType, Value
   return arr;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-PermuteOrderOne<IDType, NNZType, ValueType>::PermuteOrderOne(IDType *order) {
+template <typename IDType, typename ValueType>
+PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
   this->SetConverter(
       utils::converter::ConverterOrderOne<ValueType>{});
   this->RegisterFunction(
       {Array<ValueType>::get_format_id_static()}, PermuteArray);
   this->params_ = std::unique_ptr<PermuteOrderOneParams>(new PermuteOrderOneParams(order));
 }
-template <typename IDType, typename NNZType, typename ValueType>
-format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, NNZType, ValueType>::PermuteArray(
+template <typename IDType, typename ValueType>
+format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteArray(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<Array<ValueType>>();
   auto order = static_cast<PermuteOrderOneParams *>(params)->order;
