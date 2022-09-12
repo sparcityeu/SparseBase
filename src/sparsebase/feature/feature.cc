@@ -139,12 +139,12 @@ Extractor::Extract(format::Format *format,
   // match and get classes for format extraction
   std::vector<preprocess::ExtractableType *> cs = this->GetClasses(in_);
   std::unordered_map<std::type_index, std::any> res;
-  std::cout << std::endl << "Classes used:" << std::endl;
+  //std::cout << std::endl << "Classes used:" << std::endl;
   for (auto &el : cs) {
-    std::cout << el->get_feature_id().name() << std::endl;
+    //std::cout << el->get_feature_id().name() << std::endl;
     res.merge(el->Extract(format, c));
   }
-  std::cout << std::endl;
+  //std::cout << std::endl;
   return res;
 }
 
