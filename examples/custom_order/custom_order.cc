@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
   }
   delete[] permutation;
 
-  preprocess::Permute<vertex_type, edge_type, value_type> transformer(order);
+  preprocess::Permute<vertex_type, edge_type, value_type> transformer(order, order);
   format::Format *csr = transformer.GetTransformation(con, {&cpu_context});
   auto *n_row_ptr =
       csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();

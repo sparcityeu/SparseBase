@@ -1,4 +1,3 @@
-#include <armadillo>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -15,8 +14,8 @@
 typedef int ull;
 typedef int val;
 
-template<typename T, typename C>
-std::tuple<val, val, ull> compare(T* j1, T* j2, C count, T threshold, bool verbose = false, bool print_samples = false);
+//template<typename T, typename C>
+//std::tuple<val, val, ull> compare(T* j1, T* j2, C count, T threshold, bool verbose = false, bool print_samples = false);
 
 // matrices to try
 //  offshor
@@ -30,7 +29,7 @@ int main(){
   // Hamrjki thinkVle1/Hamrle1.mtx
   context::CPUContext cpu_context;
 
-  utils::io::MTXReader<ull, ull, val> A_reader(A_filename);
+  utils::io::MTXReader<ull, ull, val> A_reader(A_filename, true);
   format::COO<ull, ull, val> * A =  A_reader.ReadCOO();
 
   //preprocess::ReorderingSuite<ull, ull, val> reorder;
@@ -57,59 +56,58 @@ int main(){
 
   float * deg_dist = preprocess::GraphFeatureSuite::GetDegreeDistribution<float>({}, A, {&cpu_context});
   int * deg = preprocess::GraphFeatureSuite::GetDegrees({}, A, {&cpu_context});
-  cout << deg_dist <<  deg;
   return 0;
 }
 
-// compares two vectors of numbers element wise and returns (mean, std, num_different)
-template<typename T, typename C>
-std::tuple<double, double, ull> compare_vectors(T* v1, T* v2, C count, T threshold, std::vector<C>& indexes){
-  ull  total_different = 0;
-  double sum = 0;
-  for (C i = 0; i<count ; i++){
-    double diff =abs(v1[i]-v2[i]);
-    if (diff>threshold){
-      indexes.push_back(i);
-      total_different++;
-      sum+=diff;
-    }
-  }
-  double mean = sum/ double(count);
-  double sum_sqrd=0;
-  for (C i = 0; i<count ; i++){
-    double diff =abs(v1[i]-v2[i]);
-    if (diff>threshold){
-      sum_sqrd+=pow(diff-mean,2);
-    }
-  }
-  double std_div = sqrt(sum_sqrd/double(count));
-  return std::make_tuple(mean, std_div, total_different);
-}
-
-
-template<typename T, typename C>
-std::tuple<double, double, ull> compare(T* j1, T* j2, C count, T threshold, bool verbose, bool print_samples){
-  std::vector<C> indexes;
-  std::tuple<double, double, ull> comparison_tuple= compare_vectors(j1, j2, count,  threshold, indexes);
-  if (indexes.size() > 0){
-    std::cout << "Errors:\n";
-    for (int i =0; i<indexes.size() && i < 10; i++){
-      std::cout << indexes[i] << " " << j1[indexes[i]] << " " << j2[indexes[i]] << std::endl;
-    }
-  }
-  if (verbose){
-    std::cout << "Mean = " << std::get<0>(comparison_tuple) << " STD = " << std::get<1>(comparison_tuple)  << "Tot. diff. = " << std::get<2>(comparison_tuple) << std::endl;
-    if (print_samples){
-      std::cout << "Samples:\n";
-      std::cout << j1[0] << " " << j2[0] << std::endl;
-      std::cout << j1[10] << " " << j2[10] << std::endl;
-      std::cout << j1[100] << " " << j2[100] << std::endl;
-      std::cout << j1[1000] << " " << j2[1000] << std::endl;
-      std::cout << j1[10000] << " " << j2[10000] << std::endl;
-    }
-  }
-  return comparison_tuple;
-}
+//// compares two vectors of numbers element wise and returns (mean, std, num_different)
+//template<typename T, typename C>
+//std::tuple<double, double, ull> compare_vectors(T* v1, T* v2, C count, T threshold, std::vector<C>& indexes){
+//  ull  total_different = 0;
+//  double sum = 0;
+//  for (C i = 0; i<count ; i++){
+//    double diff =abs(v1[i]-v2[i]);
+//    if (diff>threshold){
+//      indexes.push_back(i);
+//      total_different++;
+//      sum+=diff;
+//    }
+//  }
+//  double mean = sum/ double(count);
+//  double sum_sqrd=0;
+//  for (C i = 0; i<count ; i++){
+//    double diff =abs(v1[i]-v2[i]);
+//    if (diff>threshold){
+//      sum_sqrd+=pow(diff-mean,2);
+//    }
+//  }
+//  double std_div = sqrt(sum_sqrd/double(count));
+//  return std::make_tuple(mean, std_div, total_different);
+//}
+//
+//
+//template<typename T, typename C>
+//std::tuple<double, double, ull> compare(T* j1, T* j2, C count, T threshold, bool verbose, bool print_samples){
+//  std::vector<C> indexes;
+//  std::tuple<double, double, ull> comparison_tuple= compare_vectors(j1, j2, count,  threshold, indexes);
+//  if (indexes.size() > 0){
+//    std::cout << "Errors:\n";
+//    for (int i =0; i<indexes.size() && i < 10; i++){
+//      std::cout << indexes[i] << " " << j1[indexes[i]] << " " << j2[indexes[i]] << std::endl;
+//    }
+//  }
+//  if (verbose){
+//    std::cout << "Mean = " << std::get<0>(comparison_tuple) << " STD = " << std::get<1>(comparison_tuple)  << "Tot. diff. = " << std::get<2>(comparison_tuple) << std::endl;
+//    if (print_samples){
+//      std::cout << "Samples:\n";
+//      std::cout << j1[0] << " " << j2[0] << std::endl;
+//      std::cout << j1[10] << " " << j2[10] << std::endl;
+//      std::cout << j1[100] << " " << j2[100] << std::endl;
+//      std::cout << j1[1000] << " " << j2[1000] << std::endl;
+//      std::cout << j1[10000] << " " << j2[10000] << std::endl;
+//    }
+//  }
+//  return comparison_tuple;
+//}
 
 // Solving
 /*
