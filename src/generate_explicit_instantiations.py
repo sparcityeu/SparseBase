@@ -151,7 +151,10 @@ class preprocess_init(explicit_initialization):
         for value_type in value_types:
             format_order_one = "FormatOrderOne<"+value_type+">"
             self.out_stream.write(PREFIX+"TransformPreprocessType<"+format_order_one+','+format_order_one+">;")
-        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'Permute', 'Degrees', 'PermuteOrderOne', 'InversePermuteOrderOne'], self.out_stream)
+        for vertex_type in vertex_types:
+            for value_type in value_types:
+                self.out_stream.write(PREFIX+"PermuteOrderOne<"+vertex_type+','+value_type+">;")
+        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'Permute', 'Degrees', 'InversePermuteOrderOne'], self.out_stream)
 
 class converter_init(explicit_initialization):
     def __init__(self, folder, dry_run=False):
