@@ -388,6 +388,7 @@ public:
     bool ascending;
     DegreeReorderParams(bool ascending) : ascending(ascending) {}
   };
+  typedef DegreeReorderParams ParamsType;
 
 protected:
   //! An implementation function that will reorder a CSR format
@@ -817,6 +818,59 @@ public:
 protected:
   void Register();
 };
+
+class GraphFeatureSuite {
+public:
+  template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
+  static FeatureType* GetDegreeDistribution(typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+    DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
+    return deg_dist.GetDistribution(format, contexts);
+  }
+  template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
+  static NNZType* GetDegrees(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+    Degrees<IDType, NNZType, ValueType> deg_dist;
+    return deg_dist.GetDegrees(format, contexts);
+  }
+};
+//template <typename IDType, typename NNZType, typename ValueType>
+class ReorderingSuite {
+public:
+  template <template <typename, typename, typename> typename Reordering,typename IDType, typename NNZType, typename ValueType>
+  static IDType* Reorder(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+    Reordering<IDType, NNZType, ValueType> reordering(params);
+    return reordering.GetReorder(format, contexts);
+  }
+
+  template <typename IDType, typename NNZType, typename ValueType>
+  static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+    Permute<IDType, NNZType, ValueType> perm(ordering);
+    return perm.GetTransformation(format, contexts);
+  }
+
+  template <typename IDType, typename ValueType>
+  static format::FormatOrderOne<ValueType>* Permute1D(IDType* ordering, format::FormatOrderOne<ValueType>* format, std::vector<context::Context*> contexts){
+    PermuteOrderOne<IDType, ValueType> perm(ordering);
+    return perm.GetTransformation(format, contexts);
+  }
+
+  template <typename IDType, typename NNZType, typename ValueType>
+  static IDType * InversePermutation(IDType*perm, format::FormatOrderTwo<IDType, NNZType, ValueType> *format){
+    IDType length = format->get_dimensions()[0];
+    auto inv_perm = new IDType[length];
+    for (IDType i = 0; i < length; i++){
+      inv_perm[perm[i]] = i;
+    }
+    return inv_perm;
+  }
+
+};
+
+template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
+int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
+  std::cout << "It works!\n";
+  Reordering<IDType, NNZType, ValueType> r;
+  return 1;
+}
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
