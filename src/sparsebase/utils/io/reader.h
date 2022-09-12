@@ -113,7 +113,7 @@ public:
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
    */
-  explicit MTXReader(std::string filename, bool weighted = false,
+  explicit MTXReader(std::string filename, bool weighted,
                      bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
@@ -136,7 +136,7 @@ class PigoMTXReader : public Reader,
                       public ReadsCOO<IDType, NNZType, ValueType>,
                       public ReadsCSR<IDType, NNZType, ValueType> {
 public:
-  PigoMTXReader(std::string filename, bool weighted = false,
+  PigoMTXReader(std::string filename, bool weighted,
                 bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
@@ -159,7 +159,7 @@ class PigoEdgeListReader : public Reader,
                            public ReadsCSR<IDType, NNZType, ValueType>,
                            public ReadsCOO<IDType, NNZType, ValueType> {
 public:
-  PigoEdgeListReader(std::string filename, bool weighted = false);
+  PigoEdgeListReader(std::string filename, bool weighted);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   virtual ~PigoEdgeListReader() = default;
