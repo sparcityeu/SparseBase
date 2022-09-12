@@ -281,6 +281,55 @@ protected:
   std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
 };
 
+//! Compressed Sparse Column Sparse Data Format
+/*!
+ * Compressed Sparse Column format keeps 3 arrays col_ptr, row, vals.
+ * The i-th element in the col_ptr array denotes the index the i-th column starts
+ * in the row array.
+ * The row, vals arrays are identical to the COO format.
+ *
+ * \tparam IDType type used for the dimensions
+ * \tparam NNZType type used for non-zeros and the number of non-zeros
+ * \tparam ValueType type used for the stored values
+ *
+ * Buluç, Aydın; Fineman, Jeremy T.; Frigo, Matteo; Gilbert, John R.; Leiserson,
+ * Charles E. (2009). Parallel sparse matrix-vector and matrix-transpose-vector
+ * multiplication using compressed sparse blocks. ACM Symp. on Parallelism
+ * in Algorithms and Architectures. CiteSeerX 10.1.1.211.5256.
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class CSC : public FormatImplementation<CSC<IDType, NNZType, ValueType>> {
+public:
+  CSC(IDType n, IDType m, NNZType *col_ptr, IDType *col, ValueType *vals,
+      Ownership own = kNotOwned, bool ignore_sort = false);
+  CSC(const CSC<IDType, NNZType, ValueType> &);
+  CSC(CSC<IDType, NNZType, ValueType> &&);
+  CSC<IDType, NNZType, ValueType> &
+  operator=(const CSC<IDType, NNZType, ValueType> &);
+  Format *Clone() const override;
+  virtual ~CSC();
+  NNZType *get_col_ptr() const;
+  IDType *get_row() const;
+  ValueType *get_vals() const;
+
+  NNZType *release_col_ptr();
+  IDType *release_row();
+  ValueType *release_vals();
+
+  void set_col_ptr(NNZType *, Ownership own = kNotOwned);
+  void set_row(IDType *, Ownership own = kNotOwned);
+  void set_vals(ValueType *, Ownership own = kNotOwned);
+
+  virtual bool ColPtrIsOwned();
+  virtual bool RowIsOwned();
+  virtual bool ValsIsOwned();
+
+protected:
+  std::unique_ptr<NNZType[], std::function<void(NNZType *)>> col_ptr_;
+  std::unique_ptr<IDType[], std::function<void(IDType *)>> row_;
+  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+};
+
 } // namespace format
 
 } // namespace sparsebase
