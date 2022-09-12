@@ -126,6 +126,19 @@ public:
                   std::type_index to_type, context::Context *to_context,
                   bool is_move_conversion = false);
 
+  /*! Removes conversion functions that convert from `from_type` to `to_type` from
+   * the conversion map
+   * @param from_type type_index of the original format type
+   * @param to_type type_index of the destination format type
+   * @param move_conversion whether the conversions to be removed are move conversions or not
+   */
+  void ClearConversionFunctions(std::type_index from_type, std::type_index to_type, bool move_conversion = false);
+  
+  /*! Removes all conversion functions from the current converter
+   * @param move_conversion whether the conversions to be removed are move conversions or not
+   */
+  void ClearConversionFunctions(bool move_conversion = false);
+  
   std::vector<format::Format *>
   ApplyConversionSchema(ConversionSchemaConditional cs,
                         std::vector<format::Format *> packed_sfs,
