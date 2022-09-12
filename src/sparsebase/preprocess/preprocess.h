@@ -515,11 +515,13 @@ class Permute : public TransformPreprocessType<
                     format::FormatOrderTwo<IDType, NNZType, ValueType>,
                     format::FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
-  Permute(IDType *);
+  Permute(IDType *, IDType *);
   struct PermuteParams : PreprocessParams {
-    IDType *order;
-    explicit PermuteParams(IDType *order) : order(order){};
+    IDType *row_order;
+    IDType *col_order;
+    explicit PermuteParams(IDType *r_order, IDType* c_order) : row_order(r_order), col_order(c_order){};
   };
+  explicit Permute(PermuteParams);
   typedef PermuteParams ParamsType;
 
 protected:
@@ -532,31 +534,6 @@ protected:
    * @return a transformed Format object of type CSR
    */
   static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteCSR(std::vector<format::Format *> formats,
-                                      PreprocessParams *);
-};
-
-template <typename IDType, typename NNZType, typename ValueType>
-class InversePermuteOrderOne
-    : public TransformPreprocessType<format::FormatOrderOne<ValueType>,
-                                     format::FormatOrderOne<ValueType>> {
-public:
-  InversePermuteOrderOne(IDType *);
-  struct InversePermuteOrderOneParams : PreprocessParams {
-    IDType *order;
-    explicit InversePermuteOrderOneParams(IDType *order) : order(order){};
-  };
-  typedef InversePermuteOrderOneParams ParamsType;
-
-protected:
-  //! An implementation function that will transform a CSR format into another
-  //! CSR
-  /*!
-   *
-   * @param formats a vector containing a single Format object of type Array
-   * @param params a polymorphic pointer at a `TransformParams` object
-   * @return a transformed Format object of type CSR
-   */
-  static format::FormatOrderOne<ValueType> *InverselyPermuteArray(std::vector<format::Format *> formats,
                                       PreprocessParams *);
 };
 
@@ -843,7 +820,7 @@ public:
 
   template <typename IDType, typename NNZType, typename ValueType>
   static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
-    Permute<IDType, NNZType, ValueType> perm(ordering);
+    Permute<IDType, NNZType, ValueType> perm(ordering, ordering);
     return perm.GetTransformation(format, contexts);
   }
 

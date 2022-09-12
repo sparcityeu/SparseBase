@@ -506,31 +506,6 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   return Q;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-InversePermuteOrderOne<IDType, NNZType, ValueType>::InversePermuteOrderOne(IDType *order) {
-  this->SetConverter(
-      utils::converter::ConverterOrderOne<ValueType>{});
-  this->RegisterFunction(
-      {Array<ValueType>::get_format_id_static()}, InverselyPermuteArray);
-  this->params_ = std::unique_ptr<InversePermuteOrderOneParams>(new InversePermuteOrderOneParams(order));
-}
-template <typename IDType, typename NNZType, typename ValueType>
-format::FormatOrderOne<ValueType> *InversePermuteOrderOne<IDType, NNZType, ValueType>::InverselyPermuteArray(
-    std::vector<Format *> formats, PreprocessParams *params) {
-  auto *sp = formats[0]->As<Array<ValueType>>();
-  auto order = static_cast<InversePermuteOrderOneParams *>(params)->order;
-  std::vector<DimensionType> dimensions = sp->get_dimensions();
-  IDType length = dimensions[0];
-  ValueType *vals = sp->get_vals();
-  ValueType *nvals = new ValueType[length]();
-
-  for (IDType i = 0; i < length; i++){
-    nvals[i] = vals[order[i]];
-  }
-  Array<ValueType> *arr = new Array<ValueType>(length, nvals, kOwned);
-  return arr;
-}
-
 template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
   this->SetConverter(
@@ -560,12 +535,16 @@ format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteAr
   return arr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Permute<IDType, NNZType, ValueType>::Permute(IDType *order) {
+Permute<IDType, NNZType, ValueType>::Permute(IDType *row_order, IDType* col_order) {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteCSR);
-  this->params_ = std::unique_ptr<PermuteParams>(new PermuteParams(order));
+  this->params_ = std::unique_ptr<PermuteParams>(new PermuteParams(row_order, col_order));
+}
+template <typename IDType, typename NNZType, typename ValueType>
+Permute<IDType, NNZType, ValueType>::Permute(PermuteParams params) {
+  Permute(params.row_order, params.col_order);
 }
 template <typename InputFormatType, typename ReturnFormtType>
 TransformPreprocessType<InputFormatType, ReturnFormtType>::~TransformPreprocessType() = default;
@@ -573,7 +552,8 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, ValueType>::PermuteCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
-  auto order = static_cast<PermuteParams *>(params)->order;
+  auto row_order = static_cast<PermuteParams *>(params)->row_order;
+  auto col_order = static_cast<PermuteParams *>(params)->col_order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
@@ -589,15 +569,18 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, Val
       nvals = new ValueType[nnz]();
   }
 
-  IDType *inverse_order = new IDType[n]();
+  IDType *inverse_row_order = new IDType[n]();
   for (IDType i = 0; i < n; i++)
-    inverse_order[order[i]] = i;
+    inverse_row_order[row_order[i]] = i;
+  //IDType *inverse_col_order = new IDType[n]();
+  //for (IDType i = 0; i < n; i++)
+  //  inverse_col_order[col_order[i]] = i;
   NNZType c = 0;
   for (IDType i = 0; i < n; i++) {
-    IDType u = inverse_order[i];
+    IDType u = inverse_row_order[i];
     nxadj[i + 1] = nxadj[i] + (xadj[u + 1] - xadj[u]);
     for (NNZType v = xadj[u]; v < xadj[u + 1]; v++) {
-      nadj[c] = order[adj[v]];
+      nadj[c] = col_order[adj[v]];
       if constexpr (!std::is_same_v<void, ValueType>) {
         if (sp->get_vals() != nullptr)
           nvals[c] = vals[v];
@@ -605,7 +588,7 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, Val
       c++;
     }
   }
-  delete[] inverse_order;
+  delete[] inverse_row_order;
   CSR<IDType, NNZType, ValueType> *csr = new CSR(n, m, nxadj, nadj, nvals);
   return csr;
 }
