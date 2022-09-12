@@ -826,7 +826,7 @@ public:
     DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
     return deg_dist.GetDistribution(format, contexts);
   }
-  template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
+  template <typename IDType, typename NNZType, typename ValueType>
   static NNZType* GetDegrees(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
     Degrees<IDType, NNZType, ValueType> deg_dist;
     return deg_dist.GetDegrees(format, contexts);

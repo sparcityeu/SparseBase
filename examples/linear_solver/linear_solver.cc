@@ -35,10 +35,8 @@ int main(){
 
   //preprocess::ReorderingSuite<ull, ull, val> reorder;
 
-  //ull *perm = reorder.Reorder<preprocess::RCMReorder>({}, A, {&cpu_context});
   ull *perm = preprocess::ReorderingSuite::Reorder<preprocess::RCMReorder>({}, A, {&cpu_context});
 
-  //auto * A_reordered = reorder.Permute2D(perm, A, {&cpu_context})->Convert<format::COO>();
   auto * A_reordered = preprocess::ReorderingSuite::Permute2D(perm, A, {&cpu_context})->Convert<format::COO>();
 
   auto *A_csc = A_reordered->Convert<format::CSC>();
@@ -48,7 +46,6 @@ int main(){
 
   format::Array<val> *b = new format::Array<val>(3, nullptr);
 
-  //format::Array<val> * b_reordered = reorder.Permute1D(perm, b, {&cpu_context})->Convert<format::Array>();
   format::Array<val> * b_reordered = preprocess::ReorderingSuite::Permute1D<int, int>(perm, b, {&cpu_context})->Convert<format::Array>();
 
   // solving for x
@@ -59,8 +56,8 @@ int main(){
   format::Array<val> *x = preprocess::ReorderingSuite::Permute1D(inv_perm, inv_x, {&cpu_context})->Convert<format::Array>();
 
   float * deg_dist = preprocess::GraphFeatureSuite::GetDegreeDistribution<float>({}, A, {&cpu_context});
-  float * deg = preprocess::GraphFeatureSuite::GetDegrees({}, A, {&cpu_context});
-  cout << deg_dist << deg <<
+  int * deg = preprocess::GraphFeatureSuite::GetDegrees({}, A, {&cpu_context});
+  cout << deg_dist <<  deg;
   return 0;
 }
 
