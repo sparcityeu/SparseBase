@@ -544,7 +544,7 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(IDType *row_order, 
 }
 template <typename IDType, typename NNZType, typename ValueType>
 PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams params) {
-  Permute(params.row_order, params.col_order);
+  PermuteOrderTwo(params.row_order, params.col_order);
 }
 template <typename InputFormatType, typename ReturnFormtType>
 TransformPreprocessType<InputFormatType, ReturnFormtType>::~TransformPreprocessType() = default;
