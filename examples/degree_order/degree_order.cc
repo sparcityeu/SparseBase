@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
   cout << "Checking the correctness of the ordering..." << endl;
   // We can easily get the inverse of our permutation (to reverse the ordering)
-  auto inv_permutation = preprocess::ReorderingSuite::InversePermutation(permutation, con->As<format::CSR<vertex_type, edge_type, value_type>>());
+  auto inv_permutation = preprocess::ReorderBase::InversePermutation(permutation, con->As<format::CSR<vertex_type, edge_type, value_type>>());
   bool order_is_correct = true;
   set<vertex_type> check;
   for (vertex_type new_u = 0; new_u < n - 1 && order_is_correct; new_u++) {

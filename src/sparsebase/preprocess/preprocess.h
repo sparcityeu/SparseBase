@@ -810,11 +810,11 @@ public:
   }
 };
 //template <typename IDType, typename NNZType, typename ValueType>
-class ReorderingSuite {
+class ReorderBase {
 public:
   template <template <typename, typename, typename> typename Reordering,typename IDType, typename NNZType, typename ValueType>
   static IDType* Reorder(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
-    static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderingSuite::Reorder");
+    static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
     Reordering<IDType, NNZType, ValueType> reordering(params);
     return reordering.GetReorder(format, contexts);
   }

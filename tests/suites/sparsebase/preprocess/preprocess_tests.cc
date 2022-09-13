@@ -133,7 +133,7 @@ TEST(ArrayPermute, Basic){
 }
 TEST(ArrayPermute, Inverse){
   context::CPUContext cpu_context;
-  auto inv_p = ReorderingSuite::InversePermutation(inverse_perm_array, &global_csr);
+  auto inv_p = ReorderBase::InversePermutation(inverse_perm_array, &global_csr);
   PermuteOrderOne<int, float> inverse_transform(inv_p);
   format::Format* inv_inversed_arr_fp = inverse_transform.GetTransformation(&inv_arr, {&cpu_context});
   format::Array<float> *inv_inversed_arr = inv_inversed_arr_fp->As<format::Array<float>>();
@@ -384,8 +384,8 @@ TEST(PermuteTest, RowWise) {
 
 TEST(InversePermuteTest, RowColWise) {
   sparsebase::format::CSR<int, int, int> rc_reordered_csr(3, 3, rc_row_ptr, rc_cols, rc_vals, sparsebase::format::kNotOwned, true);
-  auto inv_r_order = sparsebase::preprocess::ReorderingSuite::InversePermutation(r_reorder_vector, &rc_reordered_csr);
-  auto inv_c_order = sparsebase::preprocess::ReorderingSuite::InversePermutation(c_reorder_vector, &rc_reordered_csr);
+  auto inv_r_order = sparsebase::preprocess::ReorderBase::InversePermutation(r_reorder_vector, &rc_reordered_csr);
+  auto inv_c_order = sparsebase::preprocess::ReorderBase::InversePermutation(c_reorder_vector, &rc_reordered_csr);
   sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(inv_r_order, inv_c_order);
   auto transformed_format =
       transformer.GetTransformation(&rc_reordered_csr, {&cpu_context})
