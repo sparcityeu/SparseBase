@@ -369,7 +369,7 @@ TEST(RCMReorderTest, BasicTest) {
 }
 
 TEST(PermuteTest, RowWise) {
-  sparsebase::preprocess::Permute<int, int, int> transformer(r_reorder_vector, nullptr);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(r_reorder_vector, nullptr);
   auto transformed_format =
       transformer.GetTransformation(&global_coo, {&cpu_context})
           ->As<format::CSR<int, int, int>>();
@@ -386,7 +386,7 @@ TEST(InversePermuteTest, RowColWise) {
   sparsebase::format::CSR<int, int, int> rc_reordered_csr(3, 3, rc_row_ptr, rc_cols, rc_vals, sparsebase::format::kNotOwned, true);
   auto inv_r_order = sparsebase::preprocess::ReorderingSuite::InversePermutation(r_reorder_vector, &rc_reordered_csr);
   auto inv_c_order = sparsebase::preprocess::ReorderingSuite::InversePermutation(c_reorder_vector, &rc_reordered_csr);
-  sparsebase::preprocess::Permute<int, int, int> transformer(inv_r_order, inv_c_order);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(inv_r_order, inv_c_order);
   auto transformed_format =
       transformer.GetTransformation(&rc_reordered_csr, {&cpu_context})
           ->As<format::CSR<int, int, int>>();
@@ -400,7 +400,7 @@ TEST(InversePermuteTest, RowColWise) {
 }
 
 TEST(PermuteTest, ColWise) {
-  sparsebase::preprocess::Permute<int, int, int> transformer(nullptr, c_reorder_vector);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, c_reorder_vector);
   auto transformed_format =
       transformer.GetTransformation(&global_coo, {&cpu_context})
           ->As<format::CSR<int, int, int>>();
@@ -414,7 +414,7 @@ TEST(PermuteTest, ColWise) {
 }
 
 TEST(PermuteTest, RowColWise) {
-  sparsebase::preprocess::Permute<int, int, int> transformer(r_reorder_vector, c_reorder_vector);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(r_reorder_vector, c_reorder_vector);
   auto transformed_format =
       transformer.GetTransformation(&global_coo, {&cpu_context})
           ->As<format::CSR<int, int, int>>();
@@ -430,7 +430,7 @@ TEST(PermuteTest, RowColWise) {
 TEST(PermuteTest, ConversionNoParam) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
-  sparsebase::preprocess::Permute<int, int, int> transformer(order, order);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(order, order);
   auto transformed_format =
       transformer.GetTransformation(&global_coo, {&cpu_context})
           ->As<format::CSR<int, int, int>>();
@@ -442,7 +442,7 @@ TEST(PermuteTest, ConversionNoParam) {
 TEST(PermuteTest, WrongInputType) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
-  sparsebase::preprocess::Permute<int, int, int> transformer(order, order);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(order, order);
   EXPECT_THROW((transformer.GetTransformation(&orig_arr, {&cpu_context})
                    ->As<format::CSR<int, int, int>>()), utils::TypeException);
 }
@@ -450,8 +450,8 @@ TEST(PermuteTest, WrongInputType) {
 TEST(PermuteTest, NoConversionParam) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_csr, {&cpu_context});
-  sparsebase::preprocess::Permute<int, int, int> transformer(nullptr, nullptr);
-  sparsebase::preprocess::Permute<int, int, int>::PermuteParams params(
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, nullptr);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int>::PermuteOrderTwoParams params(
       order, order);
   auto transformed_format =
       transformer.GetTransformation(&global_csr, &params, {&cpu_context})
@@ -464,8 +464,8 @@ TEST(PermuteTest, NoConversionParam) {
 TEST(PermuteTest, ConversionParamCached) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
-  sparsebase::preprocess::Permute<int, int, int> transformer(nullptr, nullptr);
-  sparsebase::preprocess::Permute<int, int, int>::PermuteParams params(
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, nullptr);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int>::PermuteOrderTwoParams params(
       order, order);
   auto transformed_output =
       transformer.GetTransformationCached(&global_coo, &params, {&cpu_context});
@@ -484,8 +484,8 @@ TEST(PermuteTest, ConversionParamCached) {
 TEST(PermuteTest, NoConversionNoParamCached) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
-  sparsebase::preprocess::Permute<int, int, int> transformer(nullptr, nullptr);
-  sparsebase::preprocess::Permute<int, int, int>::PermuteParams params(
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, nullptr);
+  sparsebase::preprocess::PermuteOrderTwo<int, int, int>::PermuteOrderTwoParams params(
       order, order);
   auto transformed_output =
       transformer.GetTransformationCached(&global_csr, &params, {&cpu_context});
