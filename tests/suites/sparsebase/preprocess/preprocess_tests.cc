@@ -21,15 +21,38 @@ int cols[nnz] = {1, 2, 0, 0};
 int rows[nnz] = {0, 0, 1, 2};
 float distribution[n] = {2.0 / nnz, 1.0 / nnz, 1.0 / nnz};
 int degrees[n] = {2, 1, 1};
+int vals[nnz] = {1, 2, 3, 4};
+
+// row reordering
+// r_reorder_vector[i] = j -> new row j used to be at location i
+int r_reorder_vector[3] = {1, 2, 0};
+int r_row_ptr[n+1] = {0, 1, 3, 4};
+int r_rows[nnz] = {0, 1, 1, 2};
+int r_cols[nnz] = {0, 1, 2, 0};
+int r_vals[nnz] = {4, 1, 2, 3};
+
+// column reordering
+int c_reorder_vector[3] = {2, 0, 1};
+int c_row_ptr[n+1] = {0, 2, 3, 4};
+int c_rows[nnz] = {0, 0, 1, 2};
+int c_cols[nnz] = {0, 1, 2, 2};
+int c_vals[nnz] = {1, 2, 3, 4};
+
+// row and column reordering
+int rc_row_ptr[n+1] = {0, 1, 3, 4};
+int rc_rows[nnz] = {0, 1, 1, 2};
+int rc_cols[nnz] = {2, 0, 1, 2};
+int rc_vals[nnz] = {4, 1, 2, 3};
+
 
 int inverse_perm_array[3] = {2, 0, 1};
 float original_array[3] = {0.0, 0.1, 0.2};
 float reordered_array[3] = {0.1, 0.2, 0.0};
 format::Array<float> orig_arr(n, original_array, format::kNotOwned);
 format::Array<float> inv_arr(n, reordered_array, format::kNotOwned);
-format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, nullptr,
+format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, vals,
                                       format::kNotOwned);
-format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, nullptr,
+format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, vals,
                                       format::kNotOwned);
 sparsebase::context::CPUContext cpu_context;
 
@@ -111,7 +134,7 @@ TEST(ArrayPermute, Basic){
 TEST(ArrayPermute, Inverse){
   context::CPUContext cpu_context;
   auto inv_p = ReorderingSuite::InversePermutation(inverse_perm_array, &global_csr);
-  PermuteOrderOne<int, float> inverse_transform(inverse_perm_array);
+  PermuteOrderOne<int, float> inverse_transform(inv_p);
   format::Format* inv_inversed_arr_fp = inverse_transform.GetTransformation(&inv_arr, {&cpu_context});
   format::Array<float> *inv_inversed_arr = inv_inversed_arr_fp->As<format::Array<float>>();
   for (int i = 0; i < n; i++){
@@ -343,6 +366,65 @@ TEST(RCMReorderTest, BasicTest) {
   sparsebase::preprocess::RCMReorder<int, int, int> reorder;
   auto order = reorder.GetReorder(&global_coo, {&cpu_context});
   check_reorder(order, n);
+}
+
+TEST(PermuteTest, RowWise) {
+  sparsebase::preprocess::Permute<int, int, int> transformer(r_reorder_vector, nullptr);
+  auto transformed_format =
+      transformer.GetTransformation(&global_coo, {&cpu_context})
+          ->As<format::CSR<int, int, int>>();
+  for (int i = 0; i < n+1; i++){
+    EXPECT_EQ(transformed_format->get_row_ptr()[i], r_row_ptr[i]);
+  }
+  for (int i = 0; i < nnz; i++){
+    EXPECT_EQ(transformed_format->get_col()[i], r_cols[i]);
+    EXPECT_EQ(transformed_format->get_vals()[i], r_vals[i]);
+  }
+}
+
+TEST(InversePermuteTest, RowColWise) {
+  sparsebase::format::CSR<int, int, int> rc_reordered_csr(3, 3, rc_row_ptr, rc_cols, rc_vals, sparsebase::format::kNotOwned, true);
+  auto inv_r_order = sparsebase::preprocess::ReorderingSuite::InversePermutation(r_reorder_vector, &rc_reordered_csr);
+  auto inv_c_order = sparsebase::preprocess::ReorderingSuite::InversePermutation(c_reorder_vector, &rc_reordered_csr);
+  sparsebase::preprocess::Permute<int, int, int> transformer(inv_r_order, inv_c_order);
+  auto transformed_format =
+      transformer.GetTransformation(&rc_reordered_csr, {&cpu_context})
+          ->As<format::CSR<int, int, int>>();
+  for (int i = 0; i < n+1; i++){
+    EXPECT_EQ(transformed_format->get_row_ptr()[i], row_ptr[i]);
+  }
+  for (int i = 0; i < nnz; i++){
+    EXPECT_EQ(transformed_format->get_col()[i], cols[i]);
+    EXPECT_EQ(transformed_format->get_vals()[i], vals[i]);
+  }
+}
+
+TEST(PermuteTest, ColWise) {
+  sparsebase::preprocess::Permute<int, int, int> transformer(nullptr, c_reorder_vector);
+  auto transformed_format =
+      transformer.GetTransformation(&global_coo, {&cpu_context})
+          ->As<format::CSR<int, int, int>>();
+  for (int i = 0; i < n+1; i++){
+    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
+  }
+  for (int i = 0; i < nnz; i++){
+    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
+    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
+  }
+}
+
+TEST(PermuteTest, RowColWise) {
+  sparsebase::preprocess::Permute<int, int, int> transformer(r_reorder_vector, c_reorder_vector);
+  auto transformed_format =
+      transformer.GetTransformation(&global_coo, {&cpu_context})
+          ->As<format::CSR<int, int, int>>();
+  for (int i = 0; i < n+1; i++){
+    EXPECT_EQ(transformed_format->get_row_ptr()[i], rc_row_ptr[i]);
+  }
+  for (int i = 0; i < nnz; i++){
+    EXPECT_EQ(transformed_format->get_col()[i], rc_cols[i]);
+    EXPECT_EQ(transformed_format->get_vals()[i], rc_vals[i]);
+  }
 }
 
 TEST(PermuteTest, ConversionNoParam) {
