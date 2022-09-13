@@ -511,18 +511,18 @@ public:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class Permute : public TransformPreprocessType<
+class PermuteOrderTwo : public TransformPreprocessType<
                     format::FormatOrderTwo<IDType, NNZType, ValueType>,
                     format::FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
-  Permute(IDType *, IDType *);
-  struct PermuteParams : PreprocessParams {
+  PermuteOrderTwo(IDType *, IDType *);
+  struct PermuteOrderTwoParams : PreprocessParams {
     IDType *row_order;
     IDType *col_order;
-    explicit PermuteParams(IDType *r_order, IDType* c_order) : row_order(r_order), col_order(c_order){};
+    explicit PermuteOrderTwoParams(IDType *r_order, IDType* c_order) : row_order(r_order), col_order(c_order){};
   };
-  explicit Permute(PermuteParams);
-  typedef PermuteParams ParamsType;
+  explicit PermuteOrderTwo(PermuteOrderTwoParams);
+  typedef PermuteOrderTwoParams ParamsType;
 
 protected:
   //! An implementation function that will transform a CSR format into another
@@ -533,7 +533,7 @@ protected:
    * @param params a polymorphic pointer at a `TransformParams` object
    * @return a transformed Format object of type CSR
    */
-  static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteCSR(std::vector<format::Format *> formats,
+  static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwoCSR(std::vector<format::Format *> formats,
                                       PreprocessParams *);
 };
 
@@ -820,7 +820,7 @@ public:
 
   template <typename IDType, typename NNZType, typename ValueType>
   static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
-    Permute<IDType, NNZType, ValueType> perm(ordering, ordering);
+    PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, ordering);
     return perm.GetTransformation(format, contexts);
   }
 
