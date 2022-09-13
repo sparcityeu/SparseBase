@@ -796,7 +796,7 @@ protected:
   void Register();
 };
 
-class GraphFeatureSuite {
+class GraphFeatureBase {
 public:
   template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
   static FeatureType* GetDegreeDistribution(typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
@@ -819,28 +819,44 @@ public:
     return reordering.GetReorder(format, contexts);
   }
 
-  template <typename IDType, typename NNZType, typename ValueType>
-  static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, ordering);
-    return perm.GetTransformation(format, contexts);
+    auto out_format = perm.GetTransformation(format, contexts);
+    return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <typename IDType, typename NNZType, typename ValueType>
-  static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2DRowWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DRowWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, nullptr);
-    return perm.GetTransformation(format, contexts);
+    auto out_format = perm.GetTransformation(format, contexts);
+    return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <typename IDType, typename NNZType, typename ValueType>
-  static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2DColWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DColWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(nullptr, ordering);
-    return perm.GetTransformation(format, contexts);
+    auto out_format = perm.GetTransformation(format, contexts);
+    return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <typename IDType, typename ValueType>
-  static format::FormatOrderOne<ValueType>* Permute1D(IDType* ordering, format::FormatOrderOne<ValueType>* format, std::vector<context::Context*> contexts){
-    PermuteOrderOne<IDType, ValueType> perm(ordering);
-    return perm.GetTransformation(format, contexts);
+
+  //! Permute a one-dimensional format using a permutation array.
+  /*!
+   *
+   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the return pointer type. Default is FormatOrderTwo.
+   * \param order Permutation array.
+   * \param format object to be permuted.
+   * \param contexts vector of contexts that can be used for permutation.
+   * \return The permuted format. Function returns a pointer at a generic FormatOrderOne object.
+   * However, if the user passes a FormatOrderOne class as the templated parameter `ReturnFormatType`, e.g.
+   * format::Array, then the returned format will be converted to that type.
+   */
+  template <template <typename> typename ReturnFormatType = format::FormatOrderTwo, typename AutoIDType, typename AutoValueType>
+  static ReturnFormatType<AutoValueType>* Permute1D(AutoIDType* ordering, format::FormatOrderOne<AutoValueType>* format, std::vector<context::Context*> contexts){
+    PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
+    auto out_format = perm.GetTransformation(format, contexts);
+    return out_format->template Convert<ReturnFormatType>();
   }
 
   template <typename IDType, typename NNZType, typename ValueType>
