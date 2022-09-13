@@ -825,6 +825,18 @@ public:
     return perm.GetTransformation(format, contexts);
   }
 
+  template <typename IDType, typename NNZType, typename ValueType>
+  static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2DRowWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+    PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, nullptr);
+    return perm.GetTransformation(format, contexts);
+  }
+
+  template <typename IDType, typename NNZType, typename ValueType>
+  static format::FormatOrderTwo<IDType, NNZType, ValueType>* Permute2DColWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+    PermuteOrderTwo<IDType, NNZType, ValueType> perm(nullptr, ordering);
+    return perm.GetTransformation(format, contexts);
+  }
+
   template <typename IDType, typename ValueType>
   static format::FormatOrderOne<ValueType>* Permute1D(IDType* ordering, format::FormatOrderOne<ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderOne<IDType, ValueType> perm(ordering);
