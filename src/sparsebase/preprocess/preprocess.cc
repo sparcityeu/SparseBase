@@ -1104,15 +1104,14 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
 }
 
 #if !defined(_HEADER_ONLY)
-//template class ReorderingSuite<int, int, int>;
-template int* ReorderingSuite::Reorder<RCMReorder>(RCMReorder<int, int, int>::ParamsType, format::FormatOrderTwo<int, int, int>* format, std::vector<context::Context*> contexts);
-template format::FormatOrderTwo<int, int, int>* ReorderingSuite::Permute2D(int*, format::FormatOrderTwo<int, int, int>* format, std::vector<context::Context*> contexts);
-template format::FormatOrderOne<int>* ReorderingSuite::Permute1D(int*, format::FormatOrderOne<int>* format, std::vector<context::Context*> contexts);
-template int* ReorderingSuite::InversePermutation(int*, format::FormatOrderTwo<int, int, int>* format);
-//template class ReorderingSuite<unsigned long long, unsigned long long, double>;
-//template unsigned long long* ReorderingSuite<unsigned long long, unsigned long long, double>::Reorder<RCMReorder>(RCMReorder<unsigned long long, unsigned long long, double>::ParamsType, format::FormatOrderTwo<unsigned long long, unsigned long long, double>* format, std::vector<context::Context*> contexts);
-//template class ReorderingSuite<int, int, int>;
-//template int* ReorderingSuite<int, int, int>::Reorder<RCMReorder>(RCMReorder<int, int, int>::ParamsType, format::FormatOrderTwo<int, int, int>* format, std::vector<context::Context*> contexts);
+template int* ReorderBase::Reorder<RCMReorder>(RCMReorder<int, int, int>::ParamsType, format::FormatOrderTwo<int, int, int>* format, std::vector<context::Context*> contexts);
+template format::FormatOrderTwo<int, int, int>* ReorderBase::Permute2D(int*, format::FormatOrderTwo<int, int, int>* format, std::vector<context::Context*> contexts);
+template format::FormatOrderOne<int>* ReorderBase::Permute1D(int*, format::FormatOrderOne<int>* format, std::vector<context::Context*> contexts);
+template int* ReorderBase::InversePermutation(int*, format::FormatOrderTwo<int, int, int>* format);
+//template class ReorderBase<unsigned long long, unsigned long long, double>;
+//template unsigned long long* ReorderBase<unsigned long long, unsigned long long, double>::Reorder<RCMReorder>(RCMReorder<unsigned long long, unsigned long long, double>::ParamsType, format::FormatOrderTwo<unsigned long long, unsigned long long, double>* format, std::vector<context::Context*> contexts);
+//template class ReorderBase<int, int, int>;
+//template int* ReorderBase<int, int, int>::Reorder<RCMReorder>(RCMReorder<int, int, int>::ParamsType, format::FormatOrderTwo<int, int, int>* format, std::vector<context::Context*> contexts);
 #include "init/preprocess.inc"
 #endif
 

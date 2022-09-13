@@ -32,11 +32,9 @@ int main(){
   utils::io::MTXReader<ull, ull, val> A_reader(A_filename, true);
   format::COO<ull, ull, val> * A =  A_reader.ReadCOO();
 
-  //preprocess::ReorderingSuite<ull, ull, val> reorder;
+  ull *perm = preprocess::ReorderBase::Reorder<preprocess::RCMReorder>({}, A, {&cpu_context});
 
-  ull *perm = preprocess::ReorderingSuite::Reorder<preprocess::RCMReorder>({}, A, {&cpu_context});
-
-  auto * A_reordered = preprocess::ReorderingSuite::Permute2D(perm, A, {&cpu_context})->Convert<format::COO>();
+  auto * A_reordered = preprocess::ReorderBase::Permute2D(perm, A, {&cpu_context})->Convert<format::COO>();
 
   auto *A_csc = A_reordered->Convert<format::CSC>();
 
@@ -45,17 +43,17 @@ int main(){
 
   format::Array<val> *b = new format::Array<val>(3, nullptr);
 
-  format::Array<val> * b_reordered = preprocess::ReorderingSuite::Permute1D<int, int>(perm, b, {&cpu_context})->Convert<format::Array>();
+  format::Array<val> * b_reordered = preprocess::ReorderBase::Permute1D<int, int>(perm, b, {&cpu_context})->Convert<format::Array>();
 
   // solving for x
   format::Array<val> *inv_x = new format::Array<val>(3, nullptr);
   //ull *inv_perm = reorder.InversePermutation(perm, A);
   //format::Array<val> *x = reorder.Permute1D(inv_perm, inv_x, {&cpu_context})->Convert<format::Array>();
-  ull *inv_perm = preprocess::ReorderingSuite::InversePermutation(perm, A);
-  format::Array<val> *x = preprocess::ReorderingSuite::Permute1D(inv_perm, inv_x, {&cpu_context})->Convert<format::Array>();
+  ull *inv_perm = preprocess::ReorderBase::InversePermutation(perm, A);
+  format::Array<val> *x = preprocess::ReorderBase::Permute1D(inv_perm, inv_x, {&cpu_context})->Convert<format::Array>();
 
-  float * deg_dist = preprocess::GraphFeatureSuite::GetDegreeDistribution<float>({}, A, {&cpu_context});
-  int * deg = preprocess::GraphFeatureSuite::GetDegrees({}, A, {&cpu_context});
+  float * deg_dist = preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, A, {&cpu_context});
+  int * deg = preprocess::GraphFeatureBase::GetDegrees({}, A, {&cpu_context});
   return 0;
 }
 
