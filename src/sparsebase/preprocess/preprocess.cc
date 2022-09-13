@@ -535,25 +535,25 @@ format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteAr
   return arr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Permute<IDType, NNZType, ValueType>::Permute(IDType *row_order, IDType* col_order) {
+PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(IDType *row_order, IDType* col_order) {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteCSR);
-  this->params_ = std::unique_ptr<PermuteParams>(new PermuteParams(row_order, col_order));
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteOrderTwoCSR);
+  this->params_ = std::unique_ptr<PermuteOrderTwoParams>(new PermuteOrderTwoParams(row_order, col_order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Permute<IDType, NNZType, ValueType>::Permute(PermuteParams params) {
+PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams params) {
   Permute(params.row_order, params.col_order);
 }
 template <typename InputFormatType, typename ReturnFormtType>
 TransformPreprocessType<InputFormatType, ReturnFormtType>::~TransformPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
-format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, ValueType>::PermuteCSR(
+format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
-  auto row_order = static_cast<PermuteParams *>(params)->row_order;
-  auto col_order = static_cast<PermuteParams *>(params)->col_order;
+  auto row_order = static_cast<PermuteOrderTwoParams *>(params)->row_order;
+  auto col_order = static_cast<PermuteOrderTwoParams *>(params)->col_order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];

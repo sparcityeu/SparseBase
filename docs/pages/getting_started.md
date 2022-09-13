@@ -323,10 +323,11 @@ vertex_type * order = orderer.GetReorder(con, {&cpu_context});
 ```
 
 Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
-So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `Transform` class
+So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `PermuteOrderTwo` class
 to mutate the graph.
 
 ```cpp
-sparsebase::preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
-sparsebase::format::Format *result = transformer.GetTransformation(con, {&cpu_context});
+// use `order` to permute both rows and columns
+sparsebase::preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> permute(order, order);
+sparsebase::format::Format *result = permute.GetTransformation(con, {&cpu_context});
 ```
