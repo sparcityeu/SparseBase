@@ -11,6 +11,10 @@
 
 #define CHECK
 
+using namespace sparsebase;
+using namespace format;
+using namespace preprocess;
+
 typedef int ull;
 typedef int val;
 
@@ -30,30 +34,29 @@ int main(){
   context::CPUContext cpu_context;
 
   utils::io::MTXReader<ull, ull, val> A_reader(A_filename, true);
-  format::COO<ull, ull, val> * A =  A_reader.ReadCOO();
+  COO<ull, ull, val> * A =  A_reader.ReadCOO();
 
-  ull *perm = preprocess::ReorderBase::Reorder<preprocess::RCMReorder>({}, A, {&cpu_context});
+  ull *perm = ReorderBase::Reorder<RCMReorder>({}, A, {&cpu_context});
 
-  auto * A_reordered = preprocess::ReorderBase::Permute2D(perm, A, {&cpu_context})->Convert<format::COO>();
+  auto * A_reordered = ReorderBase::Permute2D<CSC>(perm, A, {&cpu_context});
 
-  auto *A_csc = A_reordered->Convert<format::CSC>();
+  auto *A_csc = A_reordered->Convert<CSC>();
 
   //utils::io::MTXReader<ull, ull, val> b_reader(B_filename);
   //format::Array<val> * b = b_reader.ReadArray();
 
-  format::Array<val> *b = new format::Array<val>(3, nullptr);
+  Array<val> *b = new Array<val>(3, nullptr);
 
-  format::Array<val> * b_reordered = preprocess::ReorderBase::Permute1D<int, int>(perm, b, {&cpu_context})->Convert<format::Array>();
+  Array<val> * b_reordered = ReorderBase::Permute1D<Array>(perm, b, {&cpu_context});
 
   // solving for x
-  format::Array<val> *inv_x = new format::Array<val>(3, nullptr);
-  //ull *inv_perm = reorder.InversePermutation(perm, A);
-  //format::Array<val> *x = reorder.Permute1D(inv_perm, inv_x, {&cpu_context})->Convert<format::Array>();
-  ull *inv_perm = preprocess::ReorderBase::InversePermutation(perm, A);
-  format::Array<val> *x = preprocess::ReorderBase::Permute1D(inv_perm, inv_x, {&cpu_context})->Convert<format::Array>();
+  Array<val> *inv_x = new Array<val>(3, nullptr);
 
-  float * deg_dist = preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, A, {&cpu_context});
-  int * deg = preprocess::GraphFeatureBase::GetDegrees({}, A, {&cpu_context});
+  ull *inv_perm = ReorderBase::InversePermutation(perm, A);
+  format::Array<val> *x = ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context});
+
+  float * deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>({}, A, {&cpu_context});
+  int * deg = preprocess::GraphFeatureBase ::GetDegrees({}, A, {&cpu_context});
   return 0;
 }
 
