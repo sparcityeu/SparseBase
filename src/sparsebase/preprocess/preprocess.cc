@@ -568,19 +568,39 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, Val
     if (sp->get_vals() != nullptr)
       nvals = new ValueType[nnz]();
   }
-
-  IDType *inverse_row_order = new IDType[n]();
-  for (IDType i = 0; i < n; i++)
-    inverse_row_order[row_order[i]] = i;
+  std::function<IDType(IDType)> get_i_row_order;
+  std::function<IDType(IDType)> get_col_order;
+  IDType *inverse_row_order;
+  if (row_order!=nullptr){
+    inverse_row_order= new IDType[n]();
+    for (IDType i = 0; i < n; i++)
+      inverse_row_order[row_order[i]] = i;
+    get_i_row_order= [&inverse_row_order](IDType i) -> IDType {
+      return inverse_row_order[i];
+    };
+  } else {
+    get_i_row_order= [&inverse_row_order](IDType i) -> IDType {
+      return i;
+    };
+  }
+  if (col_order!=nullptr){
+    get_col_order= [&col_order](IDType i) -> IDType {
+      return col_order[i];
+    };
+  } else {
+    get_col_order= [](IDType i) -> IDType {
+      return i;
+    };
+  }
   //IDType *inverse_col_order = new IDType[n]();
   //for (IDType i = 0; i < n; i++)
   //  inverse_col_order[col_order[i]] = i;
   NNZType c = 0;
   for (IDType i = 0; i < n; i++) {
-    IDType u = inverse_row_order[i];
+    IDType u = get_i_row_order(i);
     nxadj[i + 1] = nxadj[i] + (xadj[u + 1] - xadj[u]);
     for (NNZType v = xadj[u]; v < xadj[u + 1]; v++) {
-      nadj[c] = col_order[adj[v]];
+      nadj[c] = get_col_order(adj[v]);
       if constexpr (!std::is_same_v<void, ValueType>) {
         if (sp->get_vals() != nullptr)
           nvals[c] = vals[v];
@@ -588,7 +608,8 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *Permute<IDType, NNZType, Val
       c++;
     }
   }
-  delete[] inverse_row_order;
+  if (row_order == nullptr)
+    delete[] inverse_row_order;
   CSR<IDType, NNZType, ValueType> *csr = new CSR(n, m, nxadj, nadj, nvals);
   return csr;
 }
