@@ -25,6 +25,7 @@ if(NOT ${_HEADER_ONLY})
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
     sparsebase/utils/io/writer.cc
+    sparsebase/experiment/experiment.cc
   )
   if (${CUDA})
 
@@ -87,6 +88,9 @@ set(CONVERTER_FILES
 set(EXCEPTION_FILES 
   sparsebase/utils/exception.h
 )
+set(EXPERIMENT_FILES 
+  sparsebase/experiment/experiment.h
+)
 if(${_HEADER_ONLY})
   set(CONTEXT_FILES ${CONTEXT_FILES}
     sparsebase/context/context.cc
@@ -110,6 +114,9 @@ if(${_HEADER_ONLY})
   set(CONVERTER_FILES ${CONVERTER_FILES}
     sparsebase/utils/converter/converter.cc
   )
+  set(EXPERIMENT_FILES ${EXPERIMENT_FILES}
+    sparsebase/experiment/experiment.cc
+  )
 endif()
 install(FILES ${SINGLE_HEADER_FILE}
   DESTINATION include)
@@ -129,6 +136,8 @@ install(FILES ${CONVERTER_FILES}
   DESTINATION include/sparsebase/utils/converter/)
 install(FILES ${EXCEPTION_FILES}
   DESTINATION include/sparsebase/utils/)
+install(FILES ${EXPERIMENT_FILES}
+  DESTINATION include/sparsebase/experiment/)
 
 if(USE_PIGO)
   install(FILES sparsebase/external/pigo/pigo.hpp
