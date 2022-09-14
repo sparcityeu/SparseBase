@@ -753,16 +753,44 @@ protected:
 template <typename IDType>
 class PartitionPreprocessType : public FunctionMatcherMixin<IDType *> {
 public:
+  PartitionPreprocessType();
   IDType* Partition(format::Format * format, std::vector<context::Context*> contexts);
+  IDType *Partition(format::Format *format, PreprocessParams *params,
+                     std::vector<context::Context *> contexts);
+  virtual ~PartitionPreprocessType();
 };
 
 
 #ifdef USE_METIS
+
+#include "metis.h"
+
 template <typename IDType, typename NNZType, typename ValueType>
 class MetisPartition : public PartitionPreprocessType<IDType> {
 public:
   MetisPartition();
   static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
+
+  struct MetisParams : PreprocessParams{
+    int num_partitions = 2;
+    idx_t ptype = METIS_PTYPE_KWAY;
+    idx_t objtype = METIS_OBJTYPE_CUT;
+    idx_t ctype = METIS_CTYPE_RM;
+    idx_t iptype = METIS_IPTYPE_GROW;
+    idx_t rtype = METIS_RTYPE_FM;
+    idx_t ncuts = 1;
+    idx_t nseps = 1;
+    idx_t numbering = 0;
+    idx_t niter = 10;
+    idx_t seed = 42;
+    idx_t minconn = 0;
+    idx_t no2hop = 0;
+    idx_t contig = 0;
+    idx_t compress = 0;
+    idx_t ccorder = 0;
+    idx_t pfactor = 0;
+    idx_t ufactor = 30;
+  };
 };
 #endif
 

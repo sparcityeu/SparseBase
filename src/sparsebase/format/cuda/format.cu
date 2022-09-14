@@ -313,7 +313,7 @@ template <typename ValueType> CUDAArray<ValueType>::~CUDAArray() {}
 // format.inc
 
 #if !defined(_HEADER_ONLY)
-#include "init/external/cuda/format.inc"
+#include "init/cuda/format.inc"
 #endif
 }; // namespace cuda
 }; // namespace format
