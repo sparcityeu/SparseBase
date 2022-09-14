@@ -1042,6 +1042,60 @@ IDType *PartitionPreprocessType<IDType>::Partition() {
   return nullptr;
 }
 
+#ifdef USE_METIS
+
+#include "metis.h"
+
+template <typename IDType, typename NNZType, typename ValueType>
+MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
+  CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+
+  idx_t n = (idx_t) csr->get_dimensions()[0];
+
+  IDType* partition = new IDType[n];
+
+  idx_t options[METIS_NOPTIONS];
+  options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_VOL;
+  options[METIS_OPTION_CTYPE] = METIS_CTYPE_SHEM;
+  options[METIS_OPTION_IPTYPE] = METIS_IPTYPE_NODE;
+  options[METIS_OPTION_RTYPE] = METIS_RTYPE_GREEDY;
+  options[METIS_OPTION_NO2HOP] = 1;
+  options[METIS_OPTION_NCUTS] = 1;
+  options[METIS_OPTION_NITER] = 10;
+  options[METIS_OPTION_UFACTOR] = 0.3;
+  options[METIS_OPTION_MINCONN] = 0;
+  options[METIS_OPTION_CONTIG] = 0;
+  options[METIS_OPTION_SEED] = 42;
+  options[METIS_OPTION_NUMBERING] = 0;
+  options[METIS_OPTION_DBGLVL] = 0;
+
+  idx_t np = 2;
+  idx_t nw = 1;
+  idx_t objval;
+
+  if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
+                && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
+    METIS_PartGraphKway(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
+                        nullptr, nullptr, nullptr, &np, nullptr, nullptr, options, &objval, partition);
+  } else {
+    throw utils::TypeException("Metis Partitioner supports only " + std::to_string(sizeof(idx_t)*8) + "-bit signed integers for ids");
+  }
+  return partition;
+}
+
+#endif
+
+
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"
 #endif

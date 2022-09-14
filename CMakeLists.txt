@@ -17,9 +17,6 @@ set(NNZ_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variabl
 set(VALUE_TYPES "unsigned int" "int" "float" "double" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
-# METIS OPTIONS
-option(METIS_USE "Whether metis library should be used during compilation" OFF)
-set(METIS_LIB_DIR "" CACHE STRING "Library directory (containing .so or .a file) for the metis library")
 
 if(${CUDA})
   if (${CMAKE_VERSION} VERSION_LESS "3.18")
