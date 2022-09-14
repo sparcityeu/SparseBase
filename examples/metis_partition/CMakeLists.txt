@@ -1,0 +1,2 @@
+add_executable(metis_partition ${CMAKE_CURRENT_SOURCE_DIR}/metis_partition.cc)
+target_link_libraries(metis_partition sparsebase)

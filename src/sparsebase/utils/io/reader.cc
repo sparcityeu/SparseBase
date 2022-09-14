@@ -392,7 +392,6 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 }
 
 #if !defined(_HEADER_ONLY)
-#include "init/external/pigo.inc"
 #include "init/reader.inc"
 #endif
 

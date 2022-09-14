@@ -1038,9 +1038,20 @@ template <typename IDType>
 PartitionPreprocessType<IDType>::PartitionPreprocessType() = default;
 
 template <typename IDType>
-IDType *PartitionPreprocessType<IDType>::Partition() {
-  return nullptr;
+IDType *PartitionPreprocessType<IDType>::Partition(format::Format* format,
+                                                   std::vector<context::Context*> contexts) {
+    return this->Execute(this->params_.get(), (this->sc_.get()), contexts, format);
 }
+
+template <typename IDType>
+IDType *PartitionPreprocessType<IDType>::Partition(
+    format::Format *format, PreprocessParams *params,
+    std::vector<context::Context *> contexts) {
+  return this->Execute(params, (this->sc_.get()), contexts, format);
+}
+
+template <typename IDType>
+PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 
 #ifdef USE_METIS
 
@@ -1053,6 +1064,8 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
 
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+
+  this->params_ = std::unique_ptr<MetisParams>(new MetisParams);
 }
 
 
@@ -1060,33 +1073,46 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
   CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
 
+  MetisParams* mparams = static_cast<MetisParams*>(params);
+
   idx_t n = (idx_t) csr->get_dimensions()[0];
 
   IDType* partition = new IDType[n];
 
   idx_t options[METIS_NOPTIONS];
-  options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_VOL;
-  options[METIS_OPTION_CTYPE] = METIS_CTYPE_SHEM;
-  options[METIS_OPTION_IPTYPE] = METIS_IPTYPE_NODE;
-  options[METIS_OPTION_RTYPE] = METIS_RTYPE_GREEDY;
-  options[METIS_OPTION_NO2HOP] = 1;
-  options[METIS_OPTION_NCUTS] = 1;
-  options[METIS_OPTION_NITER] = 10;
-  options[METIS_OPTION_UFACTOR] = 0.3;
-  options[METIS_OPTION_MINCONN] = 0;
-  options[METIS_OPTION_CONTIG] = 0;
-  options[METIS_OPTION_SEED] = 42;
-  options[METIS_OPTION_NUMBERING] = 0;
+  options[METIS_OPTION_OBJTYPE] = mparams->objtype;
+  options[METIS_OPTION_CTYPE] = mparams->ctype;
+  options[METIS_OPTION_IPTYPE] = mparams->iptype;
+  options[METIS_OPTION_RTYPE] = mparams->rtype;
+  options[METIS_OPTION_NO2HOP] = mparams->no2hop;
+  options[METIS_OPTION_NCUTS] = mparams->ncuts;
+  options[METIS_OPTION_NITER] = mparams->niter;
+  options[METIS_OPTION_UFACTOR] = mparams->ufactor;
+  options[METIS_OPTION_MINCONN] = mparams->minconn;
+  options[METIS_OPTION_CONTIG] = mparams->contig;
+  options[METIS_OPTION_SEED] = mparams->seed;
+  options[METIS_OPTION_NUMBERING] = mparams->numbering;
   options[METIS_OPTION_DBGLVL] = 0;
 
-  idx_t np = 2;
+  idx_t np = mparams->num_partitions;
   idx_t nw = 1;
   idx_t objval;
 
   if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
                 && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
-    METIS_PartGraphKway(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
-                        nullptr, nullptr, nullptr, &np, nullptr, nullptr, options, &objval, partition);
+
+    if(mparams->ptype == METIS_PTYPE_RB){
+     METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
+                        nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
+                        &objval, partition);
+
+    } else {
+
+      METIS_PartGraphKway(&n, &nw, (idx_t *)csr->get_row_ptr(),
+                          (idx_t *)csr->get_col(), nullptr, nullptr, nullptr,
+                          &np, nullptr, nullptr, options,
+                          &objval, partition);
+    }
   } else {
     throw utils::TypeException("Metis Partitioner supports only " + std::to_string(sizeof(idx_t)*8) + "-bit signed integers for ids");
   }

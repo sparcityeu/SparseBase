@@ -63,15 +63,16 @@ endif()
 function(target_add_opt_library target lib_name lib_dir inc_dir)
   if(NOT (lib_dir STREQUAL "none" AND inc_dir STREQUAL "none"))
     message(STATUS "Adding optional library: ${lib_name}")
+    set(OPT_LIB "LIB-NOTFOUND")
     find_library(
-            OPT_LIB_${lib_name}
+            OPT_LIB
             NAME ${lib_name} lib${libname}
             PATHS ${lib_dir}
             NO_DEFAULT_PATH
     )
 
-    if(OPT_LIB_${lib_name})
-      target_link_libraries(${target} INTERFACE OPT_LIB_${libname})
+    if(OPT_LIB)
+      target_link_libraries(${target} INTERFACE ${OPT_LIB})
       target_include_directories(${target} PUBLIC ${inc_dir})
       string(TOUPPER USE_${lib_name} OPT_LIB_DEF)
       target_compile_definitions(${target} PUBLIC ${OPT_LIB_DEF})
