@@ -974,6 +974,7 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
 TEST(GraphFeatureBase, Degrees){
  EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegrees({}, &global_csr, {&cpu_context}));
  auto degrees_array = sparsebase::preprocess::GraphFeatureBase::GetDegrees({}, &global_csr, {&cpu_context});
+ EXPECT_EQ(std::type_index(typeid(degrees_array)), std::type_index(typeid(degrees)));
  for (int i = 0; i < n; i++) {
    EXPECT_EQ(degrees_array[i], degrees[i]);
  }
@@ -982,6 +983,7 @@ TEST(GraphFeatureBase, Degrees){
 TEST(GraphFeatureBase, DegreeDistribution){
   EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, &global_csr, {&cpu_context}));
   auto degreeDistribution_array = sparsebase::preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, &global_csr, {&cpu_context});
+  EXPECT_EQ(std::type_index(typeid(degreeDistribution_array)), std::type_index(typeid(distribution)));
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(degreeDistribution_array[i], distribution[i]);
   }
