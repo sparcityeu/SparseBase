@@ -501,35 +501,35 @@ TEST(ReorderBase, Permute2DRowWise) {
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DRowWise<TestFormat>(r_reorder_vector, &f, {&cpu_context}), utils::FunctionNotFoundException);
 }
 
-TEST(ReorderBase, Permute2DColWise) {
-  // no conversion of output
-  EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context}));
-  // check output of permutation
-  auto transformed_format = sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context})->Convert<format::CSR>();
-  for (int i = 0; i < n+1; i++){
-    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
-  }
-  for (int i = 0; i < nnz; i++){
-    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
-    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
-  }
-  // converting output to possible format
-  EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context}));
-  EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context}))->get_format_id(), (format::CSR<int, int, int>::get_format_id_static()));
-  transformed_format = sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context})->Convert<format::CSR>();
-  for (int i = 0; i < n+1; i++){
-    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
-  }
-  for (int i = 0; i < nnz; i++){
-    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
-    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
-  }
-  // converting output to illegal format (No conversion available)
-  EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise<TestFormat>(c_reorder_vector, &global_csr, {&cpu_context}), utils::ConversionException);
-  // passing a format that isn't convertable
-  TestFormat<int, int, int> f;
-  EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise<TestFormat>(c_reorder_vector, &f, {&cpu_context}), utils::FunctionNotFoundException);
-}
+//TEST(ReorderBase, Permute2DColWise) {
+//  // no conversion of output
+//  EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context}));
+//  // check output of permutation
+//  auto transformed_format = sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context})->Convert<format::CSR>();
+//  for (int i = 0; i < n+1; i++){
+//    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
+//  }
+//  for (int i = 0; i < nnz; i++){
+//    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
+//    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
+//  }
+//  // converting output to possible format
+//  EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context}));
+//  EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context}))->get_format_id(), (format::CSR<int, int, int>::get_format_id_static()));
+//  transformed_format = sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector, &global_csr, {&cpu_context})->Convert<format::CSR>();
+//  for (int i = 0; i < n+1; i++){
+//    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
+//  }
+//  for (int i = 0; i < nnz; i++){
+//    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
+//    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
+//  }
+//  // converting output to illegal format (No conversion available)
+//  EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise<TestFormat>(c_reorder_vector, &global_csr, {&cpu_context}), utils::ConversionException);
+//  // passing a format that isn't convertable
+//  TestFormat<int, int, int> f;
+//  EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise<TestFormat>(c_reorder_vector, &f, {&cpu_context}), utils::FunctionNotFoundException);
+//}
 
 TEST(PermuteTest, RowWise) {
   sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(r_reorder_vector, nullptr);
@@ -562,19 +562,19 @@ TEST(InversePermuteTest, RowColWise) {
   }
 }
 
-TEST(PermuteTest, ColWise) {
-  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, c_reorder_vector);
-  auto transformed_format =
-      transformer.GetTransformation(&global_coo, {&cpu_context})
-          ->As<format::CSR<int, int, int>>();
-  for (int i = 0; i < n+1; i++){
-    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
-  }
-  for (int i = 0; i < nnz; i++){
-    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
-    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
-  }
-}
+//TEST(PermuteTest, ColWise) {
+//  sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, c_reorder_vector);
+//  auto transformed_format =
+//      transformer.GetTransformation(&global_coo, {&cpu_context})
+//          ->As<format::CSR<int, int, int>>();
+//  for (int i = 0; i < n+1; i++){
+//    EXPECT_EQ(transformed_format->get_row_ptr()[i], c_row_ptr[i]);
+//  }
+//  for (int i = 0; i < nnz; i++){
+//    EXPECT_EQ(transformed_format->get_col()[i], c_cols[i]);
+//    EXPECT_EQ(transformed_format->get_vals()[i], c_vals[i]);
+//  }
+//}
 
 TEST(PermuteTest, RowColWise) {
   sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(r_reorder_vector, c_reorder_vector);
@@ -969,4 +969,20 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
   }
   delete[] distribution_array;
   delete[] degree_array;
+}
+
+TEST(GraphFeatureBase, Degrees){
+ EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegrees({}, &global_csr, {&cpu_context}));
+ auto degrees_array = sparsebase::preprocess::GraphFeatureBase::GetDegrees({}, &global_csr, {&cpu_context});
+ for (int i = 0; i < n; i++) {
+   EXPECT_EQ(degrees_array[i], degrees[i]);
+ }
+}
+
+TEST(GraphFeatureBase, DegreeDistribution){
+  EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, &global_csr, {&cpu_context}));
+  auto degreeDistribution_array = sparsebase::preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, &global_csr, {&cpu_context});
+  for (int i = 0; i < n; i++) {
+    EXPECT_EQ(degreeDistribution_array[i], distribution[i]);
+  }
 }
