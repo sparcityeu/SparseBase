@@ -822,6 +822,7 @@ public:
   template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
   static IDType* Reorder(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
+    static_assert(!std::is_same_v<GenericReorder<IDType, NNZType, ValueType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
     Reordering<IDType, NNZType, ValueType> reordering(params);
     return reordering.GetReorder(format, contexts);
   }
@@ -830,21 +831,40 @@ public:
   static ReturnFormatType<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, ordering);
     auto out_format = perm.GetTransformation(format, contexts);
-    return out_format->template Convert<ReturnFormatType>();
+    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+      return out_format;
+    else
+      return out_format->template Convert<ReturnFormatType>();
+  }
+
+  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DRowColumnWise(IDType* row_ordering, IDType* col_ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+    PermuteOrderTwo<IDType, NNZType, ValueType> perm(row_ordering, col_ordering);
+    auto out_format = perm.GetTransformation(format, contexts);
+    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+      return out_format;
+    else
+      return out_format->template Convert<ReturnFormatType>();
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
   static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DRowWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, nullptr);
     auto out_format = perm.GetTransformation(format, contexts);
-    return out_format->template Convert<ReturnFormatType>();
+    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+      return out_format;
+    else
+      return out_format->template Convert<ReturnFormatType>();
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
   static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DColWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(nullptr, ordering);
     auto out_format = perm.GetTransformation(format, contexts);
-    return out_format->template Convert<ReturnFormatType>();
+    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+      return out_format;
+    else
+      return out_format->template Convert<ReturnFormatType>();
   }
 
 
@@ -863,7 +883,10 @@ public:
   static ReturnFormatType<AutoValueType>* Permute1D(AutoIDType* ordering, format::FormatOrderOne<AutoValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
     auto out_format = perm.GetTransformation(format, contexts);
-    return out_format->template Convert<ReturnFormatType>();
+    if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>, format::FormatOrderOne<AutoValueType>>)
+      return out_format;
+    else
+      return out_format->template Convert<ReturnFormatType>();
   }
 
   template <typename IDType, typename NumType>
