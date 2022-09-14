@@ -859,16 +859,16 @@ public:
    * However, if the user passes a FormatOrderOne class as the templated parameter `ReturnFormatType`, e.g.
    * format::Array, then the returned format will be converted to that type.
    */
-  template <template <typename> typename ReturnFormatType = format::FormatOrderTwo, typename AutoIDType, typename AutoValueType>
+  template <template <typename> typename ReturnFormatType = format::FormatOrderOne, typename AutoIDType, typename AutoValueType>
   static ReturnFormatType<AutoValueType>* Permute1D(AutoIDType* ordering, format::FormatOrderOne<AutoValueType>* format, std::vector<context::Context*> contexts){
     PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
     auto out_format = perm.GetTransformation(format, contexts);
     return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <typename IDType, typename NNZType, typename ValueType>
-  static IDType * InversePermutation(IDType*perm, format::FormatOrderTwo<IDType, NNZType, ValueType> *format){
-    IDType length = format->get_dimensions()[0];
+  template <typename IDType, typename NumType>
+  static IDType * InversePermutation(IDType*perm, NumType length){
+    static_assert(std::is_integral_v<NumType>, "Length of the permutation array must be an integer");
     auto inv_perm = new IDType[length];
     for (IDType i = 0; i < length; i++){
       inv_perm[perm[i]] = i;
