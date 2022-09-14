@@ -58,13 +58,36 @@ else()
     $<INSTALL_INTERFACE:include>)
 endif()
 
-### External Libraries
+# Function for adding optional libraries
+# Example : target_add_opt_library("sparsebase" "metis" ${METIS_LIB_DIR} ${METIS_INC_DIR})
+function(target_add_opt_library target lib_name lib_dir inc_dir)
+  if(NOT (lib_dir STREQUAL "none" AND inc_dir STREQUAL "none"))
+    message(STATUS "Adding optional library: ${lib_name}")
+    find_library(
+            OPT_LIB_${lib_name}
+            NAME ${lib_name} lib${libname}
+            PATHS ${lib_dir}
+            NO_DEFAULT_PATH
+    )
 
-if(METIS_USE)
-  target_link_directories(sparsebase INTERFACE ${METIS_LIB_DIR})
-  target_include_directories(sparsebase INTERFACE ${METIS_INC_DIR})
-  target_link_libraries(sparsebase INTERFACE metis)
-endif()
+    if(OPT_LIB_${lib_name})
+      target_link_libraries(${target} INTERFACE OPT_LIB_${libname})
+      target_include_directories(${target} PUBLIC ${inc_dir})
+      string(TOUPPER USE_${lib_name} OPT_LIB_DEF)
+      target_compile_definitions(${target} PUBLIC ${OPT_LIB_DEF})
+    else()
+      message(FATAL_ERROR "Error: ${lib_name} was not found in the provided directories")
+    endif()
+  else()
+    message(STATUS "Optinal library not provided: ${lib_name}")
+  endif()
+endfunction()
+
+### External Libraries
+set(METIS_LIB_DIR "none" CACHE STRING "Library directory for metis")
+set(METIS_INC_DIR "none" CACHE STRING "Include directory for metis")
+target_add_opt_library("sparsebase" "metis" ${METIS_LIB_DIR} ${METIS_INC_DIR})
+
 
 ### Installation plan
 set(SINGLE_HEADER_FILE 

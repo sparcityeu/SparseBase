@@ -749,12 +749,22 @@ protected:
   void Register();
 };
 
+
 template <typename IDType>
-class PartitionPreprocessType : public FunctionMatcherMixin<IDType *>{
+class PartitionPreprocessType : public FunctionMatcherMixin<IDType *> {
 public:
-  PartitionPreprocessType();
-  IDType* Partition(format::Format* format, PreprocessParams* params);
+  IDType* Partition(format::Format * format, std::vector<context::Context*> contexts);
 };
+
+
+#ifdef USE_METIS
+template <typename IDType, typename NNZType, typename ValueType>
+class MetisPartition : public PartitionPreprocessType<IDType> {
+public:
+  MetisPartition();
+  static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
+};
+#endif
 
 
 } // namespace sparsebase::preprocess
