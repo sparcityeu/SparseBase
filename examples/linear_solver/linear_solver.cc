@@ -52,7 +52,7 @@ int main(){
   // solving for x
   Array<val> *inv_x = new Array<val>(3, nullptr);
 
-  ull *inv_perm = ReorderBase::InversePermutation(perm, A);
+  ull *inv_perm = ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
   format::Array<val> *x = ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context});
 
   float * deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>({}, A, {&cpu_context});
