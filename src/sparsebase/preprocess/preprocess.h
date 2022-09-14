@@ -389,6 +389,7 @@ public:
     DegreeReorderParams(bool ascending) : ascending(ascending) {}
   };
   typedef DegreeReorderParams ParamsType;
+  DegreeReorder(DegreeReorderParams);
 
 protected:
   //! An implementation function that will reorder a CSR format
@@ -409,6 +410,7 @@ protected:
 template <typename IDType, typename NNZType, typename ValueType>
 class GenericReorder : public ReorderPreprocessType<IDType> {
 public:
+  typedef PreprocessType ParamsType;
   GenericReorder();
 };
 
@@ -548,6 +550,7 @@ public:
     explicit PermuteOrderOneParams(IDType *order) : order(order){};
   };
   typedef PermuteOrderOneParams ParamsType;
+  explicit PermuteOrderOne(ParamsType);
 
 protected:
   //! An implementation function that will transform a CSR format into another
@@ -590,6 +593,7 @@ public:
   struct JaccardWeightsParams : PreprocessParams{};
   typedef JaccardWeightsParams ParamsType;
   JaccardWeights();
+  JaccardWeights(ParamsType);
   //! Take a single Format object representating a graph and get the Jaccard
   //! Weights as a 1D format object
   /*!
@@ -632,6 +636,7 @@ public:
   struct DegreeDistributionParams : PreprocessParams {};
   typedef DegreeDistributionParams ParamsType;
   DegreeDistribution();
+  DegreeDistribution(DegreeDistributionParams);
   DegreeDistribution(const DegreeDistribution &);
   DegreeDistribution(std::shared_ptr<DegreeDistributionParams>);
   virtual std::unordered_map<std::type_index, std::any>
@@ -707,6 +712,7 @@ public:
   struct DegreesParams : PreprocessParams {};
   typedef DegreesParams ParamsType;
   Degrees();
+  Degrees(DegreesParams);
   Degrees(const Degrees<IDType, NNZType, ValueType> &d);
   Degrees(std::shared_ptr<DegreesParams>);
   std::unordered_map<std::type_index, std::any>
@@ -754,6 +760,7 @@ class Degrees_DegreeDistribution
 
 public:
   Degrees_DegreeDistribution();
+  Degrees_DegreeDistribution(Params);
   Degrees_DegreeDistribution(
       const Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>
           &d);
@@ -812,7 +819,7 @@ public:
 //template <typename IDType, typename NNZType, typename ValueType>
 class ReorderBase {
 public:
-  template <template <typename, typename, typename> typename Reordering,typename IDType, typename NNZType, typename ValueType>
+  template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
   static IDType* Reorder(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
     Reordering<IDType, NNZType, ValueType> reordering(params);
@@ -877,6 +884,7 @@ int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
   Reordering<IDType, NNZType, ValueType> r;
   return 1;
 }
+
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY

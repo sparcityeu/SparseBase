@@ -278,8 +278,16 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   }
   return return_object;
 }
+
 template <typename IDType, typename NNZType, typename ValueType>
-GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {}
+GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+}
+template <typename IDType, typename NNZType, typename ValueType>
+DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(DegreeReorderParams params) {
+ DegreeReorder<IDType, NNZType, ValueType>(params.ascending);
+}
 template <typename IDType, typename NNZType, typename ValueType>
 DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
@@ -507,6 +515,10 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 }
 
 template <typename IDType, typename ValueType>
+PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(PermuteOrderOneParams params) {
+  PermuteOrderOne(params.order);
+}
+template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
   this->SetConverter(
       utils::converter::ConverterOrderOne<ValueType>{});
@@ -680,6 +692,10 @@ std::type_index FeaturePreprocessType<FeatureType>::get_feature_id() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights(ParamsType) {}
+
+template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights() {
   this->SetConverter(
@@ -728,6 +744,12 @@ DegreeDistribution<IDType, NNZType, ValueType,
   this->params_ =
       std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
   this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType,
+    FeatureType>::DegreeDistribution(DegreeDistributionParams params) {
+  DegreeDistribution();
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -867,6 +889,10 @@ FeatureType *DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+Degrees<IDType, NNZType, ValueType>::Degrees(DegreesParams) {
+  Degrees();
+}
+template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
@@ -949,6 +975,12 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(
   return degrees;
 }
 
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType,
+    FeatureType>::Degrees_DegreeDistribution(Params) {
+  Degrees_DegreeDistribution();
+}
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType,
