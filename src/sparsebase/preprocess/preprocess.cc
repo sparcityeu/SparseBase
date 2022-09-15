@@ -246,7 +246,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   if (!convert_input){
     for (auto convert_order : cs){
       if (std::get<0>(convert_order))
-        throw utils::DirectExecutionNotAvailableException(packed_format_types, std::type_index(typeid(*this)), this->GetAvailableFormats());
+        throw utils::DirectExecutionNotAvailableException(packed_format_types, this->GetAvailableFormats());
     }
   }
   std::vector<Format *> ready_formats =

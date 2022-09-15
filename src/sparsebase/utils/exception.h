@@ -72,7 +72,7 @@ std::string ListOfKeysToString(KeyType vec){
   for (auto ti : vec){
     output+=std::string(ti.name())+", ";
   }
-  output.substr(0, output.size()-2);
+  output = output.substr(0, output.size()-2);
   output+="]";
   return output;
 }
@@ -82,12 +82,11 @@ class DirectExecutionNotAvailableException : public Exception {
 public:
   KeyType used_format_;
   std::vector<KeyType> available_formats_;
-  std::type_index crashing_class_;
   std::string msg_;
-  DirectExecutionNotAvailableException(const KeyType & used_format, const std::type_index & crashing_class, const std::vector<KeyType> & available_formats): used_format_(used_format), crashing_class_(crashing_class), available_formats_(available_formats){
-    msg_="Could not execute "+std::string(crashing_class_.name())+" directly using input "+ ListOfKeysToString(used_format_)+". This class can only be used with the following formats:";
+  DirectExecutionNotAvailableException(const KeyType & used_format, const std::vector<KeyType> & available_formats): used_format_(used_format), available_formats_(available_formats){
+    msg_="Preprocessing could not be used directly using input formats:\n "+ ListOfKeysToString(used_format_)+"\nThis class can only be used with the following formats:\n ";
     for (auto format_ti : available_formats_){
-      msg_+= ListOfKeysToString(format_ti)+"\n";
+      msg_+= ListOfKeysToString(format_ti)+"\n ";
     }
   }
   virtual const char *what() const throw() { return msg_.c_str(); }
