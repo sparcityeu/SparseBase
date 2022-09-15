@@ -59,7 +59,7 @@ public:
    * the value an std::any to that feature.
    */
   virtual std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *> contexts) = 0;
+  Extract(format::Format *format, std::vector<context::Context *> contexts, bool convert_input) = 0;
   //! Returns the std::type_index of this class
   virtual std::type_index get_feature_id() = 0;
   //! Get the std::type_index of all the ExtractableType classes fused into this
@@ -177,6 +177,13 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   typedef std::unordered_map<Key, Function, KeyHash, KeyEqualTo> ConversionMap;
 
 public:
+  std::vector<Key> GetAvailableFormats(){
+    std::vector<Key> keys;
+    for (auto element : map_to_function_){
+      keys.push_back(element.first);
+    }
+    return keys;
+  }
   //! Register a key to a function as long as that key isn't already registered
   /*!
     \param key_of_function key used in the map
@@ -246,19 +253,27 @@ protected:
    * objects (given variadically), as well as the Format conversions needed on
    * the inputs, executes the preprocessing, and returns the results. Note: this
    * function will delete any intermediery Format objects that were created due
-   * to a conversion. \param PreprocessParams a polymorphic pointer at the
-   * object containing hyperparameters needed for preprocessing. \param
+   * to a conversion.
+   * \param PreprocessParams a polymorphic pointer at the
+   * object containing hyperparameters needed for preprocessing.
+   * \param
    * converter Converter object to be used for determining available Format
-   * conversions. \param contexts Contexts available for execution of the
-   * preprocessing. \param sf a single input Format* (this is templated to allow
-   * variadic definition). \param sfs a variadic Format* (this is templated to
-   * allow variadic definition). \return the output of the preprocessing (of
+   * conversions.
+   * \param contexts Contexts available for execution of the
+   * preprocessing.
+   * \param convert_input whether or not to convert the input format if that is
+   * needed
+   * \param sf a single input Format* (this is templated to allow
+   * variadic definition).
+   * \param sfs a variadic Format* (this is templated to
+   * allow variadic definition).
+   * \return the output of the preprocessing (of
    * type ReturnType).
    */
   template <typename F, typename... SF>
   ReturnType Execute(PreprocessParams *params,
                      utils::converter::Converter *converter,
-                     std::vector<context::Context *> contexts, F sf, SF... sfs);
+                     std::vector<context::Context *> contexts, bool convert_input, F sf, SF... sfs);
   //! Executes preprocessing on input formats (given variadically)
   /*!
    * Determines the function needed to carry out preprocessing on input Format*
@@ -267,13 +282,21 @@ protected:
    * - the preprocessing result.
    * - pointers at any Format objects that were created due to a conversion.
    * Note: this function will delete any intermediery Format objects that were
-   * created due to a conversion. \param PreprocessParams a polymorphic pointer
-   * at the object containing hyperparameters needed for preprocessing. \param
+   * created due to a conversion.
+   * \param PreprocessParams a polymorphic pointer
+   * at the object containing hyperparameters needed for preprocessing.
+   * \param
    * converter Converter object to be used for determining available Format
-   * conversions. \param contexts Contexts available for execution of the
-   * preprocessing. \param sf a single input Format* (this is templated to allow
-   * variadic definition). \param sfs a variadic Format* (this is templated to
-   * allow variadic definition). \return a tuple containing a) the output of the
+   * conversions.
+   * \param contexts Contexts available for execution of the
+   * preprocessing.
+   * \param convert_input whether or not to convert the input format if that is
+   * needed
+   * \param sf a single input Format* (this is templated to allow
+   * variadic definition).
+   * \param sfs a variadic Format* (this is templated to
+   * allow variadic definition).
+   * \return a tuple containing a) the output of the
    * preprocessing (of type ReturnType), and b) a vector of Format*, where each
    * pointer in the output points at the format that the corresponds Format
    * object from the the input was converted to. If an input Format wasn't
@@ -282,7 +305,7 @@ protected:
   template <typename F, typename... SF>
   std::tuple<std::vector<format::Format *>, ReturnType>
   CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
-                std::vector<context::Context *> contexts, F sf, SF... sfs);
+                std::vector<context::Context *> contexts, bool convert_input, F sf, SF... sfs);
 };
 
 template <typename ReturnType>
@@ -290,10 +313,10 @@ class GenericPreprocessType : public FunctionMatcherMixin<ReturnType> {
 protected:
 public:
   int GetOutput(format::Format *csr, PreprocessParams *params,
-                std::vector<context::Context *>);
+                std::vector<context::Context *>, bool convert_input);
   std::tuple<std::vector<format::Format *>, int>
   GetOutputCached(format::Format *csr, PreprocessParams *params,
-                  std::vector<context::Context *>);
+                  std::vector<context::Context *>, bool convert_input);
   virtual ~GenericPreprocessType();
 };
 
@@ -320,7 +343,7 @@ public:
    * element in the original format object
    */
   IDType *GetReorder(format::Format *format,
-                     std::vector<context::Context *> contexts);
+                     std::vector<context::Context *> contexts, bool convert_input);
   //! Generates a reordering inverse permutation of `format` with the given
   //! PreprocessParams object and using one of the contexts in `contexts`
   /*!
@@ -335,7 +358,7 @@ public:
    * element in the original format object
    */
   IDType *GetReorder(format::Format *format, PreprocessParams *params,
-                     std::vector<context::Context *> contexts);
+                     std::vector<context::Context *> contexts, bool convert_input);
   //! Generates a reordering using one of the contexts in `contexts`, and caches
   //! intermediate `Format` objects.
   /*!
@@ -352,7 +375,7 @@ public:
    * element in the original format object
    */
   std::tuple<std::vector<format::Format *>, IDType *>
-  GetReorderCached(format::Format *csr, std::vector<context::Context *>);
+  GetReorderCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
   //! Generates a reordering inverse permutation of `format` with the given
   //! PreprocessParams object and using one of the contexts in `contexts`
   /*!
@@ -372,7 +395,7 @@ public:
    */
   std::tuple<std::vector<format::Format *>, IDType *>
   GetReorderCached(format::Format *csr, PreprocessParams *params,
-                   std::vector<context::Context *>);
+                   std::vector<context::Context *>, bool convert_input);
   virtual ~ReorderPreprocessType();
 };
 
@@ -449,7 +472,7 @@ public:
    * @return a transformed Format object
    */
   format::Format *GetTransformation(format::Format *csr,
-                                    std::vector<context::Context *>);
+                                    std::vector<context::Context *>, bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -462,7 +485,7 @@ public:
    */
   format::Format *GetTransformation(format::Format *csr,
                                     PreprocessParams *params,
-                                    std::vector<context::Context *>);
+                                    std::vector<context::Context *>, bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -477,7 +500,7 @@ public:
    * a transformed Format object.
    */
   std::tuple<std::vector<format::Format *>, format::Format *>
-  GetTransformationCached(format::Format *csr, std::vector<context::Context *>);
+  GetTransformationCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -494,7 +517,7 @@ public:
    */
   std::tuple<std::vector<format::Format *>, format::Format *>
   GetTransformationCached(format::Format *csr, PreprocessParams *params,
-                          std::vector<context::Context *>);
+                          std::vector<context::Context *>, bool convert_input);
   virtual ~TransformPreprocessType();
 };
 
@@ -555,7 +578,7 @@ public:
    * Weight of edge i in the graph (ith non-zero)
    */
   format::Format *GetJaccardWeights(format::Format *format,
-                                    std::vector<context::Context *>);
+                                    std::vector<context::Context *>, bool convert_input);
 #ifdef CUDA
   //! Take a CUDACSR representating a graph and get the Jaccard Weights as a
   //! CUDAArray
@@ -590,7 +613,7 @@ public:
   DegreeDistribution(const DegreeDistribution &);
   DegreeDistribution(std::shared_ptr<DegreeDistributionParams>);
   virtual std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>);
+  Extract(format::Format *format, std::vector<context::Context *>, bool convert_input);
   virtual std::vector<std::type_index> get_sub_ids();
   virtual std::vector<ExtractableType *> get_subs();
   static std::type_index get_feature_id_static();
@@ -605,7 +628,7 @@ public:
    * i is the degree distribution of the ith vertex in `formats`
    */
   FeatureType *GetDistribution(format::Format *format,
-                               std::vector<context::Context *> contexts);
+                               std::vector<context::Context *> contexts, bool convert_input);
   //! Degree distribution generation executor function that carries out function
   //! matching on a Graph
   /*!
@@ -617,7 +640,7 @@ public:
    */
   FeatureType *
   GetDistribution(object::Graph<IDType, NNZType, ValueType> *object,
-                  std::vector<context::Context *> contexts);
+                  std::vector<context::Context *> contexts, bool convert_input);
   //! Degree distribution generation executer function that carries out function
   //! matching with cached outputs
   /*!
@@ -634,7 +657,7 @@ public:
    */
   std::tuple<std::vector<format::Format *>, FeatureType *>
   GetDistributionCached(format::Format *format,
-                        std::vector<context::Context *> contexts);
+                        std::vector<context::Context *> contexts, bool convert_input);
 
   static FeatureType
       *
@@ -664,7 +687,7 @@ public:
   Degrees(const Degrees<IDType, NNZType, ValueType> &d);
   Degrees(std::shared_ptr<DegreesParams>);
   std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>) override;
+  Extract(format::Format *format, std::vector<context::Context *>, bool convert_input) override;
   std::vector<std::type_index> get_sub_ids() override;
   std::vector<ExtractableType *> get_subs() override;
   static std::type_index get_feature_id_static();
@@ -678,7 +701,7 @@ public:
    * i is the degree of the ith vertex in `format`
    */
   IDType *GetDegrees(format::Format *format,
-                     std::vector<context::Context *> contexts);
+                     std::vector<context::Context *> contexts, bool convert_input);
   //! Degree generation implementation function for CSRs
   /*!
    *
@@ -712,7 +735,7 @@ public:
           &d);
   Degrees_DegreeDistribution(std::shared_ptr<Params>);
   std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>) override;
+  Extract(format::Format *format, std::vector<context::Context *>, bool convert_input) override;
   std::vector<std::type_index> get_sub_ids() override;
   std::vector<ExtractableType *> get_subs() override;
   static std::type_index get_feature_id_static();
@@ -729,7 +752,7 @@ public:
    * the ith array element.
    */
   std::unordered_map<std::type_index, std::any>
-  Get(format::Format *format, std::vector<context::Context *> contexts);
+  Get(format::Format *format, std::vector<context::Context *> contexts, bool convert_input);
 
   //! Degree and degree distribution implementation function for CSRs
   /*!

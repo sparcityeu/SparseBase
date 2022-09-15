@@ -12,6 +12,8 @@
 #include "sparsebase/config.h"
 #include <exception>
 #include <iostream>
+#include <vector>
+#include <typeindex>
 
 namespace sparsebase {
 
@@ -60,6 +62,34 @@ class ConversionException : public Exception {
 public:
   ConversionException(const std::string type1, const std::string type2)
       : msg_("Can not convert type " + type1 + " to " + type2) {}
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
+template <typename KeyType>
+std::string ListOfKeysToString(KeyType vec){
+  static_assert(std::is_same<KeyType, std::vector<std::type_index>>::value, "Cannot make a string of keys of other types than vector<type_index>");
+  std::string output="[";
+  for (auto ti : vec){
+    output+=std::string(ti.name())+", ";
+  }
+  output.substr(0, output.size()-2);
+  output+="]";
+  return output;
+}
+
+template <typename KeyType>
+class DirectExecutionNotAvailableException : public Exception {
+public:
+  KeyType used_format_;
+  std::vector<KeyType> available_formats_;
+  std::type_index crashing_class_;
+  std::string msg_;
+  DirectExecutionNotAvailableException(const KeyType & used_format, const std::type_index & crashing_class, const std::vector<KeyType> & available_formats): used_format_(used_format), crashing_class_(crashing_class), available_formats_(available_formats){
+    msg_="Could not execute "+std::string(crashing_class_.name())+" directly using input "+ ListOfKeysToString(used_format_)+". This class can only be used with the following formats:";
+    for (auto format_ti : available_formats_){
+      msg_+= ListOfKeysToString(format_ti)+"\n";
+    }
+  }
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 

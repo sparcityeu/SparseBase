@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
       {format::CSR<vertex_type, edge_type, value_type>::get_format_id_static()},
       degree_reorder_csr);
   customParam params{10};
-  vertex_type *order = orderer.GetReorder(con, &params, {&cpu_context});
+  vertex_type *order = orderer.GetReorder(con, &params, {&cpu_context}, false);
 
   vertex_type n = con->get_dimensions()[0];
   auto xadj =
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
   delete[] permutation;
 
   preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
-  format::Format *csr = transformer.GetTransformation(con, {&cpu_context});
+  format::Format *csr = transformer.GetTransformation(con, {&cpu_context}, true);
   auto *n_row_ptr =
       csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto *n_col =

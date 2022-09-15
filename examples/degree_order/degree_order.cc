@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
   preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
   format::Format *con = g.get_connectivity();
-  vertex_type *order = orderer.GetReorder(con, {&cpu_context});
+  vertex_type *order = orderer.GetReorder(con, {&cpu_context}, false);
   vertex_type n = con->get_dimensions()[0];
   auto row_ptr =
       con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
   }
   delete[] permutation;
   preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
-  format::Format *csr = transformer.GetTransformation(con, {&cpu_context});
+  format::Format *csr = transformer.GetTransformation(con, {&cpu_context}, true);
   auto *n_row_ptr =
       csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto *n_col =
