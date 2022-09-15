@@ -116,8 +116,6 @@ Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
     }
   }
 
-
-
   for (IDType i = 0; i < nnz; i++) {
     col[i] = csr_col[i];
   }
@@ -231,7 +229,6 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
       new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
   return csr;
 }
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {

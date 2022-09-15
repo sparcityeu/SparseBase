@@ -135,6 +135,7 @@ Users can run unit tests easily after building the project. To do so, they must 
 mkdir build # if a build directory doesn't exist
 cd build
 cmake -DRUN_TESTS=ON ..
+make
 ```
 Once its built, while in the build directory, do the following:
 ```bash
