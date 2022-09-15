@@ -19,7 +19,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   string file_name = argv[1];
-  bool weighted = false;
 
   // Reading the mtx into a graph object
   // auto reader = new sparsebase::MTXReader<vertex_type, edge_type,
@@ -27,7 +26,7 @@ int main(int argc, char *argv[]) {
   object::Graph<vertex_type, edge_type, value_type> g;
   g.ReadConnectivityToCOO(
       sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(
-          file_name, weighted));
+          file_name));
 
   cout << "Number of vertices: " << g.n_ << endl;
   cout << "Number of edges: " << g.m_ << endl;
