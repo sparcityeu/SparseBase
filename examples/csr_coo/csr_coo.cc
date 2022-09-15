@@ -41,9 +41,8 @@ int main(int argc, char *argv[]) {
 
   {
     string file_name = argv[1];
-    bool weighted = false;
     utils::io::MTXReader<unsigned int, unsigned int, unsigned int> reader(
-        file_name, weighted);
+        file_name);
     format::COO<unsigned int, unsigned int, unsigned int> *coo =
         reader.ReadCOO();
     auto format = coo->get_format_id();
