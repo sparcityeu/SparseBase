@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     cout << endl;
 
     // extract features
-    auto raws = engine.Extract(coo, {&cpu_context});
+    auto raws = engine.Extract(coo, {&cpu_context}, true);
     cout << "#features extracted: " << raws.size() << endl;
     auto dgrs =
         std::any_cast<vertex_type *>(raws[degrees::get_feature_id_static()]);
