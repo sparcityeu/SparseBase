@@ -39,7 +39,10 @@ int main(int argc, char *argv[]) {
   preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer;
   auto *con = g.get_connectivity()
                   ->As<format::CSR<vertex_type, edge_type, value_type>>();
-  vertex_type *order = orderer.GetReorder(con, {&cpu_context}, false);
+  utils::converter::ConverterOrderTwo<vertex_type, edge_type, value_type> conv;
+  context::CPUContext cpu;
+  auto con2 = conv.Convert<format::COO<vertex_type, edge_type, value_type>>(con, {&cpu});
+  vertex_type *order = orderer.GetReorder(con2, {&cpu_context}, false);
   auto xadj = con->get_row_ptr();
   auto adj = con->get_col();
   vertex_type n = con->get_dimensions()[0];
