@@ -222,17 +222,25 @@ auto csr = reader2->ReadCSR();
 
 ### Casting Formats
 
-Many function in the library return generic ``Format`` pointers to ensure flexibility.
-These pointers can easily be converted into concrete versions using the ``As<>()`` function of the
-``Format`` class.
+Many functions in the library return generic format pointers like ``FormatOrderTwo`` or ``FormatOrderOne`` to ensure flexibility. These pointers can easily be converted into concrete versions using the ``Convert<>()`` member function. 
+
+```cpp
+// Consider the scenario where you obtained a generic pointer from a function
+sparsebase::format::FormatOrderTwo<int, int, int>* format = ...;
+
+// If the type of this pointer is known, then you can simply use the Convert function
+sparsebase::format::CSR<int,int,int>* csr = format->Convert<sparsebase::format::CSR>();
+
+```
+
+Alternatively, if the pointer you have is to the abstract ``Format`` class, then you should use the ``As<>()`` casting function. Keep in mind that you must pass, as a template argument to ``As<>()``, the format class you wish to cast to along with its templated types:
 
 ```cpp
 // Consider the scenario where you obtained a generic pointer from a function
 sparsebase::format::Format* format = ...;
 
-// If the type of this pointer is known, then you can simply use the As function
-// If the type is not known you can use the converters described in the next section
-sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR<int,int,int>>();
+// The template argument includes the class name along with its template types (int, int, int)
+sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR<int, int, int>>();
 
 ```
 
@@ -241,22 +249,19 @@ sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR<i
 
 As explained in the previous section, readers will read to different formats.
 
-However, we can convert the data into the format we desire using ``Converter``:
+However, we can convert the data into the format we desire using the ``Convert`` member funciton:
 ```cpp
 // Consider the scenario where you obtained a COO and want to convert it to a CSR
 auto coo = ...; 
 
-// Converter instances automatically select the correct conversion function and apply it
-auto converter = sparsebase::utils::converter::Converter<vertex_type, edge_type, value_type>();
-
-// Since we don't want the result to be in a device, we will use a default CPUContext here
+// Since we don't want the result to be in a external device such as a GPU, we will use a default CPUContext here
 sparsebase::context::CPUContext cpu_context;
 
 // Convert<>() function will convert to the desired format and cast the pointer to the right type
 // The final parameter being true indicates a move conversion will be performed
 // This will be faster but will invalidate the original coo matrix
 // If both the coo and csr are needed you should pass false here
-auto csr = converter.Convert<sparsebase::format::CSR<vertex_type, edge_type, value_type>>(result, &cpu_context, true);
+auto csr = coo->Convert<sparsebase::format::CSR>(&cpu_context, true);
 
 ```
 
@@ -319,10 +324,11 @@ vertex_type * order = orderer.GetReorder(con, {&cpu_context});
 ```
 
 Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
-So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `Transform` class
+So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `PermuteOrderTwo` class
 to mutate the graph.
 
 ```cpp
-sparsebase::preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
-sparsebase::format::Format *result = transformer.GetTransformation(con, {&cpu_context});
+// use `order` to permute both rows and columns
+sparsebase::preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> permute(order, order);
+sparsebase::format::Format *result = permute.GetTransformation(con, {&cpu_context});
 ```
