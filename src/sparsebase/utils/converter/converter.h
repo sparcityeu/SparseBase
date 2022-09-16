@@ -10,7 +10,6 @@
 #define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
 
 #include "sparsebase/config.h"
-#include "sparsebase/format/format.h"
 #include <functional>
 #include <tuple>
 #include <unordered_map>
@@ -19,6 +18,23 @@
 #include "sparsebase/utils/converter/cuda/converter.cuh"
 #endif
 
+// Forward declerations for the `Convert` functions in sparsebase/format/format.h
+namespace sparsebase {
+namespace utils {
+namespace converter {
+class Converter;
+template <class ConverterType> 
+class ConverterImpl;
+template <typename IDType, typename NNZType, typename ValueType>
+class ConverterOrderTwo;
+template <typename ValueType>
+class ConverterOrderOne;
+    
+} // namespace converter
+} // namespace utils
+} // namespace sparsebase
+
+#include "sparsebase/format/format.h"
 namespace sparsebase {
 
 namespace utils {
