@@ -21,11 +21,11 @@ const std::string mtx_symm_data =
 %This is a comment
 5 5 6
 1 1
-2 1 
-4 1 
-3 2 
-5 3 
-5 4 
+2 1
+4 1
+3 2
+5 3
+5 4
 )";
 
 const std::string mtx_data_with_values =
@@ -205,6 +205,57 @@ void checkArrayReading(std::string filename){
   EXPECT_EQ(array->get_dimensions()[0], one_row_one_col_length);
   EXPECT_EQ(array->get_num_nnz(), one_row_one_col_length);
 
+TEST(IOBase, Basics) {
+
+  // Write the mtx data to a file
+  std::ofstream ofs("test.mtx");
+  ofs << mtx_data;
+  ofs.close();
+
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_values.mtx");
+  ofs2 << mtx_data_with_values;
+  ofs2.close();
+
+  // Read non-weighted file using sparsebase
+  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int, int, int>("test.mtx", false);
+
+  // Check the dimensions
+  EXPECT_EQ(coo->get_dimensions()[0], 5);
+  EXPECT_EQ(coo->get_dimensions()[1], 5);
+  EXPECT_EQ(coo->get_num_nnz(), 5);
+
+  // Check that the arrays are populated
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(coo->get_row()[i], row[i]);
+    EXPECT_EQ(coo->get_col()[i], col[i]);
+  }
+
+  // Read the weighted file using sparsebase
+  auto coo2 = sparsebase::utils::io::IOBase::ReadMTXToCOO<int, int, int>("test_values.mtx", true);
+
+  // Check the dimensions
+  EXPECT_EQ(coo2->get_dimensions()[0], 5);
+  EXPECT_EQ(coo2->get_dimensions()[1], 5);
+  EXPECT_EQ(coo2->get_num_nnz(), 5);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo2->get_vals(), nullptr);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(coo2->get_row()[i], row[i]);
+    EXPECT_EQ(coo2->get_col()[i], col[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals[i]);
+  }
+}
+TEST(MTXReader, Basics) {
   // Check that the arrays are populated
   EXPECT_NE(array->get_vals(), nullptr);
   for (int i= 0; i< 10; i++) std::cout << array->get_vals()[i] <<" ";
