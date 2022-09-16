@@ -116,8 +116,6 @@ Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
     }
   }
 
-
-
   for (IDType i = 0; i < nnz; i++) {
     col[i] = csr_col[i];
   }
@@ -231,7 +229,6 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
       new CSR<IDType, NNZType, ValueType>(n, m, row_ptr, col, vals, kOwned);
   return csr;
 }
-
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
@@ -402,6 +399,7 @@ void Converter::RegisterConditionalConversionFunction(
 Format *Converter::Convert(Format *source, std::type_index to_type,
                            context::Context *to_context,
                            bool is_move_conversion) {
+
   if (to_type == source->get_format_id() &&
       source->get_context()->IsEquivalent(to_context)) {
     return source;
@@ -480,6 +478,27 @@ bool Converter::CanConvert(std::type_index from_type,
   }
   return false;
 }
+
+  void Converter::ClearConversionFunctions(std::type_index from_type, std::type_index to_type, bool move_conversion){
+    auto map = get_conversion_map(move_conversion);
+    if (map->find(from_type) != map->end()){
+      if ((*map)[from_type].find(to_type)!= (*map)[from_type].end()){
+        (*map)[from_type].erase(to_type);
+        if ((*map)[from_type].size() == 0) map->erase(from_type);
+      }
+    }
+  }
+  
+  /*! Removes all conversion functions from the current converter
+   */
+  void Converter::ClearConversionFunctions(bool move_conversion){
+    auto map = get_conversion_map(move_conversion);
+    map->clear();
+  }
+  
+  /*! Removes all move conversion functions from the current converter
+   */
+  void ClearMoveConversionFunctions(std::type_index from_type, std::type_index to_type);
 std::vector<Format *>
 Converter::ApplyConversionSchema(ConversionSchemaConditional cs,
                                  std::vector<Format *> packed_sfs,
