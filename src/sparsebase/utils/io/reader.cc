@@ -554,12 +554,12 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
     : filename_(filename), weighted_(weighted),
       convert_to_zero_index_(convert_to_zero_index) {}
 
-template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType> *
-PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
-  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
-  return reader.ReadArray();
-}
+//template <typename IDType, typename NNZType, typename ValueType>
+//format::Array<ValueType> *
+//PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+//  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
+//  return reader.ReadArray();
+//}
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
