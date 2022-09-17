@@ -289,7 +289,7 @@ TEST(IOBase, ReadBinaryToArray) {
   }
 }
 
-TEST(IOBase, ReadPigoMTXReadToCSR) {
+TEST(IOBase, ReadPigoMTXToCSR) {
   // Write the mtx data to a file
   std::ofstream ofs("test_pigo.mtx");
   ofs << mtx_data;
@@ -1013,6 +1013,63 @@ TEST(EdgeListReader, Basics) {
     EXPECT_EQ(coo3->get_row()[i], row[i]);
     EXPECT_EQ(coo3->get_col()[i], col[i]);
     EXPECT_EQ(coo3->get_vals()[i], vals[i]);
+  }
+}
+TEST(PigoMTXReader, CSR) {
+  // Write the mtx data to a file
+  std::ofstream ofs("test_pigo.mtx");
+  ofs << mtx_data;
+  ofs.close();
+
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_values_pigo.mtx");
+  ofs2 << mtx_data_with_values;
+  ofs2.close();
+
+  sparsebase::utils::io::PigoMTXReader<int, int, int> reader("test_pigo.mtx",
+                                                             false);
+  auto csr = reader.ReadCSR();
+
+  // Check the dimensions
+  EXPECT_EQ(csr->get_dimensions()[0], 5);
+  EXPECT_EQ(csr->get_dimensions()[1], 5);
+  EXPECT_EQ(csr->get_num_nnz(), 5);
+
+  // Check that the arrays are populated
+  EXPECT_NE(csr->get_row_ptr(), nullptr);
+  EXPECT_NE(csr->get_col(), nullptr);
+
+
+  for (int i = 0; i < 6; i++) {
+    EXPECT_EQ(csr->get_row_ptr()[i], row_ptr[i]);
+  }
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(csr->get_col()[i], col[i]);
+  }
+
+  sparsebase::utils::io::PigoMTXReader<int, int, float> reader2(
+      "test_values_pigo.mtx", true);
+  auto csr2 = reader2.ReadCSR();
+
+  // Check the dimensions
+  EXPECT_EQ(csr2->get_dimensions()[0], 5);
+  EXPECT_EQ(csr2->get_dimensions()[1], 5);
+  EXPECT_EQ(csr2->get_num_nnz(), 5);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(csr2->get_vals(), nullptr);
+  EXPECT_NE(csr2->get_row_ptr(), nullptr);
+  EXPECT_NE(csr2->get_col(), nullptr);
+
+
+  for (int i = 0; i < 5; i++) {
+  EXPECT_EQ(csr2->get_row_ptr()[i], row_ptr[i]);
+  }
+  // Check the integrity and order of data
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(csr2->get_col()[i], col[i]);
+    EXPECT_EQ(csr2->get_vals()[i], vals[i]);
   }
 }
 
