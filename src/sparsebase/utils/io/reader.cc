@@ -581,7 +581,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
         pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
-        pigo_coo.y(), pigo_coo.w(), format::kOwned);
+        pigo_coo.y(), nullptr, format::kOwned);
   }
 
   if (convert_to_zero_index_) {
@@ -611,6 +611,7 @@ format::CSR<IDType, NNZType, ValueType> *
 PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
   utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  std::cout << "nnz " << coo->get_num_nnz() << " dim " << coo->get_dimensions()[0] << " " << coo->get_dimensions()[1] << std::endl;
   return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, coo->get_context(), true);
 }
