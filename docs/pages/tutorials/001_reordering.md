@@ -71,10 +71,10 @@ The array `new_order` is an array containing the inverse permutation of all the 
 Finally, use the reordering array `new_order` to restrucuture the graph and apply the new order to it.
 
 ```c++
-// Transform object takes the reordering as an argument
-preprocess::Transform<IDType, NNZType, ValueType> transform(new_order);
-// The transformer will use `new_order` to restructure `csr`
-format::Format* format = transform.GetTransformation(csr, {&cpu_context});
+// PermuteOrdeTwo object takes the reordering as an argument for row and column reordering
+preprocess::PermuteOrderTwo<IDType, NNZType, ValueType> permute(new_order, new_order);
+// The permuter will use `new_order` to restructure `csr`
+format::Format* format = permute.GetTransformation(csr, {&cpu_context});
 // The abstract `Format` pointer is cast into a `CSR` pointer
 format::CSR<IDType, NNZType, ValueType>* new_csr = 
   format->As<format::CSR<IDType, NNZType, ValueType>>();

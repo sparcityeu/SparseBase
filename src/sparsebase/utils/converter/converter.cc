@@ -399,6 +399,7 @@ void Converter::RegisterConditionalConversionFunction(
 Format *Converter::Convert(Format *source, std::type_index to_type,
                            context::Context *to_context,
                            bool is_move_conversion) {
+
   if (to_type == source->get_format_id() &&
       source->get_context()->IsEquivalent(to_context)) {
     return source;
