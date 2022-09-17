@@ -101,7 +101,17 @@ gen_inst("ConverterOrderOne<$nnz_type>", "converter.inc")
 gen_inst("ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter.inc")
 
 # Converter (CUDA)
-
+reset_file("converter.inc", folder=cuda_output_folder)
+gen_inst("sparsebase::format::Format * CsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>",
+         "converter.inc", ifdef="USE_CUDA", folder=cuda_output_folder)
+gen_inst("sparsebase::format::Format * CUDACsrCsrConditionalFunction<$id_type, $nnz_type, $value_type>", "converter.inc",
+         ifdef="USE_CUDA", folder=cuda_output_folder)
+gen_inst("sparsebase::format::Format * CUDACsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>", "converter.inc",
+         ifdef="USE_CUDA", folder=cuda_output_folder)
+gen_inst("sparsebase::format::Format * CUDAArrayArrayConditionalFunction<$value_type>", "converter.inc",
+         ifdef="USE_CUDA", folder=cuda_output_folder)
+gen_inst("sparsebase::format::Format * ArrayCUDAArrayConditionalFunction<$value_type>", "converter.inc",
+         ifdef="USE_CUDA", folder=cuda_output_folder)
 
 
 # Reader
@@ -120,7 +130,7 @@ reset_file("writer.inc")
 gen_inst("BinaryWriterOrderOne<$id_type>", "writer.inc")
 gen_inst("BinaryWriterOrderOne<$nnz_type>", "writer.inc")
 gen_inst("BinaryWriterOrderOne<$value_type>", "writer.inc")
-gen_inst("BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
+gen_inst("BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
 
 # Feature
 reset_file("feature.inc")
