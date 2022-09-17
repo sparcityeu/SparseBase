@@ -1060,7 +1060,7 @@ PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
   this->SetConverter(
-      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
 
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
