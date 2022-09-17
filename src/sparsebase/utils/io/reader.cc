@@ -59,7 +59,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       }
     }
 
-    if (square_) {
+    if (square_ || read_undirected_) {
       n = std::max(n, m);
       m = n;
     }
