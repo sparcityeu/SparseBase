@@ -575,6 +575,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
     coo = new format::COO<IDType, NNZType, ValueType>(
         pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
         pigo_coo.y(), pigo_coo.w(), format::kOwned);
+    std::cout << " x y z " << pigo_coo.x() << " " <<pigo_coo.y() << " " << pigo_coo.w() << std::endl;
   } else {
     pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
               ValueType *>
@@ -582,6 +583,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
     coo = new format::COO<IDType, NNZType, ValueType>(
         pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
         pigo_coo.y(), nullptr, format::kOwned);
+    std::cout << " x y z " << pigo_coo.x() << " " <<pigo_coo.y() << " " << pigo_coo.w() << std::endl;
   }
 
   if (convert_to_zero_index_) {
@@ -641,7 +643,7 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         coo(filename_, pigo::EDGE_LIST);
     return new format::COO<IDType, NNZType, ValueType>(
-        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
+        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), nullptr,
         format::kOwned);
   }
 #else
