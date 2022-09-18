@@ -2,36 +2,37 @@
 
 namespace sparsebase::experiment {
 
-void ConcreteExperiment::AddFormat(format::Format * format){
-    this->_formats.push_back(format);
+void ConcreteExperiment::AddDataGetter(GetDataFunction func){
+    this->_dataGetters.push_back(func);
 }
 
-void ConcreteExperiment::AddKernel(KernelFunction * k){
-    this->_kernels.push_back(k);
+void ConcreteExperiment::AddKernel(KernelFunction func){
+    this->_kernels.push_back(func);
 }
 
-void ConcreteExperiment::AddProcess(preprocess::ExtractableType * process){
-    this->_processes.push_back(process);
-}
-
-void ConcreteExperiment::AddContext(context::Context * context){
-    this->_contexts.push_back(context);
+void ConcreteExperiment::AddPreprocess(PreprocessFunction func){
+    this->_preprocesses.push_back(func);
 }
 
 std::vector<double> ConcreteExperiment::GetRunTimes(){
-    return this->_runs;
+    return this->_runTimes;
 }
 
-void ConcreteExperiment::Run(){
-    for(unsigned int i = 0; i < _params.num_runs; i++){
-        for(auto f: _formats){
-            for(auto p: _processes){
-                // preprocess
+void ConcreteExperiment::Run(unsigned int times) {
+    for(unsigned int i = 0; i < times; i++){
+        for(auto f: _dataGetters){
+            std::cout << "Get data " << std::endl;
+            // get data and cache
+            //auto data = f();
+            for(auto p: _preprocesses){
+              std::cout << "Preprocess " << std::endl;
+              // preprocess
                 // transform
                 for(auto k: _kernels){
-                    // launch sampler
+                  std::cout << "Kernel " << std::endl;
+                  // launch sampler
                     // run kernel
-                    // collect metrics
+                    // restore runtimes
                 }
             }
         }
