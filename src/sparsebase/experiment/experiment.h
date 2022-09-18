@@ -13,26 +13,24 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include <any>
-#include <set>
-#include <tuple>
 #include <unordered_map>
 #include <vector>
 
 namespace sparsebase::experiment {
 
-struct KernelParams {};
-using KernelFunction = std::any (std::vector<format::Format *> formats,
-                                std::vector<context::Context *> contexts,
-                                          KernelParams * params);
+// variadics or params struct
+using GetDataFunction = std::unordered_map<std::string, format::Format*> (std::string);
+// variadics or params struct
+using PreprocessFunction = std::unordered_map<std::string, format::Format*> (std::unordered_map<std::string, format::Format*>);
+// variadics or params struct
+using KernelFunction = std::any (std::unordered_map<std::string, format::Format*>);
 
 class ExperimentType{
     public:
-        virtual void Run() = 0;
-        virtual void AddFormat(format::Format *) = 0;
-        virtual void AddContext(context::Context *) = 0;
-        virtual void AddProcess(preprocess::ExtractableType *) = 0;
+        virtual void Run(unsigned int times = 1) = 0;
+        virtual void AddDataGetter(GetDataFunction) = 0;
+        virtual void AddPreprocess(PreprocessFunction) = 0;
         virtual void AddKernel(KernelFunction) = 0;
-        virtual std::vector<double> GetRunTimes() = 0;
 };
 
 struct ExperimentParams{
@@ -40,19 +38,17 @@ struct ExperimentParams{
 };
 class ConcreteExperiment : public ExperimentType {
     public:
-        void Run();
-        void AddFormat(format::Format * format);
-        void AddProcess(preprocess::ExtractableType * process);
-        void AddContext(context::Context * context);
-        void AddKernel(KernelFunction);
+        void Run(unsigned int times = 1);
+        virtual void AddDataGetter(GetDataFunction);
+        virtual void AddPreprocess(PreprocessFunction);
+        virtual void AddKernel(KernelFunction);
         std::vector<double> GetRunTimes();
     private:
         ExperimentParams _params;
-        std::vector<KernelFunction *> _kernels;
-        std::vector<format::Format *> _formats;
-        std::vector<preprocess::ExtractableType*> _processes;
-        std::vector<context::Context*> _contexts;
-        std::vector<double> _runs;
+        std::vector<std::function<KernelFunction>> _kernels;
+        std::vector<std::function<GetDataFunction>> _dataGetters;
+        std::vector<std::function<PreprocessFunction>> _preprocesses;
+        std::vector<double> _runTimes;
 };
 
 //class PreprocessExperiment : public ConcreteExperiment {
