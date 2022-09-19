@@ -88,7 +88,7 @@ public:
   */
   static std::unordered_map<std::type_index, std::any>
   Extract(std::vector<Feature> &features, format::Format *format,
-          const std::vector<context::Context *> &);
+          const std::vector<context::Context *> &, bool convert_input);
   std::
       unordered_map<std::type_index, std::any>
       //! Computes the features that are added to in_ private data member.
@@ -99,7 +99,7 @@ public:
         computation will take place. \return void
       */
       Extract(format::Format *format,
-              const std::vector<context::Context *> &con);
+              const std::vector<context::Context *> &con, bool convert_input);
   //! Adds a feature to private in_ data member.
   /*!
     Detailed Description.

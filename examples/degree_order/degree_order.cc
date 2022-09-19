@@ -40,43 +40,41 @@ int main(int argc, char *argv[]) {
 
   preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
   format::Format *con = g.get_connectivity();
-  vertex_type *order = orderer.GetReorder(con, {&cpu_context});
+  vertex_type *permutation = orderer.GetReorder(con, {&cpu_context}, false);
   vertex_type n = con->get_dimensions()[0];
   auto row_ptr =
       con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto col =
       con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "According to degree order: " << endl;
-  cout << "First vertex, ID: " << order[0]
-       << ", Degree: " << row_ptr[order[0] + 1] - row_ptr[order[0]] << endl;
-  cout << "Last vertex, ID: " << order[n - 1]
-       << ", Degree: " << row_ptr[order[n - 1] + 1] - row_ptr[order[n - 1]]
+  cout << "First vertex, ID: " << permutation[0]
+       << ", Degree: " << row_ptr[permutation[0] + 1] - row_ptr[permutation[0]] << endl;
+  cout << "Last vertex, ID: " << permutation[n - 1]
+       << ", Degree: " << row_ptr[permutation[n - 1] + 1] - row_ptr[permutation[n - 1]]
        << endl;
 
   cout << "********************************" << endl;
 
   cout << "Checking the correctness of the ordering..." << endl;
-  auto *permutation = new vertex_type[n];
-  for (vertex_type i = 0; i < n; i++) {
-    permutation[order[i]] = i;
-  }
+  // We can easily get the inverse of our permutation (to reverse the ordering)
+  auto inv_permutation = preprocess::ReorderBase::InversePermutation(permutation, con->get_dimensions()[0]);
   bool order_is_correct = true;
   set<vertex_type> check;
   for (vertex_type new_u = 0; new_u < n - 1 && order_is_correct; new_u++) {
-    vertex_type u = permutation[new_u];
+    vertex_type u = inv_permutation[new_u];
     if (check.find(u) == check.end()) {
       check.insert(u);
     } else {
       order_is_correct = false;
     }
-    vertex_type v = permutation[new_u + 1];
+    vertex_type v = inv_permutation[new_u + 1];
     if (row_ptr[u + 1] - row_ptr[u] > row_ptr[v + 1] - row_ptr[v]) {
       cout << "Degree Order is incorrect!" << endl;
       order_is_correct = false;
       return 1;
     }
   }
-  vertex_type v = permutation[n - 1];
+  vertex_type v = inv_permutation[n - 1];
   if (check.find(v) == check.end()) {
     check.insert(v);
   } else {
@@ -85,13 +83,12 @@ int main(int argc, char *argv[]) {
   if (order_is_correct) {
     cout << "Order is correct." << endl;
   }
-  delete[] permutation;
-  preprocess::Transform<vertex_type, edge_type, value_type> transformer(order);
-  format::Format *csr = transformer.GetTransformation(con, {&cpu_context});
+  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(permutation, permutation);
+  format::Format *perm_csr = transformer.GetTransformation(con, {&cpu_context}, true);
   auto *n_row_ptr =
-      csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+      perm_csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto *n_col =
-      csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
+      perm_csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for (vertex_type i = 0; i < n - 1 && transform_is_correct; i++) {
@@ -104,5 +101,20 @@ int main(int argc, char *argv[]) {
   if (transform_is_correct) {
     cout << "Transformation is correct." << endl;
   }
+  // We can reverse the ordering easily
+  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(inv_permutation, inv_permutation);
+  auto perm_then_inv_perm_csr = inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)->As<format::CSR<vertex_type, edge_type, value_type>>();
+  auto orig_csr = con->As<format::CSR<vertex_type, edge_type, value_type>>();
+  for (vertex_type i = 0; i < n; i++){
+    for (edge_type e = perm_then_inv_perm_csr->get_row_ptr()[i]; e < perm_then_inv_perm_csr->get_row_ptr()[i+1]; e++){
+      if (orig_csr->get_col()[e]!= perm_then_inv_perm_csr->get_col()[e]){
+        cout << "Bad inverse reordering!\n";
+        return 1;
+      }
+    }
+  }
+  cout << "Inversion is correct\n";
+  delete[] permutation;
+  delete[] inv_permutation;
   return 0;
 }
