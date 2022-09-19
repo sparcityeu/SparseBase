@@ -831,9 +831,9 @@ template <typename IDType>
 class PartitionPreprocessType : public FunctionMatcherMixin<IDType *> {
 public:
   PartitionPreprocessType();
-  IDType* Partition(format::Format * format, std::vector<context::Context*> contexts);
+  IDType* Partition(format::Format * format, std::vector<context::Context*> contexts, bool convert_input);
   IDType *Partition(format::Format *format, PreprocessParams *params,
-                     std::vector<context::Context *> contexts);
+                     std::vector<context::Context *> contexts, bool convert_input);
   virtual ~PartitionPreprocessType();
 };
 

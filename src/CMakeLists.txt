@@ -16,6 +16,7 @@ if(NOT ${_HEADER_ONLY})
     --pigo ${USE_PIGO}
     --cuda ${CUDA}
     --output-folder ${PROJECT_BINARY_DIR}/init)
+  message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
     sparsebase/format/format.cc
     sparsebase/context/context.cc
@@ -86,7 +87,7 @@ macro(add_opt_library name)
   )
 
   if(NOT OPT_LIB)
-    message(WARNING "${OPT_NAME_UPPER} library file was not found. "
+    message(FATAL_ERROR "${OPT_NAME_UPPER} library file was not found. "
             "Try setting the ${OPT_NAME_UPPER}_LIB_DIR environment variable")
   endif()
 
