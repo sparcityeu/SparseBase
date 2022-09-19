@@ -10,7 +10,6 @@
 #define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
 
 #include "sparsebase/config.h"
-#include "sparsebase/format/format.h"
 #include <functional>
 #include <tuple>
 #include <unordered_map>
@@ -19,6 +18,23 @@
 #include "sparsebase/utils/converter/cuda/converter.cuh"
 #endif
 
+// Forward declerations for the `Convert` functions in sparsebase/format/format.h
+namespace sparsebase {
+namespace utils {
+namespace converter {
+class Converter;
+template <class ConverterType> 
+class ConverterImpl;
+template <typename IDType, typename NNZType, typename ValueType>
+class ConverterOrderTwo;
+template <typename ValueType>
+class ConverterOrderOne;
+    
+} // namespace converter
+} // namespace utils
+} // namespace sparsebase
+
+#include "sparsebase/format/format.h"
 namespace sparsebase {
 
 namespace utils {
@@ -126,6 +142,19 @@ public:
                   std::type_index to_type, context::Context *to_context,
                   bool is_move_conversion = false);
 
+  /*! Removes conversion functions that convert from `from_type` to `to_type` from
+   * the conversion map
+   * @param from_type type_index of the original format type
+   * @param to_type type_index of the destination format type
+   * @param move_conversion whether the conversions to be removed are move conversions or not
+   */
+  void ClearConversionFunctions(std::type_index from_type, std::type_index to_type, bool move_conversion = false);
+  
+  /*! Removes all conversion functions from the current converter
+   * @param move_conversion whether the conversions to be removed are move conversions or not
+   */
+  void ClearConversionFunctions(bool move_conversion = false);
+  
   std::vector<format::Format *>
   ApplyConversionSchema(ConversionSchemaConditional cs,
                         std::vector<format::Format *> packed_sfs,

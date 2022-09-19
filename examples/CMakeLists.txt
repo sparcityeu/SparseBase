@@ -20,6 +20,7 @@ if(NOT ${_HEADER_ONLY} OR NOT ${CUDA})
   add_subdirectory(sparse_reader)
   add_subdirectory(custom_format)
   add_subdirectory(custom_converter)
+  add_subdirectory(linear_solver)
 
   if(${USE_METIS})
     add_subdirectory(metis_partition)
