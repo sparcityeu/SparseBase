@@ -2,7 +2,6 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/exception.h"
 #include <vector>
-#include "sparsebase/external/metis/metis.h"
 
 namespace sparsebase::feature {
 
