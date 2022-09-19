@@ -37,7 +37,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_METIS=ON
 Example for METIS using cmake variables:
 ```bash
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_METIS=ON 
+cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_METIS=ON \
   -DMETIS_LIB_DIR=/home/user/lib/metis/lib -DMETIS_INC_DIR=/home/user/lib/metis/include
 ```
 
