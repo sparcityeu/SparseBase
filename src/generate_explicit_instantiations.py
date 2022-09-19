@@ -1,3 +1,6 @@
+# This script is intended to be executed by CMake directly
+# Manually executing this script should not be necessary other than debugging purposes
+
 import sys
 import os
 import argparse
@@ -102,16 +105,26 @@ gen_inst("ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter.inc")
 
 # Converter (CUDA)
 reset_file("converter.inc", folder=cuda_output_folder)
-gen_inst("sparsebase::format::Format * CsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>",
-         "converter.inc", ifdef="USE_CUDA", folder=cuda_output_folder)
-gen_inst("sparsebase::format::Format * CUDACsrCsrConditionalFunction<$id_type, $nnz_type, $value_type>", "converter.inc",
+return_type = "format::Format * "
+params = "(format::Format *source, context::Context*context)"
+order_two_functions = ['CsrCUDACsrConditionalFunction',
+                       'CUDACsrCsrConditionalFunction',
+                       'CUDACsrCUDACsrConditionalFunction']
+order_one_functions = ['CUDAArrayArrayConditionalFunction',
+                       'ArrayCUDAArrayConditionalFunction']
+
+for func in order_two_functions:
+    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc",
+             ifdef="USE_CUDA", folder=cuda_output_folder)
+
+for func in order_one_functions:
+    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder)
-gen_inst("sparsebase::format::Format * CUDACsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>", "converter.inc",
+    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder)
-gen_inst("sparsebase::format::Format * CUDAArrayArrayConditionalFunction<$value_type>", "converter.inc",
+    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder)
-gen_inst("sparsebase::format::Format * ArrayCUDAArrayConditionalFunction<$value_type>", "converter.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+
 
 
 # Reader
@@ -136,7 +149,7 @@ gen_inst("BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
 reset_file("feature.inc")
 gen_inst("FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>", "feature.inc")
 
-# Preprocessors
+# Preprocess
 reset_file("preprocess.inc")
 gen_inst("Degrees<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("RCMReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
@@ -144,11 +157,23 @@ gen_inst("DegreeReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("GenericReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("Transform<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("TransformPreprocessType<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("ReorderPreprocessType<$id_type>", "preprocess.inc")
-gen_inst("PartitionPreprocessType<$id_type>", "preprocess.inc")
 gen_inst("DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("MetisPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
+gen_inst("FunctionMatcherMixin<format::Format*>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type*>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type*, ConverterMixin<ExtractableType>>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type, ConverterMixin<ExtractableType>>", "preprocess.inc")
+gen_inst("GenericPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("ReorderPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("PartitionPreprocessType<$id_type>", "preprocess.inc")
 
-# Preprocessors (CUDA)
+# Preprocess (CUDA)
+reset_file("preprocess.inc", cuda_output_folder)
+gen_inst("format::cuda::CUDAArray<$float_type>* "
+         + "RunJaccardKernel(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
+         "preprocess.inc",
+         ifdef="USE_CUDA",
+         folder=cuda_output_folder)

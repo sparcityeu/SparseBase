@@ -763,7 +763,7 @@ public:
 
 #ifdef USE_METIS
 
-#include "metis.h"
+
 
 template <typename IDType, typename NNZType, typename ValueType>
 class MetisPartition : public PartitionPreprocessType<IDType> {
@@ -771,25 +771,68 @@ public:
   MetisPartition();
   static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
 
+  /* Types of objectives */
+  typedef enum {
+    METIS_OBJTYPE_CUT,
+    METIS_OBJTYPE_VOL,
+    METIS_OBJTYPE_NODE
+  } mobjtype_et;
+
+  /*! Partitioning Schemes */
+  typedef enum {
+    METIS_PTYPE_RB,
+    METIS_PTYPE_KWAY
+  } mptype_et;
+
+  /*! Graph types for meshes */
+  typedef enum {
+    METIS_GTYPE_DUAL,
+    METIS_GTYPE_NODAL
+  } mgtype_et;
+
+  /*! Coarsening Schemes */
+  typedef enum {
+    METIS_CTYPE_RM,
+    METIS_CTYPE_SHEM
+  } mctype_et;
+
+  /*! Initial partitioning schemes */
+  typedef enum {
+    METIS_IPTYPE_GROW,
+    METIS_IPTYPE_RANDOM,
+    METIS_IPTYPE_EDGE,
+    METIS_IPTYPE_NODE,
+    METIS_IPTYPE_METISRB
+  } miptype_et;
+
+
+  /*! Refinement schemes */
+  typedef enum {
+    METIS_RTYPE_FM,
+    METIS_RTYPE_GREEDY,
+    METIS_RTYPE_SEP2SIDED,
+    METIS_RTYPE_SEP1SIDED
+  } mrtype_et;
+
   struct MetisParams : PreprocessParams{
-    int num_partitions = 2;
-    idx_t ptype = METIS_PTYPE_KWAY;
-    idx_t objtype = METIS_OBJTYPE_CUT;
-    idx_t ctype = METIS_CTYPE_RM;
-    idx_t iptype = METIS_IPTYPE_GROW;
-    idx_t rtype = METIS_RTYPE_FM;
-    idx_t ncuts = 1;
-    idx_t nseps = 1;
-    idx_t numbering = 0;
-    idx_t niter = 10;
-    idx_t seed = 42;
-    idx_t minconn = 0;
-    idx_t no2hop = 0;
-    idx_t contig = 0;
-    idx_t compress = 0;
-    idx_t ccorder = 0;
-    idx_t pfactor = 0;
-    idx_t ufactor = 30;
+    int64_t num_partitions = 2;
+    int64_t ptype = METIS_PTYPE_KWAY;
+    int64_t objtype = METIS_OBJTYPE_CUT;
+    int64_t ctype = METIS_CTYPE_RM;
+    int64_t iptype = METIS_IPTYPE_GROW;
+    int64_t rtype = METIS_RTYPE_FM;
+    int64_t ncuts = 1;
+    int64_t nseps = 1;
+    int64_t numbering = 0;
+    int64_t niter = 10;
+    int64_t seed = 42;
+    int64_t minconn = 0;
+    int64_t no2hop = 0;
+    int64_t contig = 0;
+    int64_t compress = 0;
+    int64_t ccorder = 0;
+    int64_t pfactor = 0;
+    int64_t ufactor = 30;
   };
 };
 #endif

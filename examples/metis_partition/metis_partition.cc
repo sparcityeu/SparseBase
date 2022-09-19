@@ -27,7 +27,7 @@ int main(int argc, char** argv){
   preprocess::MetisPartition<TYPES>::MetisParams params;
   params.seed = 12;
   params.ufactor = 50;
-  params.rtype = preprocess::METIS_RTYPE_GREEDY;
+  params.rtype = preprocess::MetisPartition<TYPES>::METIS_RTYPE_GREEDY;
 
   cout << "Partitioning CSR..." << endl;
   auto* res2 = metis.Partition(csr, &params, {&cpu_context});
