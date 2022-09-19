@@ -71,9 +71,11 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder):
     if not dry_run:
         out.close()
 
+
 # Format
 reset_file("format.inc")
 gen_inst("CSR<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("CSC<$id_type, $nnz_type, $value_type>", "format.inc")
 gen_inst("COO<$id_type, $nnz_type, $value_type>", "format.inc")
 gen_inst("Array<$value_type>", "format.inc")
 gen_inst("Array<$nnz_type>", "format.inc")
@@ -82,13 +84,13 @@ gen_inst("Array<$id_type>", "format.inc")
 # Format (CUDA)
 reset_file("format.inc", cuda_output_folder)
 gen_inst("CUDACSR<$id_type, $nnz_type, $value_type>", "format.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
 gen_inst("CUDAArray<$value_type>", "format.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
 gen_inst("CUDAArray<$id_type>", "format.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
 gen_inst("CUDAArray<$nnz_type>", "format.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
 
 
 # Object
@@ -115,15 +117,15 @@ order_one_functions = ['CUDAArrayArrayConditionalFunction',
 
 for func in order_two_functions:
     gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc",
-             ifdef="USE_CUDA", folder=cuda_output_folder)
+             ifdef="CUDA", folder=cuda_output_folder)
 
 for func in order_one_functions:
     gen_inst(return_type + func + "<$id_type>" + params, "converter.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
     gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
     gen_inst(return_type + func + "<$value_type>" + params, "converter.inc",
-         ifdef="USE_CUDA", folder=cuda_output_folder)
+         ifdef="CUDA", folder=cuda_output_folder)
 
 
 
@@ -155,8 +157,12 @@ gen_inst("Degrees<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("RCMReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("DegreeReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("GenericReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("Transform<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("TransformPreprocessType<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("PermuteOrderTwo<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("PermuteOrderOne<$id_type, $value_type>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderTwo<$id_type, $nnz_type, $value_type>, format::FormatOrderTwo<$id_type, $nnz_type, $value_type>>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderOne<$value_type>, format::FormatOrderOne<$value_type>>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderOne<$id_type>, format::FormatOrderOne<$id_type>>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderOne<$nnz_type>, format::FormatOrderOne<$nnz_type>>", "preprocess.inc")
 gen_inst("DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")

@@ -1146,15 +1146,15 @@ PartitionPreprocessType<IDType>::PartitionPreprocessType() = default;
 
 template <typename IDType>
 IDType *PartitionPreprocessType<IDType>::Partition(format::Format* format,
-                                                   std::vector<context::Context*> contexts) {
-    return this->Execute(this->params_.get(), (this->sc_.get()), contexts, format);
+                                                   std::vector<context::Context*> contexts, bool convert_input) {
+    return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename IDType>
 IDType *PartitionPreprocessType<IDType>::Partition(
     format::Format *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->Execute(params, (this->sc_.get()), contexts, format);
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename IDType>
