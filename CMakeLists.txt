@@ -32,10 +32,7 @@ if (WIN32 OR APPLE)
   set(USE_PIGO OFF)
 endif()
 
-configure_file(
-  "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
-  "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
-)
+
 
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-std=c++17"   COMPILER_SUPPORTS_CXX17 )

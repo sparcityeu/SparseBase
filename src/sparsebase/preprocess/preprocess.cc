@@ -1055,7 +1055,7 @@ PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 
 #ifdef USE_METIS
 
-#include "metis.h"
+#include "sparsebase/external/metis/metis.h"
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
@@ -1080,22 +1080,22 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   IDType* partition = new IDType[n];
 
   idx_t options[METIS_NOPTIONS];
-  options[METIS_OPTION_OBJTYPE] = mparams->objtype;
-  options[METIS_OPTION_CTYPE] = mparams->ctype;
-  options[METIS_OPTION_IPTYPE] = mparams->iptype;
-  options[METIS_OPTION_RTYPE] = mparams->rtype;
-  options[METIS_OPTION_NO2HOP] = mparams->no2hop;
-  options[METIS_OPTION_NCUTS] = mparams->ncuts;
-  options[METIS_OPTION_NITER] = mparams->niter;
-  options[METIS_OPTION_UFACTOR] = mparams->ufactor;
-  options[METIS_OPTION_MINCONN] = mparams->minconn;
-  options[METIS_OPTION_CONTIG] = mparams->contig;
-  options[METIS_OPTION_SEED] = mparams->seed;
-  options[METIS_OPTION_NUMBERING] = mparams->numbering;
-  options[METIS_OPTION_DBGLVL] = 0;
+  options[METIS_OPTION_OBJTYPE] = (idx_t) mparams->objtype;
+  options[METIS_OPTION_CTYPE] = (idx_t) mparams->ctype;
+  options[METIS_OPTION_IPTYPE] = (idx_t) mparams->iptype;
+  options[METIS_OPTION_RTYPE] = (idx_t) mparams->rtype;
+  options[METIS_OPTION_NO2HOP] = (idx_t) mparams->no2hop;
+  options[METIS_OPTION_NCUTS] = (idx_t) mparams->ncuts;
+  options[METIS_OPTION_NITER] = (idx_t) mparams->niter;
+  options[METIS_OPTION_UFACTOR] = (idx_t) mparams->ufactor;
+  options[METIS_OPTION_MINCONN] = (idx_t) mparams->minconn;
+  options[METIS_OPTION_CONTIG] = (idx_t) mparams->contig;
+  options[METIS_OPTION_SEED] = (idx_t) mparams->seed;
+  options[METIS_OPTION_NUMBERING] = (idx_t) mparams->numbering;
+  options[METIS_OPTION_DBGLVL] = (idx_t) 0;
 
-  idx_t np = mparams->num_partitions;
-  idx_t nw = 1;
+  idx_t np = (idx_t) mparams->num_partitions;
+  idx_t nw = (idx_t) 1;
   idx_t objval;
 
   if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
