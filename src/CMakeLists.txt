@@ -76,7 +76,8 @@ set(PREPROCESS_FILES
 set(OBJECT_FILES 
   sparsebase/object/object.h
 )
-set(IO_FILES 
+set(IO_FILES
+  sparsebase/utils/io/iobase.h
   sparsebase/utils/io/reader.h
   sparsebase/utils/io/sparse_file_format.h
   sparsebase/utils/io/writer.h
