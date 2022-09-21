@@ -1,6 +1,10 @@
-from sys import stdout
+# This script is intended to be executed by CMake directly
+# Manually executing this script should not be necessary other than debugging purposes
+
+import sys
 import os
 import argparse
+import itertools
 
 parser = argparse.ArgumentParser(description="Generate explicit instantiations of SparseBase template classes")
 parser.add_argument('--id-types', nargs='+', type=str, help= "C++ data types used for variables storing IDs")
@@ -14,277 +18,169 @@ parser.add_argument('--pigo', type=str, help= "Use pigo (OFF/ON).")
 parser.add_argument('--cuda', type=str, help= "Use CUDA (OFF/ON).")
 args = parser.parse_args()
 
-'''
-Global variables defining data types
-'''
-vertex_types = ' '.join(args.id_types).split(',')
+id_types = ' '.join(args.id_types).split(',')
 nnz_types = ' '.join(args.nnz_types).split(',')
 value_types = ' '.join(args.value_types).split(',')
 float_types = ' '.join(args.float_types).split(',')
 output_folder = args.output_folder
-external_output_folder = os.path.join(output_folder, 'external')
-use_pigo = True if args.pigo == 'ON' else False
-
-use_cuda = True if args.cuda == 'ON' else False
-cuda_output_folder = os.path.join(external_output_folder, 'cuda')
-
+cuda_output_folder = os.path.join(output_folder, 'cuda')
 dry_run = args.dry_run
 
-PREFIX = "template class "
-temp_suffix = '.tmp'
+os.makedirs(output_folder, exist_ok=True)
+os.makedirs(cuda_output_folder, exist_ok=True)
 
-## Utility function that prints explicit instantiations of classes that require exactly three template parameters: IDType, NNZType, and ValueType
-# @param implementations: a list of strings corresponding to class names
-# @param out_stream: an output stream to which the instantiations will be printed
-def print_implementations(implementations, out_stream):
-    for implementation_class in implementations:
-        for vertex_type in vertex_types:
-            for nnz_type in nnz_types:
-                for value_type in value_types:
-                    out_stream.write(PREFIX+implementation_class+'<'+vertex_type+', '+nnz_type+', '+value_type+'>;\n')
-        out_stream.write('\n\n\n')
+comb_types = list(itertools.product(id_types, nnz_types, value_types, float_types))
+already_added = set()
 
-## An class for an objec that writes explicit initializations
-# 
-# This class manages opening the output stream and creating the temporary filename
-class explicit_initialization:
-    ## initializes the object
-    # @param filename: the path to which the output is stored
-    # @param dry_run: if true, prints the explicit initializations to stdout 
-    def __init__(self, filename, dry_run=False):
-        self.filename = filename
-
-        if not dry_run:
-            self.out_stream = open(self.get_temp_filename(), 'w')
-        else:
-            self.out_stream = stdout
-
-    ## Returns the name of the temp file with the explicit initializations
-    def get_temp_filename(self):
-        return self.filename+temp_suffix
-
-    ## Returns the name of the final file with the explicit initializations
-    def get_filename(self):
-        return self.filename
-
-    ## If this isn't a dry run, closes the stream to the file
-    def close(self):
-        if not dry_run:
-            self.out_stream.close()
-
-class converter_cuda_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'converter.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-
-    ## Prints explicit template instantiations for the preprocess file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        order_two_functions = ['CsrCUDACsrConditionalFunction', 'CUDACsrCsrConditionalFunction', 'CUDACsrCUDACsrConditionalFunction']
-        order_one_functions = ['CUDAArrayArrayConditionalFunction', 'ArrayCUDAArrayConditionalFunction']
-        for vertex_type in vertex_types:
-            for nnz_type in nnz_types:
-                for value_type in value_types:
-                    for function in order_two_functions: 
-                        self.out_stream.write("template sparsebase::format::Format * "+function+"<"+vertex_type+", "+nnz_type+", "+value_type+">(sparsebase::format::Format *source, sparsebase::context::Context*context);\n")
-        for value_type in value_types:
-            for function in order_one_functions: 
-                self.out_stream.write("template sparsebase::format::Format * "+function+"<"+value_type+">(sparsebase::format::Format *source, sparsebase::context::Context*context);\n")
-
-class preprocess_cuda_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'preprocess.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-
-    ## Prints explicit template instantiations for the preprocess file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        #order_two_functions = [('JaccardWeights', ['GetJaccardWeightCUDACSR'])]
-        for vertex_type in vertex_types:
-            for nnz_type in nnz_types:
-                for value_type in value_types:
-                    for float_type in float_types:
-                        #for prep_class, funcs in order_two_functions: 
-                        #    for function in funcs:
-                                types = "<"+vertex_type+", "+nnz_type+", "+value_type+">"
-                                self.out_stream.write("template format::cuda::CUDAArray<"+float_type+">*  RunJaccardKernel(format::cuda::CUDACSR"+types+"*);\n")
-
-class format_cuda_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'format.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the format file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        single_order_classes = ['CUDAArray']
-        for value_type in value_types:
-            for c in single_order_classes:
-                self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
-        self.out_stream.write('\n\n')
-        print_implementations(['CUDACSR'], self.out_stream)
-class preprocess_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'preprocess.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-
-    ## Prints explicit template instantiations for the preprocess file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+ 'Format*'+", "+"ConverterMixin<PreprocessType>>;\n")
-        self.out_stream.write(PREFIX+"ConverterMixin<PreprocessType>;\n")
-        for vertex_type in vertex_types:
-            for preprocess_return_type in [vertex_type+'*', vertex_type]:
-                self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<PreprocessType>>;\n")
-                self.out_stream.write(PREFIX+"FunctionMatcherMixin<"+preprocess_return_type+", "+"ConverterMixin<ExtractableType>>;\n")
-        for vertex_type in vertex_types:
-            self.out_stream.write(PREFIX+"GenericPreprocessType<"+vertex_type+">;\n")
-            self.out_stream.write(PREFIX+"ReorderPreprocessType<"+vertex_type+">;\n")
-        for vertex_type in vertex_types:
-            for nnz_type in nnz_types:
-                for value_type in value_types:
-                    format_order_two = "FormatOrderTwo<"+vertex_type+","+nnz_type+","+value_type+">"
-                    self.out_stream.write(PREFIX+"TransformPreprocessType<"+format_order_two+','+format_order_two+">;")
-                    for dist_type in float_types:
-                        self.out_stream.write(PREFIX+"DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-                        self.out_stream.write(PREFIX+"Degrees_DegreeDistribution<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-                        self.out_stream.write(PREFIX+"JaccardWeights<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
-        for value_type in value_types:
-            format_order_one = "FormatOrderOne<"+value_type+">"
-            self.out_stream.write(PREFIX+"TransformPreprocessType<"+format_order_one+','+format_order_one+">;")
-        for vertex_type in vertex_types:
-            for value_type in value_types:
-                self.out_stream.write(PREFIX+"PermuteOrderOne<"+vertex_type+','+value_type+">;")
-        print_implementations(['GenericReorder', 'DegreeReorder', 'RCMReorder', 'PermuteOrderTwo', 'Degrees'], self.out_stream)
-
-class converter_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'converter.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-
-    ## Prints explicit template instantiations for the converter file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        single_order_classes = ['ConverterOrderOne']
-        for value_type in value_types:
-            for c in single_order_classes:
-                self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
-        print_implementations(['ConverterOrderTwo'], self.out_stream)
-
-class object_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'object.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the object file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['AbstractObject', 'Graph'], self.out_stream)
-
-class format_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'format.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the format file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        single_order_classes = ['Array']
-        for value_type in value_types:
-            for c in single_order_classes:
-                self.out_stream.write(PREFIX+c+"<"+value_type+">;\n")
-        self.out_stream.write('\n\n')
-        print_implementations(['CSR', 'COO', 'CSC'], self.out_stream)
-
-class reader_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'reader.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the reader file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        for value_type in value_types:
-            self.out_stream.write("template class BinaryReaderOrderOne<" + value_type + ">;\n")
-        print_implementations(['MTXReader', 'EdgeListReader', 'BinaryReaderOrderTwo'],
-                              self.out_stream)
-
-class writer_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'writer.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the reader file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        for value_type in value_types:
-            self.out_stream.write("template class BinaryWriterOrderOne<" + value_type + ">;\n")
-        print_implementations(['BinaryWriterOrderTwo'], self.out_stream)
+def reset_file(filename, folder=output_folder):
+    path = os.path.join(folder, filename)
+    out = open(path, "w+")
+    out.write("// Automatically generated by " + os.path.basename(__file__) + "\n\n")
+    out.close()
 
 
-class pigo_reader_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'pigo.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the reader file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        print_implementations(['PigoMTXReader', 'PigoEdgeListReader'], self.out_stream)
+def gen_inst(template, filename, ifdef=None, folder=output_folder):
 
-class feature_init(explicit_initialization):
-    def __init__(self, folder, dry_run=False):
-        self.source_filename = 'feature.inc'
-        super().__init__(os.path.join(folder, self.source_filename), dry_run)
-    ## Prints explicit template instantiations for the reader file
-    def run(self):
-        self.out_stream.write('// '+self.source_filename+'\n')
-        for vertex_type in vertex_types:
-            for nnz_type in nnz_types:
-                for value_type in value_types:
-                    for dist_type in float_types:
-                        self.out_stream.write(PREFIX+"FeatureExtractor<"+vertex_type+", "+nnz_type+", "+value_type+", "+dist_type+">;\n")
+    out = sys.stdout
+    if not dry_run:
+        path = os.path.join(folder, filename)
+        out = open(path, "a")
 
-## Create the output folder if it doesn't already exist
-if not os.path.isdir(output_folder):
-    os.mkdir(output_folder)
-if not os.path.isdir(external_output_folder):
-    os.mkdir(external_output_folder)
-if use_cuda:
-    if not os.path.isdir(cuda_output_folder):
-        os.mkdir(cuda_output_folder)
+    out.write("// Generated from: " + template + "\n")
 
-inits = []
-inits.append(reader_init(output_folder, dry_run))
-inits.append(format_init(output_folder, dry_run))
-inits.append(converter_init(output_folder, dry_run))
-inits.append(preprocess_init(output_folder, dry_run))
-inits.append(object_init(output_folder, dry_run))
-inits.append(feature_init(output_folder, dry_run))
-inits.append(writer_init(output_folder, dry_run))
-inits.append(pigo_reader_init(external_output_folder, dry_run))
-if use_cuda:
-    inits.append(converter_cuda_init(cuda_output_folder, dry_run))
-    inits.append(preprocess_cuda_init(cuda_output_folder, dry_run))
-    inits.append(format_cuda_init(cuda_output_folder, dry_run))
+    if ifdef is not None:
+        out.write("#ifdef " + ifdef + "\n")
+
+    for types in comb_types:
+        inst = template.replace("$id_type", types[0])
+        inst = inst.replace("$nnz_type", types[1])
+        inst = inst.replace("$value_type", types[2])
+        inst = inst.replace("$float_type", types[3])
+
+        key = folder + ":" + filename + ":" + inst
+
+        if key not in already_added:
+            already_added.add(key)
+            out.write("template class " + inst + ";\n")
+
+    if ifdef is not None:
+        out.write("#endif\n")
+
+    out.write("\n")
+
+    if not dry_run:
+        out.close()
 
 
-## Create temporary files containing the explicit instantiations
-for init_object in inits:
-    init_object.run()
-    init_object.close()
+# Format
+reset_file("format.inc")
+gen_inst("CSR<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("CSC<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("COO<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("Array<$value_type>", "format.inc")
+gen_inst("Array<$nnz_type>", "format.inc")
+gen_inst("Array<$id_type>", "format.inc")
 
-if not dry_run:
-    ## Check whether the newly created folder is different from the existing one, and if it is, replace it
-    for init_object in inits:
-        file_created = init_object.get_temp_filename()
-        existing_file = init_object.get_filename()
-        replace_old_file = True
-        if os.path.isfile(existing_file):
-            with open(file_created, 'r') as new_file:
-                with open(existing_file, 'r') as old_file:
-                    old_line, new_line = None,None
-                    while old_line == new_line and old_line != '':
-                        old_line = old_file.readline()
-                        new_line = new_file.readline()
-                    if old_line == new_line:
-                        replace_old_file = False 
-        if replace_old_file:
-            os.rename(file_created, existing_file)
-            print("Updating explicit instantiation file:", existing_file)
-        else:
-            os.remove(file_created)
+# Format (CUDA)
+reset_file("format.inc", cuda_output_folder)
+gen_inst("CUDACSR<$id_type, $nnz_type, $value_type>", "format.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+gen_inst("CUDAArray<$value_type>", "format.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+gen_inst("CUDAArray<$id_type>", "format.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+gen_inst("CUDAArray<$nnz_type>", "format.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+
+
+# Object
+reset_file("object.inc")
+gen_inst("AbstractObject<$id_type, $nnz_type, $value_type>", "object.inc")
+gen_inst("Graph<$id_type, $nnz_type, $value_type>", "object.inc")
+
+# Converter
+reset_file("converter.inc")
+gen_inst("ConverterOrderOne<$value_type>", "converter.inc")
+gen_inst("ConverterOrderOne<$id_type>", "converter.inc")
+gen_inst("ConverterOrderOne<$nnz_type>", "converter.inc")
+gen_inst("ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter.inc")
+
+# Converter (CUDA)
+reset_file("converter.inc", folder=cuda_output_folder)
+return_type = "format::Format * "
+params = "(format::Format *source, context::Context*context)"
+order_two_functions = ['CsrCUDACsrConditionalFunction',
+                       'CUDACsrCsrConditionalFunction',
+                       'CUDACsrCUDACsrConditionalFunction']
+order_one_functions = ['CUDAArrayArrayConditionalFunction',
+                       'ArrayCUDAArrayConditionalFunction']
+
+for func in order_two_functions:
+    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc",
+             ifdef="CUDA", folder=cuda_output_folder)
+
+for func in order_one_functions:
+    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc",
+         ifdef="CUDA", folder=cuda_output_folder)
+
+
+
+# Reader
+reset_file("reader.inc")
+gen_inst("EdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("MTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("PigoEdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("PigoMTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("BinaryReaderOrderOne<$id_type>", "reader.inc")
+gen_inst("BinaryReaderOrderOne<$nnz_type>", "reader.inc")
+gen_inst("BinaryReaderOrderOne<$value_type>", "reader.inc")
+
+# Writer
+reset_file("writer.inc")
+gen_inst("BinaryWriterOrderOne<$id_type>", "writer.inc")
+gen_inst("BinaryWriterOrderOne<$nnz_type>", "writer.inc")
+gen_inst("BinaryWriterOrderOne<$value_type>", "writer.inc")
+gen_inst("BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
+
+# Feature
+reset_file("feature.inc")
+gen_inst("FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>", "feature.inc")
+
+# Preprocess
+reset_file("preprocess.inc")
+gen_inst("Degrees<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("RCMReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("DegreeReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("GenericReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("PermuteOrderTwo<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("PermuteOrderOne<$id_type, $value_type>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderTwo<$id_type, $nnz_type, $value_type>, format::FormatOrderTwo<$id_type, $nnz_type, $value_type>>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderOne<$value_type>, format::FormatOrderOne<$value_type>>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderOne<$id_type>, format::FormatOrderOne<$id_type>>", "preprocess.inc")
+gen_inst("TransformPreprocessType<format::FormatOrderOne<$nnz_type>, format::FormatOrderOne<$nnz_type>>", "preprocess.inc")
+gen_inst("DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
+gen_inst("Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
+gen_inst("JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
+gen_inst("MetisPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
+gen_inst("ConverterMixin<PreprocessType>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<format::Format*>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type*>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type*, ConverterMixin<ExtractableType>>", "preprocess.inc")
+gen_inst("FunctionMatcherMixin<$id_type, ConverterMixin<ExtractableType>>", "preprocess.inc")
+gen_inst("GenericPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("ReorderPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("PartitionPreprocessType<$id_type>", "preprocess.inc")
+
+# Preprocess (CUDA)
+reset_file("preprocess.inc", cuda_output_folder)
+gen_inst("format::cuda::CUDAArray<$float_type>* "
+         + "RunJaccardKernel(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
+         "preprocess.inc",
+         ifdef="USE_CUDA",
+         folder=cuda_output_folder)

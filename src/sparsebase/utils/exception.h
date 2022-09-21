@@ -51,6 +51,7 @@ class TypeException : public Exception {
   std::string msg_;
 
 public:
+  TypeException(const std::string& msg) : msg_(msg) {}
   TypeException(const std::string type1, const std::string type2)
       : msg_("Object is of type " + type1 + " not " + type2) {}
   virtual const char *what() const throw() { return msg_.c_str(); }
