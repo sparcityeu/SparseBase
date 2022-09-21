@@ -134,7 +134,7 @@ bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
   return can_access;
 }
 #if !defined(_HEADER_ONLY)
-#include "init/external/cuda/converter.inc"
+#include "init/cuda/converter.inc"
 #endif
 } // namespace cuda
 } // namespace converter

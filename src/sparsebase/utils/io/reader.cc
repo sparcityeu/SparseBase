@@ -60,7 +60,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       }
     }
 
-    if (square_) {
+    if (square_ || read_undirected_) {
       n = std::max(n, m);
       m = n;
     }
@@ -738,7 +738,6 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 }
 
 #if !defined(_HEADER_ONLY)
-#include "init/external/pigo.inc"
 #include "init/reader.inc"
 #endif
 
