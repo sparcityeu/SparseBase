@@ -38,7 +38,7 @@ int main(int argc, char **argv){
   };
   string file_name = argv[1];
   auto data = get_data_f(file_name);
-  exp.AddDataGetter(get_data_f);
+  exp.AddDataLoader(get_data_f, {file_name});
 
   auto preprocess_f = [] (unordered_map<string, Format*> data) {
     cout << "PREPROCESS LAMBDA FUNCTION!!" << endl;
@@ -46,8 +46,8 @@ int main(int argc, char **argv){
     context::CPUContext cpu_context;
     auto *perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context});
     //r.emplace("permutation", perm);
-    auto * A_reordered = ReorderBase::Permute2D<CSC>(perm, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context});
-    auto *A_csc = A_reordered->Convert<CSC>();
+    auto * A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context});
+    auto *A_csc = A_reordered->Convert<CSR>();
     r.emplace("ordered", A_csc);
     return r;
   };
@@ -56,11 +56,22 @@ int main(int argc, char **argv){
 
   auto kernel_f = [] (unordered_map<string, Format*> data) {
     cout << "DO WHATEVER YOU WANT WITH DATA!!!" << endl;
-    std::any rt;
+    context::CPUContext cpu_context;
+    auto *perm = ReorderBase::Reorder<RCMReorder>({}, data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context});
+    auto * A_reordered = ReorderBase::Permute2D<CSR>(perm, data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context});
+    auto * A_csc = A_reordered->Convert<CSC>();
+    std::any rt = A_csc;
     return rt;
   };
   auto r = kernel_f(data);
   exp.AddKernel(kernel_f);
-  exp.Run();
+  exp.AddKernel(kernel_f);
+  exp.Run(2);
+  std::vector<std::any> res = exp.GetResults();
+  cout << "Size = " << res.size() << endl;
+  auto secs = exp.GetRunTimes();
+  for(auto s: secs){
+    cout << "Run time: " << s << endl;
+  }
   return 0;
 }

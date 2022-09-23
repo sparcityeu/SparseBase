@@ -15,40 +15,44 @@
 #include <any>
 #include <unordered_map>
 #include <vector>
+#include <chrono>
 
 namespace sparsebase::experiment {
 
-// variadics or params struct
-using GetDataFunction = std::unordered_map<std::string, format::Format*> (std::string);
-// variadics or params struct
+using LoadDataFunction = std::unordered_map<std::string, format::Format*> (std::string);
 using PreprocessFunction = std::unordered_map<std::string, format::Format*> (std::unordered_map<std::string, format::Format*>);
-// variadics or params struct
 using KernelFunction = std::any (std::unordered_map<std::string, format::Format*>);
 
 class ExperimentType{
     public:
         virtual void Run(unsigned int times = 1) = 0;
-        virtual void AddDataGetter(GetDataFunction) = 0;
+        virtual void AddDataLoader(LoadDataFunction, std::vector<std::string> targets) = 0;
         virtual void AddPreprocess(PreprocessFunction) = 0;
         virtual void AddKernel(KernelFunction) = 0;
+        virtual std::vector<double> GetRunTimes() = 0;
+        virtual std::vector<std::any> GetResults() = 0;
 };
 
 struct ExperimentParams{
     unsigned int num_runs;
 };
+
 class ConcreteExperiment : public ExperimentType {
     public:
         void Run(unsigned int times = 1);
-        virtual void AddDataGetter(GetDataFunction);
+        virtual void AddDataLoader(LoadDataFunction, std::vector<std::string> targets);
         virtual void AddPreprocess(PreprocessFunction);
         virtual void AddKernel(KernelFunction);
         std::vector<double> GetRunTimes();
+        std::vector<std::any> GetResults();
     private:
         ExperimentParams _params;
+        std::vector<std::vector<std::string>> _targets;
         std::vector<std::function<KernelFunction>> _kernels;
-        std::vector<std::function<GetDataFunction>> _dataGetters;
+        std::vector<std::function<LoadDataFunction>> _dataLoaders;
         std::vector<std::function<PreprocessFunction>> _preprocesses;
-        std::vector<double> _runTimes;
+        std::vector<double> _runtimes;
+        std::vector<std::any> _results;
 };
 
 //class PreprocessExperiment : public ConcreteExperiment {
