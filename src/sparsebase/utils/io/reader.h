@@ -168,14 +168,13 @@ private:
 template <typename IDType, typename NNZType, typename ValueType>
 class PigoMTXReader : public Reader,
                       public ReadsCOO<IDType, NNZType, ValueType>,
-                      public ReadsCSR<IDType, NNZType, ValueType>,
-                      public ReadsArray<ValueType> {
+                      public ReadsCSR<IDType, NNZType, ValueType> {
 public:
   PigoMTXReader(std::string filename, bool weighted,
                 bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
-  format::Array<ValueType> *ReadArray() const override;
+  //format::Array<ValueType> *ReadArray() const override;
   virtual ~PigoMTXReader() = default;
 
 private:

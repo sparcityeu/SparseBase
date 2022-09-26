@@ -60,7 +60,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       }
     }
 
-    if (square_) {
+    if (square_ || read_undirected_) {
       n = std::max(n, m);
       m = n;
     }
@@ -554,12 +554,12 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
     : filename_(filename), weighted_(weighted),
       convert_to_zero_index_(convert_to_zero_index) {}
 
-template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType> *
-PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
-  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
-  return reader.ReadArray();
-}
+//template <typename IDType, typename NNZType, typename ValueType>
+//format::Array<ValueType> *
+//PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+//  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
+//  return reader.ReadArray();
+//}
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType> *
@@ -581,7 +581,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
         pigo_coo(filename_, pigo::MATRIX_MARKET);
     coo = new format::COO<IDType, NNZType, ValueType>(
         pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
-        pigo_coo.y(), pigo_coo.w(), format::kOwned);
+        pigo_coo.y(), nullptr, format::kOwned);
   }
 
   if (convert_to_zero_index_) {
@@ -611,6 +611,7 @@ format::CSR<IDType, NNZType, ValueType> *
 PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
   utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  std::cout << "nnz " << coo->get_num_nnz() << " dim " << coo->get_dimensions()[0] << " " << coo->get_dimensions()[1] << std::endl;
   return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, coo->get_context(), true);
 }
@@ -640,7 +641,7 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
               ValueType *>
         coo(filename_, pigo::EDGE_LIST);
     return new format::COO<IDType, NNZType, ValueType>(
-        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
+        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), nullptr,
         format::kOwned);
   }
 #else
@@ -737,7 +738,6 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 }
 
 #if !defined(_HEADER_ONLY)
-#include "init/external/pigo.inc"
 #include "init/reader.inc"
 #endif
 

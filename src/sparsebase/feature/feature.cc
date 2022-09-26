@@ -122,10 +122,10 @@ std::vector<preprocess::ExtractableType *> Extractor::GetFuncList() {
 
 std::unordered_map<std::type_index, std::any>
 Extractor::Extract(std::vector<Feature> &fs, format::Format *format,
-                   const std::vector<context::Context *> &c) {
+                   const std::vector<context::Context *> &c, bool convert_input) {
   std::unordered_map<std::type_index, std::any> res;
   for (auto &el : fs) {
-    auto t = el->Extract(format, c);
+    auto t = el->Extract(format, c, convert_input);
     res.merge(t);
   }
   return res;
@@ -133,7 +133,7 @@ Extractor::Extract(std::vector<Feature> &fs, format::Format *format,
 
 std::unordered_map<std::type_index, std::any>
 Extractor::Extract(format::Format *format,
-                   const std::vector<context::Context *> &c) {
+                   const std::vector<context::Context *> &c, bool convert_input) {
   if (in_.empty())
     return {};
   // match and get classes for format extraction
@@ -142,7 +142,7 @@ Extractor::Extract(format::Format *format,
   //std::cout << std::endl << "Classes used:" << std::endl;
   for (auto &el : cs) {
     //std::cout << el->get_feature_id().name() << std::endl;
-    res.merge(el->Extract(format, c));
+    res.merge(el->Extract(format, c, convert_input));
   }
   //std::cout << std::endl;
   return res;

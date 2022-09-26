@@ -36,9 +36,9 @@ int main(){
   utils::io::MTXReader<ull, ull, val> A_reader(A_filename, true);
   COO<ull, ull, val> * A =  A_reader.ReadCOO();
 
-  ull *perm = ReorderBase::Reorder<RCMReorder>({}, A, {&cpu_context});
+  ull *perm = ReorderBase::Reorder<RCMReorder>({}, A, {&cpu_context}, true);
 
-  auto * A_reordered = ReorderBase::Permute2D<CSC>(perm, A, {&cpu_context});
+  auto * A_reordered = ReorderBase::Permute2D<CSC>(perm, A, {&cpu_context}, true);
 
   auto *A_csc = A_reordered->Convert<CSC>();
 
@@ -47,16 +47,16 @@ int main(){
 
   Array<val> *b = new Array<val>(3, nullptr);
 
-  Array<val> * b_reordered = ReorderBase::Permute1D<Array>(perm, b, {&cpu_context});
+  Array<val> * b_reordered = ReorderBase::Permute1D<Array>(perm, b, {&cpu_context}, true);
 
   // solving for x
   Array<val> *inv_x = new Array<val>(3, nullptr);
 
   ull *inv_perm = ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
-  format::Array<val> *x = ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context});
+  format::Array<val> *x = ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context}, true);
 
-  float * deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>({}, A, {&cpu_context});
-  int * deg = preprocess::GraphFeatureBase ::GetDegrees({}, A, {&cpu_context});
+  float * deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>({}, A, {&cpu_context}, true);
+  int * deg = preprocess::GraphFeatureBase ::GetDegrees({}, A, {&cpu_context}, true);
   return 0;
 }
 
