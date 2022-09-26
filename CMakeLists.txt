@@ -17,6 +17,7 @@ set(NNZ_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variabl
 set(VALUE_TYPES "unsigned int" "int" "float" "double" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
+
 if(${CUDA})
   if (${CMAKE_VERSION} VERSION_LESS "3.18")
     message(FATAL_ERROR "Using CUDA requires CMake version 3.18 or higher")
@@ -31,10 +32,7 @@ if (WIN32 OR APPLE)
   set(USE_PIGO OFF)
 endif()
 
-configure_file(
-  "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
-  "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
-)
+
 
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-std=c++17"   COMPILER_SUPPORTS_CXX17 )

@@ -1,0 +1,2 @@
+add_executable(custom_experiment ${CMAKE_CURRENT_SOURCE_DIR}/custom_experiment.cc)
+target_link_libraries(custom_experiment sparsebase)

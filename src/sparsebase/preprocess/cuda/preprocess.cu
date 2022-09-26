@@ -158,7 +158,7 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
 }
 
 #if !defined(_HEADER_ONLY)
-#include "init/external/cuda/preprocess.inc"
+#include "init/cuda/preprocess.inc"
 #endif
 } // namespace cuda
 } // namespace preprocess
