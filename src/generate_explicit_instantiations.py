@@ -14,8 +14,6 @@ parser.add_argument('--float-types', nargs='+', type=str, help= "C++ data types 
 parser.add_argument('--output-folder', type=str, help= "Path to output folder to store resultant files")
 parser.add_argument('--dry-run', action='store_true', help= "Will not write the files to disk, and will write them to stdout instead")
 
-parser.add_argument('--pigo', type=str, help= "Use pigo (OFF/ON).")
-parser.add_argument('--cuda', type=str, help= "Use CUDA (OFF/ON).")
 args = parser.parse_args()
 
 id_types = ' '.join(args.id_types).split(',')
