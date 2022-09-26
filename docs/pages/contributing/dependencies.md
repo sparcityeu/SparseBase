@@ -13,10 +13,11 @@ Currently, for choosing required dependencies we suggest the following options i
 1. Look for header-only libraries
 2. Check if it can be achieved by calling a Python script (we already depend on Python in our build system)
 3. Look for UNIX commandline tools
-4. Open an Github issue for discussion
+4. Open a [Github](https://github.com/sparcityeu/sparsebase) issue for discussion
 
 > SparseBase is designed as an HPC library, so you shouldn't be forced to use a header-only solution
-> if it lacks the performance necessary. If this is the case please open an issue on Github so that we can discuss.
+> if it lacks the performance necessary. If this is the case please open an issue on 
+> [Github](https://github.com/sparcityeu/sparsebase) so that we can discuss.
 
 ### Header Only Dependencies
 
@@ -26,7 +27,7 @@ the license for the dependency.
 
 When choosing a header-only dependency please make sure it uses a permissive license (like MIT,Apache,BSD).
 Copy-left licences (like GPL) can cause legal issues since the SparseBase itself uses a permissive license.
-If you are not sure, please open an issue on Github.
+If you are not sure, please open an issue on [Github](https://github.com/sparcityeu/sparsebase).
 
 
 ### Calling Python and UNIX Tools
