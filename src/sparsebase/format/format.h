@@ -10,6 +10,7 @@
 #define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
 
 #include "sparsebase/config.h"
+#include "sparsebase/utils/utils.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/utils/exception.h"
 #include <algorithm>
@@ -20,6 +21,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <vector>
+#include <cxxabi.h>
 
 namespace sparsebase {
 
@@ -79,6 +81,10 @@ public:
    * will also have different identifiers.
    */
   virtual std::type_index get_format_id() = 0;
+
+  //! Similar to get_format_id but returns a demangled name instead
+  virtual std::string get_format_name() = 0;
+
   virtual ~Format() = default;
 
   //! Performs a deep copy of the Format object and returns the pointer to the
@@ -143,8 +149,16 @@ public:
   //! instance is a member of
   virtual std::type_index get_format_id() { return typeid(FormatType); }
 
+  virtual std::string get_format_name(){
+    return utils::demangle(get_format_id());
+  };
+
   //! A static variant of the get_format_id() function
   static std::type_index get_format_id_static() { return typeid(FormatType); }
+
+  static std::string get_format_name_static() {
+    return utils::demangle(get_format_id_static());
+  };
 
   virtual std::type_index get_context_type() const {
     return this->context_->get_context_type_member();
@@ -155,6 +169,7 @@ protected:
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
   std::unique_ptr<sparsebase::context::Context> context_;
+
 };
 
 template <typename ValueType>
