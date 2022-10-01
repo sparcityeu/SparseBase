@@ -1,5 +1,6 @@
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/utils/utils.h"
 #include <iostream>
 #include <set>
 
@@ -414,7 +415,7 @@ Format *Converter::Convert(Format *source, std::type_index to_type,
                               to_type, to_context, is_move_conversion);
     return conv_func(source, to_context);
   } catch (...) {
-    throw ConversionException(source->get_format_id().name(), to_type.name());
+    throw ConversionException(source->get_format_name(), utils::demangle(to_type));
     // mechanism
   }
 }
@@ -437,9 +438,9 @@ ConditionalConversionFunction Converter::GetConversionFunction(
         return std::get<1>(conditional_function_tuple);
       }
     }
-    throw ConversionException(from_type.name(), to_type.name());
+    throw ConversionException(utils::demangle(from_type), utils::demangle(to_type));
   } catch (...) {
-    throw ConversionException(from_type.name(), to_type.name());
+    throw ConversionException(utils::demangle(from_type), utils::demangle(to_type));
     // mechanism
   }
 }

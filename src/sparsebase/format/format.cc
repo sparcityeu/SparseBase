@@ -12,6 +12,7 @@ using namespace sparsebase::utils;
 
 namespace sparsebase::format {
 
+
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::COO(COO<IDType, NNZType, ValueType> &&rhs)
     : col_(std::move(rhs.col_)), row_(std::move(rhs.row_)),
