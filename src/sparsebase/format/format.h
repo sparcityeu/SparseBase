@@ -106,12 +106,24 @@ public:
    * \return A concrete format pointer to this object (for example:
    * CSR<int,int,int>*)
    */
-  template <typename T> T *As() {
-    if (this->get_format_id() == std::type_index(typeid(T))) {
-      return static_cast<T *>(this);
+  template <typename T> typename std::remove_pointer<T>::type *As() {
+    using TD = typename std::remove_pointer<T>::type;
+    if (this->get_format_id() == std::type_index(typeid(TD))) {
+      return static_cast<TD *>(this);
     }
-    throw utils::TypeException(get_format_id().name(), typeid(T).name());
+    throw utils::TypeException(get_format_id().name(), typeid(TD).name());
   }
+
+  //! Templated function that can be used to check the concrete type of this object
+  /*!
+   * \tparam T a concrete format class (for example: CSR<int,int,int>)
+   * \return true if the type of this object is T
+   */
+  template <typename T> bool Is() {
+    using TD = typename std::remove_pointer<T>::type;
+    return this->get_format_id() == std::type_index(typeid(TD));
+  }
+
 };
 
 //! A class derived from the base Format class, mostly used for development
