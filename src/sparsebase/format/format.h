@@ -107,11 +107,11 @@ public:
    * CSR<int,int,int>*)
    */
   template <typename T> typename std::remove_pointer<T>::type *As() {
-    using TD = typename std::remove_pointer<T>::type;
-    if (this->get_format_id() == std::type_index(typeid(TD))) {
-      return static_cast<TD *>(this);
+    using TBase = typename std::remove_pointer<T>::type;
+    if (this->get_format_id() == std::type_index(typeid(TBase))) {
+      return static_cast<TBase *>(this);
     }
-    throw utils::TypeException(get_format_id().name(), typeid(TD).name());
+    throw utils::TypeException(get_format_id().name(), typeid(TBase).name());
   }
 
   //! Templated function that can be used to check the concrete type of this object
@@ -120,8 +120,8 @@ public:
    * \return true if the type of this object is T
    */
   template <typename T> bool Is() {
-    using TD = typename std::remove_pointer<T>::type;
-    return this->get_format_id() == std::type_index(typeid(TD));
+    using TBase = typename std::remove_pointer<T>::type;
+    return this->get_format_id() == std::type_index(typeid(TBase));
   }
 
 };
