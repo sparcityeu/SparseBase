@@ -11,8 +11,10 @@ Hence, any templated class or function you create in SparseBase will require ins
 with the library with the types known at compile time. This is achieved with the script 
 `src/generate_explicit_instantiations.py`.
 
-> Note that this script is not intended to be called manually besides debugging. It will be called automatically
-> by CMake during the configuration step
+```{note}
+This script is not intended to be called manually besides debugging. It will be called automatically
+by CMake during the configuration step.
+```
 
 To add a new instantiation you need to call the following function. Each parameter is explained in its own section.
 
@@ -36,8 +38,10 @@ The following operations will be performed on the template you provide:
 The filename to be used for the output. As per [Google's Style Guide](https://google.github.io/styleguide/cppguide.html),
 the filenames we use end with the `.inc` extension. 
 
-> Caution!!! If the file is being used for the first time you should also call the `reset_file()` function with it.
-> Otherwise you may encounter duplicate instantiation errors
+```{warning}
+If the file is being used for the first time you should also call the `reset_file()` function with it.
+Otherwise you may encounter duplicate instantiation errors
+```
 
 ## Ifdef
 
@@ -60,7 +64,8 @@ By default, the script will put everything in the `output_folder` argument passe
 This optional parameter can be used to override that.
 Generally you will want to use this to open a new folder under `output_folder`.
 
-> Caution!!! Files under different folders are different from each other. And as a result the `reset_file()`
-> function must be called on each file separately. Note that `reset_file()` also takes an optional folder 
-> parameter for this purpose.
-
+```{warning}
+Files under different folders are different from each other. And as a result the `reset_file()`
+function must be called on each file separately. Note that `reset_file()` also takes an optional folder 
+parameter for this purpose.
+```

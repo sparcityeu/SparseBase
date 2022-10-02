@@ -1,8 +1,8 @@
 # Adding New Dependencies
 
 SparseBase contains two different types of dependencies:
-- Required dependencies
-- Optional dependencies
+- Required dependencies.
+- Optional dependencies.
 
 ## Required Dependencies
 
@@ -15,9 +15,11 @@ Currently, for choosing required dependencies we suggest the following options i
 3. Look for UNIX commandline tools
 4. Open a [Github](https://github.com/sparcityeu/sparsebase) issue for discussion
 
-> SparseBase is designed as an HPC library, so you shouldn't be forced to use a header-only solution
-> if it lacks the performance necessary. If this is the case please open an issue on 
-> [Github](https://github.com/sparcityeu/sparsebase) so that we can discuss.
+```{note}
+SparseBase is designed as an HPC library, so you shouldn't be forced to use a header-only solution
+if it lacks the performance necessary. If this is the case please open an issue on 
+[Github](https://github.com/sparcityeu/sparsebase) so that we can discuss.
+```
 
 ### Header Only Dependencies
 
@@ -42,8 +44,10 @@ another can not be directly bundled with SparseBase. Some examples:
 - [METIS](https://github.com/KarypisLab/METIS) (Has some compilation options that are best chosen by the user)
 - [PATOH](https://faculty.cc.gatech.edu/~umit/software.html) (Not open-source)
 
-> If the dependency is header-only we suggest treating it as a required dependency 
-> even if it doesn't have substantial effect on the library
+```{note}
+If the dependency is header-only we suggest treating it as a required dependency 
+even if it doesn't have substantial effect on the library.
+```
 
 Optional dependencies must be build separately by users.
 
@@ -51,32 +55,32 @@ Here are the steps to add an optional dependency:
 
 1. In the `src/CMakeLists.txt` file add a new option in the form `USE_<dependency>`. 
 This will be set by the user to turn the dependency ON or OFF. It should always default to OFF.
-```cmake
-option(USE_METIS "Enable METIS integration" OFF)
-```
+    ```cmake
+    option(USE_METIS "Enable METIS integration" OFF)
+    ```
 
 2. In the same file call the `add_opt_library` macro with the name of the library if it is ON.
 This name should match the library's built file (ie, `lib<name>.so` or `lib<name>.a` etc.)
-```cmake
-if(USE_METIS)
-    add_opt_library("metis")
-endif()
-```
+    ```cmake
+    if(USE_METIS)
+        add_opt_library("metis")
+    endif()
+    ```
 
 3. In the `src/config.h.in` file add `#cmakedefine USE_<dependency>`
-```cpp
-#cmakedefine USE_METIS
-```
+    ```cpp
+    #cmakedefine USE_METIS
+    ```
 
 4. Now the dependency should be accessible. The included files will be in `sparsebase/external/<dependency>`. 
 You should surround every usage with `#ifdef USE_<dependency> ... #endif`.
-```cpp
-#ifdef USE_METIS
+    ```cpp
+    #ifdef USE_METIS
 
-#include "sparsebase/external/metis/metis.h"
+    #include "sparsebase/external/metis/metis.h"
 
-template <typename IDType, typename NNZType, typename ValueType>
-MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){...}
+    template <typename IDType, typename NNZType, typename ValueType>
+    MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){...}
 
-#endif
-```
+    #endif
+    ```
