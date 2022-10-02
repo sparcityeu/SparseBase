@@ -159,7 +159,7 @@ OptimalOrderCSRonCUDAGPUDriver(format::CUDACSR<IDType, NNZType, ValueType> *csr,
 ```
 
 
-Finally, we add the function `OptimallyReorderCUDACSR()` as an implementation inside the `OptimalReorder` class. Note that the function is enclosed in an `#ifdef CUDA` preprocessor block. This will guarantee that it does not get compiled unless compilation of the library with `CUDA` is enabled.
+Finally, we add the function `OptimallyReorderCUDACSR()` as an implementation inside the `OptimalReorder` class. Note that the function is enclosed in an `#ifdef USE_CUDA` preprocessor block. This will guarantee that it does not get compiled unless compilation of the library with `CUDA` is enabled.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
@@ -167,7 +167,7 @@ namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
 class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
 // We do not want the function to be compiled if CUDA isn't enabled
-#ifdef CUDA
+#ifdef USE_CUDA
   static IDType *OptimallyOrderCUDACSR(
       std::vector<format::Format<IDType, NNZType, ValueType> *> input_sf,
       PreprocessParams *poly_params) {
@@ -192,7 +192,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
 
 ### 4. Register the implementations you wrote to the correct formats
 
-Inside the constructor, register the functions you made to the correct `Format` type. Note that registering the `CUDACSR` implementation function is surrounded by an `#ifdef CUDA` block to prevent it from being registered if the library is not compiled with `CUDA` enabled.
+Inside the constructor, register the functions you made to the correct `Format` type. Note that registering the `CUDACSR` implementation function is surrounded by an `#ifdef USE_CUDA` block to prevent it from being registered if the library is not compiled with `CUDA` enabled.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
@@ -205,7 +205,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
     this->RegisterFunction(
         {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
         OptimallyOrderCSR);
-#ifdef CUDA
+#ifdef USE_CUDA
     this->RegisterFunction(
         {format::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()},
         OptimallyOrderCUDACSR);

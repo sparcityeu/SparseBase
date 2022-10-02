@@ -627,7 +627,7 @@ public:
    */
   format::Format *GetJaccardWeights(format::Format *format,
                                     std::vector<context::Context *>, bool convert_input);
-#ifdef CUDA
+#ifdef USE_CUDA
   //! Take a CUDACSR representating a graph and get the Jaccard Weights as a
   //! CUDAArray
   /*!
@@ -826,6 +826,120 @@ protected:
   void Register();
 };
 
+//! An abstract class representing partitioning algorithms.
+/*!
+ * Class that generalizes partitioning algorithms. It defines the API used for
+ * partitioning as well as the return type of partitioning (IDType*).
+ * @tparam IDType  the data type of row and column numbers (vertex IDs in the
+ * case of graphs)
+ */
+template <typename IDType>
+class PartitionPreprocessType : public FunctionMatcherMixin<IDType *> {
+public:
+  PartitionPreprocessType();
+
+  //! Performs a partition operation using the default parameters
+  /*!
+   * @returns An IDType array where the i-th index contains the ID for the partitioning i belongs to
+   */
+  IDType* Partition(format::Format * format, std::vector<context::Context*> contexts, bool convert_input);
+
+  //! Performs a partition operation using the parameters supplied by the user
+  /*!
+   * @returns An IDType array where the i-th index contains the ID for the partitioning i belongs to
+   */
+  IDType* Partition(format::Format *format, PreprocessParams *params,
+                     std::vector<context::Context *> contexts, bool convert_input);
+  virtual ~PartitionPreprocessType();
+};
+
+
+#ifdef USE_METIS
+
+
+//! A wrapper for the METIS partitioner
+/* !
+ * Wraps the METIS partitioner available here: https://github.com/KarypisLab/METIS
+ * The library must be compiled with the USE_METIS option turned on
+ * and the pre-built METIS library should be available.
+ * See the Optional Dependencies page (under Getting Started) in our documentation for more info.
+ * Detailed explanations of the options can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class MetisPartition : public PartitionPreprocessType<IDType> {
+private:
+  static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
+
+public:
+  MetisPartition();
+
+  //! Objectives to be optimized by METIS
+  typedef enum {
+    METIS_OBJTYPE_CUT,
+    METIS_OBJTYPE_VOL,
+    METIS_OBJTYPE_NODE
+  } mobjtype_et;
+
+  //! Partitiong Methods
+  typedef enum {
+    METIS_PTYPE_RB,
+    METIS_PTYPE_KWAY
+  } mptype_et;
+
+  //! Coarsening Schemes
+  typedef enum {
+    METIS_CTYPE_RM,
+    METIS_CTYPE_SHEM
+  } mctype_et;
+
+  //! Determines the algorithm used for initial partitioning
+  typedef enum {
+    METIS_IPTYPE_GROW,
+    METIS_IPTYPE_RANDOM,
+    METIS_IPTYPE_EDGE,
+    METIS_IPTYPE_NODE,
+    METIS_IPTYPE_METISRB
+  } miptype_et;
+
+
+  //! Determines the algorithm used for refinement
+  typedef enum {
+    METIS_RTYPE_FM,
+    METIS_RTYPE_GREEDY,
+    METIS_RTYPE_SEP2SIDED,
+    METIS_RTYPE_SEP1SIDED
+  } mrtype_et;
+
+  //! Parameters for metis partitioning
+  /*!
+   * This struct replaces the options array of METIS
+   * The names of the options are identical to the array
+   * and can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
+   */
+  struct MetisParams : PreprocessParams{
+    int64_t num_partitions = 2;
+    int64_t ptype = METIS_PTYPE_KWAY;
+    int64_t objtype = METIS_OBJTYPE_CUT;
+    int64_t ctype = METIS_CTYPE_RM;
+    int64_t iptype = METIS_IPTYPE_GROW;
+    int64_t rtype = METIS_RTYPE_FM;
+    int64_t ncuts = 1;
+    int64_t nseps = 1;
+    int64_t numbering = 0;
+    int64_t niter = 10;
+    int64_t seed = 42;
+    int64_t minconn = 0;
+    int64_t no2hop = 0;
+    int64_t contig = 0;
+    int64_t compress = 0;
+    int64_t ccorder = 0;
+    int64_t pfactor = 0;
+    int64_t ufactor = 30;
+  };
+};
+#endif
+
+
 class GraphFeatureBase {
 public:
   template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
@@ -935,7 +1049,7 @@ int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "cuda/preprocess.cu"
 #endif
 #endif

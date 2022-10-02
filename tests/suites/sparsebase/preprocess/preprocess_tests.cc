@@ -750,7 +750,7 @@ TEST(PermuteTest, NoConversionNoParamCached) {
   ASSERT_EQ(std::get<0>(transformed_output)[0], nullptr);
 }
 
-#ifndef CUDA
+#ifndef USE_CUDA
 TEST(JaccardTest, NoCuda) {
   sparsebase::preprocess::JaccardWeights<int, int, int, float> jac;
   EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, true),
