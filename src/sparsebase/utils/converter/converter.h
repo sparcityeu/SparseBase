@@ -13,7 +13,7 @@
 #include <functional>
 #include <tuple>
 #include <unordered_map>
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/utils/converter/cuda/converter.cuh"
 #endif
@@ -207,7 +207,7 @@ public:
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/utils/converter/converter.cc"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "cuda/converter.cu"
 #endif
 #endif

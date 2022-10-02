@@ -627,7 +627,7 @@ public:
    */
   format::Format *GetJaccardWeights(format::Format *format,
                                     std::vector<context::Context *>, bool convert_input);
-#ifdef CUDA
+#ifdef USE_CUDA
   //! Take a CUDACSR representating a graph and get the Jaccard Weights as a
   //! CUDAArray
   /*!
@@ -1050,7 +1050,7 @@ template <typename IDType> class PermuteOrderOne<IDType, void>{};
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "cuda/preprocess.cu"
 #endif
 #endif
