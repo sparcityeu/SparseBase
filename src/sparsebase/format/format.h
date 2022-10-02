@@ -37,8 +37,9 @@ enum Ownership {
 
 template <typename T> struct Deleter {
   void operator()(T *obj) {
-    if (obj != nullptr)
-      delete obj;
+    if constexpr (!std::is_same_v<T, void>)
+      if (obj != nullptr)
+        delete obj;
   }
 };
 
@@ -233,9 +234,9 @@ public:
   virtual bool ValsIsOwned();
 
 protected:
-  std::unique_ptr<IDType[], std::function<void(IDType *)>> col_;
-  std::unique_ptr<IDType[], std::function<void(IDType *)>> row_;
-  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+  std::unique_ptr<IDType, std::function<void(IDType *)>> col_;
+  std::unique_ptr<IDType, std::function<void(IDType *)>> row_;
+  std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
 //! One dimensional Format class that wraps a native C++ array
@@ -262,7 +263,7 @@ public:
   virtual bool ValsIsOwned();
 
 protected:
-  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+  std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
 //! Compressed Sparse Row Sparse Data Format
@@ -309,9 +310,9 @@ public:
   virtual bool ValsIsOwned();
 
 protected:
-  std::unique_ptr<NNZType[], std::function<void(NNZType *)>> row_ptr_;
-  std::unique_ptr<IDType[], std::function<void(IDType *)>> col_;
-  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+  std::unique_ptr<NNZType, std::function<void(NNZType *)>> row_ptr_;
+  std::unique_ptr<IDType, std::function<void(IDType *)>> col_;
+  std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
 //! Compressed Sparse Column Sparse Data Format
@@ -358,9 +359,9 @@ public:
   virtual bool ValsIsOwned();
 
 protected:
-  std::unique_ptr<NNZType[], std::function<void(NNZType *)>> col_ptr_;
-  std::unique_ptr<IDType[], std::function<void(IDType *)>> row_;
-  std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
+  std::unique_ptr<NNZType, std::function<void(NNZType *)>> col_ptr_;
+  std::unique_ptr<IDType, std::function<void(IDType *)>> row_;
+  std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
 } // namespace format
@@ -406,7 +407,6 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
                actual_context, is_move_conversion)
       ->template As<ToType<IDType, NNZType, ValueType>>();
 }
-
 } // namespace format
 
 } // namespace sparsebase

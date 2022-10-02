@@ -173,7 +173,7 @@ Currently two sparse data formats are supported:
 - CSR (Compressed Sparse Row)
 
 In the code snippet below you can see the creation of a CSR type object 
-which only contains connectivity information. As a result the value parameter is set to nullptr
+which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
 ```cpp
 unsigned int row_ptr[4] = {0, 2, 3, 4};
 unsigned int col[4] = {1, 2, 0, 0};
@@ -182,15 +182,10 @@ unsigned int col[4] = {1, 2, 0, 0};
 // First is IDType which is related to the size of the dimensions
 // Second is NumNonZerosType which is related to the number of non-zeros stored
 // Third is ValueType which determines the type of the stored values
-sparsebase::format::CSR<unsigned int, unsigned int, unsigned int> csr(3, 3, row_ptr, col, nullptr);
+sparsebase::format::CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
-> In the example, we are not using any values but we still set the ValueType parameter to ``unsigned int``.
-> Due to how the internal memory management system works, these types can not be set to ``void``.
-> In this case, the actual type used does not matter as long as it is one of the supported types.
-
-
-In the code snippet below you can see the creation of a COO type object which also contains value information.
+In the code snippet below you can see the creation of a COO type object also contains value information.
 
 ```cpp
 int row[6] = {0, 0, 1, 1, 2, 2};
