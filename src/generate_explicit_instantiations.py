@@ -39,7 +39,7 @@ def reset_file(filename, folder=output_folder):
     out.close()
 
 
-def gen_inst(template, filename, ifdef=None, folder=output_folder):
+def gen_inst(template, filename, is_class=True, ifdef=None, folder=output_folder):
 
     out = sys.stdout
     if not dry_run:
@@ -61,7 +61,11 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder):
 
         if key not in already_added:
             already_added.add(key)
-            out.write("template class " + inst + ";\n")
+            if is_class:
+                out.write("template class " + inst + ";\n")
+            else:
+                out.write("template  " + inst + ";\n")
+
 
     if ifdef is not None:
         out.write("#endif\n")
@@ -84,13 +88,13 @@ gen_inst("Array<$id_type>", "format.inc")
 # Format (CUDA)
 reset_file("format.inc", cuda_output_folder)
 gen_inst("CUDACSR<$id_type, $nnz_type, $value_type>", "format.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
+         ifdef="USE_CUDA", folder=cuda_output_folder)
 gen_inst("CUDAArray<$value_type>", "format.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
+         ifdef="USE_CUDA", folder=cuda_output_folder)
 gen_inst("CUDAArray<$id_type>", "format.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
+         ifdef="USE_CUDA", folder=cuda_output_folder)
 gen_inst("CUDAArray<$nnz_type>", "format.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
+         ifdef="USE_CUDA", folder=cuda_output_folder)
 
 
 # Object
@@ -116,16 +120,16 @@ order_one_functions = ['CUDAArrayArrayConditionalFunction',
                        'ArrayCUDAArrayConditionalFunction']
 
 for func in order_two_functions:
-    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc",
-             ifdef="CUDA", folder=cuda_output_folder)
+    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc", is_class=False,
+             ifdef="USE_CUDA", folder=cuda_output_folder)
 
 for func in order_one_functions:
-    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
-    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
-    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc",
-         ifdef="CUDA", folder=cuda_output_folder)
+    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc", is_class=False,
+         ifdef="USE_CUDA", folder=cuda_output_folder)
+    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc", is_class=False,
+         ifdef="USE_CUDA", folder=cuda_output_folder)
+    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc", is_class=False,
+         ifdef="USE_CUDA", folder=cuda_output_folder)
 
 
 
@@ -180,7 +184,8 @@ gen_inst("PartitionPreprocessType<$id_type>", "preprocess.inc")
 # Preprocess (CUDA)
 reset_file("preprocess.inc", cuda_output_folder)
 gen_inst("format::cuda::CUDAArray<$float_type>* "
-         + "RunJaccardKernel(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
+         + "RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
          "preprocess.inc",
+         is_class=False,
          ifdef="USE_CUDA",
          folder=cuda_output_folder)

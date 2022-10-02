@@ -1,7 +1,7 @@
 #include "preprocess.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "sparsebase/preprocess/cuda/preprocess.cuh"
 #endif
 #include <iostream>
@@ -706,7 +706,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
-#ifdef CUDA
+#ifdef USE_CUDA
   std::vector<std::type_index> formats = {
       format::cuda::CUDACSR<IDType, NNZType,
                             ValueType>::get_format_id_static()};
@@ -726,7 +726,7 @@ JaccardWeights<IDType, NNZType, ValueType, FeatureType>::GetJaccardWeights(
   return this->Execute(nullptr, (this->sc_.get()), contexts, convert_input,
                        format); // func(sfs, this->params_.get());
 }
-#ifdef CUDA
+#ifdef USE_CUDA
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 format::Format *
