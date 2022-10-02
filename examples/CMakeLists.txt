@@ -6,11 +6,11 @@ configure_file(
 
 file(COPY ${CMAKE_SOURCE_DIR}/examples/data DESTINATION ${CMAKE_BINARY_DIR}/examples/)
 
-if (${CUDA})
+if (${USE_CUDA})
   add_subdirectory(cuda_example)
   add_subdirectory(array_example)
 endif()
-if(NOT ${_HEADER_ONLY} OR NOT ${CUDA})
+if(NOT ${_HEADER_ONLY} OR NOT ${USE_CUDA})
   add_subdirectory(csr_coo)
   add_subdirectory(degree_order)
   add_subdirectory(custom_order)

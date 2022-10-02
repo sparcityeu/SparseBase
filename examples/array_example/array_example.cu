@@ -37,7 +37,7 @@ int main() {
                              cuda_array->get_dimensions()[0]);
   cudaDeviceSynchronize();
 
-  auto cpu_array->Convert<format::Array>(&cpu_context);
+  auto cpu_array = cuda_array->Convert<format::Array>(&cpu_context);
 
   print_array(cpu_array->get_vals(), cuda_array->get_dimensions()[0]);
 
