@@ -412,7 +412,7 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/format/format.cc"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "cuda/format.cu"
 #endif
 #endif

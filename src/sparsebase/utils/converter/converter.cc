@@ -1,5 +1,5 @@
-#include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
 #include <iostream>
 #include <set>
 
@@ -272,7 +272,7 @@ Converter *ConverterOrderOne<ValueType>::Clone() const {
 }
 
 template <typename ValueType> void ConverterOrderOne<ValueType>::Reset() {
-#ifdef CUDA
+#ifdef USE_CUDA
   this->RegisterConditionalConversionFunction(
       Array<ValueType>::get_format_id_static(),
       format::cuda::CUDAArray<ValueType>::get_format_id_static(),
@@ -318,7 +318,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *) -> bool { return true; });
-#ifdef CUDA
+#ifdef USE_CUDA
   this->RegisterConditionalConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
