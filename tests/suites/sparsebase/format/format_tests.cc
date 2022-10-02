@@ -434,3 +434,30 @@ TEST(CSR, Sort) {
     EXPECT_EQ(csr3.get_col()[i], csr_col[i]);
   }
 }
+
+TEST(Format, Is){
+  int *new_csr_row_ptr = new int[5];
+  int *new_csr_col = new int[4];
+  int *new_csr_vals = new int[4];
+  std::copy(csr_row_ptr, csr_row_ptr + 5, new_csr_row_ptr);
+  std::copy(csr_col, csr_col + 4, new_csr_col);
+  std::copy(csr_vals, csr_vals + 4, new_csr_vals);
+
+  // Construct an owned CSR
+  auto *csr = new sparsebase::format::CSR<int, int, int>(
+      4, 4, new_csr_row_ptr, new_csr_col, new_csr_vals,
+      sparsebase::format::kOwned);
+
+  bool res = csr->Is<format::CSR<int,int,int>>();
+  EXPECT_TRUE(res);
+  res = csr->Is<format::CSR<int,int,int>*>();
+  EXPECT_TRUE(res);
+
+  res = csr->Is<format::COO<int,int,int>>();
+  EXPECT_FALSE(res);
+  res = csr->Is<format::CSR<int,int,float>>();
+  EXPECT_FALSE(res);
+
+  delete csr;
+}
+
