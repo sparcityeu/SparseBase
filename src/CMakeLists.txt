@@ -14,7 +14,7 @@ if(NOT ${_HEADER_ONLY})
     --value-types ${VALUE_TYPES_JOINED} 
     --float-types ${FLOAT_TYPES_JOINED}
     --pigo ${USE_PIGO}
-    --cuda ${CUDA}
+    --cuda ${USE_CUDA}
     --output-folder ${PROJECT_BINARY_DIR}/init)
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
@@ -27,7 +27,7 @@ if(NOT ${_HEADER_ONLY})
     sparsebase/feature/feature.cc
     sparsebase/utils/io/writer.cc
   )
-  if (${CUDA})
+  if (${USE_CUDA})
 
     set(LIB_FILES ${LIB_FILES}
       sparsebase/format/cuda/format.cu
@@ -217,7 +217,7 @@ install(FILES
   sparsebase/external/json/json.hpp
   DESTINATION include/sparsebase/external/json/)
 
-if(${CUDA})
+if(${USE_CUDA})
   set(CUDA_FORMAT_FILES
     sparsebase/format/cuda/format.cuh)
   set(CUDA_CONVERTER_FILES
