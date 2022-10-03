@@ -31,7 +31,7 @@ If you are new to the project, we suggest starting here: :doc:`pages/getting_sta
    :maxdepth: 2
 
 
-   pages/getting_started
+   pages/getting_started/index
    pages/tutorials/index
    pages/explanations/index
    pages/how_to_guides/index
