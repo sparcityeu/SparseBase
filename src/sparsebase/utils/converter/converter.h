@@ -41,6 +41,8 @@ namespace utils {
 
 namespace converter {
 
+
+
 //! A conversion schema is a way to store a conversion to a particular type and
 //! context
 typedef std::vector<std::tuple<bool, std::type_index, context::Context *>>
@@ -189,6 +191,7 @@ public:
   virtual Converter *Clone() const;
   virtual void Reset();
 };
+
 
 //! An instance of this class can be used to convert between order one formats
 //! (Array)

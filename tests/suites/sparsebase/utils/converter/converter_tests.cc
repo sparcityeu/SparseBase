@@ -311,3 +311,136 @@ TEST(Converter, ClearingASingleDirection){
           &cpu_context)),
       nullptr);
 }
+
+#define MATCH_CHECKING_ONEVAL(T1, T2, val) \
+  EXPECT_TRUE(format::isTypeConversionSafe((T1)(val), (T2)(val))); \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(val), (T1)(val))); \
+  if ((val)!=0) {                           \
+    EXPECT_FALSE(format::isTypeConversionSafe((T1)(-(val)), (T2)(val)));  \
+  EXPECT_FALSE(format::isTypeConversionSafe((T1)((val)), (T2)(-(val)))); \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-(val)), (T1)(val)));  \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)((val)), (T1)(-(val))));  \
+}
+#define MATCH_CHECKING_SIGNED_MISMATCH(T1, T2) \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-1), (T1)(-1))); \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-1.5), (T1)(-1.5)));
+
+#define MATCH_CHECKING_SIGNED_MATCH(T1, T2) \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(-1), (T1)(-1))); \
+  if constexpr (std::is_integral_v<T1> == std::is_integral_v<T2>) EXPECT_TRUE(format::isTypeConversionSafe((T2)(-2.5), (T1)(-2.5)));
+
+#define MATCH_CHECKING_INT_FLOAT_MISMATCH(T1, T2) \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-3.5), (T1)(-3.5))); \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(4.5), (T1)(4.5)));
+
+#define MATCH_CHECKING_INT_FLOAT_MATCH(T1, T2) \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(-5.5), (T1)(-5.5))); \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(6.5), (T1)(6.5)));
+
+#include <limits>
+#include <stdint.h>
+#define MATCH_CHECK_ALL_CASES(T1, T2) \
+  MATCH_CHECKING_ONEVAL(T1, T2, 0) \
+  MATCH_CHECKING_ONEVAL(T1, T2, 1)    \
+  if constexpr (std::is_integral_v<T1>) { \
+    if constexpr (std::is_signed_v<T1>) {  \
+      if constexpr (std::is_integral_v<T2>) {                                 \
+        if constexpr (std::is_signed_v<T2>) EXPECT_TRUE(format::isTypeConversionSafe((T1)(-1), (T2)(-1))); \
+        else EXPECT_FALSE(format::isTypeConversionSafe((T1)(-1), (T2)(-1)));                             \
+      } else {                          \
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(2), (T2)(2))); \
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(-2), (T2)(-2))); \
+      }                               \
+    } else {                          \
+        \
+    }                                    \
+  } else {                            \
+    if constexpr (std::is_integral_v<T2>){\
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(1.5), (T2)(1.5)));                                  \
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(3), (T2)(3)));                                  \
+      if constexpr (std::is_signed_v<T2>){\
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(-1.5), (T2)(-1.5)));                                  \
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(-3), (T2)(-3)));                                  \
+      } else {                        \
+        EXPECT_FALSE(format::isTypeConversionSafe((T1)(-3), (T2)(-3)));                                  \
+      }                                  \
+    }                                     \
+  }                                   \
+  if constexpr (std::is_floating_point_v<T2> == false) {                                     \
+    if constexpr (std::is_integral_v<T1> == true && std::is_integral_v<T2> == true) {                                    \
+      if constexpr (std::is_floating_point_v<T1> == false && std::uintmax_t(std::numeric_limits<T1>::max()) > std::uintmax_t(std::numeric_limits<T2>::max())) {  \
+      EXPECT_FALSE(format::isTypeConversionSafe((T1)(std::numeric_limits<T2>::max() + (unsigned long long)1), (T2)((unsigned long long)std::numeric_limits<T2>::max() + (unsigned long long)1)));} \
+      {                                   \
+        const intmax_t botT1 = std::numeric_limits<T1>::min(); \
+        const intmax_t botT2 = std::numeric_limits<T2>::min(); \
+        if (botT1 < botT2) {            \
+          if constexpr (!std::is_same_v<signed long long, T2>)                              \
+            EXPECT_FALSE(format::isTypeConversionSafe((T1)(botT2 - 1), (T2)(botT2 - 1)));}\
+      }\
+    }                                   \
+  }                                    \
+  if constexpr (!std::is_integral_v<T1> && !std::is_integral_v<T2>) {\
+    if constexpr (double(std::numeric_limits<T1>::max()) > double(std::numeric_limits<T2>::max())) {  \
+    EXPECT_FALSE(format::isTypeConversionSafe(((T1)(T1)std::numeric_limits<T2>::max() * (T1)2), (T2)(std::numeric_limits<T2>::max() * (T1)2)));} \
+      const double botT1 = double(-(std::numeric_limits<T1>::max())); \
+      const double botT2 = double(-(std::numeric_limits<T2>::max())); \
+      if constexpr (!std::is_same_v<double, T2>)                              \
+        if (botT1 < botT2) {      \
+          EXPECT_FALSE(format::isTypeConversionSafe((T1)(botT2 * 2), (T2)(botT2 * 2)));}                         \
+   }
+  //} else if constexpr (std::is_integral_v<T1> && !std::is_integral_v<T2>) {\
+  //  if constexpr (double(std::numeric_limits<T1>::max()) > double(std::numeric_limits<T2>::max())) {  \
+  //  EXPECT_FALSE(format::isTypeConversionSafe(((T1)std::numeric_limits<T2>::max() + (T1)1), std::numeric_limits<T2>::max() + //(T2)1));} \
+  //    const intmax_t botT1 = []() {if constexpr (std::is_floating_point_v<T1>) return intmax_t(-(std::numeric_limits<T1>::max())); //else return intmax_t(std::numeric_limits<T1>::min());}(); \
+  //    const double botT2 = []() {if constexpr (std::is_floating_point_v<T2>) return double(-(std::numeric_limits<T2>::max())); else //return double(std::numeric_limits<T2>::min());}(); \
+  //    if constexpr (!std::is_same_v<double, T2>)                              \
+  //      if (double(botT1) < botT2) {      \
+  //        EXPECT_FALSE(format::isTypeConversionSafe(botT2 - 1, (T2)(botT2 - 1)));}\
+  //} else if constexpr (!std::is_integral_v<T1> && !std::is_integral_v<T2>) {\
+  //  if constexpr (double(std::numeric_limits<T1>::max()) > double(std::numeric_limits<T2>::max())) {  \
+  //  EXPECT_FALSE(format::isTypeConversionSafe(((T1)std::numeric_limits<T2>::max() + (T1)1), std::numeric_limits<T2>::max() + //(T2)1));} \
+  //    const double botT1 = []() {if constexpr (std::is_floating_point_v<T1>) return double(-(std::numeric_limits<T1>::max())); else //return double(std::numeric_limits<T1>::min());}(); \
+      const double botT2 = []() {if constexpr (std::is_floating_point_v<T2>) return double(-(std::numeric_limits<T2>::max())); else return double(std::numeric_limits<T2>::min());}(); \
+      if constexpr (!std::is_same_v<double, T2>)                              \
+        if (double(botT1) < botT2) {      \
+          EXPECT_FALSE(format::isTypeConversionSafe(botT2 - 1, (T2)(botT2 - 1)));}\
+  }\
+
+#define MATCH_CHECK_ALL_TYPES_INTEGRAL(T1) \
+  MATCH_CHECK_ALL_CASES(T1,char) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned char) \
+  MATCH_CHECK_ALL_CASES(T1,short) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned short) \
+  MATCH_CHECK_ALL_CASES(T1,int) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned int) \
+  MATCH_CHECK_ALL_CASES(T1,long long) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned long long) \
+
+#define MATCH_CHECK_ALL_TYPES_FLOATING_POINT(T1) \
+  MATCH_CHECK_ALL_CASES(T1,float) \
+  MATCH_CHECK_ALL_CASES(T1,double)
+
+TEST(isTypeConversionSafe, TypeConversions){
+  // int to int
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(char);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned char);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(short);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned short);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(int);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned int);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(long long);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned long long);
+  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(float);
+  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(double);
+  // int to float
+
+  // float to int
+
+  // float to float
+
+}
+TEST(FormatOrderTwoTypeConversion, CSR){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  (&csr)->Convert<format::CSR, int, int, unsigned int>(false);
+}
