@@ -25,6 +25,112 @@ namespace sparsebase {
 
 namespace format {
 
+//TODO: move to utils
+// Thanks to artificial mind blog: https://artificial-mind.net/blog/2020/10/03/always-false
+template <typename ... T>
+constexpr bool always_false = false;
+
+#include <limits>
+#include <stdint.h>
+
+using std::numeric_limits;
+
+// Cross float-integral type conversion is not currently available
+template <typename T, typename U>
+bool CanTypeFitValue(const U value) {
+  if constexpr (std::is_integral_v<T> != std::is_integral_v<U>) return false;
+  if constexpr (std::is_integral_v<T> && std::is_integral_v<U> ) {
+    const intmax_t botT = []() {
+      if constexpr (std::is_floating_point_v<T>)
+        return intmax_t(-(numeric_limits<T>::max()));
+      else
+        return intmax_t(numeric_limits<T>::min());
+    }();
+    const intmax_t botU = []() {
+      if constexpr (std::is_floating_point_v<U>)
+        return intmax_t(-(numeric_limits<U>::max()));
+      else
+        return intmax_t(numeric_limits<U>::min());
+    }();
+    const uintmax_t topT = uintmax_t(numeric_limits<T>::max());
+    const uintmax_t topU = uintmax_t(numeric_limits<U>::max());
+    return !((botT > botU && value < (U)(botT)) ||
+             (topT < topU && value > (U)(topT)));
+  } else if constexpr(!std::is_integral_v<T> && !std::is_integral_v<U> ) {
+    const double botT = []() {
+      if constexpr (std::is_floating_point_v<T>)
+        return T(-(numeric_limits<T>::max()));
+      else
+        return T(numeric_limits<T>::min());
+    }();
+    const double botU = []() {
+      if constexpr (std::is_floating_point_v<U>)
+        return U(-(numeric_limits<U>::max()));
+      else
+        return U(numeric_limits<U>::min());
+    }();
+    const double topT = numeric_limits<T>::max();
+    const double topU = numeric_limits<U>::max();
+    return !((botT > botU && value < (U)(botT)) ||
+             (topT < topU && value > (U)(topT)));
+  }
+  //} else if constexpr (std::is_integral_v<T> && !std::is_integral_v<U> ){
+  //  const double topT = double(numeric_limits<T>::max());
+  //  const uintmax_t topU = uintmax_t(numeric_limits<U>::max());
+  //  const double botT = []() {
+  //    if constexpr (std::is_floating_point_v<T>)
+  //      return double(-(numeric_limits<T>::max()));
+  //    else
+  //      return double(numeric_limits<T>::min());
+  //  }();
+  //  const intmax_t botU = []() {
+  //    if constexpr (std::is_floating_point_v<U>)
+  //      return intmax_t(-(numeric_limits<U>::max()));
+  //    else
+  //      return intmax_t(numeric_limits<U>::min());
+  //  }();
+  //  return !(double(topU) > topT && double(value) > topT) || !(double(botU) < botT && double(value) > topT);
+  //} else {
+  //  const uintmax_t topT = uintmax_t(numeric_limits<T>::max());
+  //  const double topU = double(numeric_limits<U>::max());
+  //  const intmax_t botT = []() {
+  //    if constexpr (std::is_floating_point_v<T>)
+  //      return intmax_t(-(numeric_limits<T>::max()));
+  //    else
+  //      return intmax_t(numeric_limits<T>::min());
+  //  }();
+  //  const double botU = []() {
+  //    if constexpr (std::is_floating_point_v<U>)
+  //      return double(-(numeric_limits<U>::max()));
+  //    else
+  //      return double(numeric_limits<U>::min());
+  //  }();
+  //  return !(topU > double(topT) && value > double(topT)) || !(botU < double(botT) && value > double(topT));
+  //}
+}
+
+//TODO: move to utils
+template <typename FromType, typename ToType>
+inline bool isTypeConversionSafe(FromType from_val, ToType to_val) {
+  return from_val == to_val && CanTypeFitValue<ToType>(from_val);
+}
+
+template <typename ToType, typename FromType, typename SizeType>
+ToType *ConvertArrayType(FromType *from_ptr, SizeType size) {
+  if (from_ptr == nullptr) return nullptr;
+  auto to_ptr = new ToType[size];
+  for (SizeType i = 0; i < size; i++){
+    to_ptr[i] = from_ptr[i];
+    if (!isTypeConversionSafe(from_ptr[i], to_ptr[i])) {
+      throw utils::TypeException(
+          "Could not convert array from type " +
+          std::string(std::type_index(typeid(FromType)).name()) + " to type " +
+          std::string(std::type_index(typeid(ToType)).name()) + ". Overflow detected");
+    }
+  }
+  return to_ptr;
+}
+
 //! Enum depicting the ownership status of a Format instance
 enum Ownership {
   //! When used the arrays are owned by the user (Format instance is not
@@ -200,6 +306,19 @@ class FormatOrderTwo
     template <template <typename, typename, typename> class ToType>
     ToType<IDType, NNZType, ValueType> *
     Convert(context::Context *to_context=nullptr, bool is_move_conversion = false);
+
+
+  template <template <typename, typename, typename> class ToType, typename ToIDType, typename ToNNZType, typename ToValueType>
+  ToType<ToIDType, ToNNZType, ToValueType> *
+  Convert(bool is_move_conversion = false);
+  template <template <typename, typename, typename> class ToType,
+      typename ToIDType, typename ToNNZType, typename ToValueType>
+  struct TypeConverter{
+    ToType<ToIDType, ToNNZType, ToValueType>* operator()(FormatOrderTwo<IDType, NNZType, ValueType>*){
+      static_assert(always_false<ToIDType>, "Cannot do type conversion for the requested type. Throw a rock through one of our devs' windows");
+    }
+  };
+
 };
 
 //! Coordinate List Sparse Data Format
@@ -375,6 +494,20 @@ protected:
   std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
 };
 
+template <typename IDType, typename NNZType, typename ValueType>
+template <typename ToIDType, typename ToNNZType, typename ToValueType>
+struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
+    <CSR, ToIDType, ToNNZType, ToValueType> {
+  CSR<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source) {
+    CSR<IDType, NNZType, ValueType>* csr = source->template As<CSR<IDType, NNZType, ValueType>>();
+    auto dims = csr->get_dimensions();
+    auto num_nnz = csr->get_num_nnz();
+    ToNNZType * new_row_ptr = ConvertArrayType<ToNNZType>(csr->get_row_ptr(), dims[0] + 1);
+    ToIDType * new_col = ConvertArrayType<ToIDType>(csr->get_col(), num_nnz);
+    ToValueType * new_vals = ConvertArrayType<ToValueType>(csr->get_vals(), num_nnz);
+    return new CSR<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], new_row_ptr, new_col, new_vals, kOwned);
+  }
+};
 } // namespace format
 
 } // namespace sparsebase
@@ -417,6 +550,17 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
       .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                actual_context, is_move_conversion)
       ->template As<ToType<IDType, NNZType, ValueType>>();
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+template <template <typename, typename, typename> class ToType, typename ToIDType, typename ToNNZType, typename ToValueType>
+ToType<ToIDType, ToNNZType, ToValueType> *
+FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
+  static_assert(
+      std::is_base_of<format::FormatOrderTwo<ToIDType, ToNNZType, ToValueType>,
+          ToType<ToIDType, ToNNZType, ToValueType>>::value,
+      "T must be an order two format");
+  return TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(this);
 }
 
 } // namespace format

@@ -20,7 +20,6 @@ Converter::get_conversion_map(bool is_move_conversion) {
 }
 
 
-
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCscFunctionConditional(Format *source, context::Context *context) {
   auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
