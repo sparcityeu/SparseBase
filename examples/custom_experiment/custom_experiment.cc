@@ -16,57 +16,65 @@ using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = unsigned int;
 
+#define NUM_RUNS 1
+
+// create custom dataLoader
+unordered_map<string, Format*> get_data_f( string & file_name ) {
+  CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name)
+      .ReadCSR();
+  unordered_map<string, Format*> r;
+  r.emplace("graph", csr);
+  return r;
+};
+
+// create custom preprocess function
+void preprocess_f(unordered_map<string, Format*> & data) {
+  context::CPUContext cpu_context;
+  auto perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
+  auto A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
+  //auto *A_csr = A_reordered->Convert<CSR>();
+  data.emplace("ordered", A_reordered);
+};
+
+// kernel function is always provided by the user
+// this kernel carries out an spmv
+std::any kernel_f(unordered_map<string, Format*> & data, std::any params) {
+  auto v = any_cast<double*>(params);
+  auto spm = data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>();
+  auto dimensions = spm->get_dimensions();
+  auto num_rows = dimensions[0];
+  auto rows = spm->get_row_ptr();
+  auto cols = spm->get_col();
+
+  auto * res = new double[num_rows];
+  for(unsigned int i = 0; i < num_rows; i++){
+    double s = 0;
+    for(unsigned int j = rows[i]; j < rows[i+1]; j++){
+      auto idx = cols[j];
+      s += v[idx];
+    }
+    res[i] = s;
+  }
+
+  return res;
+};
+
 int main(int argc, char **argv){
 
   experiment::ConcreteExperiment exp;
-  auto get_data_f = [] ( string file_name ) {
-    CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name)
-        .ReadCSR();
-    unordered_map<string, Format*> r;
-    r.emplace("graph", csr);
-    auto format = csr->get_format_id();
-    auto dimensions = csr->get_dimensions();
-    auto row_ptr2 = csr->get_row_ptr();
-    auto col2 = csr->get_col();
-    auto vals = csr->get_vals();
-    cout << "Format: " << format.name() << endl;
-    cout << "# of dimensions: " << dimensions.size() << endl;
-    for (int i = 0; i < dimensions.size(); i++) {
-      cout << "Dim " << i << " size " << dimensions[i] << endl;
-    }
-    return r;
-  };
   string file_name = argv[1];
-  auto data = get_data_f(file_name);
+  // add custom dataLoader
   exp.AddDataLoader(get_data_f, {file_name});
-
-  auto preprocess_f = [] (unordered_map<string, Format*> data) {
-    cout << "PREPROCESS LAMBDA FUNCTION!!" << endl;
-    unordered_map<string, Format*> r;
-    context::CPUContext cpu_context;
-    auto *perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
-    //r.emplace("permutation", perm);
-    auto * A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
-    auto *A_csc = A_reordered->Convert<CSR>();
-    r.emplace("ordered", A_csc);
-    return r;
-  };
-  data = preprocess_f(data);
+  // add custom preprocessing
   exp.AddPreprocess(preprocess_f);
 
-  auto kernel_f = [] (unordered_map<string, Format*> data) {
-    cout << "DO WHATEVER YOU WANT WITH DATA!!!" << endl;
-    context::CPUContext cpu_context;
-    auto *perm = ReorderBase::Reorder<RCMReorder>({}, data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
-    auto * A_reordered = ReorderBase::Permute2D<CSR>(perm, data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
-    auto * A_csc = A_reordered->Convert<CSC>();
-    std::any rt = A_csc;
-    return rt;
-  };
-  auto r = kernel_f(data);
-  exp.AddKernel(kernel_f);
-  exp.AddKernel(kernel_f);
-  exp.Run(2);
+  auto v = new double[958];
+  std::fill_n(v, 958, 1);
+  // since the vector is all 1s, this kernel calculates the number of nnz per row
+  exp.AddKernel(kernel_f, v);
+
+  exp.Run(NUM_RUNS);
+
   std::vector<std::any> res = exp.GetResults();
   cout << "Size = " << res.size() << endl;
   auto secs = exp.GetRunTimes();
