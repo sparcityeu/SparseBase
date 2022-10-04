@@ -289,6 +289,16 @@ class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Fo
     template <template <typename> typename ToType>
     ToType<ValueType> *Convert(context::Context *to_context=nullptr,
                                bool is_move_conversion = false);
+
+  template <template <typename> typename ToType, typename ToValueType>
+  ToType<ToValueType> *Convert(bool is_move_conversion = false);
+
+    template <template <typename> typename ToType, typename ToValueType>
+    struct TypeConverter {
+      ToType<ToValueType> * operator()(FormatOrderOne<ValueType>*){
+        static_assert(always_false<ToValueType>, "Cannot do type conversion for the requested type. Throw a rock through one of our devs' windows");
+      }
+    };
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
@@ -508,6 +518,45 @@ struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
     return new CSR<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], new_row_ptr, new_col, new_vals, kOwned);
   }
 };
+template <typename IDType, typename NNZType, typename ValueType>
+template <typename ToIDType, typename ToNNZType, typename ToValueType>
+struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
+    <CSC, ToIDType, ToNNZType, ToValueType> {
+  CSC<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source) {
+    CSC<IDType, NNZType, ValueType>* csc = source->template As<CSC<IDType, NNZType, ValueType>>();
+    auto dims = csc->get_dimensions();
+    auto num_nnz = csc->get_num_nnz();
+    ToNNZType * new_col_ptr = ConvertArrayType<ToNNZType>(csc->get_col_ptr(), dims[0] + 1);
+    ToIDType * new_row = ConvertArrayType<ToIDType>(csc->get_row(), num_nnz);
+    ToValueType * new_vals = ConvertArrayType<ToValueType>(csc->get_vals(), num_nnz);
+    return new CSC<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], new_col_ptr, new_row, new_vals, kOwned);
+  }
+};
+template <typename IDType, typename NNZType, typename ValueType>
+template <typename ToIDType, typename ToNNZType, typename ToValueType>
+struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
+    <COO, ToIDType, ToNNZType, ToValueType> {
+  COO<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source) {
+    COO<IDType, NNZType, ValueType>* coo = source->template As<COO<IDType, NNZType, ValueType>>();
+    auto dims = coo->get_dimensions();
+    auto num_nnz = coo->get_num_nnz();
+    ToIDType * new_col = ConvertArrayType<ToIDType>(coo->get_col(), num_nnz);
+    ToIDType * new_row = ConvertArrayType<ToIDType>(coo->get_row(), num_nnz);
+    ToValueType * new_vals = ConvertArrayType<ToValueType>(coo->get_vals(), num_nnz);
+    return new COO<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], num_nnz, new_row, new_col, new_vals, kOwned);
+  }
+};
+
+template <typename ValueType>
+template <typename ToValueType>
+struct FormatOrderOne<ValueType>::TypeConverter<format::Array, ToValueType> {
+  format::Array<ToValueType> * operator()(FormatOrderOne<ValueType>* source){
+    auto arr = source->template As<format::Array<ValueType>>();
+    auto num_nnz = arr->get_num_nnz();
+    ToValueType * new_vals = ConvertArrayType<ToValueType>(arr->get_vals(), num_nnz);
+    return new Array<ToValueType>(num_nnz, new_vals, kOwned);
+  }
+};
 } // namespace format
 
 } // namespace sparsebase
@@ -531,6 +580,28 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
       .Convert(this, ToType<ValueType>::get_format_id_static(), actual_context,
                is_move_conversion)
       ->template As<ToType<ValueType>>();
+}
+template <typename ValueType>
+template <template <typename> typename ToType, typename ToValueType>
+ToType<ToValueType> *FormatOrderOne<ValueType>::Convert(bool is_move_conversion){
+  static_assert(
+      std::is_base_of<format::FormatOrderOne<ToValueType>,
+          ToType<ToValueType>>::value,
+      "T must be an order one format");
+
+  utils::converter::ConverterOrderOne<ValueType> converter;
+  if (this->get_format_id() != ToType<ValueType>::get_format_id_static()) {
+    auto converted_format =
+    converter.template Convert<ToType<ValueType>>(
+        this, this->get_context(), is_move_conversion);
+    auto type_converted_format =
+        TypeConverter<ToType, ToValueType>()(
+            converted_format);
+    delete converted_format;
+    return type_converted_format;
+  } else {
+    return TypeConverter<ToType, ToValueType>()(this);
+  }
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -560,7 +631,20 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
       std::is_base_of<format::FormatOrderTwo<ToIDType, ToNNZType, ToValueType>,
           ToType<ToIDType, ToNNZType, ToValueType>>::value,
       "T must be an order two format");
-  return TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(this);
+  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  if (this->get_format_id() != ToType<IDType, NNZType, ValueType>::get_format_id_static()) {
+    auto converted_format =
+        converter.template Convert<ToType<IDType, NNZType, ValueType>>(
+            this, this->get_context(), is_move_conversion);
+    auto type_converted_format =
+        TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(
+            converted_format);
+    delete converted_format;
+    return type_converted_format;
+  } else {
+    return TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(
+            this);
+  }
 }
 
 } // namespace format
