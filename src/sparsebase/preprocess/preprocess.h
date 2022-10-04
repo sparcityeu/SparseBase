@@ -559,7 +559,7 @@ protected:
 template <typename IDType, typename ValueType>
 class PermuteOrderOne
     : public TransformPreprocessType<format::FormatOrderOne<ValueType>,
-                                     format::FormatOrderOne<ValueType>> {
+                                     format::FormatOrderOne<ValueType>*> {
 public:
   PermuteOrderOne(IDType *);
   struct PermuteOrderOneParams : PreprocessParams {
