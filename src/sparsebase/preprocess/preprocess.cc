@@ -633,7 +633,7 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZT
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+std::tuple<std::vector<format::Format *>, ReturnFormatType>
 TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
     format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
@@ -642,7 +642,7 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCac
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+std::tuple<std::vector<format::Format *>, ReturnFormatType>
 TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
     format::Format  *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
@@ -651,14 +651,14 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCac
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+ReturnFormatType TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
   return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+ReturnFormatType TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format  *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
@@ -1228,6 +1228,67 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
 
 #endif
 
+template <typename IDType, typename NNZType, typename ValueType>
+ApplyPartitionOrderTwo<IDType, NNZType, ValueType>::ApplyPartitionOrderTwo(
+    IDType *partition_data, int num_partitions){
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      ApplyPartitionCSR());
+  ParamsType params;
+  params.partition = partition_data;
+  params.num_partitions = num_partitions;
+  this->params_ = params;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>
+    ApplyPartitionOrderTwo<IDType, NNZType, ValueType>::ApplyPartitionCSR(
+      format::Format * format, PreprocessParams * params){
+
+  auto csr = format->template As<format::CSR<IDType, NNZType, ValueType>>();
+  auto con_params = static_cast<ParamsType*>(params);
+
+  DimensionType n,m;
+  auto dims = csr->get_dimensions();
+  n = dims[0];
+  m = dims[1];
+
+  NNZType* row_ptr = csr->get_row_ptr();
+  IDType* col = csr->get_col();
+
+  DimensionType max_dim = std::max(n, m);
+
+  IDType* partition = con_params->partition;
+
+  std::vector<bool> in_cut(max_dim, false);
+  for(IDType u=0; u < n; u++){
+    NNZType start = row_ptr[u];
+    NNZType end = row_ptr[u+1];
+
+    for(NNZType j=start; j<end; j++){
+      IDType v = col[j];
+
+      if(partition[u] != partition[v]){
+
+        if(in_cut[v] || in_cut[u]){
+          continue;
+        }
+
+        if(u > v){
+          in_cut[u] = true;
+        } else {
+          in_cut[v] = true;
+        }
+      }
+    }
+  }
+
+
+
+
+}
 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"

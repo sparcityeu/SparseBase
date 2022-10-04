@@ -467,15 +467,9 @@ protected:
 
 //! Transforms a format according to an inverse permutation of its rows/columns
 template <typename InputFormatType, typename ReturnFormatType>
-class TransformPreprocessType : public FunctionMatcherMixin<ReturnFormatType *> {
+class TransformPreprocessType : public FunctionMatcherMixin<ReturnFormatType> {
 public:
-  TransformPreprocessType(){
-    static_assert(
-        std::is_base_of<format::Format, InputFormatType>::value,
-        "TransformationPreprocessType must take as input a Format object");
-    static_assert(std::is_base_of<format::Format, ReturnFormatType>::value,
-                  "TransformationPreprocessType must return a Format object");
-  }
+  TransformPreprocessType() = default;
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -485,7 +479,7 @@ public:
    * transformation.
    * @return a transformed Format object
    */
-  ReturnFormatType *GetTransformation(format::Format *csr,
+  ReturnFormatType GetTransformation(format::Format *csr,
                                     std::vector<context::Context *>, bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
@@ -497,7 +491,7 @@ public:
    * transformation.
    * @return a transformed Format object
    */
-  ReturnFormatType *GetTransformation(format::Format *csr,
+  ReturnFormatType GetTransformation(format::Format *csr,
                                     PreprocessParams *params,
                                     std::vector<context::Context *>, bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
@@ -513,7 +507,7 @@ public:
    * converted, the output pointer will point at nullptr. The second element is
    * a transformed Format object.
    */
-  std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+  std::tuple<std::vector<format::Format *>, ReturnFormatType>
   GetTransformationCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
@@ -529,7 +523,7 @@ public:
    * converted, the output pointer will point at nullptr. The second element is
    * a transformed Format object.
    */
-  std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+  std::tuple<std::vector<format::Format *>, ReturnFormatType>
   GetTransformationCached(format::Format *csr, PreprocessParams *params,
                           std::vector<context::Context *>, bool convert_input);
   virtual ~TransformPreprocessType();
@@ -538,7 +532,7 @@ public:
 template <typename IDType, typename NNZType, typename ValueType>
 class PermuteOrderTwo : public TransformPreprocessType<
                     format::FormatOrderTwo<IDType, NNZType, ValueType>,
-                    format::FormatOrderTwo<IDType, NNZType, ValueType>> {
+                    format::FormatOrderTwo<IDType, NNZType, ValueType>*> {
 public:
   PermuteOrderTwo(IDType *, IDType *);
   struct PermuteOrderTwoParams : PreprocessParams {
@@ -936,8 +930,26 @@ public:
     int64_t pfactor = 0;
     int64_t ufactor = 30;
   };
+  typedef MetisParams ParamsType;
 };
 #endif
+
+template <typename IDType, typename NNZType, typename ValueType>
+class ApplyPartitionOrderTwo : public TransformPreprocessType<format::FormatOrderTwo<IDType, NNZType, ValueType>,
+                                                      std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>> {
+public:
+  ApplyPartitionOrderTwo(IDType *, int num_partitions);
+  struct ApplyPartitionParams : PreprocessParams {
+    IDType* partition;
+    int num_partitions = 2;
+    bool vertex_cut = false;
+    bool duplicate_cut = false;
+  };
+  typedef ApplyPartitionParams ParamsType;
+
+protected:
+  static std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> ApplyPartitionCSR(format::Format * format, PreprocessParams * params);
+};
 
 
 class GraphFeatureBase {
