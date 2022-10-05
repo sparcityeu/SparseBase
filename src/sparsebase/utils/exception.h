@@ -78,6 +78,16 @@ std::string ListOfKeysToString(KeyType vec){
   return output;
 }
 
+template <typename T>
+class AttemptToReset : public Exception {
+public:
+  std::string msg_;
+  AttemptToReset() {
+    msg_="Attempting to reset a variable of type "+std::string(std::type_index(typeid(T)).name())+" that is only settable once";
+  }
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
 template <typename KeyType>
 class DirectExecutionNotAvailableException : public Exception {
 public:

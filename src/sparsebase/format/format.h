@@ -131,6 +131,31 @@ ToType *ConvertArrayType(FromType *from_ptr, SizeType size) {
   return to_ptr;
 }
 
+template <typename T>
+class OnceSettable {
+public:
+  OnceSettable(): is_set_(false){}
+  operator T() const {
+    return data_;
+  }
+  OnceSettable(const OnceSettable&) = delete;
+  OnceSettable(OnceSettable&&) = delete;
+  OnceSettable& operator=(T&& data){
+    if (!is_set_) {
+      data_ = std::move(data);
+      is_set_ = true;
+      return *this;
+    }
+    throw utils::AttemptToReset<T>();
+  }
+  const T& get() const{
+    return data_;
+  }
+private:
+  T data_;
+  bool is_set_;
+};
+
 //! Enum depicting the ownership status of a Format instance
 enum Ownership {
   //! When used the arrays are owned by the user (Format instance is not
@@ -255,7 +280,7 @@ public:
   }
   virtual DimensionType get_num_nnz() const { return nnz_; }
   virtual DimensionType get_order() const { return order_; }
-  virtual context::Context *get_context() const { return context_.get(); }
+  virtual context::Context *get_context() const { return context_.get().get(); }
 
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
@@ -265,14 +290,14 @@ public:
   static std::type_index get_format_id_static() { return typeid(FormatType); }
 
   virtual std::type_index get_context_type() const {
-    return this->context_->get_context_type_member();
+    return this->context_.get()->get_context_type_member();
   }
 
 protected:
   DimensionType order_;
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
-  std::unique_ptr<sparsebase::context::Context> context_;
+  OnceSettable<std::unique_ptr<sparsebase::context::Context>> context_;
 };
 
 template <typename ValueType>

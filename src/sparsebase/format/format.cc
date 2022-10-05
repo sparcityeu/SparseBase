@@ -332,7 +332,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
             vals, Deleter<ValueType>());
   }
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
-      new sparsebase::context::CPUContext);
+      new sparsebase::context::CPUContext);;
 
   if (!ignore_sort) {
     bool not_sorted = false;
