@@ -31,6 +31,22 @@ public:
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
+class DemangleException : public Exception {
+  int status_;
+
+public:
+  DemangleException(int status) : status_(status) {}
+  virtual const char *what() const throw() {
+    if(status_ == -1){
+      return "A memory allocation failiure occurred.";
+    } else if(status_ == -2){
+      return "mangled_name is not a valid name under the C++ ABI mangling rules.";
+    } else {
+      return "Unknown failure in demangling.";
+    }
+  }
+};
+
 class ReaderException : public Exception {
   std::string msg_;
 
@@ -52,7 +68,7 @@ class TypeException : public Exception {
 
 public:
   TypeException(const std::string& msg) : msg_(msg) {}
-  TypeException(const std::string type1, const std::string type2)
+  TypeException(const std::string& type1, const std::string& type2)
       : msg_("Object is of type " + type1 + " not " + type2) {}
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
@@ -61,7 +77,7 @@ class ConversionException : public Exception {
   std::string msg_;
 
 public:
-  ConversionException(const std::string type1, const std::string type2)
+  ConversionException(const std::string& type1, const std::string& type2)
       : msg_("Can not convert type " + type1 + " to " + type2) {}
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
