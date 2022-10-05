@@ -522,7 +522,7 @@ public:
   }
   void ResetContext(){
     this->context_ =std::unique_ptr<context::Context>(new context::CPUContext);
-    format::OnceSettable<std::unique_ptr<context::Context>> xx;
+    utils::OnceSettable<std::unique_ptr<context::Context>> xx;
   }
   Format * Clone()const {
     return nullptr;
