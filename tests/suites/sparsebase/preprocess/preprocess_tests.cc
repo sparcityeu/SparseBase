@@ -1162,10 +1162,44 @@ TEST(GraphFeatureBase, Degrees){
    EXPECT_EQ(degrees_array[i], degrees[i]);
  }
 }
+TEST(GraphFeatureBase, DegreesCached){
+  EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegreesCached({}, &global_csr, {&cpu_context}));
+  auto output = sparsebase::preprocess::GraphFeatureBase::GetDegreesCached({}, &global_csr, {&cpu_context});
+  auto degrees_array  = output.second;
+  EXPECT_EQ(std::type_index(typeid(degrees_array)), std::type_index(typeid(int*)));
+  for (int i = 0; i < n; i++) {
+    EXPECT_EQ(degrees_array[i], degrees[i]);
+  }
+  EXPECT_EQ(output.first, nullptr);
+  auto output_conv = sparsebase::preprocess::GraphFeatureBase::GetDegreesCached({}, &global_coo, {&cpu_context});
+  degrees_array  = output_conv.second;
+  EXPECT_NE(output_conv.first, nullptr);
+  EXPECT_EQ(std::type_index(typeid(degrees_array)), std::type_index(typeid(int*)));
+  for (int i = 0; i < n; i++) {
+    EXPECT_EQ(degrees_array[i], degrees[i]);
+  }
+}
 
 TEST(GraphFeatureBase, DegreeDistribution){
   EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, &global_csr, {&cpu_context}, true));
   auto degreeDistribution_array = sparsebase::preprocess::GraphFeatureBase::GetDegreeDistribution<float>({}, &global_csr, {&cpu_context}, true);
+  EXPECT_EQ(std::type_index(typeid(degreeDistribution_array)), std::type_index(typeid(float*)));
+  for (int i = 0; i < n; i++) {
+    EXPECT_EQ(degreeDistribution_array[i], distribution[i]);
+  }
+}
+TEST(GraphFeatureBase, DegreeDistributionCached){
+  EXPECT_NO_THROW(sparsebase::preprocess::GraphFeatureBase::GetDegreeDistributionCached<float>({}, &global_csr, {&cpu_context}));
+  auto output = sparsebase::preprocess::GraphFeatureBase::GetDegreeDistributionCached<float>({}, &global_csr, {&cpu_context});
+  auto degreeDistribution_array = output.second;
+  EXPECT_EQ(std::type_index(typeid(degreeDistribution_array)), std::type_index(typeid(float*)));
+  for (int i = 0; i < n; i++) {
+    EXPECT_EQ(degreeDistribution_array[i], distribution[i]);
+  }
+  EXPECT_EQ(output.first, nullptr);
+  auto output_conv = sparsebase::preprocess::GraphFeatureBase::GetDegreeDistributionCached<float>({}, &global_coo, {&cpu_context});
+  EXPECT_NE(output_conv.first, nullptr);
+  degreeDistribution_array = output_conv.second;
   EXPECT_EQ(std::type_index(typeid(degreeDistribution_array)), std::type_index(typeid(float*)));
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(degreeDistribution_array[i], distribution[i]);
