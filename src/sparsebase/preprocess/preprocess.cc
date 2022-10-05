@@ -967,6 +967,12 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegrees(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>,IDType *>Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
+    Format *format, std::vector<context::Context *> c, bool convert_input) {
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 IDType *Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();

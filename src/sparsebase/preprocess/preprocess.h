@@ -754,6 +754,8 @@ public:
    */
   IDType *GetDegrees(format::Format *format,
                      std::vector<context::Context *> contexts, bool convert_input);
+  std::tuple<std::vector<format::Format *>,IDType *>GetDegreesCached(format::Format *format,
+                     std::vector<context::Context *> contexts, bool convert_input);
   //! Degree generation implementation function for CSRs
   /*!
    *
@@ -947,10 +949,24 @@ public:
     DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
     return deg_dist.GetDistribution(format, contexts, convert_input);
   }
+  template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
+  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, FeatureType*> GetDegreeDistributionCached(typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+    DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
+    auto output = deg_dist.GetDistributionCached(format, contexts, true);
+    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
+    return std::make_pair(converted_format, std::get<1>(output));
+  }
   template <typename IDType, typename NNZType, typename ValueType>
   static NNZType* GetDegrees(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts, bool convert_input){
     Degrees<IDType, NNZType, ValueType> deg_dist;
     return deg_dist.GetDegrees(format, contexts, convert_input);
+  }
+  template <typename IDType, typename NNZType, typename ValueType>
+  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, NNZType*> GetDegreesCached(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+    Degrees<IDType, NNZType, ValueType> deg_dist;
+    auto output = deg_dist.GetDegreesCached(format, contexts, true);
+    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
+    return std::make_pair(converted_format, std::get<1>(output));
   }
 };
 //template <typename IDType, typename NNZType, typename ValueType>
@@ -1101,14 +1117,6 @@ public:
   }
 
 };
-
-template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
-int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
-  std::cout << "It works!\n";
-  Reordering<IDType, NNZType, ValueType> r;
-  return 1;
-}
-
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
