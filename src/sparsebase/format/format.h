@@ -10,6 +10,7 @@
 #define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
 
 #include "sparsebase/config.h"
+#include "sparsebase/utils/utils.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/utils/exception.h"
 #include <algorithm>
@@ -20,6 +21,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <vector>
+#include <cxxabi.h>
 
 namespace sparsebase {
 
@@ -79,6 +81,10 @@ public:
    * will also have different identifiers.
    */
   virtual std::type_index get_format_id() = 0;
+
+  //! Similar to get_format_id but returns a demangled name instead
+  virtual std::string get_format_name() = 0;
+
   virtual ~Format() = default;
 
   //! Performs a deep copy of the Format object and returns the pointer to the
@@ -106,12 +112,24 @@ public:
    * \return A concrete format pointer to this object (for example:
    * CSR<int,int,int>*)
    */
-  template <typename T> T *As() {
-    if (this->get_format_id() == std::type_index(typeid(T))) {
-      return static_cast<T *>(this);
+  template <typename T> typename std::remove_pointer<T>::type *As() {
+    using TBase = typename std::remove_pointer<T>::type;
+    if (this->get_format_id() == std::type_index(typeid(TBase))) {
+      return static_cast<TBase *>(this);
     }
-    throw utils::TypeException(get_format_id().name(), typeid(T).name());
+    throw utils::TypeException(get_format_id().name(), typeid(TBase).name());
   }
+
+  //! Templated function that can be used to check the concrete type of this object
+  /*!
+   * \tparam T a concrete format class (for example: CSR<int,int,int>)
+   * \return true if the type of this object is T
+   */
+  template <typename T> bool Is() {
+    using TBase = typename std::remove_pointer<T>::type;
+    return this->get_format_id() == std::type_index(typeid(TBase));
+  }
+
 };
 
 //! A class derived from the base Format class, mostly used for development
@@ -143,8 +161,16 @@ public:
   //! instance is a member of
   virtual std::type_index get_format_id() { return typeid(FormatType); }
 
+  virtual std::string get_format_name(){
+    return utils::demangle(get_format_id());
+  };
+
   //! A static variant of the get_format_id() function
   static std::type_index get_format_id_static() { return typeid(FormatType); }
+
+  static std::string get_format_name_static() {
+    return utils::demangle(get_format_id_static());
+  };
 
   virtual std::type_index get_context_type() const {
     return this->context_->get_context_type_member();
@@ -155,6 +181,7 @@ protected:
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
   std::unique_ptr<sparsebase::context::Context> context_;
+
 };
 
 template <typename ValueType>
@@ -412,7 +439,7 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
 } // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/format/format.cc"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "cuda/format.cu"
 #endif
 #endif

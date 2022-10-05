@@ -1,7 +1,7 @@
 #include "preprocess.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "sparsebase/preprocess/cuda/preprocess.cuh"
 #endif
 #include <iostream>
@@ -171,7 +171,7 @@ FunctionMatcherMixin<
       std::string message;
       message = "Could not find a function that matches the formats: {";
       for (auto f : packed_sfs) {
-        message += f->get_format_id().name();
+        message += f->get_format_name();
         message += " ";
       }
       message += "} using the contexts {";
@@ -636,7 +636,7 @@ template <typename InputFormatType, typename ReturnFormatType>
 std::tuple<std::vector<format::Format *>, ReturnFormatType *>
 TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
     format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
-  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
   return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
                              format);
 }
@@ -646,14 +646,14 @@ std::tuple<std::vector<format::Format *>, ReturnFormatType *>
 TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
     format::Format  *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
   return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
 ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
-  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
   return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input, format);
 }
 
@@ -661,7 +661,7 @@ template <typename InputFormatType, typename ReturnFormatType>
 ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format  *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
   return this->Execute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
@@ -706,7 +706,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
-#ifdef CUDA
+#ifdef USE_CUDA
   std::vector<std::type_index> formats = {
       format::cuda::CUDACSR<IDType, NNZType,
                             ValueType>::get_format_id_static()};
@@ -726,7 +726,7 @@ JaccardWeights<IDType, NNZType, ValueType, FeatureType>::GetJaccardWeights(
   return this->Execute(nullptr, (this->sc_.get()), contexts, convert_input,
                        format); // func(sfs, this->params_.get());
 }
-#ifdef CUDA
+#ifdef USE_CUDA
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 format::Format *

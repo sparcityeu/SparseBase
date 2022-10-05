@@ -627,7 +627,7 @@ public:
    */
   format::Format *GetJaccardWeights(format::Format *format,
                                     std::vector<context::Context *>, bool convert_input);
-#ifdef CUDA
+#ifdef USE_CUDA
   //! Take a CUDACSR representating a graph and get the Jaccard Weights as a
   //! CUDAArray
   /*!
@@ -1049,7 +1049,7 @@ int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "cuda/preprocess.cu"
 #endif
 #endif
