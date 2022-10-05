@@ -471,6 +471,14 @@ TEST(ReorderBase, Reorder) {
   check_reorder(order, n);
 }
 
+TEST(ReorderBase, ReorderCached) {
+  auto out_no_convert = sparsebase::preprocess::ReorderBase::ReorderCached<RCMReorder>({}, &global_csr, {&cpu_context});
+  EXPECT_EQ(out_no_convert.first, nullptr);
+  auto order = sparsebase::preprocess::ReorderBase::ReorderCached<RCMReorder>({}, &global_coo, {&cpu_context});
+  check_reorder(order.second, n);
+  compare_csr(order.first->Convert<format::CSR>(), &global_csr);
+}
+
 TEST(ReorderBase, Permute1D) {
   // no conversion of output
   EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute1D(inverse_perm_array, &orig_arr, {&cpu_context}, true));
@@ -497,6 +505,28 @@ TEST(ReorderBase, Permute1D) {
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute1D(r_reorder_vector, &f, {&cpu_context}, true), utils::FunctionNotFoundException);
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute1D(r_reorder_vector, &f, {&cpu_context}, false), utils::FunctionNotFoundException);
 }
+TEST(ReorderBase, Permute1DCached) {
+  // no conversion of output
+  auto output_no_convert_input = sparsebase::preprocess::ReorderBase::Permute1DCached(inverse_perm_array, &orig_arr, {&cpu_context});
+  EXPECT_EQ(output_no_convert_input.first, nullptr);
+  // converting input to possible format
+#ifdef USE_CUDA
+  context::cuda::CUDAContext g0{0};
+  auto cuda_arr = orig_arr.Convert<format::cuda::CUDAArray>(&g0);
+  auto output_convert_input = sparsebase::preprocess::ReorderBase::Permute1DCached(inverse_perm_array, cuda_arr, {&cpu_context});
+  EXPECT_NE(output_convert_input.first, nullptr);
+  auto transformed_format = output_convert_input.second->Convert<format::Array>();
+  for (int i = 0; i < n; i++){
+    EXPECT_EQ(transformed_format->get_vals()[i], reordered_array[i]);
+  }
+  auto output_convert_input_output = sparsebase::preprocess::ReorderBase::Permute1DCached<format::Array>(inverse_perm_array, cuda_arr, {&cpu_context});
+  auto transformed_format_input_output = output_convert_input_output.second;
+  for (int i = 0; i < n; i++){
+    EXPECT_EQ(transformed_format_input_output ->get_vals()[i], reordered_array[i]);
+  }
+  EXPECT_NE(output_convert_input_output .first, nullptr);
+#endif
+}
 TEST(ReorderBase, Permute2D) {
   // no conversion of output
   EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2D(r_reorder_vector, &global_csr, {&cpu_context}, true));
@@ -519,6 +549,26 @@ TEST(ReorderBase, Permute2D) {
   // passing a format that isn't convertable
   TestFormat<int, int, int> f;
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2D<TestFormat>(r_reorder_vector, &f, {&cpu_context}, true), utils::FunctionNotFoundException);
+}
+TEST(ReorderBase, Permute2DCached) {
+  // no conversion of output
+  auto output_no_convert_input = sparsebase::preprocess::ReorderBase::Permute2DCached(r_reorder_vector, &global_csr, {&cpu_context});
+  EXPECT_EQ(output_no_convert_input.first, nullptr);
+  // converting input to possible format
+  auto output_convert_input = sparsebase::preprocess::ReorderBase::Permute2DCached(r_reorder_vector, &global_coo, {&cpu_context});
+  EXPECT_NE(output_convert_input.first, nullptr);
+  auto transformed_format = output_convert_input.second->Convert<format::CSR>();
+  confirm_renumbered_csr(
+      global_csr.get_row_ptr(), transformed_format->get_row_ptr(),
+      global_csr.get_col(), transformed_format->get_col(), r_reorder_vector, n);
+  // converting output to possible format
+  auto output_convert_input_output = sparsebase::preprocess::ReorderBase::Permute2DCached<format::CSR>(r_reorder_vector, &global_coo, {&cpu_context});
+  EXPECT_NE(output_convert_input_output .first, nullptr);
+  auto transformed_format_input_output = output_convert_input.second->Convert<format::CSR>();
+  confirm_renumbered_csr(
+      global_csr.get_row_ptr(), transformed_format_input_output ->get_row_ptr(),
+      global_csr.get_col(), transformed_format_input_output ->get_col(), r_reorder_vector, n);
+  compare_csr(output_convert_input_output.first->Convert<format::CSR>(), &global_csr);
 }
 TEST(ReorderBase, InversePermutation) {
   auto perm = preprocess::ReorderBase::InversePermutation(inverse_perm_array, orig_arr.get_dimensions()[0]);
@@ -556,6 +606,20 @@ TEST(ReorderBase, Permute2DRowColWise) {
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DRowColumnWise<TestFormat>(r_reorder_vector, c_reorder_vector, &f, {&cpu_context}, true), utils::FunctionNotFoundException);
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DRowColumnWise<TestFormat>(r_reorder_vector, c_reorder_vector, &f, {&cpu_context}, false), utils::FunctionNotFoundException);
 }
+TEST(ReorderBase, Permute2DCachedRowColWise) {
+  // no conversion of output
+  auto output_no_convert_input = sparsebase::preprocess::ReorderBase::Permute2DRowColumnWiseCached(r_reorder_vector, c_reorder_vector, &global_csr, {&cpu_context});
+  EXPECT_EQ(output_no_convert_input.first, nullptr);
+  // converting input to possible format
+  auto output_convert_input = sparsebase::preprocess::ReorderBase::Permute2DRowColumnWiseCached(r_reorder_vector, c_reorder_vector, &global_coo, {&cpu_context});
+  EXPECT_NE(output_convert_input.first, nullptr);
+  auto transformed_format = output_convert_input.second->Convert<format::CSR>();
+  // converting output to possible format
+  auto output_convert_input_output = sparsebase::preprocess::ReorderBase::Permute2DRowColumnWiseCached<format::CSR>(r_reorder_vector, c_reorder_vector, &global_coo, {&cpu_context});
+  EXPECT_NE(output_convert_input_output .first, nullptr);
+  auto transformed_format_input_output = output_convert_input.second->Convert<format::CSR>();
+  compare_csr(output_convert_input_output.first->Convert<format::CSR>(), &global_csr);
+}
 TEST(ReorderBase, Permute2DRowWise) {
   // no conversion of output
   EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2DRowWise(r_reorder_vector, &global_csr, {&cpu_context}, true));
@@ -584,6 +648,20 @@ TEST(ReorderBase, Permute2DRowWise) {
   // passing a format that isn't convertable
   TestFormat<int, int, int> f;
   EXPECT_THROW(sparsebase::preprocess::ReorderBase::Permute2DRowWise<TestFormat>(r_reorder_vector, &f, {&cpu_context}, true), utils::FunctionNotFoundException);
+}
+TEST(ReorderBase, Permute2DCachedRowWise) {
+  // no conversion of output
+  auto output_no_convert_input = sparsebase::preprocess::ReorderBase::Permute2DRowWiseCached(r_reorder_vector, &global_csr, {&cpu_context});
+  EXPECT_EQ(output_no_convert_input.first, nullptr);
+  // converting input to possible format
+  auto output_convert_input = sparsebase::preprocess::ReorderBase::Permute2DRowWiseCached(r_reorder_vector, &global_coo, {&cpu_context});
+  EXPECT_NE(output_convert_input.first, nullptr);
+  auto transformed_format = output_convert_input.second->Convert<format::CSR>();
+  // converting output to possible format
+  auto output_convert_input_output = sparsebase::preprocess::ReorderBase::Permute2DRowWiseCached<format::CSR>(r_reorder_vector, &global_coo, {&cpu_context});
+  EXPECT_NE(output_convert_input_output .first, nullptr);
+  auto transformed_format_input_output = output_convert_input.second->Convert<format::CSR>();
+  compare_csr(output_convert_input_output.first->Convert<format::CSR>(), &global_csr);
 }
 
 //TEST(ReorderBase, Permute2DColWise) {
