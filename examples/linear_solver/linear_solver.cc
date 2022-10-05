@@ -55,8 +55,9 @@ int main(){
   ull *inv_perm = ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
   format::Array<val> *x = ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context}, true);
 
-  float * deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>({}, A, {&cpu_context}, true);
-  int * deg = preprocess::GraphFeatureBase ::GetDegrees({}, A, {&cpu_context}, true);
+  float * deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>(
+      A, {&cpu_context}, true);
+  int * deg = preprocess::GraphFeatureBase ::GetDegrees(A, {&cpu_context}, true);
   return 0;
 }
 
