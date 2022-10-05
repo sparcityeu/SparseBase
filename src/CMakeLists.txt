@@ -26,6 +26,7 @@ if(NOT ${_HEADER_ONLY})
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
     sparsebase/utils/io/writer.cc
+    sparsebase/utils/utils.cc
   )
   if (${USE_CUDA})
 
@@ -162,8 +163,9 @@ set(IO_FILES
 set(CONVERTER_FILES 
   sparsebase/utils/converter/converter.h
 )
-set(EXCEPTION_FILES 
+set(UTILS_FILES
   sparsebase/utils/exception.h
+  sparsebase/utils/utils.h
 )
 if(${_HEADER_ONLY})
   set(CONTEXT_FILES ${CONTEXT_FILES}
@@ -188,6 +190,10 @@ if(${_HEADER_ONLY})
   set(CONVERTER_FILES ${CONVERTER_FILES}
     sparsebase/utils/converter/converter.cc
   )
+
+  set(UTILS_FILES ${UTILS_FILES}
+     sparsebase/utils/utils.cc
+          )
 endif()
 install(FILES ${SINGLE_HEADER_FILE}
   DESTINATION include)
