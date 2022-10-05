@@ -22,12 +22,16 @@ int main(int argc, char** argv){
   format::COO<TYPES>* coo = utils::io::EdgeListReader<TYPES>(file_name).ReadCOO();
   format::CSR<TYPES>* csr = utils::io::EdgeListReader<TYPES>(file_name).ReadCSR();
 
+  cout << "Dimensions" << endl;
+  cout << csr->get_dimensions()[0] << endl;
+  cout << csr->get_dimensions()[1] << endl;
+
   cout << "Setting partition params..." << endl;
-  preprocess::MetisPartition<TYPES> metis;
-  preprocess::MetisPartition<TYPES>::MetisParams params;
+  preprocess::MetisGraphPartition<TYPES> metis;
+  preprocess::MetisGraphPartition<TYPES>::MetisParams params;
   params.seed = 12;
   params.ufactor = 50;
-  params.rtype = preprocess::MetisPartition<TYPES>::METIS_RTYPE_GREEDY;
+  params.rtype = preprocess::MetisGraphPartition<TYPES>::METIS_RTYPE_GREEDY;
 
   cout << "Partitioning CSR..." << endl;
   auto* res2 = metis.Partition(csr, &params, {&cpu_context}, false);
@@ -46,6 +50,17 @@ int main(int argc, char** argv){
       cerr << "Partition is inconsistent!" << endl;
       return 1;
     }
+  }
+
+  cout << "Applying partition..." << endl;
+  preprocess::ApplyGraphPartition<TYPES> applyGraphPartition(res1, 2);
+  auto formats = applyGraphPartition.GetTransformation(csr, {&cpu_context}, true);
+
+  int index = 0;
+  for(auto& format : formats){
+    cout << "Dimensions of " << index++ << endl;
+    cout << format->get_dimensions()[0] << endl;
+    cout << format->get_dimensions()[1] << endl;
   }
 
   return 0;

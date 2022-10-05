@@ -860,12 +860,12 @@ public:
  * Detailed explanations of the options can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
  */
 template <typename IDType, typename NNZType, typename ValueType>
-class MetisPartition : public PartitionPreprocessType<IDType> {
+class MetisGraphPartition : public PartitionPreprocessType<IDType> {
 private:
   static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
 
 public:
-  MetisPartition();
+  MetisGraphPartition();
 
   //! Objectives to be optimized by METIS
   typedef enum {
@@ -935,20 +935,20 @@ public:
 #endif
 
 template <typename IDType, typename NNZType, typename ValueType>
-class ApplyPartitionOrderTwo : public TransformPreprocessType<format::FormatOrderTwo<IDType, NNZType, ValueType>,
+class ApplyGraphPartition
+    : public TransformPreprocessType<format::FormatOrderTwo<IDType, NNZType, ValueType>,
                                                       std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>> {
 public:
-  ApplyPartitionOrderTwo(IDType *, int num_partitions);
-  struct ApplyPartitionParams : PreprocessParams {
+  ApplyGraphPartition(IDType *, int num_partitions);
+  struct ApplyGraphPartitionParams : PreprocessParams {
     IDType* partition;
     int num_partitions = 2;
-    bool vertex_cut = false;
-    bool duplicate_cut = false;
+    bool duplicate_cut_vertices = false;
   };
-  typedef ApplyPartitionParams ParamsType;
+  typedef ApplyGraphPartitionParams ParamsType;
 
 protected:
-  static std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> ApplyPartitionCSR(format::Format * format, PreprocessParams * params);
+  static std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> ApplyPartitionCSR(std::vector<format::Format*> formats, PreprocessParams * params);
 };
 
 

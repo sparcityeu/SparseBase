@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <omp.h>
 
 using namespace sparsebase::format;
 
@@ -651,7 +652,8 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCac
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-ReturnFormatType TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+ReturnFormatType
+TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_id().name(), InputFormatType::get_format_id_static().name());
   return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input, format);
@@ -1165,7 +1167,7 @@ PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 #include "sparsebase/external/metis/metis.h"
 
 template <typename IDType, typename NNZType, typename ValueType>
-MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
+MetisGraphPartition<IDType, NNZType, ValueType>::MetisGraphPartition(){
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
 
@@ -1177,7 +1179,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
 
 
 template <typename IDType, typename NNZType, typename ValueType>
-IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
+IDType* MetisGraphPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
   CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
 
   MetisParams* mparams = static_cast<MetisParams*>(params);
@@ -1229,25 +1231,25 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
 #endif
 
 template <typename IDType, typename NNZType, typename ValueType>
-ApplyPartitionOrderTwo<IDType, NNZType, ValueType>::ApplyPartitionOrderTwo(
+ApplyGraphPartition<IDType, NNZType, ValueType>::ApplyGraphPartition(
     IDType *partition_data, int num_partitions){
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
-      ApplyPartitionCSR());
-  ParamsType params;
-  params.partition = partition_data;
-  params.num_partitions = num_partitions;
-  this->params_ = params;
+      ApplyPartitionCSR);
+  ParamsType* params = new ParamsType();
+  params->partition = partition_data;
+  params->num_partitions = num_partitions;
+  this->params_ = std::unique_ptr<ParamsType>(params);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>
-    ApplyPartitionOrderTwo<IDType, NNZType, ValueType>::ApplyPartitionCSR(
-      format::Format * format, PreprocessParams * params){
+ApplyGraphPartition<IDType, NNZType, ValueType>::ApplyPartitionCSR(
+      std::vector<format::Format*> formats, PreprocessParams * params){
 
-  auto csr = format->template As<format::CSR<IDType, NNZType, ValueType>>();
+  auto csr = formats[0]->template As<format::CSR<IDType, NNZType, ValueType>>();
   auto con_params = static_cast<ParamsType*>(params);
 
   DimensionType n,m;
@@ -1255,37 +1257,69 @@ std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>
   n = dims[0];
   m = dims[1];
 
-  NNZType* row_ptr = csr->get_row_ptr();
-  IDType* col = csr->get_col();
+  NNZType* csr_row_ptr = csr->get_row_ptr();
+  IDType* csr_col = csr->get_col();
+  ValueType* csr_val = csr->get_vals();
 
   DimensionType max_dim = std::max(n, m);
 
   IDType* partition = con_params->partition;
+  int np = con_params->num_partitions;
 
-  std::vector<bool> in_cut(max_dim, false);
+  std::vector<std::vector<IDType>> rows(np);
+  std::vector<std::vector<IDType>> cols(np);
+  std::vector<std::vector<ValueType>> vals(np);
+  std::vector<omp_lock_t> locks(np);
+#pragma omp parallel for default(none) shared(rows, cols, vals, np, locks, csr_row_ptr, csr_col, csr_val, partition, n, con_params)
   for(IDType u=0; u < n; u++){
-    NNZType start = row_ptr[u];
-    NNZType end = row_ptr[u+1];
+    NNZType start = csr_row_ptr[u];
+    NNZType end = csr_row_ptr[u+1];
 
     for(NNZType j=start; j<end; j++){
-      IDType v = col[j];
+      IDType v = csr_col[j];
 
-      if(partition[u] != partition[v]){
+      IDType pu = partition[u];
+      IDType pv = partition[v];
 
-        if(in_cut[v] || in_cut[u]){
-          continue;
-        }
+      if(pu == pv){
+        omp_set_lock(&(locks[pu]));
+        rows[pu].push_back(u);
+        cols[pu].push_back(v);
+        if(csr_val != nullptr) vals[pu].push_back(csr_val[j]);
+        omp_unset_lock(&(locks[pu]));
 
-        if(u > v){
-          in_cut[u] = true;
-        } else {
-          in_cut[v] = true;
-        }
+      } else if(con_params->duplicate_cut_vertices){
+        omp_set_lock(&(locks[pu]));
+        rows[pu].push_back(u);
+        cols[pu].push_back(v);
+        if(csr_val != nullptr) vals[pu].push_back(csr_val[j]);
+        omp_unset_lock(&(locks[pu]));
+
+        omp_set_lock(&(locks[pv]));
+        rows[pv].push_back(u);
+        cols[pv].push_back(v);
+        if(csr_val != nullptr) vals[pv].push_back(csr_val[j]);
+        omp_unset_lock(&(locks[pv]));
       }
     }
   }
 
+  std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> res(np);
 
+#pragma omp parallel for default(none) shared(rows, cols, vals, res, np)
+  for(int i=0; i<np; i++){
+    ValueType* vals_ptr = nullptr;
+    if(!vals[i].empty()){
+      vals_ptr = vals[i].data();
+    }
+
+     res[i] = new COO<IDType, NNZType, ValueType>(rows[i].size(), cols[i].size(), rows[i].size(),
+                                             std::move(rows[i].data()), std::move(cols[i].data()),
+                                             std::move(vals_ptr), kOwned);
+
+  }
+
+  return res;
 
 
 }
