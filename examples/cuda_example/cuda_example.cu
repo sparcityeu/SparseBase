@@ -59,7 +59,7 @@ int main() {
   auto array_converter = new utils::converter::ConverterOrderOne<float>();
 
   preprocess::JaccardWeights<int, int, int, float> jac;
-  auto array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context});
+  auto array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context}, true);
 
   if (array->get_context_type() == context::CPUContext::get_context_type()) {
     auto cpu_array =

@@ -231,7 +231,7 @@ If there is a certain test file that is conditional on a CMake option, then you 
 
 For example, the test file `tests/suites/sparsebase/preprocess/cuda/preprocess_tests.cu` should only be added when the library is compiled with the `CUDA` option enabled. Here is how we define its executable and tests in the file `tests/suites/sparsebase/preprocess/cuda/CMakeLists.txt`:
 ```CMake
-if(${CUDA})
+if(${USE_CUDA})
     add_executable(sparsebase__preprocess_cuda_preprocess_tests.test preprocess_tests.cu)
     target_link_libraries(sparsebase_preprocess_cuda_preprocess_tests.test sparsebase)
     target_link_libraries(sparsebase_preprocess_cuda_preprocess_tests.test gtest gtest_main)
@@ -249,7 +249,7 @@ For example, if a certain test is only required when the library is compiled wit
 ```C++
 #include "sparsebase/config.h"
 
-#ifdef CUDA
+#ifdef USE_CUDA
 TEST(CudaTestSuite, CudaInitialization){
   // code
 }

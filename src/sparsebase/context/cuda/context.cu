@@ -3,6 +3,7 @@
 //
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda/context.cuh"
+#include "sparsebase/utils/exception.h"
 namespace sparsebase {
 namespace context {
 namespace cuda {
