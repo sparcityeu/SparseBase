@@ -1167,14 +1167,17 @@ PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 #include "sparsebase/external/metis/metis.h"
 
 template <typename IDType, typename NNZType, typename ValueType>
-MetisGraphPartition<IDType, NNZType, ValueType>::MetisGraphPartition(){
+MetisGraphPartition<IDType, NNZType, ValueType>::MetisGraphPartition(ParamsType* params){
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
 
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
 
-  this->params_ = std::unique_ptr<MetisParams>(new MetisParams);
+  if(params == nullptr)
+    this->params_ = std::unique_ptr<MetisParams>(new MetisParams);
+  else
+    this->params_ = params;
 }
 
 
@@ -1232,13 +1235,16 @@ IDType* MetisGraphPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vecto
 
 template <typename IDType, typename NNZType, typename ValueType>
 ApplyGraphPartition<IDType, NNZType, ValueType>::ApplyGraphPartition(
-    IDType *partition_data, int num_partitions){
+    IDType *partition_data, int num_partitions, ParamsType* params){
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
       ApplyPartitionCSR);
-  ParamsType* params = new ParamsType();
+
+  if(params == nullptr)
+    params = new ParamsType();
+
   params->partition = partition_data;
   params->num_partitions = num_partitions;
   this->params_ = std::unique_ptr<ParamsType>(params);

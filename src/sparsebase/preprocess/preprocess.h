@@ -865,7 +865,6 @@ private:
   static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
 
 public:
-  MetisGraphPartition();
 
   //! Objectives to be optimized by METIS
   typedef enum {
@@ -931,6 +930,7 @@ public:
     int64_t ufactor = 30;
   };
   typedef MetisParams ParamsType;
+  MetisGraphPartition(ParamsType* params = nullptr);
 };
 #endif
 
@@ -939,18 +939,37 @@ class ApplyGraphPartition
     : public TransformPreprocessType<format::FormatOrderTwo<IDType, NNZType, ValueType>,
                                                       std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>> {
 public:
-  ApplyGraphPartition(IDType *, int num_partitions);
   struct ApplyGraphPartitionParams : PreprocessParams {
     IDType* partition;
     int num_partitions = 2;
     bool duplicate_cut_vertices = false;
   };
   typedef ApplyGraphPartitionParams ParamsType;
+  ApplyGraphPartition(IDType *, int num_partitions, ParamsType* params = nullptr);
 
 protected:
   static std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> ApplyPartitionCSR(std::vector<format::Format*> formats, PreprocessParams * params);
 };
 
+class PartitionBase {
+public:
+  template <template <typename, typename, typename> typename Partition, typename IDType, typename NNZType, typename ValueType>
+  static IDType* PartitionGraph(typename Partition<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_input){
+    static_assert(std::is_base_of_v<PartitionPreprocessType<IDType>, Partition<IDType, NNZType, ValueType>>, "You must pass a partition class (with a base of PartitionPreprocessType)");
+    Partition<IDType, NNZType, ValueType> partition;
+    return partition.Partition(format, params, contexts, convert_input);
+  }
+
+  template <typename ReturnFormatType, typename IDType, typename NNZType, typename ValueType>
+  static std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> ApplyGraphPartition(typename ApplyGraphPartition<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, IDType* partition, int np, std::vector<context::Context*> contexts, bool convert_input){
+    ApplyGraphPartition<IDType, NNZType, ValueType> applier(partition, np, &params);
+    auto res = applier.Transform(format, contexts, convert_input);
+    for(auto& coo : res){
+      coo = coo->Convert<ReturnFormatType>();
+    }
+    return res;
+  }
+};
 
 class GraphFeatureBase {
 public:
