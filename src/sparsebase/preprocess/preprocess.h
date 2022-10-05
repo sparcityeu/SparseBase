@@ -945,24 +945,28 @@ public:
 class GraphFeatureBase {
 public:
   template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
-  static FeatureType* GetDegreeDistribution(typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts, bool convert_input){
+  static FeatureType *GetDegreeDistribution(
+      format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+      std::vector<context::Context *> contexts, bool convert_input) {
     DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
     return deg_dist.GetDistribution(format, contexts, convert_input);
   }
   template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, FeatureType*> GetDegreeDistributionCached(typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, FeatureType*> GetDegreeDistributionCached(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
     DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
     auto output = deg_dist.GetDistributionCached(format, contexts, true);
     auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
     return std::make_pair(converted_format, std::get<1>(output));
   }
   template <typename IDType, typename NNZType, typename ValueType>
-  static NNZType* GetDegrees(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts, bool convert_input){
+  static NNZType *
+  GetDegrees(format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+             std::vector<context::Context *> contexts, bool convert_input) {
     Degrees<IDType, NNZType, ValueType> deg_dist;
     return deg_dist.GetDegrees(format, contexts, convert_input);
   }
   template <typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, NNZType*> GetDegreesCached(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, NNZType*> GetDegreesCached(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
     Degrees<IDType, NNZType, ValueType> deg_dist;
     auto output = deg_dist.GetDegreesCached(format, contexts, true);
     auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
