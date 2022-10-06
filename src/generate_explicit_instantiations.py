@@ -171,6 +171,7 @@ gen_inst("DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "p
 gen_inst("Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("MetisPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
+gen_inst("MetisReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
 gen_inst("ConverterMixin<PreprocessType>", "preprocess.inc")
 gen_inst("FunctionMatcherMixin<format::Format*>", "preprocess.inc")
 gen_inst("FunctionMatcherMixin<$id_type*>", "preprocess.inc")

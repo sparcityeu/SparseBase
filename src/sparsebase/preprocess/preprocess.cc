@@ -1172,7 +1172,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
 
-  this->params_ = std::unique_ptr<MetisParams>(new MetisParams);
+  this->params_ = std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams);
 }
 
 
@@ -1180,11 +1180,11 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
   CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
 
-  MetisParams* mparams = static_cast<MetisParams*>(params);
+  auto* mparams = static_cast<MetisPartitionParams *>(params);
 
-  idx_t n = (idx_t) csr->get_dimensions()[0];
+  auto n = (idx_t) csr->get_dimensions()[0];
 
-  IDType* partition = new IDType[n];
+  auto* partition = new IDType[n];
 
   idx_t options[METIS_NOPTIONS];
   options[METIS_OPTION_OBJTYPE] = (idx_t) mparams->objtype;
@@ -1199,10 +1199,13 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   options[METIS_OPTION_CONTIG] = (idx_t) mparams->contig;
   options[METIS_OPTION_SEED] = (idx_t) mparams->seed;
   options[METIS_OPTION_NUMBERING] = (idx_t) mparams->numbering;
+  options[METIS_OPTION_COMPRESS] = (idx_t) mparams->compress;
+  options[METIS_OPTION_CCORDER] = (idx_t) mparams->ccorder;
+  options[METIS_OPTION_PFACTOR] = (idx_t) mparams->pfactor;
   options[METIS_OPTION_DBGLVL] = (idx_t) 0;
 
-  idx_t np = (idx_t) mparams->num_partitions;
-  idx_t nw = (idx_t) 1;
+  auto np = (idx_t) mparams->num_partitions;
+  auto nw = (idx_t) 1;
   idx_t objval;
 
   if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
@@ -1224,6 +1227,53 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
     throw utils::TypeException("Metis Partitioner supports only " + std::to_string(sizeof(idx_t)*8) + "-bit signed integers for ids");
   }
   return partition;
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+MetisReorder<IDType, NNZType, ValueType>::MetisReorder(){
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+  this->params_ = std::unique_ptr<ParamsType>(new ParamsType);
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType * MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(std::vector<format::Format *> formats,
+                                                                sparsebase::preprocess::PreprocessParams * params){
+
+  CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto* mparams = static_cast<MetisReorderParams*>(params);
+  auto n = (idx_t) csr->get_dimensions()[0];
+
+  idx_t options[METIS_NOPTIONS];
+  options[METIS_OPTION_OBJTYPE] = metis::METIS_OBJTYPE_NODE;
+  options[METIS_OPTION_CTYPE] = (idx_t) mparams->ctype;
+  options[METIS_OPTION_IPTYPE] = metis::METIS_IPTYPE_NODE;
+  options[METIS_OPTION_RTYPE] = (idx_t) mparams->rtype;
+  options[METIS_OPTION_NO2HOP] = (idx_t) mparams->no2hop;
+  options[METIS_OPTION_NITER] = (idx_t) mparams->niter;
+  options[METIS_OPTION_UFACTOR] = (idx_t) mparams->ufactor;
+  options[METIS_OPTION_SEED] = (idx_t) mparams->seed;
+  options[METIS_OPTION_NUMBERING] = (idx_t) mparams->numbering;
+  options[METIS_OPTION_COMPRESS] = (idx_t) mparams->compress;
+  options[METIS_OPTION_CCORDER] = (idx_t) mparams->ccorder;
+  options[METIS_OPTION_PFACTOR] = (idx_t) mparams->pfactor;
+  options[METIS_OPTION_DBGLVL] = (idx_t) 0;
+
+  if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
+                && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
+
+    auto* perm = new idx_t[n];
+    auto* inv_perm = new idx_t[n];
+    METIS_NodeND(&n, csr->get_row_ptr(), csr->get_col(), nullptr, options, perm, inv_perm);
+    delete[] perm;
+    return inv_perm;
+  } else {
+    throw utils::TypeException("MetisReorder supports only " + std::to_string(sizeof(idx_t)*8) + "-bit signed integers for ids");
+  }
 }
 
 #endif

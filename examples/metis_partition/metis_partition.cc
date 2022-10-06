@@ -24,10 +24,10 @@ int main(int argc, char** argv){
 
   cout << "Setting partition params..." << endl;
   preprocess::MetisPartition<TYPES> metis;
-  preprocess::MetisPartition<TYPES>::MetisParams params;
+  preprocess::MetisPartition<TYPES>::MetisPartitionParams params;
   params.seed = 12;
   params.ufactor = 50;
-  params.rtype = preprocess::MetisPartition<TYPES>::METIS_RTYPE_GREEDY;
+  params.rtype = preprocess::metis::METIS_RTYPE_GREEDY;
 
   cout << "Partitioning CSR..." << endl;
   auto* res2 = metis.Partition(csr, &params, {&cpu_context}, false);

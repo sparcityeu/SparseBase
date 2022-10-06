@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -35,6 +35,7 @@ struct PreprocessParams {};
 //! A generic type for all preprocessing types
 class PreprocessType {
   typedef PreprocessParams ParamsType;
+
 protected:
   //! Polymorphic pointer at a PreprocessParams object
   std::unique_ptr<PreprocessParams> params_;
@@ -60,7 +61,8 @@ public:
    * the value an std::any to that feature.
    */
   virtual std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *> contexts, bool convert_input) = 0;
+  Extract(format::Format *format, std::vector<context::Context *> contexts,
+          bool convert_input) = 0;
   //! Returns the std::type_index of this class
   virtual std::type_index get_feature_id() = 0;
   //! Get the std::type_index of all the ExtractableType classes fused into this
@@ -178,9 +180,9 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   typedef std::unordered_map<Key, Function, KeyHash, KeyEqualTo> ConversionMap;
 
 public:
-  std::vector<Key> GetAvailableFormats(){
+  std::vector<Key> GetAvailableFormats() {
     std::vector<Key> keys;
-    for (auto element : map_to_function_){
+    for (auto element : map_to_function_) {
       keys.push_back(element.first);
     }
     return keys;
@@ -274,7 +276,8 @@ protected:
   template <typename F, typename... SF>
   ReturnType Execute(PreprocessParams *params,
                      utils::converter::Converter *converter,
-                     std::vector<context::Context *> contexts, bool convert_input, F sf, SF... sfs);
+                     std::vector<context::Context *> contexts,
+                     bool convert_input, F sf, SF... sfs);
   //! Executes preprocessing on input formats (given variadically)
   /*!
    * Determines the function needed to carry out preprocessing on input Format*
@@ -306,7 +309,8 @@ protected:
   template <typename F, typename... SF>
   std::tuple<std::vector<format::Format *>, ReturnType>
   CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
-                std::vector<context::Context *> contexts, bool convert_input, F sf, SF... sfs);
+                std::vector<context::Context *> contexts, bool convert_input,
+                F sf, SF... sfs);
 };
 
 template <typename ReturnType>
@@ -344,7 +348,8 @@ public:
    * element in the original format object
    */
   IDType *GetReorder(format::Format *format,
-                     std::vector<context::Context *> contexts, bool convert_input);
+                     std::vector<context::Context *> contexts,
+                     bool convert_input);
   //! Generates a reordering inverse permutation of `format` with the given
   //! PreprocessParams object and using one of the contexts in `contexts`
   /*!
@@ -359,7 +364,8 @@ public:
    * element in the original format object
    */
   IDType *GetReorder(format::Format *format, PreprocessParams *params,
-                     std::vector<context::Context *> contexts, bool convert_input);
+                     std::vector<context::Context *> contexts,
+                     bool convert_input);
   //! Generates a reordering using one of the contexts in `contexts`, and caches
   //! intermediate `Format` objects.
   /*!
@@ -376,7 +382,8 @@ public:
    * element in the original format object
    */
   std::tuple<std::vector<format::Format *>, IDType *>
-  GetReorderCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
+  GetReorderCached(format::Format *csr, std::vector<context::Context *>,
+                   bool convert_input);
   //! Generates a reordering inverse permutation of `format` with the given
   //! PreprocessParams object and using one of the contexts in `contexts`
   /*!
@@ -467,9 +474,10 @@ protected:
 
 //! Transforms a format according to an inverse permutation of its rows/columns
 template <typename InputFormatType, typename ReturnFormatType>
-class TransformPreprocessType : public FunctionMatcherMixin<ReturnFormatType *> {
+class TransformPreprocessType
+    : public FunctionMatcherMixin<ReturnFormatType *> {
 public:
-  TransformPreprocessType(){
+  TransformPreprocessType() {
     static_assert(
         std::is_base_of<format::Format, InputFormatType>::value,
         "TransformationPreprocessType must take as input a Format object");
@@ -486,7 +494,8 @@ public:
    * @return a transformed Format object
    */
   ReturnFormatType *GetTransformation(format::Format *csr,
-                                    std::vector<context::Context *>, bool convert_input);
+                                      std::vector<context::Context *>,
+                                      bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -498,8 +507,9 @@ public:
    * @return a transformed Format object
    */
   ReturnFormatType *GetTransformation(format::Format *csr,
-                                    PreprocessParams *params,
-                                    std::vector<context::Context *>, bool convert_input);
+                                      PreprocessParams *params,
+                                      std::vector<context::Context *>,
+                                      bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -514,7 +524,8 @@ public:
    * a transformed Format object.
    */
   std::tuple<std::vector<format::Format *>, ReturnFormatType *>
-  GetTransformationCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
+  GetTransformationCached(format::Format *csr, std::vector<context::Context *>,
+                          bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -536,15 +547,17 @@ public:
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-class PermuteOrderTwo : public TransformPreprocessType<
-                    format::FormatOrderTwo<IDType, NNZType, ValueType>,
-                    format::FormatOrderTwo<IDType, NNZType, ValueType>> {
+class PermuteOrderTwo
+    : public TransformPreprocessType<
+          format::FormatOrderTwo<IDType, NNZType, ValueType>,
+          format::FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
   PermuteOrderTwo(IDType *, IDType *);
   struct PermuteOrderTwoParams : PreprocessParams {
     IDType *row_order;
     IDType *col_order;
-    explicit PermuteOrderTwoParams(IDType *r_order, IDType* c_order) : row_order(r_order), col_order(c_order){};
+    explicit PermuteOrderTwoParams(IDType *r_order, IDType *c_order)
+        : row_order(r_order), col_order(c_order){};
   };
   explicit PermuteOrderTwo(PermuteOrderTwoParams);
   typedef PermuteOrderTwoParams ParamsType;
@@ -558,8 +571,8 @@ protected:
    * @param params a polymorphic pointer at a `TransformParams` object
    * @return a transformed Format object of type CSR
    */
-  static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwoCSR(std::vector<format::Format *> formats,
-                                      PreprocessParams *);
+  static format::FormatOrderTwo<IDType, NNZType, ValueType> *
+  PermuteOrderTwoCSR(std::vector<format::Format *> formats, PreprocessParams *);
 };
 
 template <typename IDType, typename ValueType>
@@ -584,8 +597,8 @@ protected:
    * @param params a polymorphic pointer at a `TransformParams` object
    * @return a transformed Format object of type CSR
    */
-  static format::FormatOrderOne<ValueType> *PermuteArray(std::vector<format::Format *> formats,
-                                      PreprocessParams *);
+  static format::FormatOrderOne<ValueType> *
+  PermuteArray(std::vector<format::Format *> formats, PreprocessParams *);
 };
 
 //! A class that does feature extraction.
@@ -613,7 +626,7 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class JaccardWeights : public FunctionMatcherMixin<format::Format *> {
 public:
-  struct JaccardWeightsParams : PreprocessParams{};
+  struct JaccardWeightsParams : PreprocessParams {};
   typedef JaccardWeightsParams ParamsType;
   JaccardWeights();
   JaccardWeights(ParamsType);
@@ -626,7 +639,8 @@ public:
    * Weight of edge i in the graph (ith non-zero)
    */
   format::Format *GetJaccardWeights(format::Format *format,
-                                    std::vector<context::Context *>, bool convert_input);
+                                    std::vector<context::Context *>,
+                                    bool convert_input);
 #ifdef USE_CUDA
   //! Take a CUDACSR representating a graph and get the Jaccard Weights as a
   //! CUDAArray
@@ -663,7 +677,8 @@ public:
   DegreeDistribution(const DegreeDistribution &);
   DegreeDistribution(std::shared_ptr<DegreeDistributionParams>);
   virtual std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>, bool convert_input);
+  Extract(format::Format *format, std::vector<context::Context *>,
+          bool convert_input);
   virtual std::vector<std::type_index> get_sub_ids();
   virtual std::vector<ExtractableType *> get_subs();
   static std::type_index get_feature_id_static();
@@ -678,7 +693,8 @@ public:
    * i is the degree distribution of the ith vertex in `formats`
    */
   FeatureType *GetDistribution(format::Format *format,
-                               std::vector<context::Context *> contexts, bool convert_input);
+                               std::vector<context::Context *> contexts,
+                               bool convert_input);
   //! Degree distribution generation executor function that carries out function
   //! matching on a Graph
   /*!
@@ -707,7 +723,8 @@ public:
    */
   std::tuple<std::vector<format::Format *>, FeatureType *>
   GetDistributionCached(format::Format *format,
-                        std::vector<context::Context *> contexts, bool convert_input);
+                        std::vector<context::Context *> contexts,
+                        bool convert_input);
 
   static FeatureType
       *
@@ -739,7 +756,8 @@ public:
   Degrees(const Degrees<IDType, NNZType, ValueType> &d);
   Degrees(std::shared_ptr<DegreesParams>);
   std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>, bool convert_input) override;
+  Extract(format::Format *format, std::vector<context::Context *>,
+          bool convert_input) override;
   std::vector<std::type_index> get_sub_ids() override;
   std::vector<ExtractableType *> get_subs() override;
   static std::type_index get_feature_id_static();
@@ -753,7 +771,8 @@ public:
    * i is the degree of the ith vertex in `format`
    */
   IDType *GetDegrees(format::Format *format,
-                     std::vector<context::Context *> contexts, bool convert_input);
+                     std::vector<context::Context *> contexts,
+                     bool convert_input);
   //! Degree generation implementation function for CSRs
   /*!
    *
@@ -789,7 +808,8 @@ public:
           &d);
   Degrees_DegreeDistribution(std::shared_ptr<Params>);
   std::unordered_map<std::type_index, std::any>
-  Extract(format::Format *format, std::vector<context::Context *>, bool convert_input) override;
+  Extract(format::Format *format, std::vector<context::Context *>,
+          bool convert_input) override;
   std::vector<std::type_index> get_sub_ids() override;
   std::vector<ExtractableType *> get_subs() override;
   static std::type_index get_feature_id_static();
@@ -806,7 +826,8 @@ public:
    * the ith array element.
    */
   std::unordered_map<std::type_index, std::any>
-  Get(format::Format *format, std::vector<context::Context *> contexts, bool convert_input);
+  Get(format::Format *format, std::vector<context::Context *> contexts,
+      bool convert_input);
 
   //! Degree and degree distribution implementation function for CSRs
   /*!
@@ -840,89 +861,92 @@ public:
 
   //! Performs a partition operation using the default parameters
   /*!
-   * @returns An IDType array where the i-th index contains the ID for the partitioning i belongs to
+   * @returns An IDType array where the i-th index contains the ID for the
+   * partitioning i belongs to
    */
-  IDType* Partition(format::Format * format, std::vector<context::Context*> contexts, bool convert_input);
+  IDType *Partition(format::Format *format,
+                    std::vector<context::Context *> contexts,
+                    bool convert_input);
 
   //! Performs a partition operation using the parameters supplied by the user
   /*!
-   * @returns An IDType array where the i-th index contains the ID for the partitioning i belongs to
+   * @returns An IDType array where the i-th index contains the ID for the
+   * partitioning i belongs to
    */
-  IDType* Partition(format::Format *format, PreprocessParams *params,
-                     std::vector<context::Context *> contexts, bool convert_input);
+  IDType *Partition(format::Format *format, PreprocessParams *params,
+                    std::vector<context::Context *> contexts,
+                    bool convert_input);
   virtual ~PartitionPreprocessType();
 };
 
-
 #ifdef USE_METIS
+
+namespace metis {
+    //! Objectives to be optimized by METIS
+    typedef enum {
+      METIS_OBJTYPE_CUT,
+      METIS_OBJTYPE_VOL,
+      METIS_OBJTYPE_NODE
+    } mobjtype_et;
+
+    //! Partitiong Methods
+    typedef enum { METIS_PTYPE_RB, METIS_PTYPE_KWAY } mptype_et;
+
+    //! Coarsening Schemes
+    typedef enum { METIS_CTYPE_RM, METIS_CTYPE_SHEM } mctype_et;
+
+    //! Determines the algorithm used for initial partitioning
+    typedef enum {
+      METIS_IPTYPE_GROW,
+      METIS_IPTYPE_RANDOM,
+      METIS_IPTYPE_EDGE,
+      METIS_IPTYPE_NODE,
+      METIS_IPTYPE_METISRB
+    } miptype_et;
+
+    //! Determines the algorithm used for refinement
+    typedef enum {
+      METIS_RTYPE_FM,
+      METIS_RTYPE_GREEDY,
+      METIS_RTYPE_SEP2SIDED,
+      METIS_RTYPE_SEP1SIDED
+    } mrtype_et;
+};
+
 
 
 //! A wrapper for the METIS partitioner
 /* !
- * Wraps the METIS partitioner available here: https://github.com/KarypisLab/METIS
- * The library must be compiled with the USE_METIS option turned on
- * and the pre-built METIS library should be available.
- * See the Optional Dependencies page (under Getting Started) in our documentation for more info.
- * Detailed explanations of the options can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
+ * Wraps the METIS partitioner available here:
+ * https://github.com/KarypisLab/METIS The library must be compiled with the
+ * USE_METIS option turned on and the pre-built METIS library should be
+ * available. See the Optional Dependencies page (under Getting Started) in our
+ * documentation for more info. Detailed explanations of the options can be
+ * found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
  */
 template <typename IDType, typename NNZType, typename ValueType>
 class MetisPartition : public PartitionPreprocessType<IDType> {
 private:
-  static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
+  static IDType *PartitionCSR(std::vector<format::Format *> formats,
+                              PreprocessParams *params);
 
 public:
   MetisPartition();
-
-  //! Objectives to be optimized by METIS
-  typedef enum {
-    METIS_OBJTYPE_CUT,
-    METIS_OBJTYPE_VOL,
-    METIS_OBJTYPE_NODE
-  } mobjtype_et;
-
-  //! Partitiong Methods
-  typedef enum {
-    METIS_PTYPE_RB,
-    METIS_PTYPE_KWAY
-  } mptype_et;
-
-  //! Coarsening Schemes
-  typedef enum {
-    METIS_CTYPE_RM,
-    METIS_CTYPE_SHEM
-  } mctype_et;
-
-  //! Determines the algorithm used for initial partitioning
-  typedef enum {
-    METIS_IPTYPE_GROW,
-    METIS_IPTYPE_RANDOM,
-    METIS_IPTYPE_EDGE,
-    METIS_IPTYPE_NODE,
-    METIS_IPTYPE_METISRB
-  } miptype_et;
-
-
-  //! Determines the algorithm used for refinement
-  typedef enum {
-    METIS_RTYPE_FM,
-    METIS_RTYPE_GREEDY,
-    METIS_RTYPE_SEP2SIDED,
-    METIS_RTYPE_SEP1SIDED
-  } mrtype_et;
 
   //! Parameters for metis partitioning
   /*!
    * This struct replaces the options array of METIS
    * The names of the options are identical to the array
-   * and can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
+   * and can be found here:
+   * http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
    */
-  struct MetisParams : PreprocessParams{
+  struct MetisPartitionParams : PreprocessParams {
     int64_t num_partitions = 2;
-    int64_t ptype = METIS_PTYPE_KWAY;
-    int64_t objtype = METIS_OBJTYPE_CUT;
-    int64_t ctype = METIS_CTYPE_RM;
-    int64_t iptype = METIS_IPTYPE_GROW;
-    int64_t rtype = METIS_RTYPE_FM;
+    int64_t ptype = metis::METIS_PTYPE_KWAY;
+    int64_t objtype = metis::METIS_OBJTYPE_CUT;
+    int64_t ctype = metis::METIS_CTYPE_RM;
+    int64_t iptype = metis::METIS_IPTYPE_GROW;
+    int64_t rtype = metis::METIS_RTYPE_FM;
     int64_t ncuts = 1;
     int64_t nseps = 1;
     int64_t numbering = 0;
@@ -937,114 +961,189 @@ public:
     int64_t ufactor = 30;
   };
 };
-#endif
 
+template <typename IDType, typename NNZType, typename ValueType>
+class MetisReorder : public ReorderPreprocessType<IDType>{
+public:
+  struct MetisReorderParams : PreprocessParams {
+    int64_t ctype = metis::METIS_CTYPE_RM;
+    int64_t rtype = metis::METIS_RTYPE_SEP2SIDED;
+    int64_t nseps = 1;
+    int64_t numbering = 0;
+    int64_t niter = 10;
+    int64_t seed = 42;
+    int64_t no2hop = 0;
+    int64_t compress = 0;
+    int64_t ccorder = 0;
+    int64_t pfactor = 0;
+    int64_t ufactor = 30;
+  };
+  typedef MetisReorderParams ParamsType;
+  MetisReorder();
+  static IDType *GetReorderCSR(std::vector<format::Format *> formats,
+                               PreprocessParams *);
+};
+#endif
 
 class GraphFeatureBase {
 public:
-  template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
-  static FeatureType* GetDegreeDistribution(typename DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts, bool convert_input){
+  template <typename FeatureType, typename IDType, typename NNZType,
+            typename ValueType>
+  static FeatureType *GetDegreeDistribution(
+      typename DegreeDistribution<IDType, NNZType, ValueType,
+                                  FeatureType>::ParamsType params,
+      format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+      std::vector<context::Context *> contexts, bool convert_input) {
     DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
     return deg_dist.GetDistribution(format, contexts, convert_input);
   }
   template <typename IDType, typename NNZType, typename ValueType>
-  static NNZType* GetDegrees(typename Degrees<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts, bool convert_input){
+  static NNZType *
+  GetDegrees(typename Degrees<IDType, NNZType, ValueType>::ParamsType params,
+             format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+             std::vector<context::Context *> contexts, bool convert_input) {
     Degrees<IDType, NNZType, ValueType> deg_dist;
     return deg_dist.GetDegrees(format, contexts, convert_input);
   }
 };
-//template <typename IDType, typename NNZType, typename ValueType>
+// template <typename IDType, typename NNZType, typename ValueType>
 class ReorderBase {
 public:
-  template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
-  static IDType* Reorder(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_input){
-    static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
-    static_assert(!std::is_same_v<GenericReorder<IDType, NNZType, ValueType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
+  template <template <typename, typename, typename> typename Reordering,
+            typename IDType, typename NNZType, typename ValueType>
+  static IDType *
+  Reorder(typename Reordering<IDType, NNZType, ValueType>::ParamsType params,
+          format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+          std::vector<context::Context *> contexts, bool convert_input) {
+    static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>,
+                                    Reordering<IDType, NNZType, ValueType>>,
+                  "You must pass a reordering function (with base "
+                  "ReorderPreprocessType) to ReorderBase::Reorder");
+    static_assert(!std::is_same_v<GenericReorder<IDType, NNZType, ValueType>,
+                                  Reordering<IDType, NNZType, ValueType>>,
+                  "You must pass a reordering function (with base "
+                  "ReorderPreprocessType) to ReorderBase::Reorder");
     Reordering<IDType, NNZType, ValueType> reordering(params);
     return reordering.GetReorder(format, contexts, convert_input);
   }
 
-  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2D(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_input){
+  template <template <typename, typename, typename>
+            typename ReturnFormatType = format::FormatOrderTwo,
+            typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType> *
+  Permute2D(IDType *ordering,
+            format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+            std::vector<context::Context *> contexts, bool convert_input) {
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, ordering);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
-    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+    if constexpr (std::is_same_v<
+                      ReturnFormatType<IDType, NNZType, ValueType>,
+                      format::FormatOrderTwo<IDType, NNZType, ValueType>>)
       return out_format;
     else
       return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DRowColumnWise(IDType* row_ordering, IDType* col_ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_input){
-    PermuteOrderTwo<IDType, NNZType, ValueType> perm(row_ordering, col_ordering);
+  template <template <typename, typename, typename>
+            typename ReturnFormatType = format::FormatOrderTwo,
+            typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType> *Permute2DRowColumnWise(
+      IDType *row_ordering, IDType *col_ordering,
+      format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+      std::vector<context::Context *> contexts, bool convert_input) {
+    PermuteOrderTwo<IDType, NNZType, ValueType> perm(row_ordering,
+                                                     col_ordering);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
-    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+    if constexpr (std::is_same_v<
+                      ReturnFormatType<IDType, NNZType, ValueType>,
+                      format::FormatOrderTwo<IDType, NNZType, ValueType>>)
       return out_format;
     else
       return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DRowWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_input){
+  template <template <typename, typename, typename>
+            typename ReturnFormatType = format::FormatOrderTwo,
+            typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType> *
+  Permute2DRowWise(IDType *ordering,
+                   format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+                   std::vector<context::Context *> contexts,
+                   bool convert_input) {
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, nullptr);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
-    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+    if constexpr (std::is_same_v<
+                      ReturnFormatType<IDType, NNZType, ValueType>,
+                      format::FormatOrderTwo<IDType, NNZType, ValueType>>)
       return out_format;
     else
       return out_format->template Convert<ReturnFormatType>();
   }
 
-  template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static ReturnFormatType<IDType, NNZType, ValueType>* Permute2DColWise(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_input){
+  template <template <typename, typename, typename>
+            typename ReturnFormatType = format::FormatOrderTwo,
+            typename IDType, typename NNZType, typename ValueType>
+  static ReturnFormatType<IDType, NNZType, ValueType> *
+  Permute2DColWise(IDType *ordering,
+                   format::FormatOrderTwo<IDType, NNZType, ValueType> *format,
+                   std::vector<context::Context *> contexts,
+                   bool convert_input) {
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(nullptr, ordering);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
-    if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
+    if constexpr (std::is_same_v<
+                      ReturnFormatType<IDType, NNZType, ValueType>,
+                      format::FormatOrderTwo<IDType, NNZType, ValueType>>)
       return out_format;
     else
       return out_format->template Convert<ReturnFormatType>();
   }
-
 
   //! Permute a one-dimensional format using a permutation array.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the return pointer type. Default is FormatOrderTwo.
-   * \param order Permutation array.
-   * \param format object to be permuted.
-   * \param contexts vector of contexts that can be used for permutation.
-   * \return The permuted format. Function returns a pointer at a generic FormatOrderOne object.
-   * However, if the user passes a FormatOrderOne class as the templated parameter `ReturnFormatType`, e.g.
-   * format::Array, then the returned format will be converted to that type.
+   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. \param order Permutation
+   * array. \param format object to be permuted. \param contexts vector of
+   * contexts that can be used for permutation. \return The permuted format.
+   * Function returns a pointer at a generic FormatOrderOne object. However, if
+   * the user passes a FormatOrderOne class as the templated parameter
+   * `ReturnFormatType`, e.g. format::Array, then the returned format will be
+   * converted to that type.
    */
-  template <template <typename> typename ReturnFormatType = format::FormatOrderOne, typename AutoIDType, typename AutoValueType>
-  static ReturnFormatType<AutoValueType>* Permute1D(AutoIDType* ordering, format::FormatOrderOne<AutoValueType>* format, std::vector<context::Context*> context, bool convert_inputs){
+  template <template <typename>
+            typename ReturnFormatType = format::FormatOrderOne,
+            typename AutoIDType, typename AutoValueType>
+  static ReturnFormatType<AutoValueType> *
+  Permute1D(AutoIDType *ordering, format::FormatOrderOne<AutoValueType> *format,
+            std::vector<context::Context *> context, bool convert_inputs) {
     PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
     auto out_format = perm.GetTransformation(format, context, convert_inputs);
-    if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>, format::FormatOrderOne<AutoValueType>>)
+    if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>,
+                                 format::FormatOrderOne<AutoValueType>>)
       return out_format;
     else
       return out_format->template Convert<ReturnFormatType>();
   }
 
   template <typename IDType, typename NumType>
-  static IDType * InversePermutation(IDType*perm, NumType length){
-    static_assert(std::is_integral_v<NumType>, "Length of the permutation array must be an integer");
+  static IDType *InversePermutation(IDType *perm, NumType length) {
+    static_assert(std::is_integral_v<NumType>,
+                  "Length of the permutation array must be an integer");
     auto inv_perm = new IDType[length];
-    for (IDType i = 0; i < length; i++){
+    for (IDType i = 0; i < length; i++) {
       inv_perm[perm[i]] = i;
     }
     return inv_perm;
   }
-
 };
 
-template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
-int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
+template <template <typename, typename, typename> typename Reordering,
+          typename IDType, typename NNZType, typename ValueType>
+int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params) {
   std::cout << "It works!\n";
   Reordering<IDType, NNZType, ValueType> r;
   return 1;
 }
-
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
