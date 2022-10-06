@@ -1045,6 +1045,7 @@ int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
   return 1;
 }
 
+template <typename IDType> class PermuteOrderOne<IDType, void>{};
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
