@@ -91,6 +91,7 @@ private:
 public:
   template <typename T>
   static SbffArray Create(std::string name, T *arr, size_t size) {
+    static_assert(!std::is_same_v<T, void>, "Cannot create a void array");
     SbffArray sbas_arr;
     sbas_arr.name = name;
     sbas_arr.data = (char *)arr;

@@ -387,7 +387,7 @@ TEST(COO, Sort) {
 
   int coo_row_shuffled3[4]{0, 0, 3, 1};
   int coo_col_shuffled3[4]{2, 0, 3, 1};
-  sparsebase::format::COO<int, int, int> coo3(4, 4, 4, coo_row_shuffled3,
+  sparsebase::format::COO<int, int, void> coo3(4, 4, 4, coo_row_shuffled3,
                                               coo_col_shuffled3, nullptr,
                                               sparsebase::format::kNotOwned);
 
@@ -425,7 +425,7 @@ TEST(CSR, Sort) {
 
   int csr_row_ptr_shuffled3[5]{0, 2, 3, 3, 4};
   int csr_col_shuffled3[4]{2, 0, 1, 3};
-  sparsebase::format::CSR<int, int, int> csr3(4, 4, csr_row_ptr_shuffled3,
+  sparsebase::format::CSR<int, int, void> csr3(4, 4, csr_row_ptr_shuffled3,
                                               csr_col_shuffled3, nullptr,
                                               sparsebase::format::kNotOwned);
 
