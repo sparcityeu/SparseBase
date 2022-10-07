@@ -24,7 +24,8 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCOO(
   sbff.AddArray("col", coo->get_col(), coo->get_num_nnz());
 
   if (coo->get_vals() != nullptr)
-    sbff.AddArray("vals", coo->get_vals(), coo->get_num_nnz());
+    if constexpr (!std::is_same_v<ValueType, void>)
+      sbff.AddArray("vals", coo->get_vals(), coo->get_num_nnz());
 
   sbff.WriteObject(filename_);
 }
@@ -45,7 +46,10 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCSR(
   sbff.AddArray("col", csr->get_col(), m);
 
   if (csr->get_vals() != nullptr)
-    sbff.AddArray("vals", csr->get_vals(), m);
+    if constexpr (!std::is_same_v<ValueType, void>)
+      sbff.AddArray("vals", csr->get_vals(), m);
+    else
+      throw WriterException("Cannot write vals array of type void");
 
   sbff.WriteObject(filename_);
 }
@@ -57,9 +61,14 @@ BinaryWriterOrderOne<T>::BinaryWriterOrderOne(std::string filename)
 template <typename T>
 void BinaryWriterOrderOne<T>::WriteArray(format::Array<T> *arr) const {
   SbffObject sbff("array");
-  sbff.AddDimensions(arr->get_dimensions());
-  sbff.AddArray("array", arr->get_vals(), arr->get_dimensions()[0]);
-  sbff.WriteObject(filename_);
+  if constexpr (!std::is_same_v<T, void>) {
+    sbff.AddDimensions(arr->get_dimensions());
+    sbff.AddArray("array", arr->get_vals(), arr->get_dimensions()[0]);
+    sbff.WriteObject(filename_);
+  } else {
+    throw WriterException("Cannot write an Array with void ValueType");
+  }
+
 }
 
 #if !defined(_HEADER_ONLY)
