@@ -37,6 +37,7 @@ if(${USE_CUDA})
   # If CMake is upgraded to 3.24, the above four lines will be replaced by
   # set(CMAKE_CUDA_ARCHITECTURES native)
 endif()
+
 if (WIN32 OR APPLE)
   message(STATUS "PIGO is not supported on Windows and MacOS at the moment.")
   set(USE_PIGO OFF)
