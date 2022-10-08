@@ -38,8 +38,8 @@ void preprocess_f(unordered_map<string, Format*> & data) {
 
 // kernel function is always provided by the user
 // this kernel carries out an spmv
-std::any kernel_f(unordered_map<string, Format*> & data, std::any params) {
-  auto v = any_cast<double*>(params);
+std::any kernel_f(unordered_map<string, Format*> & data, std::any fparams, std::any kparams) {
+  auto v = any_cast<double*>(fparams);
   auto spm = data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>();
   auto dimensions = spm->get_dimensions();
   auto num_rows = dimensions[0];
@@ -63,23 +63,28 @@ int main(int argc, char **argv){
 
   experiment::ConcreteExperiment exp;
   string file_name = argv[1];
-  // add custom dataLoader
-  exp.AddDataLoader(get_data_f, {file_name});
-  // add custom preprocessing
-  exp.AddPreprocess(preprocess_f);
-
   auto v = new double[958];
   std::fill_n(v, 958, 1);
+  // add custom dataLoader
+  exp.AddDataLoader(get_data_f, {make_pair(file_name, v)});
+  // add custom preprocessing
+  exp.AddPreprocess("mypreprocess", preprocess_f);
+
   // since the vector is all 1s, this kernel calculates the number of nnz per row
-  exp.AddKernel(kernel_f, v);
+  exp.AddKernel("mykernel", kernel_f, {});
 
   exp.Run(NUM_RUNS);
 
-  std::vector<std::any> res = exp.GetResults();
-  cout << "Size = " << res.size() << endl;
+  auto res = exp.GetResults();
+  cout << "# of results = " << res.size() << endl;
   auto secs = exp.GetRunTimes();
+  cout << "Runtimes: " << endl;
   for(auto s: secs){
-    cout << "Run time: " << s << endl;
+    cout << s.first << ": ";
+    for(auto sr: s.second){
+      cout << sr << " ";
+    }
+    cout << endl;
   }
   return 0;
 }
