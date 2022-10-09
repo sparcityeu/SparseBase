@@ -56,7 +56,7 @@ std::any spmv_par(unordered_map<string, Format*> & data, std::any fparams, std::
   auto cols = spm->get_col();
 
   auto res = new row_type[num_rows]();
-  #pragma omp parallel for schedule(dynamic)
+  #pragma omp parallel for // schedule(dynamic)
   for(unsigned int i = 0; i < num_rows; i++){
     row_type s = 0;
     for(unsigned int j = rows[i]; j < rows[i+1]; j++){
@@ -185,9 +185,12 @@ int main(int argc, char **argv){
 #endif
 
   // start the experiment
-  exp.Run(NUM_RUNS);
+  exp.Run(NUM_RUNS, true);
+
+  cout << endl;
 
   // check results
+  cout << "Results: " << endl;
   auto res = exp.GetResults();
   for(auto r: res){
     cout << r.first << ": ";
@@ -198,7 +201,16 @@ int main(int argc, char **argv){
     cout << endl;
   }
 
-  // get auxiliary data
+  cout << endl;
+
+  // get auxiliary data created during the experiment
+  auto auxiliary = exp.GetAuxiliary();
+  cout << "Auxiliary Data: " << endl;
+  for(const auto & a: auxiliary){
+    cout << a.first << endl;
+  }
+
+  cout << endl;
 
   // display runtimes
   auto secs = exp.GetRunTimes();

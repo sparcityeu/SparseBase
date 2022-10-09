@@ -26,30 +26,31 @@ using KernelFunction = std::any (std::unordered_map<std::string, format::Format*
 
 class ExperimentType{
     public:
-        virtual void Run(unsigned int times) = 0;
+        virtual void Run(unsigned int times, bool store_auxiliary) = 0;
         virtual void AddDataLoader(LoadDataFunction, std::vector<std::pair<std::string, std::any>> targets) = 0;
         virtual void AddPreprocess(std::string, PreprocessFunction) = 0;
         virtual void AddKernel(std::string, KernelFunction, std::any) = 0;
         virtual std::map<std::string, std::vector<double>> GetRunTimes() = 0;
         virtual std::map<std::string, std::vector<std::any>> GetResults() = 0;
-        //virtual void WarmGPU();
+        virtual std::map<std::string, std::any> GetAuxiliary() = 0;
 };
 
 class ConcreteExperiment : public ExperimentType {
     public:
-        void Run(unsigned int times) override;
+        void Run(unsigned int times = 1, bool store_auxiliary = false) override;
         void AddDataLoader(LoadDataFunction, std::vector<std::pair<std::string, std::any>> targets) override;
         void AddPreprocess(std::string, PreprocessFunction) override;
         void AddKernel(std::string, KernelFunction, std::any) override;
         std::map<std::string, std::vector<double>> GetRunTimes() override;
         std::map<std::string, std::vector<std::any>> GetResults() override;
+        std::map<std::string, std::any> GetAuxiliary() override;
     private:
         std::vector<std::vector<std::pair<std::string, std::any>>> _targets;
         std::unordered_map<std::string, std::function<KernelFunction>> _kernels;
         std::unordered_map<std::string, std::any> _kernel_parameters;
         std::vector<std::function<LoadDataFunction>> _dataLoaders;
         std::unordered_map<std::string, std::function<PreprocessFunction>> _preprocesses;
-        std::unordered_map<std::string, std::unordered_map<std::string, std::any>> _auxiliary;
+        std::map<std::string, std::any> _auxiliary;
         std::map<std::string, std::vector<double>> _runtimes;
         std::map<std::string, std::vector<std::any>> _results;
 };

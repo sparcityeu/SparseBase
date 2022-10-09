@@ -16,8 +16,6 @@ using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = unsigned int;
 
-#define NUM_RUNS 1
-
 // create custom dataLoader
 unordered_map<string, Format*> get_data_f( string & file_name ) {
   CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name)
@@ -73,13 +71,13 @@ int main(int argc, char **argv){
   // since the vector is all 1s, this kernel calculates the number of nnz per row
   exp.AddKernel("mykernel", kernel_f, {});
 
-  exp.Run(NUM_RUNS);
+  exp.Run();
 
   auto res = exp.GetResults();
   cout << "# of results = " << res.size() << endl;
   auto secs = exp.GetRunTimes();
   cout << "Runtimes: " << endl;
-  for(auto s: secs){
+  for(const auto & s: secs){
     cout << s.first << ": ";
     for(auto sr: s.second){
       cout << sr << " ";
