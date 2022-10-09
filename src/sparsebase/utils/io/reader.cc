@@ -35,76 +35,142 @@ format::COO<IDType, NNZType, ValueType> *
 EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
-    IDType u, v;
-    ValueType w = 0;
-    IDType m = 0;
-    IDType n = 0;
-    NNZType nnz = 0;
 
-    std::vector<std::tuple<IDType, IDType, ValueType>> edges;
-    // vertices are 0-based
-    while (infile >> u >> v) {
-
+    if constexpr (std::is_same_v<ValueType, void>){
       if (weighted_) {
-        infile >> w;
+        throw ReaderException("Cannot read weights into ValueType void");
+      }
+      IDType u, v;
+      IDType m = 0;
+      IDType n = 0;
+      NNZType nnz = 0;
+      std::vector<std::tuple<IDType, IDType>> edges;
+      // vertices are 0-based
+      while (infile >> u >> v) {
+
+
+        if (u != v || !remove_self_edges_) {
+          edges.push_back(std::tuple<IDType, IDType>(u, v));
+
+          if (read_undirected_)
+            edges.push_back(std::tuple<IDType, IDType>(v, u));
+
+          n = std::max(n, u + 1);
+          m = std::max(m, v + 1);
+        }
       }
 
-      if (u != v || !remove_self_edges_) {
-        edges.push_back(std::tuple<IDType, IDType, ValueType>(u, v, w));
-
-        if (read_undirected_)
-          edges.push_back(std::tuple<IDType, IDType, ValueType>(v, u, w));
-
-        n = std::max(n, u + 1);
-        m = std::max(m, v + 1);
+      if (square_ || read_undirected_) {
+        n = std::max(n, m);
+        m = n;
       }
+
+      sort(edges.begin(), edges.end(),
+           [](const std::tuple<IDType, IDType> &t1,
+              const std::tuple<IDType, IDType> t2) {
+             if (std::get<0>(t1) == std::get<0>(t2)) {
+               return std::get<1>(t1) < std::get<1>(t2);
+             } else {
+               return std::get<0>(t1) < std::get<0>(t2);
+             }
+           });
+
+      if (remove_duplicates_) {
+        auto unique_it =
+            unique(edges.begin(), edges.end(),
+                   [](const std::tuple<IDType, IDType> &t1,
+                      const std::tuple<IDType, IDType> t2) {
+                     return (std::get<0>(t1) == std::get<0>(t2)) &&
+                            (std::get<1>(t1) == std::get<1>(t2));
+                   });
+        edges.erase(unique_it, edges.end());
+      }
+
+      nnz = edges.size();
+
+      IDType *row = new IDType[nnz];
+      IDType *col = new IDType[nnz];
+      ValueType *vals = nullptr;
+
+      for (IDType i = 0; i < nnz; i++) {
+        row[i] = std::get<0>(edges[i]);
+        col[i] = std::get<1>(edges[i]);
+      }
+
+      return new format::COO<IDType, NNZType, ValueType>(n, m, nnz, row, col,
+                                                         vals, format::kOwned);
     }
+    else {
+      IDType u, v;
+      ValueType w = 0;
+      IDType m = 0;
+      IDType n = 0;
+      NNZType nnz = 0;
+      std::vector<std::tuple<IDType, IDType, ValueType>> edges;
+      // vertices are 0-based
+      while (infile >> u >> v) {
 
-    if (square_ || read_undirected_) {
-      n = std::max(n, m);
-      m = n;
+        if (weighted_) {
+          infile >> w;
+        }
+
+        if (u != v || !remove_self_edges_) {
+          edges.push_back(std::tuple<IDType, IDType, ValueType>(u, v, w));
+
+          if (read_undirected_)
+            edges.push_back(std::tuple<IDType, IDType, ValueType>(v, u, w));
+
+          n = std::max(n, u + 1);
+          m = std::max(m, v + 1);
+        }
+      }
+
+      if (square_ || read_undirected_) {
+        n = std::max(n, m);
+        m = n;
+      }
+
+      sort(edges.begin(), edges.end(),
+           [](const std::tuple<IDType, IDType, ValueType> &t1,
+              const std::tuple<IDType, IDType, ValueType> t2) {
+             if (std::get<0>(t1) == std::get<0>(t2)) {
+               return std::get<1>(t1) < std::get<1>(t2);
+             } else {
+               return std::get<0>(t1) < std::get<0>(t2);
+             }
+           });
+
+      if (remove_duplicates_) {
+        auto unique_it =
+            unique(edges.begin(), edges.end(),
+                   [](const std::tuple<IDType, IDType, ValueType> &t1,
+                      const std::tuple<IDType, IDType, ValueType> t2) {
+                     return (std::get<0>(t1) == std::get<0>(t2)) &&
+                            (std::get<1>(t1) == std::get<1>(t2));
+                   });
+        edges.erase(unique_it, edges.end());
+      }
+
+      nnz = edges.size();
+
+      IDType *row = new IDType[nnz];
+      IDType *col = new IDType[nnz];
+      ValueType *vals = nullptr;
+      if (weighted_) {
+        vals = new ValueType[nnz];
+      }
+
+      for (IDType i = 0; i < nnz; i++) {
+        row[i] = std::get<0>(edges[i]);
+        col[i] = std::get<1>(edges[i]);
+
+        if (weighted_)
+          vals[i] = std::get<2>(edges[i]);
+      }
+
+      return new format::COO<IDType, NNZType, ValueType>(n, m, nnz, row, col,
+                                                         vals, format::kOwned);
     }
-
-    sort(edges.begin(), edges.end(),
-         [](const std::tuple<IDType, IDType, ValueType> &t1,
-            const std::tuple<IDType, IDType, ValueType> t2) {
-           if (std::get<0>(t1) == std::get<0>(t2)) {
-             return std::get<1>(t1) < std::get<1>(t2);
-           } else {
-             return std::get<0>(t1) < std::get<0>(t2);
-           }
-         });
-
-    if (remove_duplicates_) {
-      auto unique_it =
-          unique(edges.begin(), edges.end(),
-                 [](const std::tuple<IDType, IDType, ValueType> &t1,
-                    const std::tuple<IDType, IDType, ValueType> t2) {
-                   return (std::get<0>(t1) == std::get<0>(t2)) &&
-                          (std::get<1>(t1) == std::get<1>(t2));
-                 });
-      edges.erase(unique_it, edges.end());
-    }
-
-    nnz = edges.size();
-
-    IDType *row = new IDType[nnz];
-    IDType *col = new IDType[nnz];
-    ValueType *vals = nullptr;
-    if (weighted_) {
-      vals = new ValueType[nnz];
-    }
-
-    for (IDType i = 0; i < nnz; i++) {
-      row[i] = std::get<0>(edges[i]);
-      col[i] = std::get<1>(edges[i]);
-
-      if (weighted_)
-        vals[i] = std::get<2>(edges[i]);
-    }
-
-    return new format::COO<IDType, NNZType, ValueType>(n, m, nnz, row, col,
-                                                       vals, format::kOwned);
 
   } else {
     throw ReaderException("file does not exist!");
@@ -237,7 +303,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   IDType *long_rows = new IDType[total_values];
   IDType *long_cols = new IDType[total_values];
   ValueType *long_vals = nullptr;
-  if constexpr (!weighted)
+  if constexpr (weighted)
     long_vals= new ValueType[total_values];
   NNZType num_nnz = 0;
   for (format::DimensionType l = 0; l < total_values; l++) {
@@ -272,10 +338,15 @@ format::COO<IDType, NNZType, ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   bool weighted = options_.field != MTXFieldOptions::pattern;
   if (options_.format == MTXFormatOptions::array){
-    if (weighted)
-      return this->ReadArrayIntoCOO<true>();
+    if (weighted){
+      if constexpr (!std::is_same_v<ValueType, void>) {
+        return this->ReadArrayIntoCOO<true>();
+      } else{
+        throw utils::ReaderException("Weight type for weighted graphs can not be void");
+      }
+    }
     else
-      return this->ReadArrayIntoCOO<false>();
+      throw utils::ReaderException("Matrix market files with array format cannot have the field 'pattern' ");
   } else if (options_.format == MTXFormatOptions::coordinate){
     if (weighted){
       if (options_.symmetry == MTXSymmetryOptions::general)
@@ -324,37 +395,41 @@ MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
-  std::ifstream fin(filename_);
+  if constexpr (std::is_same_v<ValueType, void>)
+    throw ReaderException("Cannot read a matrix market file into an Array with void ValueType");
+  else{
+    std::ifstream fin(filename_);
 
-  // Ignore headers and comments:
-  while (fin.peek() == '%')
-    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  // Declare variables: (check the types here)
+    // Ignore headers and comments:
+    while (fin.peek() == '%')
+      fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // Declare variables: (check the types here)
 
-  // check that it has 1 row/column
-  format::DimensionType M, N, L;
+    // check that it has 1 row/column
+    format::DimensionType M, N, L;
 
-  fin >> M >> N >> L;
-  if (M != 1 && N != 1) {
-    throw ReaderException("Trying to read a 2D matrix with multiple rows "
-                          "and multiple columns into dense array");
+    fin >> M >> N >> L;
+    if (M != 1 && N != 1) {
+      throw ReaderException("Trying to read a 2D matrix with multiple rows "
+                            "and multiple columns into dense array");
+    }
+    fin.close();
+    auto coo = ReadCOO();
+    auto n = coo->get_dimensions()[0];
+    auto m = coo->get_dimensions()[1];
+    auto coo_col = coo->get_col();
+    auto coo_row = coo->get_row();
+    auto coo_vals = coo->get_vals();
+    auto num_nnz = coo->get_num_nnz();
+    ValueType *vals = new ValueType[std::max<IDType>(n, m)]();
+    IDType curr_row = 0;
+    IDType curr_col = 0;
+    for (IDType nnz = 0; nnz < num_nnz; nnz++) {
+      vals[coo_col[nnz] + coo_row[nnz]] = coo_vals[nnz];
+    }
+    return new format::Array<ValueType>(std::max(n, m), vals,
+                                        sparsebase::format::kOwned);
   }
-  fin.close();
-  auto coo = ReadCOO();
-  auto n = coo->get_dimensions()[0];
-  auto m = coo->get_dimensions()[1];
-  auto coo_col = coo->get_col();
-  auto coo_row = coo->get_row();
-  auto coo_vals = coo->get_vals();
-  auto num_nnz = coo->get_num_nnz();
-  ValueType *vals = new ValueType[std::max<IDType>(n, m)]();
-  IDType curr_row = 0;
-  IDType curr_col = 0;
-  for (IDType nnz = 0; nnz < num_nnz; nnz++) {
-    vals[coo_col[nnz] + coo_row[nnz]] = coo_vals[nnz];
-  }
-  return new format::Array<ValueType>(std::max(n, m), vals,
-                                      sparsebase::format::kOwned);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -426,16 +501,16 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
       IDType *col = new IDType[L * 2];
       NNZType actual_nnzs = 0;
       IDType m, n;
-      ValueType w;
       if constexpr (weighted) {
         if constexpr (!std::is_same_v<void, ValueType>) {
           vals = new ValueType[L * 2];
+        } else {
+          throw ReaderException(
+              "Weight type for weighted graphs can not be void");
         }
       }
       for (NNZType l = 0; l < L; l++) {
         fin >> m >> n;
-        if constexpr (weighted)
-          fin >> w;
 
         if constexpr (conv_to_zero) {
           n--;
@@ -443,8 +518,9 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
         }
         row[actual_nnzs] = m;
         col[actual_nnzs] = n;
-        if constexpr (weighted)
-          vals[actual_nnzs] = w;
+        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
+          fin >> vals[actual_nnzs];
+        }
         actual_nnzs++;
         bool check_diagonal;
         if constexpr (symm == (int)MTXSymmetryOptions::skew_symmetric)
@@ -454,8 +530,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
         if (check_diagonal && m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
-          if constexpr (weighted)
-            vals[actual_nnzs] = w;
+          if constexpr (weighted && !std::is_same_v<void, ValueType> && weighted)
+            vals[actual_nnzs] = vals[actual_nnzs-1];
           actual_nnzs++;
         }
       }
@@ -469,7 +545,7 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
         std::copy(col, col+actual_nnzs, actual_cols);
         delete[] row;
         delete[] col;
-        if constexpr (weighted) {
+        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
           actual_vals = new ValueType[actual_nnzs];
           std::copy(vals, vals+actual_nnzs, actual_vals);
           delete[] vals;
@@ -489,49 +565,66 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
-  std::ifstream fin(filename_);
-  // Ignore headers and comments:
-  while (fin.peek() == '%')
-    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  // Declare variables: (check the types here)
+  if constexpr (!std::is_same_v<void, ValueType>) {
+    std::ifstream fin(filename_);
+    // Ignore headers and comments:
+    while (fin.peek() == '%')
+      fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // Declare variables: (check the types here)
 
-  // check that it has 1 row/column
-  format::DimensionType M, N;
+    // check that it has 1 row/column
+    format::DimensionType M, N;
 
-  fin >> M >> N;
+    fin >> M >> N;
 
-  if (M != 1 && N != 1) {
-    throw ReaderException("Trying to read a 2D matrix with multiple rows "
-                          "and multiple columns into dense array");
+    if (M != 1 && N != 1) {
+      throw ReaderException("Trying to read a 2D matrix with multiple rows "
+                            "and multiple columns into dense array");
+    }
+    format::DimensionType total_values = M * N;
+    // T ODO
+    // Currently num_nnz is defined all wrong. Once it's fixed add back nnz_counter
+    //NNZType nnz_counter = 0;
+    ValueType *vals = new ValueType[total_values];
+    for (format::DimensionType l = 0; l < total_values; l++) {
+      ValueType w;
+      fin >> w;
+
+      vals[l] = w;
+      //nnz_counter += w != 0;
+    }
+
+    auto array = new format::Array<ValueType>(/*nnz_counter*/total_values, vals, format::kOwned);
+    return array;
+
+  } else {
+    throw ReaderException("Cannot read a matrix market file into an Array whose ValueType is void");
   }
-  format::DimensionType total_values = M * N;
-  // TODO
-  // Currently num_nnz is defined all wrong. Once it's fixed add back nnz_counter
-  //NNZType nnz_counter = 0;
-  ValueType *vals = new ValueType[total_values];
-  for (format::DimensionType l = 0; l < total_values; l++) {
-    ValueType w;
-    fin >> w;
-
-    vals[l] = w;
-    //nnz_counter += w != 0;
-  }
-
-  auto array = new format::Array<ValueType>(/*nnz_counter*/total_values, vals, format::kOwned);
-  return array;
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *
 MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
   // check object
-  if (options_.format == MTXFormatOptions::coordinate) {
-      return ReadCoordinateIntoArray();
-  } else if (options_.format == MTXFormatOptions::array) {
-      return ReadArrayIntoArray();
+  if constexpr (std::is_same_v<ValueType, void>){
+    throw ReaderException("Cannot read a matrix market file into an Array whose ValueType is void");
   } else {
-    throw ReaderException(
-        "Wrong format value while reading matrix market file\n");
+    bool weighted = options_.field != MTXFieldOptions::pattern;
+    if (!weighted){
+      throw ReaderException("Cannot read a matrix market file into an Array if it is in pattern format");
+    }
+    if (options_.format == MTXFormatOptions::coordinate) {
+      if constexpr (!std::is_same_v<ValueType, void>) {
+        return ReadCoordinateIntoArray();
+      }
+    } else if (options_.format == MTXFormatOptions::array) {
+      if constexpr (!std::is_same_v<ValueType, void>) {
+        return ReadArrayIntoArray();
+      }
+    } else {
+      throw ReaderException(
+          "Wrong format value while reading matrix market file\n");
+    }
   }
 }
 
@@ -569,19 +662,32 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   format::COO<IDType, NNZType, ValueType> *coo;
 
   if (weighted_) {
-    pigo::COO<IDType, IDType, IDType *, false, false, false, true, ValueType,
-              ValueType *>
-        pigo_coo(filename_, pigo::MATRIX_MARKET);
-    coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
-        pigo_coo.y(), pigo_coo.w(), format::kOwned);
+    if constexpr (!std::is_same_v<ValueType, void>) {
+      pigo::COO<IDType, IDType, IDType *, false, false, false, true, ValueType,
+                ValueType *>
+          pigo_coo(filename_, pigo::MATRIX_MARKET);
+      coo = new format::COO<IDType, NNZType, ValueType>(
+          pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(),
+          pigo_coo.x(), pigo_coo.y(), pigo_coo.w(), format::kOwned);
+    } else {
+      throw ReaderException("Cannot read a matrix market with weights into Format with void ValueType");
+    }
   } else {
-    pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
-              ValueType *>
-        pigo_coo(filename_, pigo::MATRIX_MARKET);
-    coo = new format::COO<IDType, NNZType, ValueType>(
-        pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(), pigo_coo.x(),
-        pigo_coo.y(), nullptr, format::kOwned);
+    if constexpr (!std::is_same_v<ValueType, void>) {
+      pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
+                ValueType *>
+          pigo_coo(filename_, pigo::MATRIX_MARKET);
+      coo = new format::COO<IDType, NNZType, ValueType>(
+          pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(),
+          pigo_coo.x(), pigo_coo.y(), nullptr, format::kOwned);
+    } else {
+      pigo::COO<IDType, IDType, IDType *, false, false, false, false, char,
+          char *>
+          pigo_coo(filename_, pigo::MATRIX_MARKET);
+      coo = new format::COO<IDType, NNZType, ValueType>(
+          pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(),
+          pigo_coo.x(), pigo_coo.y(), nullptr, format::kOwned);
+    }
   }
 
   if (convert_to_zero_index_) {
@@ -630,19 +736,33 @@ format::COO<IDType, NNZType, ValueType> *
 PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #ifdef USE_PIGO
   if (weighted_) {
-    pigo::COO<IDType, IDType, IDType *, false, false, false, true, ValueType,
-              ValueType *>
-        coo(filename_, pigo::EDGE_LIST);
-    return new format::COO<IDType, NNZType, ValueType>(
-        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
-        format::kOwned);
+    if constexpr (!std::is_same_v<ValueType, void>) {
+      pigo::COO<IDType, IDType, IDType *, false, false, false, true, ValueType,
+                ValueType *>
+          coo(filename_, pigo::EDGE_LIST);
+      return new format::COO<IDType, NNZType, ValueType>(
+          coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
+          format::kOwned);
+    } else {
+      throw ReaderException("Cannot read a weighted edge list into format with void ValueType");
+    }
   } else {
-    pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
-              ValueType *>
-        coo(filename_, pigo::EDGE_LIST);
-    return new format::COO<IDType, NNZType, ValueType>(
-        coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), nullptr,
-        format::kOwned);
+    if constexpr (!std::is_same_v<ValueType, void>) {
+      pigo::COO<IDType, IDType, IDType *, false, false, false, false, ValueType,
+                ValueType *>
+          coo(filename_, pigo::EDGE_LIST);
+      return new format::COO<IDType, NNZType, ValueType>(
+          coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), nullptr,
+          format::kOwned);
+    } else {
+      pigo::COO<IDType, IDType, IDType *, false, false, false, false, char,
+          char *>
+          coo(filename_, pigo::EDGE_LIST);
+      return new format::COO<IDType, NNZType, ValueType>(
+          coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), nullptr,
+          format::kOwned);
+
+    }
   }
 #else
   std::cerr << "Warning: PIGO suppport is not compiled in this build of "
@@ -683,9 +803,11 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
   sbff.template GetArray("row_ptr", row_ptr);
   sbff.template GetArray("col", col);
 
-  if (sbff.get_array_count() == 3) {
-    sbff.template GetArray("vals", vals);
-  }
+    if constexpr (!std::is_same_v<ValueType, void>){
+      sbff.template GetArray("vals", vals);
+    } else {
+      throw ReaderException("Cannot read a weighted COO into a format with void ValueType");
+    }
 
   return new format::CSR<IDType, NNZType, ValueType>(
       dimensions[0], dimensions[1], row_ptr, col, vals, format::kOwned);
@@ -710,7 +832,11 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
   sbff.template GetArray("col", col);
 
   if (sbff.get_array_count() == 3) {
-    sbff.template GetArray("vals", vals);
+    if constexpr (!std::is_same_v<ValueType, void>){
+      sbff.template GetArray("vals", vals);
+    } else {
+      throw ReaderException("Cannot read a weighted COO into a format with void ValueType");
+    }
   }
 
   return new format::COO<IDType, NNZType, ValueType>(
@@ -720,10 +846,13 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
 
 template <typename T>
 BinaryReaderOrderOne<T>::BinaryReaderOrderOne(std::string filename)
-    : filename_(filename) {}
+    : filename_(filename) {
+  static_assert(!std::is_same_v<T, void>, "A BinaryReaderOrderOne cannot read an Array of type void");
+}
 
 template <typename T>
 format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
+  static_assert(!std::is_same_v<T, void>, "A BinaryReaderOrderOne cannot read an Array of type void");
   auto sbff = SbffObject::ReadObject(filename_);
 
   if (sbff.get_name() != "array") {
@@ -732,8 +861,11 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 
   format::DimensionType size = sbff.get_dimensions()[0];
   T *arr;
-  sbff.template GetArray("array", arr);
-
+  if constexpr (!std::is_same_v<T, void>){
+    sbff.template GetArray("array", arr);
+  } else {
+    throw ReaderException("Cannot read an into an Array with void ValueType");
+  }
   return new format::Array<T>(size, arr, format::kOwned);
 }
 
