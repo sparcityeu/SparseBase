@@ -77,10 +77,10 @@ preprocess::PermuteOrderTwo<IDType, NNZType, ValueType> permute(new_order, new_o
 format::Format* format = permute.GetTransformation(csr, {&cpu_context});
 // The abstract `Format` pointer is cast into a `CSR` pointer
 format::CSR<IDType, NNZType, ValueType>* new_csr = 
-  format->As<format::CSR<IDType, NNZType, ValueType>>();
+  format->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
 ```
 
-The `GetTransformation()` call returns a `CSR` object, but it returns it as a polymorphic pointer to the superclass `Format`. The `As` function will statically cast that pointer to the correct type.
+The `GetTransformation()` call returns a `CSR` object, but it returns it as a polymorphic pointer to the superclass `Format`. The `AsAbsolute` function will statically cast that pointer to the correct type.
 
 Let's print some statistics about the reordered graph.
 

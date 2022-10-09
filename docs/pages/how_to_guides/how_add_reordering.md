@@ -106,7 +106,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
   static IDType *OptimallyOrderCSR(
       std::vector<format::Format<IDType, NNZType, ValueType> *> input_sf,
       PreprocessParams *poly_params) {
-    auto csr = input_sf[0]->As<format::CSR<IDType, NNZType, ValueType>>();
+    auto csr = input_sf[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
     OptimalReorderParams *params =
         static_cast<OptimalReorderParams *>(poly_params);
     context::CPUContext *cpu_context =
@@ -172,7 +172,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
       std::vector<format::Format<IDType, NNZType, ValueType> *> input_sf,
       PreprocessParams *poly_params) {
     auto cuda_csr =
-        input_sf[0]->As<format::CUDACSR<IDType, NNZType, ValueType>>();
+        input_sf[0]->AsAbsolute<format::CUDACSR<IDType, NNZType, ValueType>>();
     OptimalReorderParams *params =
         static_cast<OptimalReorderParams *>(poly_params);
     context::CPUContext *cuda_context =
@@ -274,7 +274,7 @@ class preprocess_init(explicit_initialization):
     print_implementations([..., 'OptimalReorder'], self.out_stream)
 ```
 
-As for `CUDA` functions, their explicit instantiations should be added to the `run(self)` function of the class `preprocess_cuda_init`. For the exact format, you may follow the existing code in the function.
+AsAbsolute for `CUDA` functions, their explicit instantiations should be added to the `run(self)` function of the class `preprocess_cuda_init`. For the exact format, you may follow the existing code in the function.
 
 ## Results
 

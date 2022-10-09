@@ -68,7 +68,7 @@ typedef unsigned long long DimensionType;
  * All Sparse Data Format Objects (like CSR and COO) are derived from Format.
  * Most of the library uses Format pointers as input and output.
  * By itself Format has very little functionality besides giving size
- * information. Often a user will have to use the As() function to convert it to
+ * information. Often a user will have to use the AsAbsolute() function to convert it to
  * a concrete format.
  */
 class Format {
@@ -113,12 +113,17 @@ public:
    * \return A concrete format pointer to this object (for example:
    * CSR<int,int,int>*)
    */
-  template <typename T> typename std::remove_pointer<T>::type *As() {
+  template <typename T> typename std::remove_pointer<T>::type *AsAbsolute() {
+    static_assert(std::is_base_of_v<Format, T>, "Cannot cast a non-Format class using AsAbsolute");
     using TBase = typename std::remove_pointer<T>::type;
     if (this->get_format_id() == std::type_index(typeid(TBase))) {
       return static_cast<TBase *>(this);
     }
     throw utils::TypeException(get_format_id().name(), typeid(TBase).name());
+  }
+  template <template <typename...> typename T> void *AsAbsolute() {
+    static_assert(utils::always_false<T<void>>, "When casting a format pointer, you need to pass the data type with the template arguments");
+    return nullptr;
   }
 
   //! Templated function that can be used to check the concrete type of this object
@@ -208,6 +213,18 @@ class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Fo
         static_assert(utils::always_false<ToValueType>, "Cannot do type conversion for the requested type. Throw a rock through one of our devs' windows");
       }
     };
+  template <typename T> typename std::remove_pointer<T>::type *As() {
+    static_assert(utils::always_false<T>, "When casting a FormatOrderTwo, only pass the class name without its types");
+    return nullptr;
+  }
+  template <template <typename> typename T> typename std::remove_pointer<T<ValueType>>::type *As() {
+    static_assert(std::is_base_of_v<FormatOrderOne<ValueType>, T<ValueType>>, "Cannot cast to a non-FormatOrderOne class");
+    using TBase = typename std::remove_pointer<T<ValueType>>::type;
+    if (this->get_format_id() == std::type_index(typeid(TBase))) {
+      return static_cast<TBase *>(this);
+    }
+    throw utils::TypeException(this->get_format_id().name(), typeid(TBase).name());
+  }
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
@@ -238,6 +255,18 @@ class FormatOrderTwo
     }
   };
 
+  template <typename T> typename std::remove_pointer<T>::type *As() {
+    static_assert(utils::always_false<T>, "When casting a FormatOrderOne, only pass the class name without its types");
+    return nullptr;
+  }
+  template <template <typename, typename, typename> typename T> typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type *As() {
+    static_assert(std::is_base_of_v<FormatOrderTwo<IDType, NNZType, ValueType>, T<IDType, NNZType, ValueType>>, "Cannot cast to a non-FormatOrderTwo class");
+    using TBase = typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type;
+    if (this->get_format_id() == std::type_index(typeid(TBase))) {
+      return static_cast<TBase *>(this);
+    }
+    throw utils::TypeException(this->get_format_id().name(), typeid(TBase).name());
+  }
 };
 
 //! Coordinate List Sparse Data Format
@@ -418,7 +447,7 @@ template <typename ToIDType, typename ToNNZType, typename ToValueType>
 struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
     <CSR, ToIDType, ToNNZType, ToValueType> {
   CSR<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source, bool is_move_conversion) {
-    CSR<IDType, NNZType, ValueType>* csr = source->template As<CSR<IDType, NNZType, ValueType>>();
+    CSR<IDType, NNZType, ValueType>* csr = source->template As<CSR>();
     auto dims = csr->get_dimensions();
     auto num_nnz = csr->get_num_nnz();
     ToNNZType * new_row_ptr;
@@ -456,7 +485,7 @@ template <typename ToIDType, typename ToNNZType, typename ToValueType>
 struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
     <CSC, ToIDType, ToNNZType, ToValueType> {
   CSC<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source, bool is_move_conversion) {
-    CSC<IDType, NNZType, ValueType>* csc = source->template As<CSC<IDType, NNZType, ValueType>>();
+    CSC<IDType, NNZType, ValueType>* csc = source->template As<CSC>();
     auto dims = csc->get_dimensions();
     auto num_nnz = csc->get_num_nnz();
     ToNNZType * new_col_ptr;
@@ -491,7 +520,7 @@ template <typename ToIDType, typename ToNNZType, typename ToValueType>
 struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
     <COO, ToIDType, ToNNZType, ToValueType> {
   COO<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source, bool is_move_conversion) {
-    COO<IDType, NNZType, ValueType>* coo = source->template As<COO<IDType, NNZType, ValueType>>();
+    COO<IDType, NNZType, ValueType>* coo = source->template As<COO>();
     auto dims = coo->get_dimensions();
     auto num_nnz = coo->get_num_nnz();
     ToIDType * new_col;
@@ -529,7 +558,7 @@ template <typename ValueType>
 template <typename ToValueType>
 struct FormatOrderOne<ValueType>::TypeConverter<format::Array, ToValueType> {
   format::Array<ToValueType> * operator()(FormatOrderOne<ValueType>* source, bool is_move_conversion){
-    auto arr = source->template As<format::Array<ValueType>>();
+    auto arr = source->template As<format::Array>();
     auto num_nnz = arr->get_num_nnz();
     ToValueType * new_vals;
     if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
@@ -564,7 +593,7 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
   return converter
       .Convert(this, ToType<ValueType>::get_format_id_static(), actual_context,
                is_move_conversion)
-      ->template As<ToType<ValueType>>();
+      ->template AsAbsolute<ToType<ValueType>>();
 }
 template <typename ValueType>
 template <template <typename> typename ToType, typename ToValueType>
@@ -605,7 +634,7 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
   return converter
       .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                actual_context, is_move_conversion)
-      ->template As<ToType<IDType, NNZType, ValueType>>();
+      ->template AsAbsolute<ToType<IDType, NNZType, ValueType>>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>

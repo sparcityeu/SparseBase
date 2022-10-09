@@ -129,7 +129,7 @@ public:
                       bool is_move_conversion = false) {
     auto *res = this->Convert(source, FormatType::get_format_id_static(),
                               to_context, is_move_conversion);
-    return res->template As<FormatType>();
+    return res->template AsAbsolute<FormatType>();
   }
 
   std::tuple<bool, context::Context *>
