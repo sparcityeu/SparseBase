@@ -24,7 +24,11 @@ std::map<std::string, std::vector<std::any>> ConcreteExperiment::GetResults(){
   return this->_results;
 }
 
-void ConcreteExperiment::Run(unsigned int times) {
+std::map<std::string, std::any> ConcreteExperiment::GetAuxiliary(){
+  return this->_auxiliary;
+}
+
+void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
   for(unsigned int l = 0; l < this->_dataLoaders.size(); l++){
     auto loader = this->_dataLoaders[l];
     for(const auto & t: this->_targets[l]){
@@ -35,6 +39,16 @@ void ConcreteExperiment::Run(unsigned int times) {
         auto pid = p.first;
         auto pfunc = p.second;
         pfunc(data);
+        if(store_auxiliary){
+          for(const auto & d: data){
+            auto aid = d.first;
+            aid.append(",");
+            aid.append(file_name);
+            aid.append(",");
+            aid.append(pid);
+            this->_auxiliary[aid] = d.second;
+          }
+        }
         for(const auto & k: this->_kernels){
           auto kid = k.first;
           auto kfunc = k.second;
