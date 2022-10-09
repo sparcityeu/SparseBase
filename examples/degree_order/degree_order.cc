@@ -43,9 +43,8 @@ int main(int argc, char *argv[]) {
   vertex_type *permutation = orderer.GetReorder(con, {&cpu_context}, false);
   vertex_type n = con->get_dimensions()[0];
   auto row_ptr =
-      con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
-  auto col =
-      con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
+      con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto col = con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << permutation[0]
        << ", Degree: " << row_ptr[permutation[0] + 1] - row_ptr[permutation[0]] << endl;
@@ -86,9 +85,9 @@ int main(int argc, char *argv[]) {
   preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(permutation, permutation);
   format::Format *perm_csr = transformer.GetTransformation(con, {&cpu_context}, true);
   auto *n_row_ptr =
-      perm_csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+      perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto *n_col =
-      perm_csr->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
+      perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for (vertex_type i = 0; i < n - 1 && transform_is_correct; i++) {
@@ -103,8 +102,9 @@ int main(int argc, char *argv[]) {
   }
   // We can reverse the ordering easily
   preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(inv_permutation, inv_permutation);
-  auto perm_then_inv_perm_csr = inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)->As<format::CSR<vertex_type, edge_type, value_type>>();
-  auto orig_csr = con->As<format::CSR<vertex_type, edge_type, value_type>>();
+  auto perm_then_inv_perm_csr = inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)->As<format::CSR>();
+  auto orig_csr =
+      con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
   for (vertex_type i = 0; i < n; i++){
     for (edge_type e = perm_then_inv_perm_csr->get_row_ptr()[i]; e < perm_then_inv_perm_csr->get_row_ptr()[i+1]; e++){
       if (orig_csr->get_col()[e]!= perm_then_inv_perm_csr->get_col()[e]){

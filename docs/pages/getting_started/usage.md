@@ -140,21 +140,21 @@ sparsebase::format::CSR<int,int,int>* csr = format->Convert<sparsebase::format::
 
 ```
 
-Alternatively, if the pointer you have is to the abstract ``Format`` class, then you should use the ``As<>()`` casting function. Keep in mind that you must pass, as a template argument to ``As<>()``, the format class you wish to cast to along with its templated types:
+Alternatively, if the pointer you have is to the abstract ``Format`` class, then you should use the ``AsAbsolute<>()`` casting function. Keep in mind that you must pass, as a template argument to ``AsAbsolute<>()``, the format class you wish to cast to along with its templated types:
 
 ```cpp
 // Consider the scenario where you obtained a generic pointer from a function
 sparsebase::format::Format* format = ...;
 
 // The template argument includes the class name along with its template types (int, int, int)
-sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR<int, int, int>>();
+sparsebase::format::CSR<int,int,int>* csr = format->AsAbsolute<sparsebase::format::CSR<int, int, int>>();
 
 ```
 
 
 ## Converting Formats
 
-As explained in the previous section, readers will read to different formats.
+AsAbsolute explained in the previous section, readers will read to different formats.
 
 However, we can convert the data into the format we desire using the ``Convert`` member funciton:
 ```cpp
@@ -213,7 +213,7 @@ Alternatively we can create a graph by directly passing the reader.
  g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
-As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
+AsAbsolute of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
 
 ## Ordering
 
