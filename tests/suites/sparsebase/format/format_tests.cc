@@ -515,5 +515,21 @@ TEST(Format, Is){
 
   delete csr;
 }
+class TestFormat : format::FormatImplementation<TestFormat> {
+public:
+  TestFormat(){
+    this->context_ = std::unique_ptr<context::Context>(new context::CPUContext);
+  }
+  void ResetContext(){
+    this->context_ =std::unique_ptr<context::Context>(new context::CPUContext);
+    utils::OnceSettable<std::unique_ptr<context::Context>> xx;
+  }
+  Format * Clone()const {
+    return nullptr;
+  }
+};
 
-
+TEST(Context, reset){
+  TestFormat tf;
+  EXPECT_THROW(tf.ResetContext(), utils::AttemptToReset<std::unique_ptr<context::Context>>);
+}

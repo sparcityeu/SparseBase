@@ -42,7 +42,7 @@ def reset_file(filename, folder=output_folder):
     out.close()
 
 
-def gen_inst(template, filename, is_class=True, ifdef=None, folder=output_folder, exceptions=None):
+def gen_inst(template, filename, ifdef=None, folder=output_folder, exceptions=None):
     local_comb_types = comb_types
     if exceptions is not None:
         for key, exception_types in exceptions.items():
@@ -70,10 +70,7 @@ def gen_inst(template, filename, is_class=True, ifdef=None, folder=output_folder
 
         if key not in already_added:
             already_added.add(key)
-            if is_class:
-                out.write("template class " + inst + ";\n")
-            else:
-                out.write("template  " + inst + ";\n")
+            out.write("template  " + inst + ";\n")
 
 
     if ifdef is not None:
@@ -87,36 +84,36 @@ def gen_inst(template, filename, is_class=True, ifdef=None, folder=output_folder
 
 # Format
 reset_file("format.inc")
-gen_inst("CSR<$id_type, $nnz_type, $value_type>", "format.inc")
-gen_inst("CSC<$id_type, $nnz_type, $value_type>", "format.inc")
-gen_inst("COO<$id_type, $nnz_type, $value_type>", "format.inc")
-gen_inst("Array<$value_type>", "format.inc", exceptions={"$value_type": ['void']})
-gen_inst("Array<$nnz_type>", "format.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("Array<$id_type>", "format.inc", exceptions={"$id_type": ['void']})
+gen_inst("class CSR<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("class CSC<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("class COO<$id_type, $nnz_type, $value_type>", "format.inc")
+gen_inst("class Array<$value_type>", "format.inc", exceptions={"$value_type": ['void']})
+gen_inst("class Array<$nnz_type>", "format.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class Array<$id_type>", "format.inc", exceptions={"$id_type": ['void']})
 
 # Format (CUDA)
 reset_file("format.inc", cuda_output_folder)
-gen_inst("CUDACSR<$id_type, $nnz_type, $value_type>", "format.inc",
+gen_inst("class CUDACSR<$id_type, $nnz_type, $value_type>", "format.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder)
-gen_inst("CUDAArray<$value_type>", "format.inc",
+gen_inst("class CUDAArray<$value_type>", "format.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
-gen_inst("CUDAArray<$id_type>", "format.inc",
+gen_inst("class CUDAArray<$id_type>", "format.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
-gen_inst("CUDAArray<$nnz_type>", "format.inc",
+gen_inst("class CUDAArray<$nnz_type>", "format.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
 
 
 # Object
 reset_file("object.inc")
-gen_inst("AbstractObject<$id_type, $nnz_type, $value_type>", "object.inc")
-gen_inst("Graph<$id_type, $nnz_type, $value_type>", "object.inc")
+gen_inst("class AbstractObject<$id_type, $nnz_type, $value_type>", "object.inc")
+gen_inst("class Graph<$id_type, $nnz_type, $value_type>", "object.inc")
 
 # Converter
 reset_file("converter.inc")
-gen_inst("ConverterOrderOne<$value_type>", "converter.inc", exceptions={"$value_type": ['void']})
-gen_inst("ConverterOrderOne<$id_type>", "converter.inc", exceptions={"$id_type": ['void']})
-gen_inst("ConverterOrderOne<$nnz_type>", "converter.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter.inc")
+gen_inst("class ConverterOrderOne<$value_type>", "converter.inc", exceptions={"$value_type": ['void']})
+gen_inst("class ConverterOrderOne<$id_type>", "converter.inc", exceptions={"$id_type": ['void']})
+gen_inst("class ConverterOrderOne<$nnz_type>", "converter.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter.inc")
 
 # Converter (CUDA)
 reset_file("converter.inc", folder=cuda_output_folder)
@@ -129,73 +126,72 @@ order_one_functions = ['CUDAArrayArrayConditionalFunction',
                        'ArrayCUDAArrayConditionalFunction']
 
 for func in order_two_functions:
-    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc", is_class=False,
+    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc",
              ifdef="USE_CUDA", folder=cuda_output_folder)
 
 for func in order_one_functions:
-    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc", is_class=False,
+    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$id_type": ['void']})
-    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc", is_class=False,
+    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$nnz_type": ['void']})
-    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc", is_class=False,
+    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
 
 
 
 # Reader
 reset_file("reader.inc")
-gen_inst("EdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("MTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("PigoEdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("PigoMTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("BinaryReaderOrderOne<$id_type>", "reader.inc", exceptions={"$id_type": ['void']})
-gen_inst("BinaryReaderOrderOne<$nnz_type>", "reader.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("BinaryReaderOrderOne<$value_type>", "reader.inc", exceptions={"$value_type": ['void']})
+gen_inst("class EdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("class MTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("class PigoEdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("class PigoMTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("class BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>", "reader.inc")
+gen_inst("class BinaryReaderOrderOne<$id_type>", "reader.inc", exceptions={"$id_type": ['void']})
+gen_inst("class BinaryReaderOrderOne<$nnz_type>", "reader.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class BinaryReaderOrderOne<$value_type>", "reader.inc", exceptions={"$value_type": ['void']})
 
 # Writer
 reset_file("writer.inc")
-gen_inst("BinaryWriterOrderOne<$id_type>", "writer.inc", exceptions={"$id_type": ['void']})
-gen_inst("BinaryWriterOrderOne<$nnz_type>", "writer.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("BinaryWriterOrderOne<$value_type>", "writer.inc", exceptions={"$value_type": ['void']})
-gen_inst("BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
+gen_inst("class BinaryWriterOrderOne<$id_type>", "writer.inc", exceptions={"$id_type": ['void']})
+gen_inst("class BinaryWriterOrderOne<$nnz_type>", "writer.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class BinaryWriterOrderOne<$value_type>", "writer.inc", exceptions={"$value_type": ['void']})
+gen_inst("class BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
 
 # Feature
 reset_file("feature.inc")
-gen_inst("FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>", "feature.inc")
+gen_inst("class FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>", "feature.inc")
 
 # Preprocess
 reset_file("preprocess.inc")
-gen_inst("Degrees<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("RCMReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("DegreeReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("GrayReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("GenericReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("PermuteOrderTwo<$id_type, $nnz_type, $value_type>", "preprocess.inc")
-gen_inst("PermuteOrderOne<$id_type, $value_type>", "preprocess.inc", exceptions={"$value_type": ['void']})
-gen_inst("TransformPreprocessType<format::FormatOrderTwo<$id_type, $nnz_type, $value_type>, format::FormatOrderTwo<$id_type, $nnz_type, $value_type>>", "preprocess.inc")
-gen_inst("TransformPreprocessType<format::FormatOrderOne<$value_type>, format::FormatOrderOne<$value_type>>", "preprocess.inc")
-gen_inst("TransformPreprocessType<format::FormatOrderOne<$id_type>, format::FormatOrderOne<$id_type>>", "preprocess.inc")
-gen_inst("TransformPreprocessType<format::FormatOrderOne<$nnz_type>, format::FormatOrderOne<$nnz_type>>", "preprocess.inc")
-gen_inst("DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
-gen_inst("Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
-gen_inst("JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
-gen_inst("MetisPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
-gen_inst("ConverterMixin<PreprocessType>", "preprocess.inc")
-gen_inst("FunctionMatcherMixin<format::Format*>", "preprocess.inc")
-gen_inst("FunctionMatcherMixin<$id_type*>", "preprocess.inc")
-gen_inst("FunctionMatcherMixin<$id_type>", "preprocess.inc")
-gen_inst("FunctionMatcherMixin<$id_type*, ConverterMixin<ExtractableType>>", "preprocess.inc")
-gen_inst("FunctionMatcherMixin<$id_type, ConverterMixin<ExtractableType>>", "preprocess.inc")
-gen_inst("GenericPreprocessType<$id_type>", "preprocess.inc")
-gen_inst("ReorderPreprocessType<$id_type>", "preprocess.inc")
-gen_inst("PartitionPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("class Degrees<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("class RCMReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("class DegreeReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("class GrayReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("class GenericReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("class PermuteOrderTwo<$id_type, $nnz_type, $value_type>", "preprocess.inc")
+gen_inst("class PermuteOrderOne<$id_type, $value_type>", "preprocess.inc", exceptions={"$value_type": ['void']})
+gen_inst("class TransformPreprocessType<format::FormatOrderTwo<$id_type, $nnz_type, $value_type>, format::FormatOrderTwo<$id_type, $nnz_type, $value_type>>", "preprocess.inc")
+gen_inst("class TransformPreprocessType<format::FormatOrderOne<$value_type>, format::FormatOrderOne<$value_type>>", "preprocess.inc")
+gen_inst("class TransformPreprocessType<format::FormatOrderOne<$id_type>, format::FormatOrderOne<$id_type>>", "preprocess.inc")
+gen_inst("class TransformPreprocessType<format::FormatOrderOne<$nnz_type>, format::FormatOrderOne<$nnz_type>>", "preprocess.inc")
+gen_inst("class DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
+gen_inst("class Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
+gen_inst("class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
+gen_inst("class MetisPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
+gen_inst("class ConverterMixin<PreprocessType>", "preprocess.inc")
+gen_inst("class FunctionMatcherMixin<format::Format*>", "preprocess.inc")
+gen_inst("class FunctionMatcherMixin<$id_type*>", "preprocess.inc")
+gen_inst("class FunctionMatcherMixin<$id_type>", "preprocess.inc")
+gen_inst("class FunctionMatcherMixin<$id_type*, ConverterMixin<ExtractableType>>", "preprocess.inc")
+gen_inst("class FunctionMatcherMixin<$id_type, ConverterMixin<ExtractableType>>", "preprocess.inc")
+gen_inst("class GenericPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("class ReorderPreprocessType<$id_type>", "preprocess.inc")
+gen_inst("class PartitionPreprocessType<$id_type>", "preprocess.inc")
 
 # Preprocess (CUDA)
 reset_file("preprocess.inc", cuda_output_folder)
 gen_inst("format::cuda::CUDAArray<$float_type>* "
          + "RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
          "preprocess.inc",
-         is_class=False,
          ifdef="USE_CUDA",
          folder=cuda_output_folder)
