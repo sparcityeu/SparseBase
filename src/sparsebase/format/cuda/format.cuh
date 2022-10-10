@@ -6,9 +6,9 @@
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
+#include "sparsebase/format/format.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda/context.cuh"
-#include "sparsebase/format/format.h"
 #ifndef SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 #define SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 
@@ -23,7 +23,7 @@ template <typename T> struct CUDADeleter {
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CUDACSR
-    : public FormatImplementation<CUDACSR<IDType, NNZType, ValueType>> {
+    : public FormatImplementation<CUDACSR<IDType, NNZType, ValueType>, FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
           ValueType *vals, context::cuda::CUDAContext context,
@@ -62,7 +62,7 @@ protected:
 };
 
 template <typename ValueType>
-class CUDAArray : public FormatImplementation<CUDAArray<ValueType>> {
+class CUDAArray : public FormatImplementation<CUDAArray<ValueType>, FormatOrderOne<ValueType>> {
 public:
   CUDAArray(DimensionType nnz, ValueType *row_ptr,
             context::cuda::CUDAContext context, Ownership own = kNotOwned);

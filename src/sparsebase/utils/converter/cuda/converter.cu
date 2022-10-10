@@ -62,9 +62,13 @@ Format *CsrCUDACsrConditionalFunction(Format *source,
   cudaMemcpy(col, csr->get_col(), csr->get_num_nnz() * sizeof(IDType),
              cudaMemcpyHostToDevice);
   if (csr->get_vals() != nullptr) {
-    cudaMalloc(&vals, csr->get_num_nnz() * sizeof(ValueType));
-    cudaMemcpy(vals, csr->get_vals(), csr->get_num_nnz() * sizeof(ValueType),
-               cudaMemcpyHostToDevice);
+    if constexpr (std::is_same_v<ValueType, void>){
+      throw utils::TypeException("Cannot create values array for type void");
+    } else {
+      cudaMalloc(&vals, csr->get_num_nnz() * sizeof(ValueType));
+      cudaMemcpy(vals, csr->get_vals(), csr->get_num_nnz() * sizeof(ValueType),
+                 cudaMemcpyHostToDevice);
+    }
   }
   return new format::cuda::CUDACSR<IDType, NNZType, ValueType>(
       csr->get_dimensions()[0], csr->get_dimensions()[0], csr->get_num_nnz(),
@@ -92,10 +96,14 @@ Format *CUDACsrCUDACsrConditionalFunction(Format *source,
   cudaMemcpy(col, cuda_csr->get_col(), cuda_csr->get_num_nnz() * sizeof(IDType),
              cudaMemcpyDeviceToDevice);
   if (cuda_csr->get_vals() != nullptr) {
-    cudaMalloc(&vals, cuda_csr->get_num_nnz() * sizeof(ValueType));
-    cudaMemcpy(vals, cuda_csr->get_vals(),
-               cuda_csr->get_num_nnz() * sizeof(ValueType),
-               cudaMemcpyDeviceToDevice);
+    if constexpr (std::is_same_v<ValueType, void>){
+      throw utils::TypeException("Cannot create values array for type void");
+    } else {
+      cudaMalloc(&vals, cuda_csr->get_num_nnz() * sizeof(ValueType));
+      cudaMemcpy(vals, cuda_csr->get_vals(),
+                 cuda_csr->get_num_nnz() * sizeof(ValueType),
+                 cudaMemcpyDeviceToDevice);
+    }
   }
   return new format::cuda::CUDACSR<IDType, NNZType, ValueType>(
       cuda_csr->get_dimensions()[0], cuda_csr->get_dimensions()[0],
@@ -119,9 +127,13 @@ Format *CUDACsrCsrConditionalFunction(Format *source,
   cudaMemcpy(col, cuda_csr->get_col(), nnz * sizeof(IDType),
              cudaMemcpyDeviceToHost);
   if (cuda_csr->get_vals() != nullptr) {
-    vals = new ValueType[nnz];
-    cudaMemcpy(vals, cuda_csr->get_vals(), nnz * sizeof(ValueType),
-               cudaMemcpyDeviceToHost);
+    if constexpr (std::is_same_v<ValueType, void>){
+      throw utils::TypeException("Cannot create values array for type void");
+    } else {
+      vals = new ValueType[nnz];
+      cudaMemcpy(vals, cuda_csr->get_vals(), nnz * sizeof(ValueType),
+                 cudaMemcpyDeviceToHost);
+    }
   }
   return new CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
 }
@@ -134,7 +146,7 @@ bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
   return can_access;
 }
 #if !defined(_HEADER_ONLY)
-#include "init/external/cuda/converter.inc"
+#include "init/cuda/converter.inc"
 #endif
 } // namespace cuda
 } // namespace converter

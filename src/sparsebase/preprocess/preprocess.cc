@@ -1,7 +1,7 @@
 #include "preprocess.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
-#ifdef CUDA
+#ifdef USE_CUDA
 #include "sparsebase/preprocess/cuda/preprocess.cuh"
 #endif
 #include <iostream>
@@ -171,7 +171,7 @@ FunctionMatcherMixin<
       std::string message;
       message = "Could not find a function that matches the formats: {";
       for (auto f : packed_sfs) {
-        message += f->get_format_id().name();
+        message += f->get_format_name();
         message += " ";
       }
       message += "} using the contexts {";
@@ -226,7 +226,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
                      KeyEqualTo>::CachedExecute(PreprocessParams *params,
                                                 utils::converter::Converter *sc,
                                                 std::vector<context::Context *>
-                                                    contexts,
+                                                    contexts, bool convert_input,
                                                 F format, SF... formats) {
   ConversionMap map = this->map_to_function_;
   // pack the Formats into a vector
@@ -243,6 +243,12 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   utils::converter::ConversionSchemaConditional cs = std::get<1>(ret);
   // carry out conversion
   // ready_formats contains the format to use in preprocessing
+  if (!convert_input){
+    for (auto convert_order : cs){
+      if (std::get<0>(convert_order))
+        throw utils::DirectExecutionNotAvailableException(packed_format_types, this->GetAvailableFormats());
+    }
+  }
   std::vector<Format *> ready_formats =
       sc->ApplyConversionSchema(cs, packed_formats);
   // `converted` contains the results of conversions
@@ -267,9 +273,9 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
                      KeyEqualTo>::Execute(PreprocessParams *params,
                                           utils::converter::Converter *sc,
                                           std::vector<context::Context *>
-                                              contexts,
+                                              contexts, bool convert_input,
                                           F sf, SF... sfs) {
-  auto cached_output = CachedExecute(params, sc, contexts, sf, sfs...);
+  auto cached_output = CachedExecute(params, sc, contexts, convert_input, sf, sfs...);
   auto converted_formats = std::get<0>(cached_output);
   auto return_object = std::get<1>(cached_output);
   for (auto *converted_format : converted_formats) {
@@ -278,8 +284,16 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   }
   return return_object;
 }
+
 template <typename IDType, typename NNZType, typename ValueType>
-GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {}
+GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+}
+template <typename IDType, typename NNZType, typename ValueType>
+DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(DegreeReorderParams params) {
+ DegreeReorder<IDType, NNZType, ValueType>(params.ascending);
+}
 template <typename IDType, typename NNZType, typename ValueType>
 DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
@@ -300,36 +314,36 @@ GenericPreprocessType<ReturnType>::~GenericPreprocessType() = default;
 template <typename ReturnType>
 int GenericPreprocessType<ReturnType>::GetOutput(
     Format *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->Execute(params, (this->sc_.get()), contexts, format);
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename ReturnType>
 std::tuple<std::vector<format::Format *>, int>
 GenericPreprocessType<ReturnType>::GetOutputCached(
     Format *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, format);
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 template <typename IDType>
 IDType *ReorderPreprocessType<IDType>::GetReorder(
-    Format *format, std::vector<context::Context *> contexts) {
-  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+    Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
                        format);
 }
 
 template <typename IDType>
 IDType *ReorderPreprocessType<IDType>::GetReorder(
     Format *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->Execute(params, (this->sc_.get()), contexts, format);
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename IDType>
 std::tuple<std::vector<format::Format *>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
-    Format *format, std::vector<context::Context *> contexts) {
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts,
+    Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
                              format);
 }
 
@@ -337,8 +351,8 @@ template <typename IDType>
 std::tuple<std::vector<format::Format *>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
     Format *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, format);
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -388,6 +402,15 @@ RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+RCMReorder<IDType, NNZType, ValueType>::RCMReorder(RCMReorderParams p) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+
 }
 template <typename IDType, typename NNZType, typename ValueType>
 IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
@@ -497,22 +520,58 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   return Q;
 }
 
+template <typename IDType, typename ValueType>
+PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(PermuteOrderOneParams params) {
+  PermuteOrderOne(params.order);
+}
+template <typename IDType, typename ValueType>
+PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
+  this->SetConverter(
+      utils::converter::ConverterOrderOne<ValueType>{});
+  this->RegisterFunction(
+      {Array<ValueType>::get_format_id_static()}, PermuteArray);
+  this->params_ = std::unique_ptr<PermuteOrderOneParams>(new PermuteOrderOneParams(order));
+}
+template <typename IDType, typename ValueType>
+format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteArray(
+    std::vector<Format *> formats, PreprocessParams *params) {
+  auto *sp = formats[0]->As<Array<ValueType>>();
+  auto order = static_cast<PermuteOrderOneParams *>(params)->order;
+  std::vector<DimensionType> dimensions = sp->get_dimensions();
+  IDType length = dimensions[0];
+  ValueType *vals = sp->get_vals();
+  ValueType *nvals = new ValueType[length]();
+  IDType* inv_order = new IDType[length];
+  for (IDType i = 0; i < length; i++){
+    inv_order[order[i]] = i;
+  }
+
+  for (IDType i = 0; i < length; i++){
+    nvals[i] = vals[inv_order[i]];
+  }
+  Array<ValueType> *arr = new Array<ValueType>(length, nvals, kOwned);
+  return arr;
+}
 template <typename IDType, typename NNZType, typename ValueType>
-Transform<IDType, NNZType, ValueType>::Transform(IDType *order) {
+PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(IDType *row_order, IDType* col_order) {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, TransformCSR);
-  this->params_ = std::unique_ptr<TransformParams>(new TransformParams(order));
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteOrderTwoCSR);
+  this->params_ = std::unique_ptr<PermuteOrderTwoParams>(new PermuteOrderTwoParams(row_order, col_order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-TransformPreprocessType<IDType, NNZType,
-                        ValueType>::~TransformPreprocessType() = default;
+PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams params) {
+  PermuteOrderTwo(params.row_order, params.col_order);
+}
+template <typename InputFormatType, typename ReturnFormtType>
+TransformPreprocessType<InputFormatType, ReturnFormtType>::~TransformPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
-Format *Transform<IDType, NNZType, ValueType>::TransformCSR(
+format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
-  auto order = static_cast<TransformParams *>(params)->order;
+  auto row_order = static_cast<PermuteOrderTwoParams *>(params)->row_order;
+  auto col_order = static_cast<PermuteOrderTwoParams *>(params)->col_order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
@@ -527,16 +586,39 @@ Format *Transform<IDType, NNZType, ValueType>::TransformCSR(
     if (sp->get_vals() != nullptr)
       nvals = new ValueType[nnz]();
   }
-
-  IDType *inverse_order = new IDType[n]();
-  for (IDType i = 0; i < n; i++)
-    inverse_order[order[i]] = i;
+  std::function<IDType(IDType)> get_i_row_order;
+  std::function<IDType(IDType)> get_col_order;
+  IDType *inverse_row_order;
+  if (row_order!=nullptr){
+    inverse_row_order= new IDType[n]();
+    for (IDType i = 0; i < n; i++)
+      inverse_row_order[row_order[i]] = i;
+    get_i_row_order= [&inverse_row_order](IDType i) -> IDType {
+      return inverse_row_order[i];
+    };
+  } else {
+    get_i_row_order= [&inverse_row_order](IDType i) -> IDType {
+      return i;
+    };
+  }
+  if (col_order!=nullptr){
+    get_col_order= [&col_order](IDType i) -> IDType {
+      return col_order[i];
+    };
+  } else {
+    get_col_order= [](IDType i) -> IDType {
+      return i;
+    };
+  }
+  //IDType *inverse_col_order = new IDType[n]();
+  //for (IDType i = 0; i < n; i++)
+  //  inverse_col_order[col_order[i]] = i;
   NNZType c = 0;
   for (IDType i = 0; i < n; i++) {
-    IDType u = inverse_order[i];
+    IDType u = get_i_row_order(i);
     nxadj[i + 1] = nxadj[i] + (xadj[u + 1] - xadj[u]);
     for (NNZType v = xadj[u]; v < xadj[u + 1]; v++) {
-      nadj[c] = order[adj[v]];
+      nadj[c] = get_col_order(adj[v]);
       if constexpr (!std::is_same_v<void, ValueType>) {
         if (sp->get_vals() != nullptr)
           nvals[c] = vals[v];
@@ -544,38 +626,43 @@ Format *Transform<IDType, NNZType, ValueType>::TransformCSR(
       c++;
     }
   }
-  delete[] inverse_order;
+  if (row_order == nullptr)
+    delete[] inverse_row_order;
   CSR<IDType, NNZType, ValueType> *csr = new CSR(n, m, nxadj, nadj, nvals);
   return csr;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<format::Format *>, format::Format *>
-TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
-    Format *csr, std::vector<context::Context *> contexts) {
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts,
-                             csr);
+template <typename InputFormatType, typename ReturnFormatType>
+std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
+    format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
+                             format);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<format::Format *>, format::Format *>
-TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformationCached(
-    Format *csr, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, csr);
+template <typename InputFormatType, typename ReturnFormatType>
+std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
+    format::Format  *format, PreprocessParams *params,
+    std::vector<context::Context *> contexts, bool convert_input) {
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
-    Format *csr, std::vector<context::Context *> contexts) {
-  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, csr);
+template <typename InputFormatType, typename ReturnFormatType>
+ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+    format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input, format);
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-Format *TransformPreprocessType<IDType, NNZType, ValueType>::GetTransformation(
-    Format *csr, PreprocessParams *params,
-    std::vector<context::Context *> contexts) {
-  return this->Execute(params, (this->sc_.get()), contexts, csr);
+template <typename InputFormatType, typename ReturnFormatType>
+ReturnFormatType *TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
+    format::Format  *format, PreprocessParams *params,
+    std::vector<context::Context *> contexts, bool convert_input) {
+  if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
+  return this->Execute(params, (this->sc_.get()), contexts, convert_input, format);
 }
 
 template <typename FeatureType>
@@ -611,11 +698,15 @@ std::type_index FeaturePreprocessType<FeatureType>::get_feature_id() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights(ParamsType) {}
+
+template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights() {
   this->SetConverter(
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
-#ifdef CUDA
+#ifdef USE_CUDA
   std::vector<std::type_index> formats = {
       format::cuda::CUDACSR<IDType, NNZType,
                             ValueType>::get_format_id_static()};
@@ -631,11 +722,11 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 format::Format *
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::GetJaccardWeights(
-    Format *format, std::vector<context::Context *> contexts) {
-  return this->Execute(nullptr, (this->sc_.get()), contexts,
+    Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(nullptr, (this->sc_.get()), contexts, convert_input,
                        format); // func(sfs, this->params_.get());
 }
-#ifdef CUDA
+#ifdef USE_CUDA
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 format::Format *
@@ -659,6 +750,12 @@ DegreeDistribution<IDType, NNZType, ValueType,
   this->params_ =
       std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
   this->pmap_.insert({get_feature_id_static(), this->params_});
+}
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+DegreeDistribution<IDType, NNZType, ValueType,
+    FeatureType>::DegreeDistribution(DegreeDistributionParams params) {
+  DegreeDistribution();
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -695,9 +792,9 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 std::unordered_map<std::type_index, std::any>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(
-    format::Format *format, std::vector<context::Context *> c) {
+    format::Format *format, std::vector<context::Context *> c, bool convert_input) {
   return {{this->get_feature_id(),
-           std::forward<FeatureType *>(GetDistribution(format, c))}};
+           std::forward<FeatureType *>(GetDistribution(format, c, convert_input))}};
 };
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -732,7 +829,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 std::tuple<std::vector<format::Format *>, FeatureType *>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     GetDistributionCached(Format *format,
-                          std::vector<context::Context *> contexts) {
+                          std::vector<context::Context *> contexts, bool convert_input) {
   // std::tuple<DegreeDistributionFunction<IDType, NNZType, ValueType,
   // FeatureType>,
   //             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
@@ -741,14 +838,14 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
   // std::get<0>(func_formats); std::vector<SparseFormat<IDType, NNZType,
   // ValueType> *> sfs = std::get<1>(func_formats);
   DegreeDistributionParams params;
-  return this->CachedExecute(&params, (this->sc_.get()), contexts,
+  return this->CachedExecute(&params, (this->sc_.get()), contexts, convert_input,
                              format); // func(sfs, this->params_.get());
 }
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 FeatureType *
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistribution(
-    Format *format, std::vector<context::Context *> contexts) {
+    Format *format, std::vector<context::Context *> contexts, bool convert_input) {
   // std::tuple<DegreeDistributionFunction<IDType, NNZType, ValueType,
   // FeatureType>,
   //             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
@@ -757,7 +854,7 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistribution(
   // std::get<0>(func_formats); std::vector<SparseFormat<IDType, NNZType,
   // ValueType> *> sfs = std::get<1>(func_formats);
   DegreeDistributionParams params;
-  return this->Execute(&params, (this->sc_.get()), contexts,
+  return this->Execute(&params, (this->sc_.get()), contexts, convert_input,
                        format); // func(sfs, this->params_.get());
 }
 
@@ -766,7 +863,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 FeatureType *
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistribution(
     object::Graph<IDType, NNZType, ValueType> *obj,
-    std::vector<context::Context *> contexts) {
+    std::vector<context::Context *> contexts, bool convert_input) {
   // std::tuple<DegreeDistributionFunction<IDType, NNZType, ValueType,
   // FeatureType>,
   //             std::vector<SparseFormat<IDType, NNZType, ValueType> *>>
@@ -775,7 +872,7 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetDistribution(
   // std::get<0>(func_formats); std::vector<SparseFormat<IDType, NNZType,
   // ValueType> *> sfs = std::get<1>(func_formats);
   Format *format = obj->get_connectivity();
-  return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
                        format); // func(sfs, this->params_.get());
 }
 
@@ -797,6 +894,10 @@ FeatureType *DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
   return dist;
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+Degrees<IDType, NNZType, ValueType>::Degrees(DegreesParams) {
+  Degrees();
+}
 template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees() {
   this->SetConverter(
@@ -854,15 +955,15 @@ std::type_index Degrees<IDType, NNZType, ValueType>::get_feature_id_static() {
 template <typename IDType, typename NNZType, typename ValueType>
 std::unordered_map<std::type_index, std::any>
 Degrees<IDType, NNZType, ValueType>::Extract(
-    format::Format *format, std::vector<context::Context *> c) {
+    format::Format *format, std::vector<context::Context *> c, bool convert_input) {
   return {
-      {this->get_feature_id(), std::forward<IDType *>(GetDegrees(format, c))}};
+      {this->get_feature_id(), std::forward<IDType *>(GetDegrees(format, c, convert_input))}};
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *Degrees<IDType, NNZType, ValueType>::GetDegrees(
-    Format *format, std::vector<context::Context *> c) {
-  return this->Execute(this->params_.get(), (this->sc_.get()), c, format);
+    Format *format, std::vector<context::Context *> c, bool convert_input) {
+  return this->Execute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -880,6 +981,12 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(
   return degrees;
 }
 
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+Degrees_DegreeDistribution<IDType, NNZType, ValueType,
+    FeatureType>::Degrees_DegreeDistribution(Params) {
+  Degrees_DegreeDistribution();
+}
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType,
@@ -998,17 +1105,17 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 std::unordered_map<std::type_index, std::any>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(
-    format::Format *format, std::vector<context::Context *> c) {
-  return Get(format, c);
+    format::Format *format, std::vector<context::Context *> c, bool convert_input) {
+  return Get(format, c, convert_input);
 };
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 std::unordered_map<std::type_index, std::any>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Get(
-    Format *format, std::vector<context::Context *> c) {
+    Format *format, std::vector<context::Context *> c, bool convert_input) {
   Params params;
-  return this->Execute(this->params_.get(), (this->sc_.get()), c, format);
+  return this->Execute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -1413,6 +1520,94 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
 
   return order;
 }
+
+template <typename IDType>
+PartitionPreprocessType<IDType>::PartitionPreprocessType() = default;
+
+template <typename IDType>
+IDType *PartitionPreprocessType<IDType>::Partition(format::Format* format,
+                                                   std::vector<context::Context*> contexts, bool convert_input) {
+  return this->Execute(this->params_.get(), (this->sc_.get()), contexts, convert_input, format);
+}
+
+template <typename IDType>
+IDType *PartitionPreprocessType<IDType>::Partition(
+    format::Format *format, PreprocessParams *params,
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(params, (this->sc_.get()), contexts, convert_input, format);
+}
+
+template <typename IDType>
+PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
+
+#ifdef USE_METIS
+
+#include "sparsebase/external/metis/metis.h"
+
+template <typename IDType, typename NNZType, typename ValueType>
+MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
+
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+
+  this->params_ = std::unique_ptr<MetisParams>(new MetisParams);
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
+  CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+
+  MetisParams* mparams = static_cast<MetisParams*>(params);
+
+  idx_t n = (idx_t) csr->get_dimensions()[0];
+
+  IDType* partition = new IDType[n];
+
+  idx_t options[METIS_NOPTIONS];
+  options[METIS_OPTION_OBJTYPE] = (idx_t) mparams->objtype;
+  options[METIS_OPTION_CTYPE] = (idx_t) mparams->ctype;
+  options[METIS_OPTION_IPTYPE] = (idx_t) mparams->iptype;
+  options[METIS_OPTION_RTYPE] = (idx_t) mparams->rtype;
+  options[METIS_OPTION_NO2HOP] = (idx_t) mparams->no2hop;
+  options[METIS_OPTION_NCUTS] = (idx_t) mparams->ncuts;
+  options[METIS_OPTION_NITER] = (idx_t) mparams->niter;
+  options[METIS_OPTION_UFACTOR] = (idx_t) mparams->ufactor;
+  options[METIS_OPTION_MINCONN] = (idx_t) mparams->minconn;
+  options[METIS_OPTION_CONTIG] = (idx_t) mparams->contig;
+  options[METIS_OPTION_SEED] = (idx_t) mparams->seed;
+  options[METIS_OPTION_NUMBERING] = (idx_t) mparams->numbering;
+  options[METIS_OPTION_DBGLVL] = (idx_t) 0;
+
+  idx_t np = (idx_t) mparams->num_partitions;
+  idx_t nw = (idx_t) 1;
+  idx_t objval;
+
+  if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
+               && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
+
+    if(mparams->ptype == METIS_PTYPE_RB){
+      METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
+                               nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
+                               &objval, partition);
+
+    } else {
+
+      METIS_PartGraphKway(&n, &nw, (idx_t *)csr->get_row_ptr(),
+                          (idx_t *)csr->get_col(), nullptr, nullptr, nullptr,
+                          &np, nullptr, nullptr, options,
+                          &objval, partition);
+    }
+  } else {
+    throw utils::TypeException("Metis Partitioner supports only " + std::to_string(sizeof(idx_t)*8) + "-bit signed integers for ids");
+  }
+  return partition;
+}
+
+#endif
+
 
 
 #if !defined(_HEADER_ONLY)

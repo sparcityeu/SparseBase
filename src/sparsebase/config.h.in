@@ -2,7 +2,8 @@
 #define SPARSEBASE_CONFIG_H_
 
 #cmakedefine _HEADER_ONLY
-#cmakedefine CUDA
+#cmakedefine USE_CUDA
 #cmakedefine USE_PIGO
+#cmakedefine USE_METIS
 
 #endif

@@ -7,10 +7,13 @@ This guide demonstrates how to add a new reordering algorithm to the library.
 Adding new reordering algorithms to SparseBase is very simple. It consists of five steps:
 
 1. create a new class for your ordering. It must inherit from the base `ReorderPreprocessType` class.
-2. Inside the class, create a new struct that will contain the hyperparameters needed by your ordering, and initialize it in the constructor. Note: This step is only needed if your reordering requires hyperparameters.
+2. Inside the class, create a new struct that will contain the hyperparameters needed by your ordering, and initialize 
+it in the constructor. 
 3. Add implementation functions that will carry out the reordering. 
 4. Register the implementation functions in the constructor.
-5. Add explicit template instantiations of your class.
+5. Set the converter of the class.
+6. Add a constructor for your class a parameters object as parameter.
+7. Add explicit template instantiations of your class.
 
 ## Steps
 
@@ -22,6 +25,7 @@ In this guide, we will create a new reordering `OptimalReorder`. This reordering
 ### 1. Create a new class for the ordering
 
 In the header file `src/sparsebase/preprocess/preprocess.h`, add the definition of your class. You should add your class under the namespace `sparsebase::preprocess`. It must be templated on three types `IDType`, `NNZType`, and `ValueType` which define the data types of the `Format` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType`.
+
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
@@ -35,6 +39,10 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {};
 
 Inside the class, create a new struct inheriting from `PreprocessParams`. Its members will be whichever hyperparameters that your reordering will require. We will call this struct `OptimalReorderParams`. We add `alpha` and `beta` to it.
 
+Additionally, create a `typedef` for your struct as `ParamsType`. This is needed by the `Reorder` function in `ReorderBase`.
+
+Note: if your reordering class does not require any hyperparameters, leave this struct empty.
+
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
@@ -44,6 +52,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
     float alpha;
     float beta;
   }
+  typedef OptimalReorderParams ParamsType;
 };
 } // namespace sparsebase::preprocess
 ```
@@ -150,7 +159,7 @@ OptimalOrderCSRonCUDAGPUDriver(format::CUDACSR<IDType, NNZType, ValueType> *csr,
 ```
 
 
-Finally, we add the function `OptimallyReorderCUDACSR()` as an implementation inside the `OptimalReorder` class. Note that the function is enclosed in an `#ifdef CUDA` preprocessor block. This will guarantee that it does not get compiled unless compilation of the library with `CUDA` is enabled.
+Finally, we add the function `OptimallyReorderCUDACSR()` as an implementation inside the `OptimalReorder` class. Note that the function is enclosed in an `#ifdef USE_CUDA` preprocessor block. This will guarantee that it does not get compiled unless compilation of the library with `CUDA` is enabled.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
@@ -158,7 +167,7 @@ namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
 class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
 // We do not want the function to be compiled if CUDA isn't enabled
-#ifdef CUDA
+#ifdef USE_CUDA
   static IDType *OptimallyOrderCUDACSR(
       std::vector<format::Format<IDType, NNZType, ValueType> *> input_sf,
       PreprocessParams *poly_params) {
@@ -183,7 +192,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
 
 ### 4. Register the implementations you wrote to the correct formats
 
-Inside the constructor, register the functions you made to the correct `Format` type. Note that registering the `CUDACSR` implementation function is surrounded by an `#ifdef CUDA` block to prevent it from being registered if the library is not compiled with `CUDA` enabled.
+Inside the constructor, register the functions you made to the correct `Format` type. Note that registering the `CUDACSR` implementation function is surrounded by an `#ifdef USE_CUDA` block to prevent it from being registered if the library is not compiled with `CUDA` enabled.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
@@ -196,7 +205,7 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
     this->RegisterFunction(
         {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
         OptimallyOrderCSR);
-#ifdef CUDA
+#ifdef USE_CUDA
     this->RegisterFunction(
         {format::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()},
         OptimallyOrderCUDACSR);
@@ -231,7 +240,24 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
 } // namespace sparsebase::preprocess
 ```
 
-### 6. Add explicit template instantiations
+### 6. Add a constructor for your class a parameters object as parameter. 
+In order for your class to work with the `Reorder` function in `ReorderBase`, it must have a constructor that takes a 
+single parameter of type `ParamsType`, i.e., the type of the hyperparameter struct of your class.
+
+```c++
+namespace sparsebase::preprocess {
+template <typename IDType, typename NNZType, typename ValueType>
+class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
+  // ...
+  OptimalReorder(OptimalReorderParams params) {
+    OptimalReorder(params.alpha, params.beta);
+  }
+  // ...
+};
+} // namespace sparsebase::preprocess
+```
+
+### 7. Add explicit template instantiations
 
 The functions we have defined so far (with the exception of the `CUDA` kernel and driver functions) have been defined in header files. This means that they will be compiled as they become needed by the user's code, and not at library build-time. However, the library supports a compiled version in which classes are pre-compiled using certain data types that the user selects. To add your class to the list of pre-compilable classes, you must do the following:
 
@@ -256,11 +282,23 @@ Now, you can easily use your reordering as shown in the following example:
 
 ```cpp
 #include "sparsebase/preprocess/preprocess.h"
+using namespace std;
+{
+    float alpha = 1.0, beta = 0.5;
+    unsigned int * order = preprocess::ReorderBase<preprocess::OptimalReorder>
+            ({alpha, beta}, some_format_object, {&cpu});
+}
+```
+
+Or, you can use the class directly as shown:
+
+```cpp
+#include "sparsebase/preprocess/preprocess.h"
 
 float alpha = 1.0, beta = 0.5;
 sparsebase::preprocess::OptimalReorder<unsigned int, unsigned int, unsigned int>
     reorder(alpha, beta);
-unsigned int *order = reorder.GetOrder(some_format_object);
+unsigned int *order = reorder.GetOrder(some_format_object, {&cpu});
 ```
 
 If the format type of `some_sparseformat_object` is `CSR`, `CUDACSR`, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.

@@ -30,17 +30,14 @@ int main() {
 
   format::Array<int> *array = new format::Array<int>(6, vals);
 
-  auto converter = new utils::converter::ConverterOrderOne<int>();
 
-  auto cuda_array =
-      converter->Convert<format::cuda::CUDAArray<int>>(array, &gpu_context);
+  auto cuda_array = array->Convert<format::cuda::CUDAArray>(&gpu_context);
 
   print_array_cuda<<<1, 1>>>(cuda_array->get_vals(),
                              cuda_array->get_dimensions()[0]);
   cudaDeviceSynchronize();
 
-  auto cpu_array =
-      converter->Convert<format::Array<int>>(cuda_array, &cpu_context);
+  auto cpu_array = cuda_array->Convert<format::Array>(&cpu_context);
 
   print_array(cpu_array->get_vals(), cuda_array->get_dimensions()[0]);
 

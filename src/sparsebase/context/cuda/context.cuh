@@ -9,7 +9,6 @@
 #ifndef SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 #define SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 
-#include "sparsebase/format/format.h"
 namespace sparsebase {
 namespace context {
 namespace cuda {
