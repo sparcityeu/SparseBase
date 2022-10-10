@@ -25,7 +25,7 @@ using value_type = unsigned int;
 std::any spmv(unordered_map<string, Format *> & data, std::any fparams, std::any kparams){
   auto v_arr = any_cast<Array<row_type>>(fparams);
   auto v = v_arr.get_vals();
-  auto spm = data["processed_format"]->As<CSR<row_type, nnz_type, value_type>>();
+  auto spm = data["processed_format"]->AsAbsolute<CSR<row_type, nnz_type, value_type>>();
   auto dimensions = spm->get_dimensions();
   auto num_rows = dimensions[0];
   auto rows = spm->get_row_ptr();
@@ -49,7 +49,7 @@ std::any spmv(unordered_map<string, Format *> & data, std::any fparams, std::any
 std::any spmv_par(unordered_map<string, Format*> & data, std::any fparams, std::any kparams){
   auto v_arr = any_cast<Array<row_type>>(fparams);
   auto v = v_arr.get_vals();
-  auto spm = data["processed_format"]->As<CSR<row_type, nnz_type, value_type>>();
+  auto spm = data["processed_format"]->AsAbsolute<CSR<row_type, nnz_type, value_type>>();
   auto dimensions = spm->get_dimensions();
   auto num_rows = dimensions[0];
   auto rows = spm->get_row_ptr();
@@ -118,7 +118,7 @@ std::any spmv_gpu(unordered_map<string, Format *> & data, std::any fparams, std:
   auto s_r = Array<row_type>(size, r);
   auto c_r = s_r.Convert<CUDAArray>(&gpu_context);
 
-  auto spm = data["processed_format"]->As<CSR<row_type, nnz_type, value_type>>();
+  auto spm = data["processed_format"]->AsAbsolute<CSR<row_type, nnz_type, value_type>>();
   auto c_spm = spm->Convert<CUDACSR>(&gpu_context);
   auto dimensions = c_spm->get_dimensions();
   auto num_rows = dimensions[0];
@@ -143,7 +143,7 @@ std::any spmv_gpu2(unordered_map<string, Format *> & data, std::any fparams, std
   auto s_r = Array<row_type>(size, r);
   auto c_r = s_r.Convert<CUDAArray>(&gpu_context);
 
-  auto spm = data["processed_format"]->As<CSR<row_type, nnz_type, value_type>>();
+  auto spm = data["processed_format"]->AsAbsolute<CSR<row_type, nnz_type, value_type>>();
   auto c_spm = spm->Convert<CUDACSR>(&gpu_context);
   auto dimensions = c_spm->get_dimensions();
   auto num_rows = dimensions[0];

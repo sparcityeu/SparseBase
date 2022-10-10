@@ -230,8 +230,8 @@ std::unordered_map<std::string, format::Format*> LoadCSC(std::string & file_name
 template< template<typename, typename, typename> typename ReorderType, typename ContextType, typename IDType, typename NNZType, typename VALType>
 void ReorderCSR(std::unordered_map<std::string, format::Format*> & data) {
   ContextType context;
-  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>({}, data["format"]->As<format::CSR<IDType, NNZType, VALType>>(), {&context}, true);
-  auto * A_reordered = preprocess::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->As<format::CSR<IDType, NNZType, VALType>>(), {&context}, true);
+  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>({}, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, VALType>>(), {&context}, true);
+  auto * A_reordered = preprocess::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, VALType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
   data.emplace("processed_format", A_csc);
 }
@@ -248,8 +248,8 @@ void Pass(std::unordered_map<std::string, format::Format*> & data) {
 template< template<typename, typename, typename> typename ReorderType, template<typename, typename, typename> typename FormatType, typename ContextType, typename IDType, typename NNZType, typename VALType>
 void Reorder(std::unordered_map<std::string, format::Format*> & data) {
   ContextType context;
-  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>({}, data["format"]->As<FormatType<IDType, NNZType, VALType>>(), {&context}, true);
-  auto * A_reordered = preprocess::ReorderBase::Permute2D<FormatType>(perm, data["format"]->As<FormatType<IDType, NNZType, VALType>>(), {&context}, true);
+  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>({}, data["format"]->AsAbsolute<FormatType<IDType, NNZType, VALType>>(), {&context}, true);
+  auto * A_reordered = preprocess::ReorderBase::Permute2D<FormatType>(perm, data["format"]->AsAbsolute<FormatType<IDType, NNZType, VALType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
   data.emplace("processed_format", A_csc);
 }
