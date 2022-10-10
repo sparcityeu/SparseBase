@@ -16,7 +16,7 @@ Format *CUDAArrayArrayConditionalFunction(Format *source,
                                           context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(source->get_context());
-  auto cuda_array = source->As<format::cuda::CUDAArray<ValueType>>();
+  auto cuda_array = source->AsAbsolute<format::cuda::CUDAArray<ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   ValueType *vals = nullptr;
   if (cuda_array->get_vals() != nullptr) {
@@ -32,7 +32,7 @@ Format *ArrayCUDAArrayConditionalFunction(Format *source,
                                           context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(context);
-  auto array = source->As<Array<ValueType>>();
+  auto array = source->AsAbsolute<Array<ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   ValueType *vals = nullptr;
   if (array->get_vals() != nullptr) {
@@ -49,7 +49,7 @@ Format *CsrCUDACsrConditionalFunction(Format *source,
                                       context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(context);
-  auto csr = source->As<CSR<IDType, NNZType, ValueType>>();
+  auto csr = source->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   NNZType *row_ptr;
   IDType *col;
@@ -80,7 +80,7 @@ Format *CUDACsrCUDACsrConditionalFunction(Format *source,
   context::cuda::CUDAContext *dest_gpu_context =
       static_cast<context::cuda::CUDAContext *>(context);
   auto cuda_csr =
-      source->As<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+      source->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
   context::cuda::CUDAContext *source_gpu_context =
       static_cast<context::cuda::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(dest_gpu_context->device_id);
@@ -115,7 +115,7 @@ Format *CUDACsrCsrConditionalFunction(Format *source,
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(source->get_context());
   auto cuda_csr =
-      source->As<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+      source->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   int n = cuda_csr->get_dimensions()[0];
   int nnz = cuda_csr->get_num_nnz();

@@ -21,7 +21,7 @@ struct customParam : preprocess::PreprocessParams {
 vertex_type *degree_reorder_csr(std::vector<format::Format *> formats,
                                 preprocess::PreprocessParams *params) {
   format::CSR<vertex_type, edge_type, value_type> *csr =
-      formats[0]->As<format::CSR<vertex_type, edge_type, value_type>>();
+      formats[0]->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
   customParam *cast_params = static_cast<customParam *>(params);
   cout << "Custom hyperparameter: " << cast_params->hyperparameter << endl;
   vertex_type n = csr->get_dimensions()[0];
@@ -85,10 +85,8 @@ int main(int argc, char *argv[]) {
   vertex_type *permutation = orderer.GetReorder(con, &params, {&cpu_context}, false);
 
   vertex_type n = con->get_dimensions()[0];
-  auto xadj =
-      con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
-  auto adj =
-      con->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
+  auto xadj = con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+  auto adj = con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "According to degree order: " << endl;
   cout << "First vertex, ID: " << permutation[0]
        << ", Degree: " << xadj[permutation[0] + 1] - xadj[permutation[0]] << endl;
@@ -132,9 +130,9 @@ int main(int argc, char *argv[]) {
   preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(permutation, permutation);
   format::Format *perm_csr = transformer.GetTransformation(con, {&cpu_context}, true);
   auto *n_row_ptr =
-      perm_csr ->As<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
+      perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_row_ptr();
   auto *n_col =
-      perm_csr ->As<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
+      perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()->get_col();
   cout << "Checking the correctness of the transformation..." << endl;
   bool transform_is_correct = true;
   for (vertex_type i = 0; i < n - 1 && transform_is_correct; i++) {
@@ -148,8 +146,9 @@ int main(int argc, char *argv[]) {
     cout << "Transformation is correct." << endl;
   }
   preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(inv_permutation, inv_permutation);
-  auto perm_then_inv_perm_csr = inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)->As<format::CSR<vertex_type, edge_type, value_type>>();
-  auto orig_csr = con->As<format::CSR<vertex_type, edge_type, value_type>>();
+  auto perm_then_inv_perm_csr = inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)->As<format::CSR>();
+  auto orig_csr =
+      con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
   for (vertex_type i = 0; i < n; i++){
     for (edge_type e = perm_then_inv_perm_csr->get_row_ptr()[i]; e < perm_then_inv_perm_csr->get_row_ptr()[i+1]; e++){
       if (orig_csr->get_col()[e]!= perm_then_inv_perm_csr->get_col()[e]){

@@ -3,8 +3,8 @@
 While SparseBase supports a header-only mode, our main focus is in the compiled version of the library. 
 This is mainly due to the large impact of header-only mode on the build times of user's projects.
 
-As a result of this, we try to keep the header files as light as possible by avoiding putting implementations there.
-There are a few exceptions to this (like the `As<>()` function of `Format`) 
+AsAbsolute a result of this, we try to keep the header files as light as possible by avoiding putting implementations there.
+There are a few exceptions to this (like the `AsAbsolute<>()` function of `Format`) 
 but this is only done in very rare situations.
 
 Hence, any templated class or function you create in SparseBase will require instantiation as it needs to be compiled
@@ -35,7 +35,7 @@ The following operations will be performed on the template you provide:
 
 ## Filename
 
-The filename to be used for the output. As per [Google's Style Guide](https://google.github.io/styleguide/cppguide.html),
+The filename to be used for the output. AsAbsolute per [Google's Style Guide](https://google.github.io/styleguide/cppguide.html),
 the filenames we use end with the `.inc` extension. 
 
 ```{warning}

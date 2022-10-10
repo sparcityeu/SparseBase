@@ -25,7 +25,7 @@ Format *COOToMyFormat(Format *source, context::Context *) {
 int main(int argc, char *argv[]) {
   // Custom Format creation and casting
   Format *format = new MyFormat;
-  MyFormat *my_format = format->As<MyFormat>();
+  MyFormat *my_format = format->AsAbsolute<MyFormat>();
 
   // Using it in an Object
   Graph<int, int, int> *graph = new Graph<int, int, int>(my_format);

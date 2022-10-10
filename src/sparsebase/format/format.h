@@ -68,7 +68,7 @@ typedef unsigned long long DimensionType;
  * All Sparse Data Format Objects (like CSR and COO) are derived from Format.
  * Most of the library uses Format pointers as input and output.
  * By itself Format has very little functionality besides giving size
- * information. Often a user will have to use the As() function to convert it to
+ * information. Often a user will have to use the AsAbsolute() function to convert it to
  * a concrete format.
  */
 class Format {
@@ -113,12 +113,17 @@ public:
    * \return A concrete format pointer to this object (for example:
    * CSR<int,int,int>*)
    */
-  template <typename T> typename std::remove_pointer<T>::type *As() {
+  template <typename T> typename std::remove_pointer<T>::type *AsAbsolute() {
+    static_assert(std::is_base_of_v<Format, T>, "Cannot cast a non-Format class using AsAbsolute");
     using TBase = typename std::remove_pointer<T>::type;
     if (this->get_format_id() == std::type_index(typeid(TBase))) {
       return static_cast<TBase *>(this);
     }
     throw utils::TypeException(get_format_id().name(), typeid(TBase).name());
+  }
+  template <template <typename...> typename T> void *AsAbsolute() {
+    static_assert(utils::always_false<T<void>>, "When casting a format pointer, you need to pass the data type with the template arguments");
+    return nullptr;
   }
 
   //! Templated function that can be used to check the concrete type of this object
@@ -156,7 +161,7 @@ public:
   }
   virtual DimensionType get_num_nnz() const { return nnz_; }
   virtual DimensionType get_order() const { return order_; }
-  virtual context::Context *get_context() const { return context_.get(); }
+  virtual context::Context *get_context() const { return context_.get().get(); }
 
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
@@ -174,15 +179,14 @@ public:
   };
 
   virtual std::type_index get_context_type() const {
-    return this->context_->get_context_type_member();
+    return this->context_.get()->get_context_type_member();
   }
 
 protected:
   DimensionType order_;
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
-  std::unique_ptr<sparsebase::context::Context> context_;
-
+  utils::OnceSettable<std::unique_ptr<sparsebase::context::Context>> context_;
 };
 
 template <typename ValueType>
@@ -199,6 +203,28 @@ class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Fo
     template <template <typename> typename ToType>
     ToType<ValueType> *Convert(context::Context *to_context=nullptr,
                                bool is_move_conversion = false);
+
+  template <template <typename> typename ToType, typename ToValueType>
+  ToType<ToValueType> *Convert(bool is_move_conversion = false);
+
+    template <template <typename> typename ToType, typename ToValueType>
+    struct TypeConverter {
+      ToType<ToValueType> * operator()(FormatOrderOne<ValueType>*, bool){
+        static_assert(utils::always_false<ToValueType>, "Cannot do type conversion for the requested type. Throw a rock through one of our devs' windows");
+      }
+    };
+  template <typename T> typename std::remove_pointer<T>::type *As() {
+    static_assert(utils::always_false<T>, "When casting a FormatOrderTwo, only pass the class name without its types");
+    return nullptr;
+  }
+  template <template <typename> typename T> typename std::remove_pointer<T<ValueType>>::type *As() {
+    static_assert(std::is_base_of_v<FormatOrderOne<ValueType>, T<ValueType>>, "Cannot cast to a non-FormatOrderOne class");
+    using TBase = typename std::remove_pointer<T<ValueType>>::type;
+    if (this->get_format_id() == std::type_index(typeid(TBase))) {
+      return static_cast<TBase *>(this);
+    }
+    throw utils::TypeException(this->get_format_id().name(), typeid(TBase).name());
+  }
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
@@ -216,6 +242,31 @@ class FormatOrderTwo
     template <template <typename, typename, typename> class ToType>
     ToType<IDType, NNZType, ValueType> *
     Convert(context::Context *to_context=nullptr, bool is_move_conversion = false);
+
+
+  template <template <typename, typename, typename> class ToType, typename ToIDType, typename ToNNZType, typename ToValueType>
+  ToType<ToIDType, ToNNZType, ToValueType> *
+  Convert(bool is_move_conversion = false);
+  template <template <typename, typename, typename> class ToType,
+      typename ToIDType, typename ToNNZType, typename ToValueType>
+  struct TypeConverter{
+    ToType<ToIDType, ToNNZType, ToValueType>* operator()(FormatOrderTwo<IDType, NNZType, ValueType>*, bool){
+      static_assert(utils::always_false<ToIDType>, "Cannot do type conversion for the requested type. Throw a rock through one of our devs' windows");
+    }
+  };
+
+  template <typename T> typename std::remove_pointer<T>::type *As() {
+    static_assert(utils::always_false<T>, "When casting a FormatOrderOne, only pass the class name without its types");
+    return nullptr;
+  }
+  template <template <typename, typename, typename> typename T> typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type *As() {
+    static_assert(std::is_base_of_v<FormatOrderTwo<IDType, NNZType, ValueType>, T<IDType, NNZType, ValueType>>, "Cannot cast to a non-FormatOrderTwo class");
+    using TBase = typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type;
+    if (this->get_format_id() == std::type_index(typeid(TBase))) {
+      return static_cast<TBase *>(this);
+    }
+    throw utils::TypeException(this->get_format_id().name(), typeid(TBase).name());
+  }
 };
 
 //! Coordinate List Sparse Data Format
@@ -391,6 +442,135 @@ protected:
   std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
+template <typename IDType, typename NNZType, typename ValueType>
+template <typename ToIDType, typename ToNNZType, typename ToValueType>
+struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
+    <CSR, ToIDType, ToNNZType, ToValueType> {
+  CSR<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source, bool is_move_conversion) {
+    CSR<IDType, NNZType, ValueType>* csr = source->template As<CSR>();
+    auto dims = csr->get_dimensions();
+    auto num_nnz = csr->get_num_nnz();
+    ToNNZType * new_row_ptr;
+    ToIDType * new_col;
+    ToValueType * new_vals;
+
+    if (!is_move_conversion || !std::is_same_v<NNZType, ToNNZType>) {
+      new_row_ptr =
+          utils::ConvertArrayType<ToNNZType>(csr->get_row_ptr(), dims[0] + 1);
+    } else {
+      if constexpr (std::is_same_v<NNZType, ToNNZType>) {
+        new_row_ptr = csr->release_row_ptr();
+      }
+    }
+
+    if (!is_move_conversion || !std::is_same_v<IDType, ToIDType>) {
+      new_col = utils::ConvertArrayType<ToIDType>(csr->get_col(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<IDType, ToIDType>) {
+        new_col = csr->release_col();
+      }
+    }
+    if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
+      new_vals = utils::ConvertArrayType<ToValueType>(csr->get_vals(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<ValueType, ToValueType>) {
+        new_vals = csr->release_vals();
+      }
+    }
+    return new CSR<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], new_row_ptr, new_col, new_vals, kOwned);
+  }
+};
+template <typename IDType, typename NNZType, typename ValueType>
+template <typename ToIDType, typename ToNNZType, typename ToValueType>
+struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
+    <CSC, ToIDType, ToNNZType, ToValueType> {
+  CSC<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source, bool is_move_conversion) {
+    CSC<IDType, NNZType, ValueType>* csc = source->template As<CSC>();
+    auto dims = csc->get_dimensions();
+    auto num_nnz = csc->get_num_nnz();
+    ToNNZType * new_col_ptr;
+    ToIDType * new_row;
+    ToValueType * new_vals;
+
+    if (!is_move_conversion || !std::is_same_v<NNZType, ToNNZType>) {
+      new_col_ptr =
+          utils::ConvertArrayType<ToNNZType>(csc->get_col_ptr(), dims[0] + 1);
+    } else {
+      if constexpr (std::is_same_v<NNZType, ToNNZType>)
+        new_col_ptr = csc->release_col_ptr();
+    }
+
+    if (!is_move_conversion || !std::is_same_v<IDType, ToIDType>) {
+      new_row = utils::ConvertArrayType<ToIDType>(csc->get_row(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<IDType, ToIDType>)
+        new_row = csc->release_row();
+    }
+    if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
+      new_vals = utils::ConvertArrayType<ToValueType>(csc->get_vals(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<ValueType, ToValueType>)
+        new_vals = csc->release_vals();
+    }
+    return new CSC<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], new_col_ptr, new_row, new_vals, kOwned);
+  }
+};
+template <typename IDType, typename NNZType, typename ValueType>
+template <typename ToIDType, typename ToNNZType, typename ToValueType>
+struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter
+    <COO, ToIDType, ToNNZType, ToValueType> {
+  COO<ToIDType, ToNNZType, ToValueType> *operator()(FormatOrderTwo<IDType, NNZType, ValueType>* source, bool is_move_conversion) {
+    COO<IDType, NNZType, ValueType>* coo = source->template As<COO>();
+    auto dims = coo->get_dimensions();
+    auto num_nnz = coo->get_num_nnz();
+    ToIDType * new_col;
+    ToIDType * new_row;
+    ToValueType * new_vals;
+
+    if (!is_move_conversion || !std::is_same_v<IDType, ToIDType>) {
+      new_col = utils::ConvertArrayType<ToIDType>(coo->get_col(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<IDType, ToIDType>){
+        new_col = coo->release_col();
+      }
+    }
+
+    if (!is_move_conversion || !std::is_same_v<IDType, ToIDType>) {
+      new_row = utils::ConvertArrayType<ToIDType>(coo->get_row(), num_nnz);
+    }else {
+      if constexpr (std::is_same_v<IDType, ToIDType>){
+        new_row = coo->release_row();
+      }
+    }
+
+    if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
+      new_vals = utils::ConvertArrayType<ToValueType>(coo->get_vals(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<ValueType, ToValueType>){
+        new_vals = coo->release_vals();
+      }
+    }
+    return new COO<ToIDType, ToNNZType, ToValueType>(dims[0], dims[1], num_nnz, new_row, new_col, new_vals, kOwned);
+  }
+};
+
+template <typename ValueType>
+template <typename ToValueType>
+struct FormatOrderOne<ValueType>::TypeConverter<format::Array, ToValueType> {
+  format::Array<ToValueType> * operator()(FormatOrderOne<ValueType>* source, bool is_move_conversion){
+    auto arr = source->template As<format::Array>();
+    auto num_nnz = arr->get_num_nnz();
+    ToValueType * new_vals;
+    if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
+      new_vals = utils::ConvertArrayType<ToValueType>(arr->get_vals(), num_nnz);
+    } else {
+      if constexpr (std::is_same_v<ValueType, ToValueType>){
+        new_vals = arr->release_vals();
+      }
+    }
+    return new Array<ToValueType>(num_nnz, new_vals, kOwned);
+  }
+};
 } // namespace format
 
 } // namespace sparsebase
@@ -413,7 +593,29 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
   return converter
       .Convert(this, ToType<ValueType>::get_format_id_static(), actual_context,
                is_move_conversion)
-      ->template As<ToType<ValueType>>();
+      ->template AsAbsolute<ToType<ValueType>>();
+}
+template <typename ValueType>
+template <template <typename> typename ToType, typename ToValueType>
+ToType<ToValueType> *FormatOrderOne<ValueType>::Convert(bool is_move_conversion){
+  static_assert(
+      std::is_base_of<format::FormatOrderOne<ToValueType>,
+          ToType<ToValueType>>::value,
+      "T must be an order one format");
+
+  utils::converter::ConverterOrderOne<ValueType> converter;
+  if (this->get_format_id() != ToType<ValueType>::get_format_id_static()) {
+    auto converted_format =
+    converter.template Convert<ToType<ValueType>>(
+        this, this->get_context(), is_move_conversion);
+    auto type_converted_format =
+        TypeConverter<ToType, ToValueType>()(
+            converted_format, is_move_conversion);
+    delete converted_format;
+    return type_converted_format;
+  } else {
+    return TypeConverter<ToType, ToValueType>()(this, is_move_conversion);
+  }
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -432,8 +634,33 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
   return converter
       .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                actual_context, is_move_conversion)
-      ->template As<ToType<IDType, NNZType, ValueType>>();
+      ->template AsAbsolute<ToType<IDType, NNZType, ValueType>>();
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+template <template <typename, typename, typename> class ToType, typename ToIDType, typename ToNNZType, typename ToValueType>
+ToType<ToIDType, ToNNZType, ToValueType> *
+FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
+  static_assert(
+      std::is_base_of<format::FormatOrderTwo<ToIDType, ToNNZType, ToValueType>,
+          ToType<ToIDType, ToNNZType, ToValueType>>::value,
+      "T must be an order two format");
+  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  if (this->get_format_id() != ToType<IDType, NNZType, ValueType>::get_format_id_static()) {
+    auto converted_format =
+        converter.template Convert<ToType<IDType, NNZType, ValueType>>(
+            this, this->get_context(), is_move_conversion);
+    auto type_converted_format =
+        TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(
+            converted_format, is_move_conversion);
+    delete converted_format;
+    return type_converted_format;
+  } else {
+    return TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(
+            this, is_move_conversion);
+  }
+}
+
 } // namespace format
 
 } // namespace sparsebase
