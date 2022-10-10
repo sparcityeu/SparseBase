@@ -291,9 +291,7 @@ GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
 }
 template <typename IDType, typename NNZType, typename ValueType>
-DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(DegreeReorderParams params) {
- DegreeReorder<IDType, NNZType, ValueType>(params.ascending);
-}
+DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(DegreeReorderParams params) : DegreeReorder(params.ascending) {}
 template <typename IDType, typename NNZType, typename ValueType>
 DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
@@ -1160,6 +1158,9 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorder(BitMapSize resolution, int 
       GrayReorderingCSR);
 }
 template <typename IDType, typename NNZType, typename ValueType>
+GrayReorder<IDType, NNZType, ValueType>::GrayReorder(GrayReorderParams p) : GrayReorder(p.resolution, p.nnz_threshold, p.sparse_density_group_size) {}
+
+template <typename IDType, typename NNZType, typename ValueType>
 bool GrayReorder<IDType, NNZType, ValueType>::desc_comparator(const row_grey_pair &l,
                                          const row_grey_pair &r) {
   return l.second > r.second;
@@ -1586,12 +1587,12 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   idx_t objval;
 
   if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
-               && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
+                && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
 
     if(mparams->ptype == METIS_PTYPE_RB){
-      METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
-                               nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
-                               &objval, partition);
+     METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
+                        nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
+                        &objval, partition);
 
     } else {
 

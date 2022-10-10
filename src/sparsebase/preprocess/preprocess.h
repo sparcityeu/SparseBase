@@ -1054,17 +1054,20 @@ enum BitMapSize{
 
 template <typename IDType, typename NNZType, typename ValueType>
 class GrayReorder : public ReorderPreprocessType<IDType> {
-  struct GrayReorderParams : PreprocessParams {
-    int resolution;
-    int nnz_threshold;
-    int sparse_density_group_size;
-  };
-
   typedef std::pair<IDType, unsigned long> row_grey_pair;
 
 public:
+  struct GrayReorderParams : PreprocessParams {
+    BitMapSize resolution;
+    int nnz_threshold;
+    int sparse_density_group_size;
+    GrayReorderParams(){}
+    GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size): resolution(r), nnz_threshold(nnz_threshold), sparse_density_group_size(group_size){}
+  };
+  typedef GrayReorderParams ParamsType;
   GrayReorder(BitMapSize resolution, int nnz_threshold,
               int sparse_density_group_size);
+  GrayReorder(GrayReorderParams);
 
 protected:
   static bool desc_comparator(const row_grey_pair &l, const row_grey_pair &r);
