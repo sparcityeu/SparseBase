@@ -21,6 +21,7 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
+#include <cmath>
 
 namespace sparsebase::preprocess {
 
@@ -1045,7 +1046,52 @@ int tester(typename Reordering<IDType, NNZType, ValueType>::ParamsType params){
   return 1;
 }
 
-template <typename IDType> class PermuteOrderOne<IDType, void>{};
+enum BitMapSize{
+  BitSize16 = 16,
+  BitSize32 = 32/*,
+  BitSize64 = 64*/ //at the moment, using 64 bits is not working as intended
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class GrayReorder : public ReorderPreprocessType<IDType> {
+  typedef std::pair<IDType, unsigned long> row_grey_pair;
+
+public:
+  struct GrayReorderParams : PreprocessParams {
+    BitMapSize resolution;
+    int nnz_threshold;
+    int sparse_density_group_size;
+    GrayReorderParams(){}
+    GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size): resolution(r), nnz_threshold(nnz_threshold), sparse_density_group_size(group_size){}
+  };
+  typedef GrayReorderParams ParamsType;
+  GrayReorder(BitMapSize resolution, int nnz_threshold,
+              int sparse_density_group_size);
+  GrayReorder(GrayReorderParams);
+
+protected:
+  static bool desc_comparator(const row_grey_pair &l, const row_grey_pair &r);
+
+  static bool asc_comparator(const row_grey_pair &l, const row_grey_pair &r);
+
+  // not sure if all IDTypes work for this
+  static unsigned long grey_bin_to_dec(unsigned long n);
+
+  static void print_dec_in_bin(unsigned long n, int size);
+
+  // not sure if all IDTypes work for this
+  static unsigned long bin_to_grey(unsigned long n);
+
+  // bool is_banded(std::vector<format::Format *> input_sf, int band_size = -1,
+  // std::vector<IDType> order) {
+  static bool is_banded(int nnz, int n_cols, NNZType *row_ptr, IDType *cols,
+                        std::vector<IDType> order, int band_size = -1);
+
+  static IDType *GrayReorderingCSR(std::vector<format::Format *> input_sf,
+                                   PreprocessParams *poly_params);
+};
+
+
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
