@@ -1,0 +1,142 @@
+name: Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  test_ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y build-essential bison flex swig libreadline-dev libomp-dev python3
+
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
+
+      - name: Build
+        # Build your program with the given configuration
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+      - name: Clean
+        working-directory: ${{github.workspace}}
+        run: rm -rf build
+
+      - name: Configure CMake (Header Only)
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D_HEADER_ONLY=ON -DRUN_TESTS=ON
+
+      - name: Build (Header Only)
+        # Build your program with the given configuration
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Run Examples (Header Only)
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests (Header Only)
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+  test_windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: MSYS2 Setup
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: git base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja
+
+      - name: Configure CMake
+        working-directory: ${{github.workspace}}
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DRUN_TESTS=ON
+
+      - name: Build
+        working-directory: ${{github.workspace}}
+        # Build your program with the given configuration
+        run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+  test_mac:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: brew update && brew install gcc@9 bison flex swig readline libomp python3
+
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
+
+      - name: Build
+        # Build your program with the given configuration
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cpp-linter/cpp-linter-action@v2
+        id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          style: 'file'
+          lines-changed-only: true
+          tidy-checks: 'bugprone-*,performance-*,readability-*,portability-*,modernize-*,cppcoreguidelines-*'
+          extra-args: '-std=c++17 -Wall -fopenmp'
+          version: '14'

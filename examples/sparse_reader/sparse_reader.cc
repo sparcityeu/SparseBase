@@ -32,8 +32,9 @@ int main(int argc, char *argv[]) {
   cout << "Number of edges: " << g.m_ << endl;
 
   // Extracting connectivity information from a graph and casting it
-  auto coo = g.get_connectivity()
-                 ->As<format::COO<vertex_type, edge_type, value_type>>();
+  auto coo =
+      g.get_connectivity()
+          ->AsAbsolute<format::COO<vertex_type, edge_type, value_type>>();
 
   vertex_type nnz = coo->get_num_nnz();
   vertex_type *col = coo->get_col();

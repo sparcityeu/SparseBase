@@ -311,3 +311,484 @@ TEST(Converter, ClearingASingleDirection){
           &cpu_context)),
       nullptr);
 }
+
+#define MATCH_CHECKING_ONEVAL(T1, T2, val) \
+  EXPECT_TRUE(utils::isTypeConversionSafe((T1)(val), (T2)(val))); \
+  EXPECT_TRUE(utils::isTypeConversionSafe((T2)(val), (T1)(val))); \
+  if ((val)!=0) {                           \
+    EXPECT_FALSE(utils::isTypeConversionSafe((T1)(-(val)), (T2)(val)));  \
+  EXPECT_FALSE(utils::isTypeConversionSafe((T1)((val)), (T2)(-(val)))); \
+  EXPECT_FALSE(utils::isTypeConversionSafe((T2)(-(val)), (T1)(val)));  \
+  EXPECT_FALSE(utils::isTypeConversionSafe((T2)((val)), (T1)(-(val))));  \
+}
+#define MATCH_CHECKING_SIGNED_MISMATCH(T1, T2) \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-1), (T1)(-1))); \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-1.5), (T1)(-1.5)));
+
+#define MATCH_CHECKING_SIGNED_MATCH(T1, T2) \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(-1), (T1)(-1))); \
+  if constexpr (std::is_integral_v<T1> == std::is_integral_v<T2>) EXPECT_TRUE(format::isTypeConversionSafe((T2)(-2.5), (T1)(-2.5)));
+
+#define MATCH_CHECKING_INT_FLOAT_MISMATCH(T1, T2) \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(-3.5), (T1)(-3.5))); \
+  EXPECT_FALSE(format::isTypeConversionSafe((T2)(4.5), (T1)(4.5)));
+
+#define MATCH_CHECKING_INT_FLOAT_MATCH(T1, T2) \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(-5.5), (T1)(-5.5))); \
+  EXPECT_TRUE(format::isTypeConversionSafe((T2)(6.5), (T1)(6.5)));
+
+#include <limits>
+#include <stdint.h>
+#define MATCH_CHECK_ALL_CASES(T1, T2) \
+  MATCH_CHECKING_ONEVAL(T1, T2, 0) \
+  MATCH_CHECKING_ONEVAL(T1, T2, 1)    \
+  if constexpr (std::is_integral_v<T1>) { \
+    if constexpr (std::is_signed_v<T1>) {  \
+      if constexpr (std::is_integral_v<T2>) {                                 \
+        if constexpr (std::is_signed_v<T2>) EXPECT_TRUE(utils::isTypeConversionSafe((T1)(-1), (T2)(-1))); \
+        else EXPECT_FALSE(utils::isTypeConversionSafe((T1)(-1), (T2)(-1)));                             \
+      } else {                          \
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(2), (T2)(2))); \
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(-2), (T2)(-2))); \
+      }                               \
+    } else {                          \
+        \
+    }                                    \
+  } else {                            \
+    if constexpr (std::is_integral_v<T2>){\
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(1.5), (T2)(1.5)));                                  \
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(3), (T2)(3)));                                  \
+      if constexpr (std::is_signed_v<T2>){\
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(-1.5), (T2)(-1.5)));                                  \
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(-3), (T2)(-3)));                                  \
+      } else {                        \
+        EXPECT_FALSE(utils::isTypeConversionSafe((T1)(-3), (T2)(-3)));                                  \
+      }                                  \
+    }                                     \
+  }                                   \
+  if constexpr (std::is_floating_point_v<T2> == false) {                                     \
+    if constexpr (std::is_integral_v<T1> == true && std::is_integral_v<T2> == true) {                                    \
+      if constexpr (std::is_floating_point_v<T1> == false && std::uintmax_t(std::numeric_limits<T1>::max()) > std::uintmax_t(std::numeric_limits<T2>::max())) {  \
+      EXPECT_FALSE(utils::isTypeConversionSafe((T1)(std::numeric_limits<T2>::max() + (unsigned long long)1), (T2)((unsigned long long)std::numeric_limits<T2>::max() + (unsigned long long)1)));} \
+      {                                   \
+        const intmax_t botT1 = std::numeric_limits<T1>::min(); \
+        const intmax_t botT2 = std::numeric_limits<T2>::min(); \
+        if (botT1 < botT2) {            \
+          if constexpr (!std::is_same_v<signed long long, T2>)                              \
+            EXPECT_FALSE(utils::isTypeConversionSafe((T1)(botT2 - 1), (T2)(botT2 - 1)));}\
+      }\
+    }                                   \
+  }                                    \
+  if constexpr (!std::is_integral_v<T1> && !std::is_integral_v<T2>) {\
+    if constexpr (double(std::numeric_limits<T1>::max()) > double(std::numeric_limits<T2>::max())) {  \
+    EXPECT_FALSE(utils::isTypeConversionSafe(((T1)(T1)std::numeric_limits<T2>::max() * (T1)2), (T2)(std::numeric_limits<T2>::max() * (T1)2)));} \
+      const double botT1 = double(-(std::numeric_limits<T1>::max())); \
+      const double botT2 = double(-(std::numeric_limits<T2>::max())); \
+      if constexpr (!std::is_same_v<double, T2>)                              \
+        if (botT1 < botT2) {      \
+          EXPECT_FALSE(utils::isTypeConversionSafe((T1)(botT2 * 2), (T2)(botT2 * 2)));}                         \
+   }
+  //} else if constexpr (std::is_integral_v<T1> && !std::is_integral_v<T2>) {\
+  //  if constexpr (double(std::numeric_limits<T1>::max()) > double(std::numeric_limits<T2>::max())) {  \
+  //  EXPECT_FALSE(format::isTypeConversionSafe(((T1)std::numeric_limits<T2>::max() + (T1)1), std::numeric_limits<T2>::max() + //(T2)1));} \
+  //    const intmax_t botT1 = []() {if constexpr (std::is_floating_point_v<T1>) return intmax_t(-(std::numeric_limits<T1>::max())); //else return intmax_t(std::numeric_limits<T1>::min());}(); \
+  //    const double botT2 = []() {if constexpr (std::is_floating_point_v<T2>) return double(-(std::numeric_limits<T2>::max())); else //return double(std::numeric_limits<T2>::min());}(); \
+  //    if constexpr (!std::is_same_v<double, T2>)                              \
+  //      if (double(botT1) < botT2) {      \
+  //        EXPECT_FALSE(format::isTypeConversionSafe(botT2 - 1, (T2)(botT2 - 1)));}\
+  //} else if constexpr (!std::is_integral_v<T1> && !std::is_integral_v<T2>) {\
+  //  if constexpr (double(std::numeric_limits<T1>::max()) > double(std::numeric_limits<T2>::max())) {  \
+  //  EXPECT_FALSE(format::isTypeConversionSafe(((T1)std::numeric_limits<T2>::max() + (T1)1), std::numeric_limits<T2>::max() + //(T2)1));} \
+  //    const double botT1 = []() {if constexpr (std::is_floating_point_v<T1>) return double(-(std::numeric_limits<T1>::max())); else //return double(std::numeric_limits<T1>::min());}(); \
+      const double botT2 = []() {if constexpr (std::is_floating_point_v<T2>) return double(-(std::numeric_limits<T2>::max())); else return double(std::numeric_limits<T2>::min());}(); \
+      if constexpr (!std::is_same_v<double, T2>)                              \
+        if (double(botT1) < botT2) {      \
+          EXPECT_FALSE(format::isTypeConversionSafe(botT2 - 1, (T2)(botT2 - 1)));}\
+  }\
+
+#define MATCH_CHECK_ALL_TYPES_INTEGRAL(T1) \
+  MATCH_CHECK_ALL_CASES(T1,char) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned char) \
+  MATCH_CHECK_ALL_CASES(T1,short) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned short) \
+  MATCH_CHECK_ALL_CASES(T1,int) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned int) \
+  MATCH_CHECK_ALL_CASES(T1,long long) \
+  MATCH_CHECK_ALL_CASES(T1,unsigned long long) \
+
+#define MATCH_CHECK_ALL_TYPES_FLOATING_POINT(T1) \
+  MATCH_CHECK_ALL_CASES(T1,float) \
+  MATCH_CHECK_ALL_CASES(T1,double)
+
+TEST(isTypeConversionSafe, TypeConversions){
+  // int to int
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(char);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned char);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(short);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned short);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(int);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned int);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(long long);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned long long);
+  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(float);
+  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(double);
+  // int to float
+
+  // float to int
+
+  // float to float
+
+}
+template <typename T1, typename T2>
+void compare_arrays(T1* a1, T2* a2, int size, std::string arr_name){
+  for (int i =0; i < size; i++) EXPECT_EQ(a1[i], a2[i]) <<  "problem in array " + arr_name + " index ", std::to_string(i);
+}
+template <typename CSRType1, typename CSRType2>
+void compare_csrs(CSRType1* csr1, CSRType2* csr2){
+  auto nnz1 = csr1->get_num_nnz();
+  auto nnz2 = csr2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(csr1->get_dimensions()[0],csr2->get_dimensions()[0]);
+  ASSERT_EQ(csr1->get_dimensions()[1],csr2->get_dimensions()[1]);
+  compare_arrays(csr1->get_row_ptr(),csr2->get_row_ptr(), n+1, "row_ptr");
+  compare_arrays(csr1->get_col(), csr2->get_col(), nnz1, "col");
+  compare_arrays(csr1->get_vals(),csr2->get_vals(), nnz1, "vals");
+}
+
+template <template <typename, typename, typename> typename CSRType1, template <typename , typename , typename > typename CSRType2, typename I1, typename N1, typename V1, typename I2, typename N2, typename V2>
+void check_move_csrs(CSRType1<I1, N1, V1>* csr1, CSRType2<I2, N2, V2>* csr2){
+  auto nnz1 = csr1->get_num_nnz();
+  auto nnz2 = csr2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(csr1->get_dimensions()[0],csr2->get_dimensions()[0]);
+  ASSERT_EQ(csr1->get_dimensions()[1],csr2->get_dimensions()[1]);
+  if constexpr (std::is_same_v<I1, I2> == true)
+    EXPECT_EQ((void*)csr1->get_col(), (void*)csr2->get_col());
+  else
+    EXPECT_NE((void*)csr1->get_col(), (void*)csr2->get_col());
+  if constexpr (std::is_same_v<N1, N2> == true)
+    EXPECT_EQ((void*)csr1->get_row_ptr(), (void*)csr2->get_row_ptr());
+  else
+    EXPECT_NE((void*)csr1->get_row_ptr(), (void*)csr2->get_row_ptr());
+  if constexpr (std::is_same_v<V1, V2> == true)
+    EXPECT_EQ((void*)csr1->get_vals(), (void*)csr2->get_vals());
+  else
+    EXPECT_NE((void*)csr1->get_vals(), (void*)csr2->get_vals());
+}
+
+#define CONVERT_AND_COMPARE_CSR(input_csr, IDT, NNZT, VALT) {auto output_csr =(input_csr)->Convert<format::CSR, IDT, NNZT, VALT>(false) ;  compare_csrs((input_csr), output_csr); delete output_csr;}
+
+#define MOVE_CONVERT_AND_COMPARE_CSR(input_csr, IDT, NNZT, VALT) {auto copy = dynamic_cast<decltype(input_csr)>((input_csr)->Clone()); auto output_csr =(copy)->Convert<format::CSR, IDT, NNZT, VALT>(true) ;  compare_csrs((input_csr), output_csr); check_move_csrs(copy, output_csr); delete output_csr; delete copy;}
+
+#define CONVERT_THEN_COMPARE_CSR(input, operand_csr, IDT, NNZT, VALT) {auto output_csr =(input)->Convert<format::CSR, IDT, NNZT, VALT>(false) ;  compare_csrs((operand_csr), output_csr); delete output_csr;}
+
+template <typename COOType1, typename COOType2>
+void compare_coos(COOType1* coo1, COOType2* coo2){
+  auto nnz1 = coo1->get_num_nnz();
+  auto nnz2 = coo2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(coo1->get_dimensions()[0],coo2->get_dimensions()[0]);
+  ASSERT_EQ(coo1->get_dimensions()[1],coo2->get_dimensions()[1]);
+  compare_arrays(coo1->get_row(),coo2->get_row(), nnz1, "row");
+  compare_arrays(coo1->get_col(), coo2->get_col(), nnz1, "col");
+  compare_arrays(coo1->get_vals(),coo2->get_vals(), nnz1, "vals");
+}
+
+template <template <typename, typename, typename> typename COOType1, template <typename , typename , typename > typename COOType2, typename I1, typename N1, typename V1, typename I2, typename N2, typename V2>
+void check_move_coos(COOType1<I1, N1, V1>* coo1, COOType2<I2, N2, V2>* coo2){
+  auto nnz1 = coo1->get_num_nnz();
+  auto nnz2 = coo2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(coo1->get_dimensions()[0],coo2->get_dimensions()[0]);
+  ASSERT_EQ(coo1->get_dimensions()[1],coo2->get_dimensions()[1]);
+  if constexpr (std::is_same_v<I1, I2> == true)
+    EXPECT_EQ((void*)coo1->get_col(), (void*)coo2->get_col());
+  else
+    EXPECT_NE((void*)coo1->get_col(), (void*)coo2->get_col());
+  if constexpr (std::is_same_v<I1, I2> == true)
+    EXPECT_EQ((void*)coo1->get_row(), (void*)coo2->get_row());
+  else
+    EXPECT_NE((void*)coo1->get_row(), (void*)coo2->get_row());
+  if constexpr (std::is_same_v<V1, V2> == true)
+    EXPECT_EQ((void*)coo1->get_vals(), (void*)coo2->get_vals());
+  else
+    EXPECT_NE((void*)coo1->get_vals(), (void*)coo2->get_vals());
+}
+
+#define CONVERT_AND_COMPARE_COO(input_coo, IDT, NNZT, VALT) {auto output_coo =(input_coo)->Convert<format::COO, IDT, NNZT, VALT>(false) ;  compare_coos((input_coo), output_coo); delete output_coo;}
+
+#define MOVE_CONVERT_AND_COMPARE_COO(input_coo, IDT, NNZT, VALT) {auto copy = dynamic_cast<decltype(input_coo)>((input_coo)->Clone()); auto output_coo =(copy)->Convert<format::COO, IDT, NNZT, VALT>(true) ;  compare_coos((input_coo), output_coo); check_move_coos(copy, output_coo); delete output_coo; delete copy;}
+
+#define CONVERT_THEN_COMPARE_COO(input, operand_coo, IDT, NNZT, VALT) {auto output_coo =(input)->Convert<format::COO, IDT, NNZT, VALT>(false) ;  compare_coos((operand_coo), output_coo); delete output_coo;}
+
+template <typename CSCType1, typename CSCType2>
+void compare_cscs(CSCType1* csc1, CSCType2* csc2){
+  auto nnz1 = csc1->get_num_nnz();
+  auto nnz2 = csc2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(csc1->get_dimensions()[0],csc2->get_dimensions()[0]);
+  ASSERT_EQ(csc1->get_dimensions()[1],csc2->get_dimensions()[1]);
+  compare_arrays(csc1->get_col_ptr(),csc2->get_col_ptr(), n+1, "col_ptr");
+  compare_arrays(csc1->get_row(), csc2->get_row(), nnz1, "row");
+  compare_arrays(csc1->get_vals(),csc2->get_vals(), nnz1, "vals");
+}
+template <template <typename, typename, typename> typename CSCType1, template <typename , typename , typename > typename CSCType2, typename I1, typename N1, typename V1, typename I2, typename N2, typename V2>
+void check_move_cscs(CSCType1<I1, N1, V1>* csc1, CSCType2<I2, N2, V2>* csc2){
+  auto nnz1 = csc1->get_num_nnz();
+  auto nnz2 = csc2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(csc1->get_dimensions()[0],csc2->get_dimensions()[0]);
+  ASSERT_EQ(csc1->get_dimensions()[1],csc2->get_dimensions()[1]);
+  if constexpr (std::is_same_v<N1, N2> == true)
+    EXPECT_EQ((void*)csc1->get_col_ptr(), (void*)csc2->get_col_ptr());
+  else
+    EXPECT_NE((void*)csc1->get_col_ptr(), (void*)csc2->get_col_ptr());
+  if constexpr (std::is_same_v<I1, I2> == true)
+    EXPECT_EQ((void*)csc1->get_row(), (void*)csc2->get_row());
+  else
+    EXPECT_NE((void*)csc1->get_row(), (void*)csc2->get_row());
+  if constexpr (std::is_same_v<V1, V2> == true)
+    EXPECT_EQ((void*)csc1->get_vals(), (void*)csc2->get_vals());
+  else
+    EXPECT_NE((void*)csc1->get_vals(), (void*)csc2->get_vals());
+}
+
+#define CONVERT_AND_COMPARE_CSC(input_csc, IDT, NNZT, VALT) {auto output_csc =(input_csc)->Convert<format::CSC, IDT, NNZT, VALT>(false) ;  compare_cscs((input_csc), output_csc); delete output_csc;}
+
+#define MOVE_CONVERT_AND_COMPARE_CSC(input_csc, IDT, NNZT, VALT) {auto copy = dynamic_cast<decltype(input_csc)>((input_csc)->Clone()); auto output_csc =(copy)->Convert<format::CSC, IDT, NNZT, VALT>(true) ;  compare_cscs((input_csc), output_csc); check_move_cscs(copy, output_csc); delete output_csc; delete copy;}
+
+#define CONVERT_THEN_COMPARE_CSC(input, operand_csc, IDT, NNZT, VALT) {auto output_csc =(input)->Convert<format::CSC, IDT, NNZT, VALT>(false) ;  compare_cscs((operand_csc), output_csc); delete output_csc;}
+
+TEST(FormatOrderTwoTypeConversion, CSR){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_CSR(&csr, unsigned int, unsigned int, int);
+  CONVERT_AND_COMPARE_CSR(&csr, int, unsigned int, int);
+  CONVERT_AND_COMPARE_CSR(&csr, unsigned int, int, int);
+  CONVERT_AND_COMPARE_CSR(&csr, unsigned int, unsigned int, unsigned int);
+  CONVERT_AND_COMPARE_CSR(&csr, int, unsigned int, unsigned int);
+  CONVERT_AND_COMPARE_CSR(&csr, unsigned int, int, unsigned int);
+  float csr_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double csr_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::CSR<int, int, float> csr_f(
+      n, m, csr_row_ptr, csr_col, csr_vals_f, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_CSR(&csr_f, unsigned int, unsigned int, double);
+  //sparsebase::format::CSR<int, int, double> csr_d(
+  //    n, m, csr_row_ptr, csr_col, csr_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_CSR(&csr_d, unsigned int, unsigned int, float);
+}
+TEST(FormatOrderTwoTypeMoveConversion, CSR){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_CSR(&csr, unsigned int, unsigned int, int);
+  MOVE_CONVERT_AND_COMPARE_CSR(&csr, int, unsigned int, int);
+  MOVE_CONVERT_AND_COMPARE_CSR(&csr, unsigned int, int, int);
+  MOVE_CONVERT_AND_COMPARE_CSR(&csr, unsigned int, unsigned int, unsigned int);
+  MOVE_CONVERT_AND_COMPARE_CSR(&csr, int, unsigned int, unsigned int);
+  MOVE_CONVERT_AND_COMPARE_CSR(&csr, unsigned int, int, unsigned int);
+  float csr_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double csr_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::CSR<int, int, float> csr_f(
+      n, m, csr_row_ptr, csr_col, csr_vals_f, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_CSR(&csr_f, unsigned int, unsigned int, double);
+  //sparsebase::format::CSR<int, int, double> csr_d(
+  //    n, m, csr_row_ptr, csr_col, csr_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_CSR(&csr_d, unsigned int, unsigned int, float);
+}
+TEST(FormatOrderTwoTypeConversion, CSC){
+  sparsebase::format::CSC<int, int, int> csc(
+      n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_CSC(&csc, unsigned int, unsigned int, int);
+  CONVERT_AND_COMPARE_CSC(&csc, int, unsigned int, int);
+  CONVERT_AND_COMPARE_CSC(&csc, unsigned int, int, int);
+  CONVERT_AND_COMPARE_CSC(&csc, unsigned int, unsigned int, unsigned int);
+  CONVERT_AND_COMPARE_CSC(&csc, int, unsigned int, unsigned int);
+  CONVERT_AND_COMPARE_CSC(&csc, unsigned int, int, unsigned int);
+  float csc_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double csc_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::CSC<int, int, float> csc_f(
+      n, m, csc_col_ptr, csc_row, csc_vals_f, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_CSC(&csc_f, unsigned int, unsigned int, double);
+  //sparsebase::format::CSC<int, int, double> csc_d(
+  //    n, m, csc_col_ptr, csc_row, csc_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_CSC(&csc_d, unsigned int, unsigned int, float);
+}
+TEST(FormatOrderTwoTypeMoveConversion, CSC){
+  sparsebase::format::CSC<int, int, int> csc(
+      n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc, unsigned int, unsigned int, int);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc, int, unsigned int, int);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc, unsigned int, int, int);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc, unsigned int, unsigned int, unsigned int);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc, int, unsigned int, unsigned int);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc, unsigned int, int, unsigned int);
+  float csc_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double csc_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::CSC<int, int, float> csc_f(
+      n, m, csc_col_ptr, csc_row, csc_vals_f, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_CSC(&csc_f, unsigned int, unsigned int, double);
+  //sparsebase::format::CSC<int, int, double> csc_d(
+  //    n, m, csc_col_ptr, csc_row, csc_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_CSC(&csc_d, unsigned int, unsigned int, float);
+}
+TEST(FormatOrderTwoTypeConversion, COO){
+  sparsebase::format::COO<int, int, int> coo(
+      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_COO(&coo, unsigned int, unsigned int, int);
+  CONVERT_AND_COMPARE_COO(&coo, int, unsigned int, int);
+  CONVERT_AND_COMPARE_COO(&coo, unsigned int, int, int);
+  CONVERT_AND_COMPARE_COO(&coo, unsigned int, unsigned int, unsigned int);
+  CONVERT_AND_COMPARE_COO(&coo, int, unsigned int, unsigned int);
+  CONVERT_AND_COMPARE_COO(&coo, unsigned int, int, unsigned int);
+  float coo_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double coo_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::COO<int, int, float> coo_f(
+      n, m, nnz, coo_row, coo_col, coo_vals_f, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_COO(&coo_f, unsigned int, unsigned int, double);
+  //sparsebase::format::COO<int, int, double> coo_d(
+  //    n, m, nnz, coo_row, coo_col, coo_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_COO(&coo_d, unsigned int, unsigned int, float);
+}
+
+TEST(FormatOrderTwoTypeMoveConversion, COO){
+  sparsebase::format::COO<int, int, int> coo(
+      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo, unsigned int, unsigned int, int);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo, int, unsigned int, int);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo, unsigned int, int, int);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo, unsigned int, unsigned int, unsigned int);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo, int, unsigned int, unsigned int);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo, unsigned int, int, unsigned int);
+  float coo_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double coo_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::COO<int, int, float> coo_f(
+      n, m, nnz, coo_row, coo_col, coo_vals_f, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_COO(&coo_f, unsigned int, unsigned int, double);
+  //sparsebase::format::COO<int, int, double> coo_d(
+  //    n, m, nnz, coo_row, coo_col, coo_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_COO(&coo_d, unsigned int, unsigned int, float);
+}
+
+TEST(FormatOrderTwoFormatAndTypeConversion, CSR){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  sparsebase::format::COO<int, int, int> coo(
+      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+  sparsebase::format::CSC<int, int, int> csc(
+      n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
+
+  auto csc_uui = csc.Convert<format::CSC, unsigned int, unsigned int, int>(false);
+  CONVERT_THEN_COMPARE_CSC(&csr, csc_uui, unsigned int, unsigned int, int);
+
+  auto coo_uui = coo.Convert<format::COO, unsigned int, unsigned int, int>(false);
+  CONVERT_THEN_COMPARE_COO(&csr, coo_uui, unsigned int, unsigned int, int);
+
+  float csr_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::CSR<int, int, float> csr_f(
+      n, m, csr_row_ptr, csr_col, csr_vals_f, sparsebase::format::kNotOwned);
+  auto csc_f = csr_f.Convert<format::CSC>();
+  auto coo_f = csr_f.Convert<format::COO>();
+
+  CONVERT_THEN_COMPARE_CSC(&csr_f, csc_f, unsigned int, unsigned int, double);
+  CONVERT_THEN_COMPARE_COO(&csr_f, coo_f, unsigned int, unsigned int, double);
+}
+
+TEST(FormatOrderTwoFormatAndTypeConversion, COO){
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  sparsebase::format::COO<int, int, int> coo(
+      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+  sparsebase::format::CSC<int, int, int> csc(
+      n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
+
+  auto csc_uui = coo.Convert<format::CSC, unsigned int, unsigned int, int>(false);
+  CONVERT_THEN_COMPARE_CSC(&coo, csc_uui, unsigned int, unsigned int, int);
+
+  auto csr_uui = coo.Convert<format::CSR, unsigned int, unsigned int, int>(false);
+  CONVERT_THEN_COMPARE_CSR(&coo, csr_uui, unsigned int, unsigned int, int);
+
+  float coo_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::COO<int, int, float> coo_f(
+      n, m, nnz, coo_row, coo_col, coo_vals_f, sparsebase::format::kNotOwned);
+  auto csc_f = coo_f.Convert<format::CSC>();
+  auto csr_f = coo_f.Convert<format::CSR>();
+
+  CONVERT_THEN_COMPARE_CSC(&coo_f, csc_f, unsigned int, unsigned int, double);
+  CONVERT_THEN_COMPARE_CSR(&coo_f, csr_f, unsigned int, unsigned int, double);
+}
+//TEST(FormatOrderTwoFormatAndTypeConversion, CSC){
+//  sparsebase::format::CSR<int, int, int> csr(
+//      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+//  sparsebase::format::COO<int, int, int> coo(
+//      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+//  sparsebase::format::CSC<int, int, int> csc(
+//      n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
+//
+//  // need multi-step conversion
+//  //auto csr_uui = csc.Convert<format::CSR, unsigned int, unsigned int, int>(false);
+//  //CONVERT_THEN_COMPARE_CSR(&csc, csr_uui, unsigned int, unsigned int, int);
+//
+//  auto coo_uui = csc.Convert<format::COO, unsigned int, unsigned int, int>(false);
+//  CONVERT_THEN_COMPARE_COO(&csc, coo_uui, unsigned int, unsigned int, int);
+//
+//  float csc_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+//  sparsebase::format::CSC<int, int, float> csc_f(
+//      n, m, csc_col_ptr, csc_row, csc_vals_f, sparsebase::format::kNotOwned);
+//  //auto csr_f = csc_f.Convert<format::CSR>(); // need to implement multi-step conversion!
+//  auto coo_f = csc_f.Convert<format::COO>();
+//
+//  //CONVERT_THEN_COMPARE_CSR(&csc_f, csr_f, unsigned int, unsigned int, double);
+//  CONVERT_THEN_COMPARE_COO(&csc_f, coo_f, unsigned int, unsigned int, double);
+//}
+
+template <typename ArrayType1, typename ArrayType2>
+void compare_arrays(ArrayType1* array1, ArrayType2* array2){
+  auto nnz1 = array1->get_num_nnz();
+  auto nnz2 = array2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(array1->get_dimensions()[0],array2->get_dimensions()[0]);
+  compare_arrays(array1->get_vals(),array2->get_vals(), nnz1, "vals");
+}
+
+template <template <typename> typename ArrayType1, template <typename> typename ArrayType2, typename V1, typename V2>
+void check_move_arrays(ArrayType1<V1>* array1, ArrayType2<V2>* array2){
+  auto nnz1 = array1->get_num_nnz();
+  auto nnz2 = array2->get_num_nnz();
+  ASSERT_EQ(nnz1, nnz2);
+  ASSERT_EQ(array1->get_dimensions()[0],array2->get_dimensions()[0]);
+  if constexpr (std::is_same_v<V1, V2>)
+    EXPECT_EQ((void*)array1->get_vals(), (void*)array2->get_vals());
+  else
+    EXPECT_NE((void*)array1->get_vals(), (void*)array2->get_vals());
+}
+
+#define CONVERT_AND_COMPARE_Array(input_array, VALT) {auto output_array =(input_array)->Convert<format::Array, VALT>(false) ;  compare_arrays((input_array), output_array); delete output_array;}
+
+#define MOVE_CONVERT_AND_COMPARE_Array(input_arr, VALT) {auto copy = dynamic_cast<decltype(input_arr)>((input_arr)->Clone()); auto output_arr =(copy)->Convert<format::Array, VALT>(true) ;  compare_arrays((input_arr), output_arr); check_move_arrays(copy, output_arr); delete output_arr; delete copy;}
+
+TEST(FormatOrderOneTypeConversion, Array){
+  sparsebase::format::Array<int> array(
+      nnz, coo_vals, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_Array(&array, unsigned int);
+  float coo_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double coo_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::Array<float> array_f(
+      nnz, coo_vals_f, sparsebase::format::kNotOwned);
+  CONVERT_AND_COMPARE_Array(&array_f,double);
+  //sparsebase::format::Array<double> array_d(
+  //    nnz, coo_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_Array(&array_d,float);
+}
+TEST(FormatOrderOneTypeMoveConversion, Array){
+  sparsebase::format::Array<int> array(
+      nnz, coo_vals, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_Array(&array, unsigned int);
+  float coo_vals_f[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  double coo_vals_d[7] = {0, -1, 3, -2121234, 0.1231, -12312.12311, -6666};
+  sparsebase::format::Array<float> array_f(
+      nnz, coo_vals_f, sparsebase::format::kNotOwned);
+  MOVE_CONVERT_AND_COMPARE_Array(&array_f,double);
+  //sparsebase::format::Array<double> array_d(
+  //    nnz, coo_vals_d, sparsebase::format::kNotOwned);
+  //CONVERT_AND_COMPARE_Array(&array_d,float);
+}
