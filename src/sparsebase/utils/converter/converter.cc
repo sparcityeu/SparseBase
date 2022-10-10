@@ -67,30 +67,6 @@ Format *CooCscFunctionConditional(Format *source, context::Context *context) {
       }
     }
   }
-#pragma omp parallel for default(none) shared(col_ptr, row, vals, n)
-      for (IDType i = 0; i < n; i++) {
-        NNZType start = col_ptr[i];
-        NNZType end = col_ptr[i + 1];
-
-        if (end - start <= 1) {
-          continue;
-        }
-
-        std::vector<std::pair<IDType, ValueType>> sort_vec;
-        for (NNZType j = start; j < end; j++) {
-          ValueType val = (vals != nullptr) ? vals[j] : 0;
-          sort_vec.emplace_back(row[j], val);
-        }
-        std::sort(sort_vec.begin(), sort_vec.end(),
-                  std::less<std::pair<IDType, ValueType>>());
-        for (NNZType j = start; j < end; j++) {
-          if (vals != nullptr) {
-            vals[j] = sort_vec[j - start].second;
-          }
-          row[j] = sort_vec[j - start].first;
-        }
-      }
-
   auto csc =
       new CSC<IDType, NNZType, ValueType>(n, m, col_ptr, row, vals, kOwned, false);
   return csc;

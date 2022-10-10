@@ -476,9 +476,33 @@ class TestFormatOrderOne : public sparsebase::format::FormatImplementation<TestF
   }
 
 };
-TEST(ReorderBase, Reorder) {
-  EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Reorder<RCMReorder>({}, &global_csr, {&cpu_context}, true));
+#define EXECUTE_AND_DELETE(call) [&](){auto output  = (call); delete [] output;}();
+
+TEST(ReorderBase, RCMReorder) {
+  EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<RCMReorder>({}, &global_csr, {&cpu_context}, true)));
   auto order = sparsebase::preprocess::ReorderBase::Reorder<RCMReorder>({}, &global_csr, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+
+TEST(ReorderBase, DegreeReorder) {
+  EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<DegreeReorder>({true}, &global_csr, {&cpu_context}, true)));
+  auto order = sparsebase::preprocess::ReorderBase::Reorder<DegreeReorder>({false}, &global_csr, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+
+TEST(ReorderBase, GrayReorder) {
+  EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<GrayReorder>({BitMapSize::BitSize16, 48, 32}, &global_csr, {&cpu_context}, true)));
+  auto order = sparsebase::preprocess::ReorderBase::Reorder<GrayReorder>({BitMapSize::BitSize16, 48, 32}, &global_csr, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+TEST(GrayReorderTest, BasicTestBitSize16) {
+  sparsebase::preprocess::GrayReorder<int, int, int> reorder(sparsebase::preprocess::BitSize16, 100, 10);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+TEST(GrayReorderTest, BasicTestBitSize32) {
+  sparsebase::preprocess::GrayReorder<int, int, int> reorder(sparsebase::preprocess::BitSize32, 100, 10);
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
   check_reorder(order, n);
 }
 
