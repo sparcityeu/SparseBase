@@ -357,7 +357,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     std::vector<format::Format *> formats, PreprocessParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
   bool ascending = cast_params->ascending;
   IDType n = csr->get_dimensions()[0];
@@ -455,7 +455,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<format::Format *> formats, PreprocessParams *params) {
   CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   NNZType *xadj = csr->get_row_ptr();
   IDType *adj = csr->get_col();
   IDType n = csr->get_dimensions()[0];
@@ -533,7 +533,7 @@ PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
 template <typename IDType, typename ValueType>
 format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteArray(
     std::vector<Format *> formats, PreprocessParams *params) {
-  auto *sp = formats[0]->As<Array<ValueType>>();
+  auto *sp = formats[0]->AsAbsolute<Array<ValueType>>();
   auto order = static_cast<PermuteOrderOneParams *>(params)->order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType length = dimensions[0];
@@ -567,7 +567,7 @@ TransformPreprocessType<InputFormatType, ReturnFormtType>::~TransformPreprocessT
 template <typename IDType, typename NNZType, typename ValueType>
 format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
-  auto *sp = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto *sp = formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   auto row_order = static_cast<PermuteOrderTwoParams *>(params)->row_order;
   auto col_order = static_cast<PermuteOrderTwoParams *>(params)->col_order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
@@ -732,7 +732,8 @@ preprocess::JaccardWeights<IDType, NNZType, ValueType, FeatureType>::
     GetJaccardWeightCUDACSR(std::vector<Format *> formats,
                             PreprocessParams *params) {
   auto cuda_csr =
-      formats[0]->As<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+      formats[0]
+          ->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
   return preprocess::cuda::RunJaccardKernel<IDType, NNZType, ValueType,
                                             FeatureType>(cuda_csr);
 }
@@ -879,7 +880,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 FeatureType *DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     GetDegreeDistributionCSR(std::vector<Format *> formats,
                              PreprocessParams *params) {
-  auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto csr = formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   auto dims = csr->get_dimensions();
   IDType num_vertices = dims[0];
   NNZType num_edges = csr->get_num_nnz();
@@ -965,9 +966,15 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegrees(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
+std::tuple<std::vector<format::Format *>,IDType *>Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
+    Format *format, std::vector<context::Context *> c, bool convert_input) {
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 IDType *Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
-  auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto csr = formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   auto dims = csr->get_dimensions();
   IDType num_vertices = dims[0];
   NNZType num_edges = csr->get_num_nnz();
@@ -1121,7 +1128,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 std::unordered_map<std::type_index, std::any>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
-  auto csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  auto csr = formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   auto dims = csr->get_dimensions();
   IDType num_vertices = dims[0];
   NNZType num_edges = csr->get_num_nnz();
@@ -1244,7 +1251,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *
 GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::Format *> input_sf,
                                PreprocessParams *poly_params) {
-  auto csr = input_sf[0]->As<format::CSR<IDType, NNZType, ValueType>>();
+  auto csr = input_sf[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   context::CPUContext *cpu_context =
       static_cast<context::CPUContext *>(csr->get_context());
 
@@ -1559,7 +1566,8 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
 
 template <typename IDType, typename NNZType, typename ValueType>
 IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params){
-  CSR<IDType, NNZType, ValueType>* csr = formats[0]->As<CSR<IDType, NNZType, ValueType>>();
+  CSR<IDType, NNZType, ValueType>* csr =
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
 
   MetisParams* mparams = static_cast<MetisParams*>(params);
 

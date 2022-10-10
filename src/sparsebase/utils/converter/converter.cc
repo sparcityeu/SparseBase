@@ -21,10 +21,9 @@ Converter::get_conversion_map(bool is_move_conversion) {
 }
 
 
-
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCscFunctionConditional(Format *source, context::Context *context) {
-  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
+  auto *coo = source->AsAbsolute<COO<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];
@@ -73,7 +72,7 @@ Format *CooCscFunctionConditional(Format *source, context::Context *context) {
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
-  auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
+  auto *csr = source->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = csr->get_dimensions();
   IDType n = dimensions[0];
@@ -120,7 +119,7 @@ Format *CsrCooFunctionConditional(Format *source, context::Context *context) {
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CsrCscFunctionConditional(Format *source, context::Context *context) {
-  auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
+  auto *csr = source->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
 
   auto coo = CsrCooFunctionConditional<IDType, NNZType, ValueType>(csr, context);
 
@@ -130,7 +129,7 @@ Format *CsrCscFunctionConditional(Format *source, context::Context *context) {
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CsrCooMoveConditionalFunction(Format *source, context::Context *) {
-  auto *csr = source->As<CSR<IDType, NNZType, ValueType>>();
+  auto *csr = source->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
   auto col = csr->release_col();
   auto vals = csr->release_vals();
   std::vector<DimensionType> dimensions = csr->get_dimensions();
@@ -161,7 +160,7 @@ Format *CsrCooMoveConditionalFunction(Format *source, context::Context *) {
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
-  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
+  auto *coo = source->AsAbsolute<COO<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];
@@ -212,7 +211,7 @@ Format *CooCsrFunctionConditional(Format *source, context::Context *context) {
 
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCsrMoveConditionalFunction(Format *source, context::Context *) {
-  auto *coo = source->As<COO<IDType, NNZType, ValueType>>();
+  auto *coo = source->AsAbsolute<COO<IDType, NNZType, ValueType>>();
 
   std::vector<DimensionType> dimensions = coo->get_dimensions();
   IDType n = dimensions[0];
@@ -400,7 +399,7 @@ Format *Converter::Convert(Format *source, std::type_index to_type,
 template <typename FormatType>
 FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
     auto* res = this->Convert(source, FormatType::get_format_id_static());
-    return res->template As<FormatType>();
+    return res->template AsAbsolute<FormatType>();
 }*/
 ConditionalConversionFunction Converter::GetConversionFunction(
     std::type_index from_type, context::Context *from_context,

@@ -37,8 +37,9 @@ int main(int argc, char *argv[]) {
   cout << "Generating RCM ordering..." << endl;
 
   preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer;
-  auto *con = g.get_connectivity()
-                  ->As<format::CSR<vertex_type, edge_type, value_type>>();
+  auto *con =
+      g.get_connectivity()
+          ->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
   vertex_type *order = orderer.GetReorder(con, {&cpu_context}, false);
   auto xadj = con->get_row_ptr();
   auto adj = con->get_col();
