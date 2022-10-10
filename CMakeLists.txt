@@ -6,35 +6,43 @@ else()
   cmake_policy(VERSION 3.18)
 endif()
 
-project( SparseBase_project VERSION 0.2.2 )
+project( SparseBase_project VERSION 0.2.4 )
 option(RUN_TESTS "Enable running tests" OFF)
 option(_HEADER_ONLY "Use the library as a header only library?" OFF)
-option(CUDA "Enable CUDA" OFF)
+option(USE_CUDA "Enable CUDA" OFF)
 option(USE_PIGO "Use PIGO for parallel I/O" ON)
 option(BUILD_EXAMPLES "Build example codes" ON)
 set(ID_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing IDs")
 set(NNZ_TYPES "unsigned int" "int" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
-set(VALUE_TYPES "unsigned int" "int" "float" "double" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(VALUE_TYPES "unsigned int" "int" "float" "double" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
-if(${CUDA})
+
+if(${USE_CUDA})
   if (${CMAKE_VERSION} VERSION_LESS "3.18")
     message(FATAL_ERROR "Using CUDA requires CMake version 3.18 or higher")
   endif()
   enable_language(CUDA)
   set(CMAKE_CUDA_STANDARD 17)
   set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
-  set(CMAKE_CUDA_ARCHITECTURES 60 62 70 75)
+
+  include(FindCUDA/select_compute_arch)
+  cuda_select_nvcc_arch_flags(CUDA_ARCH_FLAGS_RAW Auto)
+  string(REGEX MATCHALL "[0-9][0-9]" CUDA_ARCHS ${CUDA_ARCH_FLAGS_RAW})
+  set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCHS})
+  # The four lines above figure out the architectures of CUDA for the GPUs in
+  # this system automatically. Technically, using FindCuda is deprecated.
+  # However, there is no modern CMAKE alternative until CMake 3.24:
+  # https://cmake.org/cmake/help/latest/prop_tgt/CUDA_ARCHITECTURES.html#prop_tgt:CUDA_ARCHITECTURES
+  # If CMake is upgraded to 3.24, the above four lines will be replaced by
+  # set(CMAKE_CUDA_ARCHITECTURES native)
 endif()
 if (WIN32 OR APPLE)
   message(STATUS "PIGO is not supported on Windows and MacOS at the moment.")
   set(USE_PIGO OFF)
 endif()
 
-configure_file(
-  "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
-  "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
-)
+
 
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-std=c++17"   COMPILER_SUPPORTS_CXX17 )

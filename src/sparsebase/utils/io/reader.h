@@ -104,25 +104,59 @@ private:
 template <typename IDType, typename NNZType, typename ValueType>
 class MTXReader : public Reader,
                   public ReadsCSR<IDType, NNZType, ValueType>,
-                  public ReadsCOO<IDType, NNZType, ValueType> {
+                  public ReadsCOO<IDType, NNZType, ValueType>,
+                  public ReadsArray<ValueType> {
 public:
   /*!
    * Constructor for the MTXReader class
    * @param filename path to the file to be read
-   * @param weighted should be set to true if the file contains weights
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
    */
-  explicit MTXReader(std::string filename, bool weighted = false,
-                     bool convert_to_zero_index = true);
+  explicit MTXReader(std::string filename, bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+  format::Array<ValueType> *ReadArray() const override;
   ~MTXReader() override;
 
 private:
+  enum MTXObjectOptions {
+    matrix,
+    vector
+  };
+  enum MTXFormatOptions {
+    coordinate,
+    array
+  };
+  enum MTXFieldOptions {
+    real,
+    double_field,
+    complex,
+    integer,
+    pattern
+  };
+  enum MTXSymmetryOptions {
+    general = 0,
+    symmetric = 1,
+    skew_symmetric = 2,
+    hermitian = 3
+  };
+  struct MTXOptions {
+    MTXObjectOptions object;
+    MTXFormatOptions format;
+    MTXFieldOptions field;
+    MTXSymmetryOptions symmetry;
+  };
+  MTXOptions ParseHeader(std::string header_line) const;
+  format::Array<ValueType> *ReadCoordinateIntoArray() const;
+  format::Array<ValueType> *ReadArrayIntoArray() const;
+  template <bool weighted>
+  format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
+  template <bool weighted, int symm, bool conv_to_zero>
+  format::COO<IDType, NNZType, ValueType> *ReadCoordinateIntoCOO() const;
   std::string filename_;
-  bool weighted_;
   bool convert_to_zero_index_;
+  MTXOptions options_;
 };
 
 /*!
@@ -136,10 +170,11 @@ class PigoMTXReader : public Reader,
                       public ReadsCOO<IDType, NNZType, ValueType>,
                       public ReadsCSR<IDType, NNZType, ValueType> {
 public:
-  PigoMTXReader(std::string filename, bool weighted = false,
+  PigoMTXReader(std::string filename, bool weighted,
                 bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+  //format::Array<ValueType> *ReadArray() const override;
   virtual ~PigoMTXReader() = default;
 
 private:
@@ -159,7 +194,7 @@ class PigoEdgeListReader : public Reader,
                            public ReadsCSR<IDType, NNZType, ValueType>,
                            public ReadsCOO<IDType, NNZType, ValueType> {
 public:
-  PigoEdgeListReader(std::string filename, bool weighted = false);
+  PigoEdgeListReader(std::string filename, bool weighted);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   virtual ~PigoEdgeListReader() = default;

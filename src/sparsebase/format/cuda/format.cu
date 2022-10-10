@@ -47,9 +47,13 @@ CUDACSR<IDType, NNZType, ValueType>::operator=(
              cudaMemcpyDeviceToDevice);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
-    cudaMalloc(&vals, rhs.get_num_nnz() * sizeof(ValueType));
-    cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz() * sizeof(ValueType),
-               cudaMemcpyDeviceToDevice);
+    if constexpr (std::is_same_v<ValueType, void>){
+      throw utils::TypeException("Cannot create values array for type void");
+    } else {
+      cudaMalloc(&vals, rhs.get_num_nnz() * sizeof(ValueType));
+      cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz() * sizeof(ValueType),
+                 cudaMemcpyDeviceToDevice);
+    }
   }
   this->col_ = std::unique_ptr<IDType, std::function<void(IDType *)>>(
       col, CUDADeleter<IDType>());
@@ -82,9 +86,13 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(
              cudaMemcpyDeviceToDevice);
   ValueType *vals = nullptr;
   if (rhs.get_vals() != nullptr) {
-    cudaMalloc(&vals, rhs.get_num_nnz() * sizeof(ValueType));
-    cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz() * sizeof(ValueType),
-               cudaMemcpyDeviceToDevice);
+    if constexpr (std::is_same_v<ValueType, void>){
+      throw utils::TypeException("Cannot create values array for type void");
+    } else {
+      cudaMalloc(&vals, rhs.get_num_nnz() * sizeof(ValueType));
+      cudaMemcpy(vals, rhs.get_vals(), rhs.get_num_nnz() * sizeof(ValueType),
+                 cudaMemcpyDeviceToDevice);
+    }
   }
   this->col_ = std::unique_ptr<IDType, std::function<void(IDType *)>>(
       col, CUDADeleter<IDType>());
@@ -219,6 +227,7 @@ CUDACSR<IDType, NNZType, ValueType>::~CUDACSR() {}
 template <typename ValueType>
 CUDAArray<ValueType>::CUDAArray(CUDAArray<ValueType> &&rhs)
     : vals_(std::move(rhs.vals_)) {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   this->nnz_ = rhs.get_num_nnz();
   this->order_ = 1;
   this->dimension_ = rhs.dimension_;
@@ -230,6 +239,7 @@ CUDAArray<ValueType>::CUDAArray(CUDAArray<ValueType> &&rhs)
 template <typename ValueType>
 CUDAArray<ValueType> &
 CUDAArray<ValueType>::operator=(const CUDAArray<ValueType> &rhs) {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   this->nnz_ = rhs.nnz_;
   this->order_ = 1;
   this->dimension_ = rhs.dimension_;
@@ -251,6 +261,7 @@ CUDAArray<ValueType>::operator=(const CUDAArray<ValueType> &rhs) {
 template <typename ValueType>
 CUDAArray<ValueType>::CUDAArray(const CUDAArray<ValueType> &rhs)
     : vals_(nullptr, BlankDeleter<ValueType>()) {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   this->nnz_ = rhs.nnz_;
   this->order_ = 1;
   this->dimension_ = rhs.dimension_;
@@ -269,6 +280,7 @@ CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType *vals,
                                 context::cuda::CUDAContext context,
                                 Ownership own)
     : vals_(vals, BlankDeleter<ValueType>()) {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   this->order_ = 1;
   this->dimension_ = {(DimensionType)nnz};
   this->nnz_ = nnz;
@@ -281,13 +293,16 @@ CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType *vals,
 }
 
 template <typename ValueType> Format *CUDAArray<ValueType>::Clone() const {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   return new CUDAArray(*this);
 }
 template <typename ValueType>
 ValueType *CUDAArray<ValueType>::get_vals() const {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   return vals_.get();
 }
 template <typename ValueType> ValueType *CUDAArray<ValueType>::release_vals() {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   auto vals = vals_.release();
   this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
       vals, BlankDeleter<ValueType>());
@@ -296,6 +311,7 @@ template <typename ValueType> ValueType *CUDAArray<ValueType>::release_vals() {
 
 template <typename ValueType>
 void CUDAArray<ValueType>::set_vals(ValueType *vals, Ownership own) {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   if (own == kOwned) {
     this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
         vals, Deleter<ValueType>());
@@ -306,6 +322,7 @@ void CUDAArray<ValueType>::set_vals(ValueType *vals, Ownership own) {
 }
 
 template <typename ValueType> bool CUDAArray<ValueType>::ValsIsOwned() {
+  static_assert(!std::is_same_v<ValueType, void>, "Cannot create CUDAArray with void ValueType");
   return (this->vals_.get_deleter().target_type() !=
           typeid(BlankDeleter<ValueType>));
 }
@@ -313,7 +330,7 @@ template <typename ValueType> CUDAArray<ValueType>::~CUDAArray() {}
 // format.inc
 
 #if !defined(_HEADER_ONLY)
-#include "init/external/cuda/format.inc"
+#include "init/cuda/format.inc"
 #endif
 }; // namespace cuda
 }; // namespace format
