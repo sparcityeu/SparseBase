@@ -28,8 +28,8 @@ unordered_map<string, Format*> get_data_f( string & file_name ) {
 // create custom preprocess function
 void preprocess_f(unordered_map<string, Format*> & data) {
   context::CPUContext cpu_context;
-  auto perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
-  auto A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->As<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
+  auto perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
+  auto A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
   //auto *A_csr = A_reordered->Convert<CSR>();
   data.emplace("ordered", A_reordered);
 };
@@ -38,7 +38,7 @@ void preprocess_f(unordered_map<string, Format*> & data) {
 // this kernel carries out an spmv
 std::any kernel_f(unordered_map<string, Format*> & data, std::any fparams, std::any kparams) {
   auto v = any_cast<double*>(fparams);
-  auto spm = data["ordered"]->As<CSR<vertex_type, edge_type, value_type>>();
+  auto spm = data["ordered"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   auto dimensions = spm->get_dimensions();
   auto num_rows = dimensions[0];
   auto rows = spm->get_row_ptr();
