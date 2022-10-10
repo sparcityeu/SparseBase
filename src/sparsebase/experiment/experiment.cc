@@ -35,6 +35,14 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
       auto file_name = t.first;
       auto file_param = t.second;
       auto data = loader(file_name);
+      if(store_auxiliary){
+        for(const auto & d: data){
+          auto aid = d.first;
+          aid.append(",");
+          aid.append(file_name);
+          this->_auxiliary[aid] = d.second;
+        }
+      }
       for(const auto & p: this->_preprocesses){
         auto pid = p.first;
         auto pfunc = p.second;
@@ -44,9 +52,11 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
             auto aid = d.first;
             aid.append(",");
             aid.append(file_name);
-            aid.append(",");
-            aid.append(pid);
-            this->_auxiliary[aid] = d.second;
+            if(this->_auxiliary.find(aid) == this->_auxiliary.end()){
+              aid.append(",");
+              aid.append(pid);
+              this->_auxiliary[aid] = d.second;
+            }
           }
         }
         for(const auto & k: this->_kernels){
