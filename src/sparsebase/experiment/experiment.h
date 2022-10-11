@@ -257,4 +257,8 @@ void Reorder(std::unordered_map<std::string, format::Format*> & data) {
 
 } // sparsebase::experiment
 
+#ifdef _HEADER_ONLY
+#include "sparsebase/experiment/experiment.cc"
+#endif
+
 #endif
