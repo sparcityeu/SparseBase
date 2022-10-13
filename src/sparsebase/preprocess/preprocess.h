@@ -305,7 +305,7 @@ protected:
    * converted, the output pointer will point at nullptr.
    */
   template <typename F, typename... SF>
-  std::tuple<std::vector<format::Format *>, ReturnType>
+  std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
   CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
                 std::vector<context::Context *> contexts, bool convert_input, F sf, SF... sfs);
 };
@@ -316,9 +316,9 @@ protected:
 public:
   int GetOutput(format::Format *csr, PreprocessParams *params,
                 std::vector<context::Context *>, bool convert_input);
-  std::tuple<std::vector<format::Format *>, int>
+  std::tuple<std::vector<std::vector<format::Format *>>, int>
   GetOutputCached(format::Format *csr, PreprocessParams *params,
-                  std::vector<context::Context *>, bool convert_input);
+                  std::vector<context::Context *> contexts, bool convert_input);
   virtual ~GenericPreprocessType();
 };
 
@@ -376,8 +376,10 @@ public:
    * `format.get_dimensions()[0]` where the ith element is the order of the ith
    * element in the original format object
    */
-  std::tuple<std::vector<format::Format *>, IDType *>
-  GetReorderCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
+  std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
+  GetReorderCached(format::Format *csr,
+                   std::vector<context::Context *> contexts,
+                   bool convert_input);
   //! Generates a reordering inverse permutation of `format` with the given
   //! PreprocessParams object and using one of the contexts in `contexts`
   /*!
@@ -395,9 +397,10 @@ public:
    * `format.get_dimensions()[0]` where the ith element is the order of the ith
    * element in the original format object
    */
-  std::tuple<std::vector<format::Format *>, IDType *>
+  std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
   GetReorderCached(format::Format *csr, PreprocessParams *params,
-                   std::vector<context::Context *>, bool convert_input);
+                   std::vector<context::Context *> contexts,
+                   bool convert_input);
   virtual ~ReorderPreprocessType();
 };
 
@@ -514,8 +517,10 @@ public:
    * converted, the output pointer will point at nullptr. The second element is
    * a transformed Format object.
    */
-  std::tuple<std::vector<format::Format *>, ReturnFormatType *>
-  GetTransformationCached(format::Format *csr, std::vector<context::Context *>, bool convert_input);
+  std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
+  GetTransformationCached(format::Format *csr,
+                          std::vector<context::Context *> contexts,
+                          bool convert_input);
   //! Transforms `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -530,9 +535,10 @@ public:
    * converted, the output pointer will point at nullptr. The second element is
    * a transformed Format object.
    */
-  std::tuple<std::vector<format::Format *>, ReturnFormatType *>
+  std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
   GetTransformationCached(format::Format *csr, PreprocessParams *params,
-                          std::vector<context::Context *>, bool convert_input);
+                          std::vector<context::Context *> contexts,
+                          bool convert_input);
   virtual ~TransformPreprocessType();
 };
 
@@ -706,7 +712,7 @@ public:
    * element is an array of size format.get_dimensions()[0] where element i is
    * the degree distribution of the ith vertex in `formats`
    */
-  std::tuple<std::vector<format::Format *>, FeatureType *>
+  std::tuple<std::vector<std::vector<format::Format *>>, FeatureType *>
   GetDistributionCached(format::Format *format,
                         std::vector<context::Context *> contexts, bool convert_input);
 
@@ -755,7 +761,8 @@ public:
    */
   IDType *GetDegrees(format::Format *format,
                      std::vector<context::Context *> contexts, bool convert_input);
-  std::tuple<std::vector<format::Format *>,IDType *>GetDegreesCached(format::Format *format,
+  std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
+  GetDegreesCached(format::Format *format,
                      std::vector<context::Context *> contexts, bool convert_input);
   //! Degree generation implementation function for CSRs
   /*!
@@ -953,11 +960,14 @@ public:
     return deg_dist.GetDistribution(format, contexts, convert_input);
   }
   template <typename FeatureType, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, FeatureType*> GetDegreeDistributionCached(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, FeatureType*> GetDegreeDistributionCached(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
     DegreeDistribution<IDType, NNZType, ValueType, FeatureType> deg_dist;
     auto output = deg_dist.GetDistributionCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
-    return std::make_pair(converted_format, std::get<1>(output));
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
+    return std::make_pair(converted_formats, std::get<1>(output));
   }
   template <typename IDType, typename NNZType, typename ValueType>
   static NNZType *
@@ -967,11 +977,14 @@ public:
     return deg_dist.GetDegrees(format, contexts, convert_input);
   }
   template <typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, NNZType*> GetDegreesCached(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, NNZType*> GetDegreesCached(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*>contexts){
     Degrees<IDType, NNZType, ValueType> deg_dist;
     auto output = deg_dist.GetDegreesCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
-    return std::make_pair(converted_format, std::get<1>(output));
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
+    return std::make_pair(converted_formats, std::get<1>(output));
   }
 };
 //template <typename IDType, typename NNZType, typename ValueType>
@@ -986,13 +999,16 @@ public:
   }
 
   template <template <typename, typename, typename> typename Reordering, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, IDType*> ReorderCached(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, IDType*> ReorderCached(typename Reordering<IDType, NNZType, ValueType>::ParamsType params, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts){
     static_assert(std::is_base_of_v<ReorderPreprocessType<IDType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
     static_assert(!std::is_same_v<GenericReorder<IDType, NNZType, ValueType>, Reordering<IDType, NNZType, ValueType>>, "You must pass a reordering function (with base ReorderPreprocessType) to ReorderBase::Reorder");
     Reordering<IDType, NNZType, ValueType> reordering(params);
     auto output = reordering.GetReorderCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
-    return std::make_pair(converted_format, std::get<1>(output));
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
+    return std::make_pair(converted_formats, std::get<1>(output));
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
@@ -1010,39 +1026,45 @@ public:
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DCached(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DCached(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, ordering);
     auto output = perm.GetTransformationCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
     if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
-      return std::make_pair(converted_format, std::get<1>(output));
+      return std::make_pair(converted_formats, std::get<1>(output));
     else {
       if (convert_output)
         return std::make_pair(
-            converted_format,
+            converted_formats,
             std::get<1>(output)->template Convert<ReturnFormatType>());
       else
         return std::make_pair(
-            converted_format,
+            converted_formats,
             std::get<1>(output)->template As<ReturnFormatType>());
     }
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DRowColumnWiseCached(IDType* row_ordering, IDType* col_ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DRowColumnWiseCached(IDType* row_ordering, IDType* col_ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(row_ordering, col_ordering);
     auto output = perm.GetTransformationCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
     if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
-      return std::make_pair(converted_format, std::get<1>(output));
+      return std::make_pair(converted_formats, std::get<1>(output));
     else {
       if (convert_output)
         return std::make_pair(
-            converted_format,
+            converted_formats,
             std::get<1>(output)->template Convert<ReturnFormatType>());
       else
         return std::make_pair(
-            converted_format,
+            converted_formats,
             std::get<1>(output)->template As<ReturnFormatType>());
     }
   }
@@ -1076,17 +1098,20 @@ public:
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DRowWiseCached(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DRowWiseCached(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(ordering, nullptr);
     auto output = perm.GetTransformationCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
     if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
-      return std::make_pair(converted_format, std::get<1>(output));
+      return std::make_pair(converted_formats, std::get<1>(output));
     else{
       if (convert_output)
-        return std::make_pair(converted_format, std::get<1>(output)->template Convert<ReturnFormatType>());
+        return std::make_pair(converted_formats, std::get<1>(output)->template Convert<ReturnFormatType>());
       else
-        return std::make_pair(converted_format,
+        return std::make_pair(converted_formats,
             std::get<1>(output)->template As<ReturnFormatType>());
     }
   }
@@ -1106,17 +1131,20 @@ public:
   }
 
   template <template <typename, typename, typename> typename ReturnFormatType = format::FormatOrderTwo, typename IDType, typename NNZType, typename ValueType>
-  static std::pair<format::FormatOrderTwo<IDType, NNZType, ValueType>*, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DColWiseCached(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
+  static std::pair<std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*>, ReturnFormatType<IDType, NNZType, ValueType>*> Permute2DColWiseCached(IDType* ordering, format::FormatOrderTwo<IDType, NNZType, ValueType>* format, std::vector<context::Context*> contexts, bool convert_output = false){
     PermuteOrderTwo<IDType, NNZType, ValueType> perm(nullptr, ordering);
     auto output = perm.GetTransformationCached(format, contexts, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(std::get<0>(output)[0]);
+    std::vector<format::FormatOrderTwo<IDType, NNZType, ValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderTwo<IDType, NNZType, ValueType>*>(intermediate_format);
+    });
     if constexpr (std::is_same_v<ReturnFormatType<IDType, NNZType, ValueType>, format::FormatOrderTwo<IDType, NNZType, ValueType>>)
-      return std::make_pair(converted_format, std::get<1>(output));
+      return std::make_pair(converted_formats, std::get<1>(output));
     else{
       if (convert_output)
-        return std::make_pair(converted_format, std::get<1>(output)->template Convert<ReturnFormatType>());
+        return std::make_pair(converted_formats, std::get<1>(output)->template Convert<ReturnFormatType>());
       else
-        return std::make_pair(converted_format,
+        return std::make_pair(converted_formats,
             std::get<1>(output)->template As<ReturnFormatType>());
     }
   }
@@ -1147,17 +1175,20 @@ public:
   }
 
   template <template <typename> typename ReturnFormatType = format::FormatOrderOne, typename AutoIDType, typename AutoValueType>
-  static std::pair<format::FormatOrderOne<AutoValueType>*, ReturnFormatType<AutoValueType>*> Permute1DCached(AutoIDType* ordering, format::FormatOrderOne<AutoValueType>* format, std::vector<context::Context*> context, bool convert_output = false){
+  static std::pair<std::vector<format::FormatOrderOne<AutoValueType>*>, ReturnFormatType<AutoValueType>*> Permute1DCached(AutoIDType* ordering, format::FormatOrderOne<AutoValueType>* format, std::vector<context::Context*> context, bool convert_output = false){
     PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
     auto output = perm.GetTransformationCached(format, context, true);
-    auto converted_format = (std::get<0>(output)[0] == nullptr) ? nullptr : static_cast<format::FormatOrderOne<AutoValueType>*>(std::get<0>(output)[0]);
+    std::vector<format::FormatOrderOne<AutoValueType>*> converted_formats;
+    std::transform(std::get<0>(output)[0].begin(),std::get<0>(output)[0].end(), std::back_inserter(converted_formats), [](format::Format* intermediate_format){
+      return static_cast<format::FormatOrderOne<AutoValueType>*>(intermediate_format);
+    });
     if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>, format::FormatOrderOne<AutoValueType>>)
-      return std::make_pair(converted_format, std::get<1>(output));
+      return std::make_pair(converted_formats, std::get<1>(output));
     else{
       if (convert_output)
-        return std::make_pair(converted_format, std::get<1>(output)->template Convert<ReturnFormatType>());
+        return std::make_pair(converted_formats, std::get<1>(output)->template Convert<ReturnFormatType>());
       else
-        return std::make_pair(converted_format,
+        return std::make_pair(converted_formats,
             std::get<1>(output)->template As<ReturnFormatType>());
     }
   }
@@ -1218,8 +1249,103 @@ protected:
   static IDType *GrayReorderingCSR(std::vector<format::Format *> input_sf,
                                    PreprocessParams *poly_params);
 };
+template <typename ReturnType, class PreprocessingImpl, typename Function,
+    typename Key, typename KeyHash, typename KeyEqualTo>
+template <typename F, typename... SF>
+std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
+    KeyEqualTo>::CachedExecute(PreprocessParams *params,
+                               utils::converter::Converter *sc,
+                               std::vector<context::Context *>
+                               contexts, bool convert_input,
+                               F format, SF... formats) {
+  ConversionMap map = this->map_to_function_;
+  // pack the Formats into a vector
+  std::vector<format::Format *> packed_formats =
+      PackObjects(format, formats...);
+  // pack the types of Formats into a vector
+  std::vector<std::type_index> packed_format_types;
+  for (auto f : packed_formats)
+    packed_format_types.push_back(f->get_format_id());
+  // get conversion schema
+  std::tuple<Function, utils::converter::ConversionSchemaConditional> ret =
+      GetFunction(packed_formats, packed_format_types, map, contexts, sc);
+  Function func = std::get<0>(ret);
+  utils::converter::ConversionSchemaConditional cs = std::get<1>(ret);
+  // carry out conversion
+  // ready_formats contains the format to use in preprocessing
+  if (!convert_input) {
+    for (const auto &conversion_chain : cs) {
+      if (conversion_chain)
+        throw utils::DirectExecutionNotAvailableException(
+            packed_format_types, this->GetAvailableFormats());
+    }
+  }
+  std::vector<std::vector<format::Format *>> all_formats =
+      sparsebase::utils::converter::Converter::ApplyConversionSchema(
+          cs, packed_formats);
+  // The formats that will be used in the preprocessing implementation function calls
+  std::vector<format::Format *> final_formats;
+  std::transform(all_formats.begin(), all_formats.end(),
+                 std::back_inserter(final_formats),
+                 [](std::vector<format::Format *> conversion_chain) {
+                   return conversion_chain.back();
+                 });
+  // Formats that are used to get to the final formats
+  std::vector<std::vector<format::Format *>> intermediate_formats;
+  std::transform(all_formats.begin(), all_formats.end(),
+                 std::back_inserter(intermediate_formats),
+                 [](std::vector<format::Format *> conversion_chain) {
+                   if (conversion_chain.size() > 1)
+                     return std::vector<format::Format *>(conversion_chain.begin() + 1,
+                                                  conversion_chain.end());
+                   return std::vector<format::Format *>();
+                 });
+  // carry out the correct call
+  return std::make_tuple(intermediate_formats, func(final_formats, params));
+}
 
+template <typename ReturnType, class PreprocessingImpl, typename Function,
+    typename Key, typename KeyHash, typename KeyEqualTo>
+template <typename F, typename... SF>
+ReturnType
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
+    KeyEqualTo>::Execute(PreprocessParams *params,
+                         utils::converter::Converter *sc,
+                         std::vector<context::Context *>
+                         contexts, bool convert_input,
+                         F sf, SF... sfs) {
+  auto cached_output = CachedExecute(params, sc, contexts, convert_input, sf, sfs...);
+  auto converted_format_chains = std::get<0>(cached_output);
+  auto return_object = std::get<1>(cached_output);
+  for (const auto& converted_format_chain : converted_format_chains) {
+    for (const auto& converted_format : converted_format_chain)
+      delete converted_format;
+  }
+  return return_object;
+}
 
+template <typename ReturnType, class PreprocessingImpl, typename Key,
+    typename KeyHash, typename KeyEqualTo, typename Function>
+template <typename Object>
+std::vector<Object>
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
+    Function>::PackObjects(Object object) {
+  return {object};
+}
+template <typename ReturnType, class PreprocessingImpl, typename Key,
+    typename KeyHash, typename KeyEqualTo, typename Function>
+template <typename Object, typename... Objects>
+std::vector<Object>
+FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
+    Function>::PackObjects(Object object, Objects... objects) {
+  std::vector<Object> v = {object};
+  std::vector<Object> remainder = PackObjects(objects...);
+  for (auto i : remainder) {
+    v.push_back(i);
+  }
+  return v;
+}
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
