@@ -13,6 +13,10 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/utils/converter/converter.h"
+#define BOOST_ATOMIC_DETAIL_NO_CXX11_IS_TRIVIALLY_COPYABLE
+#define BOOST_ATOMIC_DETAIL_NO_HAS_UNIQUE_OBJECT_REPRESENTATIONS
+#define BOOST_ATOMIC_NO_CLEAR_PADDING
+#include "sparsebase/preprocess/rabbit_order.hpp"
 
 #include <any>
 #include <iostream>
@@ -21,6 +25,7 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 namespace sparsebase::preprocess {
 
@@ -748,6 +753,38 @@ public:
 protected:
   void Register();
 };
+
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+class SlashburnReorder : public ReorderPreprocessType<IDType> {
+public:
+  SlashburnReorder(bool ascending);
+  struct SlashburnReorderParams : PreprocessParams {
+    bool ascending;
+    SlashburnReorderParams(bool ascending) : ascending(ascending) {}
+  };
+
+protected:
+  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
+                                     PreprocessParams *params);
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class RabbitReorder : public ReorderPreprocessType<IDType> {
+public:
+  RabbitReorder(bool ascending);
+  struct RabbitReorderParams : PreprocessParams {
+    bool ascending;
+    RabbitReorderParams(bool ascending) : ascending(ascending) {}
+  };
+
+protected:
+  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
+                                     PreprocessParams *params);
+};
+
+
 
 } // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY

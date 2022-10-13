@@ -1,5 +1,9 @@
 find_package(OpenMP REQUIRED)
+find_package(Boost REQUIRED)
 set (CMAKE_CXX_STANDARD 17)
+include_directories( ${Boost_INCLUDE_DIRS} )
+find_library(TCMALLOC_LIB NAMES tcmalloc)
+find_library(NUMA_LIBRARIES NAMES numa)
 # Creating the sparsebase library executable
 if(NOT ${_HEADER_ONLY})
   find_package (Python COMPONENTS Interpreter)
@@ -44,11 +48,11 @@ if(NOT ${_HEADER_ONLY})
     # Location of the headers at install time
     $<INSTALL_INTERFACE:include>)
   target_compile_features(sparsebase PUBLIC cxx_std_17)
-  target_link_libraries(sparsebase OpenMP::OpenMP_CXX)
+  target_link_libraries(sparsebase OpenMP::OpenMP_CXX numa)
 else()
   add_library(sparsebase INTERFACE)
   target_compile_features(sparsebase INTERFACE cxx_std_17)
-  target_link_libraries(sparsebase INTERFACE OpenMP::OpenMP_CXX )
+  target_link_libraries(sparsebase INTERFACE OpenMP::OpenMP_CXX numa)
   # defining the include paths of the library
   target_include_directories(sparsebase INTERFACE
     # Location of the headers at build time
