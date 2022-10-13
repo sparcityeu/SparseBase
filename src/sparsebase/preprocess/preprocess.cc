@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <algorithm>
+#include <limits>
 
 using namespace sparsebase::format;
 
@@ -122,168 +124,87 @@ FunctionMatcherMixin<
                              utils::converter::Converter *sc) {
   utils::converter::ConversionSchemaConditional cs;
   Function func = nullptr;
+  // When function and conversion costs are added,
+  // this 'if' should be removed  -- a conversion might be
+  // cheaper than direct call to matching key
   if (CheckIfKeyMatches(map, key, packed_sfs, contexts)) {
     for (auto f : key) {
-      cs.push_back(std::make_tuple(false, f, nullptr));
+      cs.push_back({});
     }
     func = map[key];
-  } else {
-    // the keys of all the possible functions
-    std::vector<Key> all_keys;
-    for (auto key_func : map) {
-      all_keys.push_back(key_func.first);
-    }
-    std::vector<std::tuple<unsigned int,
-                           utils::converter::ConversionSchemaConditional, Key>>
-        usable_keys;
-    for (auto potential_key : all_keys) {
-      if (potential_key.size() == key.size()) {
-        utils::converter::ConversionSchemaConditional temp_cs;
-        int conversions = 0;
-        bool is_usable = true;
-        for (int i = 0; i < potential_key.size(); i++) {
-          if (key[i] == potential_key[i]) {
-            temp_cs.push_back(
-                std::make_tuple(false, potential_key[i], nullptr));
-          } else { //  if (sc.CanConvert(key[i], potential_key[i])) {
-            if (sc == nullptr) {
-              throw utils::NoConverterException();
-            }
-            auto convertable =
-                sc->CanConvert(key[i], packed_sfs[i]->get_context(),
-                               potential_key[i], contexts);
-            if (std::get<0>(convertable)) {
-              temp_cs.push_back(std::make_tuple(true, potential_key[i],
-                                                std::get<1>(convertable)));
-              conversions++;
-            } else {
-              is_usable = false;
-            }
-          }
+    return std::make_tuple(func, cs);
+  }
+  // the keys of all the available functions in preprocessing
+  std::vector<Key> all_keys;
+  for (const auto& key_func : map) {
+    all_keys.push_back(key_func.first);
+  }
+  // Find all the keys that can potentially run with this input
+  std::vector<std::tuple<unsigned int,
+                         utils::converter::ConversionSchemaConditional, Key>>
+      usable_keys;
+  for (auto potential_key : all_keys) {
+    if (potential_key.size()!=key.size()) continue;
+    utils::converter::ConversionSchemaConditional temp_cs;
+    bool is_usable = true;
+    int conversion_cost = 0;
+    for (int i = 0; i < potential_key.size(); i++) {
+      if (key[i] == potential_key[i]) {
+        temp_cs.push_back({});
+        conversion_cost  += 0; // no conversion cost
+      } else {
+        if (sc == nullptr) {
+          throw utils::NoConverterException();
         }
-        if (is_usable) {
-          usable_keys.push_back(
-              std::make_tuple(conversions, temp_cs, potential_key));
+        auto conversion_chain =
+            sc->GetConversionChain(key[i], packed_sfs[i]->get_context(),
+                                   potential_key[i], contexts);
+        if (conversion_chain) {
+          temp_cs.push_back(*conversion_chain);
+          conversion_cost+=std::get<1>(*conversion_chain);
+        } else {
+          is_usable = false;
         }
       }
     }
-    if (usable_keys.size() == 0) {
-      std::string message;
-      message = "Could not find a function that matches the formats: {";
-      for (auto f : packed_sfs) {
-        message += f->get_format_name();
-        message += " ";
-      }
-      message += "} using the contexts {";
-      for (auto c : contexts) {
-        message += c->get_context_type_member().name();
-        message += " ";
-      }
-      message += "}";
+    // At this point, we can add the cost of the function with key "potential_key"
+    if (is_usable) {
+      int total_cost = conversion_cost; // add function cost in the future
+      usable_keys.push_back(
+          std::make_tuple(total_cost, temp_cs, potential_key));
+    }
+  }
+  if (usable_keys.empty()) {
+    std::string message;
+    message = "Could not find a function that matches the formats: {";
+    for (auto f : packed_sfs) {
+      message += f->get_format_name();
+      message += " ";
+    }
+    message += "} using the contexts {";
+    for (auto c : contexts) {
+      message += c->get_context_type_member().name();
+      message += " ";
+    }
+    message += "}";
 
-      throw sparsebase::utils::FunctionNotFoundException(
-          message); // TODO: add a custom exception type
-    }
-    std::tuple<Function, utils::converter::ConversionSchemaConditional>
-        best_conversion;
-    unsigned int num_conversions = (unsigned int)-1;
-    for (auto potential_usable_key : usable_keys) {
-      if (num_conversions > std::get<0>(potential_usable_key)) {
-        num_conversions = std::get<0>(potential_usable_key);
-        cs = std::get<1>(potential_usable_key);
-        func = map[std::get<2>(potential_usable_key)];
-      }
+    throw sparsebase::utils::FunctionNotFoundException(
+        message); // TODO: add a custom exception type
+  }
+  std::tuple<Function, utils::converter::ConversionSchemaConditional>
+      best_conversion;
+  float cost = std::numeric_limits<float>::max();
+  for (auto potential_usable_key : usable_keys) {
+    if (cost > std::get<0>(potential_usable_key)) {
+      cost = std::get<0>(potential_usable_key);
+      cs = std::get<1>(potential_usable_key);
+      func = map[std::get<2>(potential_usable_key)];
     }
   }
   return std::make_tuple(func, cs);
 }
-template <typename ReturnType, class PreprocessingImpl, typename Key,
-          typename KeyHash, typename KeyEqualTo, typename Function>
-template <typename Object>
-std::vector<Object>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
-                     Function>::PackObjects(Object object) {
-  return {object};
-}
-template <typename ReturnType, class PreprocessingImpl, typename Key,
-          typename KeyHash, typename KeyEqualTo, typename Function>
-template <typename Object, typename... Objects>
-std::vector<Object>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
-                     Function>::PackObjects(Object object, Objects... objects) {
-  std::vector<Object> v = {object};
-  std::vector<Object> remainder = PackObjects(objects...);
-  for (auto i : remainder) {
-    v.push_back(i);
-  }
-  return v;
-}
-template <typename ReturnType, class PreprocessingImpl, typename Function,
-          typename Key, typename KeyHash, typename KeyEqualTo>
-template <typename F, typename... SF>
-std::tuple<std::vector<format::Format *>, ReturnType>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
-                     KeyEqualTo>::CachedExecute(PreprocessParams *params,
-                                                utils::converter::Converter *sc,
-                                                std::vector<context::Context *>
-                                                    contexts, bool convert_input,
-                                                F format, SF... formats) {
-  ConversionMap map = this->map_to_function_;
-  // pack the Formats into a vector
-  std::vector<format::Format *> packed_formats =
-      PackObjects(format, formats...);
-  // pack the types of Formats into a vector
-  std::vector<std::type_index> packed_format_types;
-  for (auto f : packed_formats)
-    packed_format_types.push_back(f->get_format_id());
-  // get conversion schema
-  std::tuple<Function, utils::converter::ConversionSchemaConditional> ret =
-      GetFunction(packed_formats, packed_format_types, map, contexts, sc);
-  Function func = std::get<0>(ret);
-  utils::converter::ConversionSchemaConditional cs = std::get<1>(ret);
-  // carry out conversion
-  // ready_formats contains the format to use in preprocessing
-  if (!convert_input){
-    for (auto convert_order : cs){
-      if (std::get<0>(convert_order))
-        throw utils::DirectExecutionNotAvailableException(packed_format_types, this->GetAvailableFormats());
-    }
-  }
-  std::vector<Format *> ready_formats =
-      sc->ApplyConversionSchema(cs, packed_formats);
-  // `converted` contains the results of conversions
-  std::vector<Format *> converted;
-  for (int i = 0; i < ready_formats.size(); i++) {
-    auto conversion = cs[i];
-    if (std::get<0>(conversion)) {
-      converted.push_back(ready_formats[i]);
-    } else {
-      converted.push_back(nullptr);
-    }
-  }
-  // carry out the correct call
-  return std::make_tuple(converted, func(ready_formats, params));
-}
 
-template <typename ReturnType, class PreprocessingImpl, typename Function,
-          typename Key, typename KeyHash, typename KeyEqualTo>
-template <typename F, typename... SF>
-ReturnType
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
-                     KeyEqualTo>::Execute(PreprocessParams *params,
-                                          utils::converter::Converter *sc,
-                                          std::vector<context::Context *>
-                                              contexts, bool convert_input,
-                                          F sf, SF... sfs) {
-  auto cached_output = CachedExecute(params, sc, contexts, convert_input, sf, sfs...);
-  auto converted_formats = std::get<0>(cached_output);
-  auto return_object = std::get<1>(cached_output);
-  for (auto *converted_format : converted_formats) {
-    if (converted_format != nullptr)
-      delete converted_format;
-  }
-  return return_object;
-}
+
 
 template <typename IDType, typename NNZType, typename ValueType>
 GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {
@@ -317,9 +238,9 @@ int GenericPreprocessType<ReturnType>::GetOutput(
 }
 
 template <typename ReturnType>
-std::tuple<std::vector<format::Format *>, int>
+std::tuple<std::vector<std::vector<format::Format *>>, int>
 GenericPreprocessType<ReturnType>::GetOutputCached(
-    Format *format, PreprocessParams *params,
+    format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
   return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
@@ -338,17 +259,18 @@ IDType *ReorderPreprocessType<IDType>::GetReorder(
 }
 
 template <typename IDType>
-std::tuple<std::vector<format::Format *>, IDType *>
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
-    Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+    format::Format *format, std::vector<context::Context *> contexts,
+    bool convert_input) {
   return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
                              format);
 }
 
 template <typename IDType>
-std::tuple<std::vector<format::Format *>, IDType *>
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
-    Format *format, PreprocessParams *params,
+    format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
   return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
@@ -631,19 +553,22 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZT
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-std::tuple<std::vector<format::Format *>, ReturnFormatType *>
-TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
-    format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::
+    GetTransformationCached(format::Format *format,
+                            std::vector<context::Context *> contexts,
+                            bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
   return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
                              format);
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-std::tuple<std::vector<format::Format *>, ReturnFormatType *>
-TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
-    format::Format  *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
+std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::
+    GetTransformationCached(format::Format *format, PreprocessParams *params,
+                            std::vector<context::Context *> contexts,
+                            bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
   return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
 }
@@ -825,7 +750,7 @@ DegreeDistribution<IDType, NNZType, ValueType,
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-std::tuple<std::vector<format::Format *>, FeatureType *>
+std::tuple<std::vector<std::vector<format::Format *>>, FeatureType *>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     GetDistributionCached(Format *format,
                           std::vector<context::Context *> contexts, bool convert_input) {
@@ -966,7 +891,8 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegrees(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<format::Format *>,IDType *>Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
+Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
     Format *format, std::vector<context::Context *> c, bool convert_input) {
   return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
 }
