@@ -106,12 +106,12 @@ jobs:
           submodules: recursive
 
       - name: Install Dependencies
-        run: brew update && brew install gcc@9 bison flex swig readline libomp python3
+        run: brew install cmake gcc@9 libomp python3
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
 
       - name: Build
         # Build your program with the given configuration
