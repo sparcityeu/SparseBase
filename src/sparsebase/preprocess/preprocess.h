@@ -342,9 +342,8 @@ public:
    * reordering.
    * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * @return an invere permutation of the input format; an array of size
-   * `format.get_dimensions()[0]` where the ith element is the order of the ith
-   * element in the original format object
+   * @return the inverse permutation array `inv_perm` of the input format; an array of size
+   * `format.get_dimensions()[0]` where `inv_per[i]` is the new ID of row/column `i`.
    */
   IDType *GetReorder(format::Format *format,
                      std::vector<context::Context *> contexts, bool convert_input);
@@ -359,9 +358,8 @@ public:
    * reordering.
    * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * @return an inverse permutation of the input format; an array of size
-   * `format.get_dimensions()[0]` where the ith element is the order of the ith
-   * element in the original format object
+   * @return the inverse permutation array `inv_perm` of the input format; an array of size
+   * `format.get_dimensions()[0]` where `inv_per[i]` is the new ID of row/column `i`.
    */
   IDType *GetReorder(format::Format *format, PreprocessParams *params,
                      std::vector<context::Context *> contexts, bool convert_input);
@@ -378,9 +376,8 @@ public:
    * each pointer in the output points at the format that the corresponds Format
    * object from the the input was converted to. If an input Format wasn't
    * converted, the output pointer will point at nullptr. The second element is
-   * an inverse permutation of the input format; an array of size
-   * `format.get_dimensions()[0]` where the ith element is the order of the ith
-   * element in the original format object
+   * the inverse permutation array `inv_perm` of the input format; an array of size
+   * `format.get_dimensions()[0]` where `inv_per[i]` is the new ID of row/column `i`.
    */
   std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
   GetReorderCached(format::Format *csr,
@@ -401,9 +398,8 @@ public:
    * each pointer in the output points at the format that the corresponds Format
    * object from the the input was converted to. If an input Format wasn't
    * converted, the output pointer will point at nullptr. The second element is
-   * an inverse permutation of the input format; an array of size
-   * `format.get_dimensions()[0]` where the ith element is the order of the ith
-   * element in the original format object
+   * the inverse permutation array `inv_perm` of the input format; an array of size
+   * `format.get_dimensions()[0]` where `inv_per[i]` is the new ID of row/column `i`.
    */
   std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
   GetReorderCached(format::Format *csr, PreprocessParams *params,
