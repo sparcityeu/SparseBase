@@ -11,16 +11,11 @@ using namespace sparsebase::format;
 
 namespace sparsebase::utils::converter {
 
-std::unordered_map<
-    std::type_index,
-    std::unordered_map<std::type_index,
-                       std::vector<std::tuple<
-                           EdgeConditional, ConditionalConversionFunction>>>> *
-Converter::get_conversion_map(bool is_move_conversion) {
+ConversionMap * Converter::get_conversion_map(bool is_move_conversion) {
   if (is_move_conversion)
-    return &conditional_move_map_;
+    return &move_conversion_map_;
   else
-    return &conditional_map_;
+    return &copy_conversion_map_;
 }
 
 
@@ -255,12 +250,12 @@ template <typename ValueType> void ConverterOrderOne<ValueType>::Reset() {
 }
 template <typename ValueType> void ConverterOrderOne<ValueType>::ResetConverterOrderOne() {
 #ifdef USE_CUDA
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       Array<ValueType>::get_format_id_static(),
       format::cuda::CUDAArray<ValueType>::get_format_id_static(),
       converter::cuda::ArrayCUDAArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::cuda::CUDAContext::get_context_type(); });
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       format::cuda::CUDAArray<ValueType>::get_format_id_static(),
       Array<ValueType>::get_format_id_static(),
       converter::cuda::CUDAArrayArrayConditionalFunction<ValueType>,
@@ -285,69 +280,93 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
 
 template <typename IDType, typename NNZType, typename ValueType>
 void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCsrFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCooFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
 #ifdef USE_CUDA
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       converter::cuda::CUDACsrCUDACsrConditionalFunction<IDType, NNZType,
                                                          ValueType>,
       converter::cuda::CUDAPeerToPeer);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       converter::cuda::CsrCUDACsrConditionalFunction<IDType, NNZType,
                                                      ValueType>,
       [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::cuda::CUDAContext::get_context_type(); });
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       converter::cuda::CUDACsrCsrConditionalFunction<IDType, NNZType,
                                                      ValueType>,
       [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
 #endif
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCsrMoveConditionalFunction<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
 }
 
@@ -356,9 +375,10 @@ ConverterOrderTwo<IDType, NNZType, ValueType>::ConverterOrderTwo() {
   this->ResetConverterOrderTwo();
 }
 
-void Converter::RegisterConditionalConversionFunction(
+void Converter::RegisterConversionFunction(
     std::type_index from_type, std::type_index to_type,
-    ConditionalConversionFunction conv_func, EdgeConditional edge_condition,
+    ConversionFunction conv_func,
+                                           ConversionCondition edge_condition,
     bool is_move_conversion) {
   auto map = get_conversion_map(is_move_conversion);
   if (map->count(from_type) == 0) {
@@ -367,22 +387,22 @@ void Converter::RegisterConditionalConversionFunction(
         std::unordered_map<
             std::type_index,
             std::vector<
-                std::tuple<EdgeConditional, ConditionalConversionFunction>>>());
+                std::tuple<ConversionCondition, ConversionFunction>>>());
   }
 
   if ((*map)[from_type].count(to_type) == 0) {
     (*map)[from_type][to_type].push_back(
-        std::make_tuple<EdgeConditional, ConditionalConversionFunction>(
-            std::forward<EdgeConditional>(edge_condition),
-            std::forward<ConditionalConversionFunction>(conv_func)));
+        std::make_tuple<ConversionCondition, ConversionFunction>(
+            std::forward<ConversionCondition>(edge_condition),
+            std::forward<ConversionFunction>(conv_func)));
     //(*map)[from_type].emplace(to_type, {make_tuple<EdgeConditional,
     // ConversionFunction>(std::forward<EdgeConditional>(edge_condition),
     // std::forward<ConversionFunction>(conv_func))});
   } else {
     (*map)[from_type][to_type].push_back(
-        std::make_tuple<EdgeConditional, ConditionalConversionFunction>(
-            std::forward<EdgeConditional>(edge_condition),
-            std::forward<ConditionalConversionFunction>(conv_func)));
+        std::make_tuple<ConversionCondition, ConversionFunction>(
+            std::forward<ConversionCondition>(edge_condition),
+            std::forward<ConversionFunction>(conv_func)));
   }
 }
 
@@ -448,9 +468,9 @@ std::optional<std::tuple<Converter::CostType, context::Context*>> Converter::Can
 }
  */
 
-std::vector<std::tuple<ConditionalConversionFunction, context::Context*>> Converter::ConversionBFS(std::type_index from_type, context::Context* from_context, std::type_index to_type, const std::vector<context::Context*>& to_contexts, ConversionMap* map){
+std::vector<ConversionStep> Converter::ConversionBFS(std::type_index from_type, context::Context* from_context, std::type_index to_type, const std::vector<context::Context*>& to_contexts, ConversionMap* map){
   std::deque<std::type_index> frontier{from_type};
-  std::unordered_map<std::type_index, std::pair<std::type_index, std::tuple<ConditionalConversionFunction, context::Context*>>> seen;
+  std::unordered_map<std::type_index, std::pair<std::type_index, ConversionStep>> seen;
   seen.emplace(from_type, std::make_pair(from_type, std::make_tuple(nullptr, nullptr)));
   int level = 1;
   size_t level_size = 1;
@@ -468,7 +488,7 @@ std::vector<std::tuple<ConditionalConversionFunction, context::Context*>> Conver
                 seen.emplace(neighbor.first, std::make_pair(curr, std::make_tuple(std::get<1>(curr_to_neighbor_functions), to_context)));
                 frontier.emplace_back(neighbor.first);
                 if (neighbor.first == to_type) {
-                  std::vector<std::tuple<ConditionalConversionFunction, context::Context*>> output(level);
+                  std::vector<ConversionStep> output(level);
                   std::type_index tip = to_type;
                   for (int j = level-1; j >= 0; j--){
                     output[j] = seen.at(tip).second;
@@ -505,20 +525,6 @@ Converter::GetConversionChain(std::type_index from_type, context::Context *from_
     return std::make_tuple(conversions, conversions.size());
   else
     return {};
-  //if (map->find(from_type) != map->end()) {
-  //  if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
-  //    for (auto condition_function_pair : (*map)[from_type][to_type]) {
-  //      for (auto to_context : to_contexts) {
-  //        if (std::get<0>(condition_function_pair)(from_context, to_context)) {
-  //          std::vector<std::tuple<ConditionalConversionFunction , context::Context *>> chain;
-  //          chain.emplace_back(std::get<1>(condition_function_pair), std::forward<context::Context *>(to_context));
-  //          return std::make_tuple(chain, chain.size());
-  //        }
-  //      }
-  //    }
-  //  }
-  //}
-  return {};
 }
 bool Converter::CanConvert(std::type_index from_type,
                            context::Context *from_context,
@@ -526,6 +532,14 @@ bool Converter::CanConvert(std::type_index from_type,
                            context::Context *to_context,
                            bool is_move_conversion) {
   return GetConversionChain(from_type, from_context, to_type, {to_context}, is_move_conversion).has_value();
+}
+
+bool Converter::CanConvert(std::type_index from_type,
+                           context::Context *from_context,
+                           std::type_index to_type,
+                           const std::vector<context::Context *>&to_contexts,
+                           bool is_move_conversion) {
+  return GetConversionChain(from_type, from_context, to_type, to_contexts, is_move_conversion).has_value();
 }
 
   void Converter::ClearConversionFunctions(std::type_index from_type, std::type_index to_type, bool move_conversion){
@@ -558,11 +572,9 @@ std::vector<format::Format*> Converter::ApplyConversionChain(const ConversionCha
   }
   return format_chain;
 }
-  /*! Removes all move conversion functions from the current converter
-   */
-  void ClearMoveConversionFunctions(std::type_index from_type, std::type_index to_type);
+
 std::vector<std::vector<Format *>>
-Converter::ApplyConversionSchema(const ConversionSchemaConditional& cs,
+Converter::ApplyConversionSchema(const ConversionSchema & cs,
                                    const std::vector<Format *> &packed_sfs,
                                  bool is_move_conversion) {
   // Each element in ret is a chain of formats resulting from

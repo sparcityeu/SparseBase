@@ -115,14 +115,14 @@ bool FunctionMatcherMixin<
  */
 template <typename ReturnType, class PreprocessingImpl, typename Function,
           typename Key, typename KeyHash, typename KeyEqualTo>
-std::tuple<Function, utils::converter::ConversionSchemaConditional>
+std::tuple<Function, utils::converter::ConversionSchema>
 FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::GetFunction(std::vector<format::Format *> packed_sfs, Key key,
                              ConversionMap map,
                              std::vector<context::Context *> contexts,
                              utils::converter::Converter *sc) {
-  utils::converter::ConversionSchemaConditional cs;
+  utils::converter::ConversionSchema cs;
   Function func = nullptr;
   // When function and conversion costs are added,
   // this 'if' should be removed  -- a conversion might be
@@ -141,11 +141,11 @@ FunctionMatcherMixin<
   }
   // Find all the keys that can potentially run with this input
   std::vector<std::tuple<unsigned int,
-                         utils::converter::ConversionSchemaConditional, Key>>
+                         utils::converter::ConversionSchema, Key>>
       usable_keys;
   for (auto potential_key : all_keys) {
     if (potential_key.size()!=key.size()) continue;
-    utils::converter::ConversionSchemaConditional temp_cs;
+    utils::converter::ConversionSchema temp_cs;
     bool is_usable = true;
     int conversion_cost = 0;
     for (int i = 0; i < potential_key.size(); i++) {
@@ -191,7 +191,7 @@ FunctionMatcherMixin<
     throw sparsebase::utils::FunctionNotFoundException(
         message); // TODO: add a custom exception type
   }
-  std::tuple<Function, utils::converter::ConversionSchemaConditional>
+  std::tuple<Function, utils::converter::ConversionSchema>
       best_conversion;
   float cost = std::numeric_limits<float>::max();
   for (auto potential_usable_key : usable_keys) {
