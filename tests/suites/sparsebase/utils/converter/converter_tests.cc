@@ -565,16 +565,16 @@ TEST(Converter, ClearingASingleDirection){
 
 TEST(isTypeConversionSafe, TypeConversions){
   // int to int
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(char);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned char);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(short);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned short);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(int);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned int);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(long long);
-  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned long long);
-  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(float);
-  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(double);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(char);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned char);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(short);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned short);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(int);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned int);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(long long);
+ // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned long long);
+ // MATCH_CHECK_ALL_TYPES_FLOATING_POINT(float);
+ // MATCH_CHECK_ALL_TYPES_FLOATING_POINT(double);
   // int to float
 
   // float to int
@@ -1102,6 +1102,32 @@ TEST_F(ConversionChainFixture, MultiStep){
   output_format = (std::get<0>(std::get<0>(*chain)[1]))(nullptr, nullptr);
   EXPECT_EQ(output_format->get_format_id(), (format::CSC<TYPE>::get_format_id_static()));
   delete output_format;
+}
+TEST_F(ConversionChainFixture, CanConvert){
+  // single step
+  // can
+  EXPECT_TRUE(c.CanConvert(csr->get_format_id(), &cpu_c, coo->get_format_id(), &cpu_c));
+  // can
+  EXPECT_TRUE(c.CanConvert(csr->get_format_id(), &cpu_c, coo->get_format_id(), {&cpu_c, &fake_c}));
+  // can't -- wrong context
+  EXPECT_FALSE(c.CanConvert(csr->get_format_id(), &fake_c, coo->get_format_id(), &fake_c));
+  // can -- same context and format
+  EXPECT_TRUE(c.CanConvert(coo->get_format_id(), &fake_c, coo->get_format_id(), &fake_c));
+  EXPECT_TRUE(c.CanConvert(coo->get_format_id(), &fake_c, coo->get_format_id(), {&cpu_c, &fake_c}));
+  // can't -- different context but same format
+  EXPECT_FALSE(c.CanConvert(coo->get_format_id(), &fake_c, coo->get_format_id(), &cpu_c));
+
+  // multi-step
+  c.RegisterConversionFunction(
+      coo->get_format_id(), csc->get_format_id(), returnCsc,
+      [](context::Context *from, context::Context *to) -> bool {
+        return to->get_context_type_member() == FakeContext::get_context_type();
+      });
+  // can
+  EXPECT_TRUE(c.CanConvert(csr->get_format_id(), &cpu_c, csc->get_format_id(), {&fake_c, &cpu_c}));
+  // can't -- wrong contexts
+  EXPECT_FALSE(c.CanConvert(csr->get_format_id(), &cpu_c, csc->get_format_id(), {&cpu_c, &cpu_c}));
+  EXPECT_FALSE(c.CanConvert(csr->get_format_id(), &cpu_c, csc->get_format_id(), {&fake_c, &fake_c}));
 }
 #undef ConversionPair
 #undef TYPE
