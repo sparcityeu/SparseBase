@@ -225,7 +225,7 @@ protected:
    * b) a utils::converter::ConversionSchemaConditional indicating conversions
    * to be done on input Format objects.
    */
-  std::tuple<Function, utils::converter::ConversionSchemaConditional>
+  std::tuple<Function, utils::converter::ConversionSchema>
   GetFunction(std::vector<format::Format *> packed_formats, Key key,
               ConversionMap map, std::vector<context::Context *> contexts,
               utils::converter::Converter *converter);
@@ -1534,10 +1534,10 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   for (auto f : packed_formats)
     packed_format_types.push_back(f->get_format_id());
   // get conversion schema
-  std::tuple<Function, utils::converter::ConversionSchemaConditional> ret =
+  std::tuple<Function, utils::converter::ConversionSchema> ret =
       GetFunction(packed_formats, packed_format_types, map, contexts, sc);
   Function func = std::get<0>(ret);
-  utils::converter::ConversionSchemaConditional cs = std::get<1>(ret);
+  utils::converter::ConversionSchema cs = std::get<1>(ret);
   // carry out conversion
   // ready_formats contains the format to use in preprocessing
   if (!convert_input) {

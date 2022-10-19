@@ -412,12 +412,13 @@ TEST(Converter, ClearingAllFunctions){
 
   converterOrderTwo.ClearConversionFunctions();
   EXPECT_THROW((converterOrderTwo.Convert<sparsebase::format::COO<int, int, int>>(&csr, &cpu_context)), sparsebase::utils::ConversionException);
-  converterOrderTwo
-      .RegisterConditionalConversionFunction(
-          sparsebase::format::CSR<int, int, int>::get_format_id_static(),
-          sparsebase::format::COO<int, int, int>::get_format_id_static(),
-          [](sparsebase::format::Format *, sparsebase::context::Context*) -> sparsebase::format::Format* {return nullptr;},
-          [](sparsebase::context::Context*, sparsebase::context::Context*) -> bool { return true; });
+  converterOrderTwo.RegisterConversionFunction(
+      sparsebase::format::CSR<int, int, int>::get_format_id_static(),
+      sparsebase::format::COO<int, int, int>::get_format_id_static(),
+      [](sparsebase::format::Format *, sparsebase::context::Context *)
+          -> sparsebase::format::Format * { return nullptr; },
+      [](sparsebase::context::Context *,
+         sparsebase::context::Context *) -> bool { return true; });
   EXPECT_EQ(
       (converterOrderTwo.Convert(
           &csr, sparsebase::format::COO<int, int, int>::get_format_id_static(),
@@ -440,12 +441,13 @@ TEST(Converter, ClearingASingleDirection){
       sparsebase::format::CSR<int, int, int>::get_format_id_static(),
       sparsebase::format::COO<int, int, int>::get_format_id_static());
   EXPECT_THROW((converterOrderTwo.Convert<sparsebase::format::COO<int, int, int>>(&csr, &cpu_context)), sparsebase::utils::ConversionException);
-  converterOrderTwo
-      .RegisterConditionalConversionFunction(
-          sparsebase::format::CSR<int, int, int>::get_format_id_static(),
-          sparsebase::format::COO<int, int, int>::get_format_id_static(),
-          [](sparsebase::format::Format *, sparsebase::context::Context*) -> sparsebase::format::Format* {return nullptr;},
-          [](sparsebase::context::Context*, sparsebase::context::Context*) -> bool { return true; });
+  converterOrderTwo.RegisterConversionFunction(
+      sparsebase::format::CSR<int, int, int>::get_format_id_static(),
+      sparsebase::format::COO<int, int, int>::get_format_id_static(),
+      [](sparsebase::format::Format *, sparsebase::context::Context *)
+          -> sparsebase::format::Format * { return nullptr; },
+      [](sparsebase::context::Context *,
+         sparsebase::context::Context *) -> bool { return true; });
   EXPECT_EQ(
       (converterOrderTwo.Convert(
           &csr, sparsebase::format::COO<int, int, int>::get_format_id_static(),
@@ -922,9 +924,9 @@ EXPECT_EQ((v2->Is<format::COO<TYPE>>()), true); \
 EXPECT_EQ((v3->Is<format::CSC<TYPE>>()), true);
 
 TEST(ApplyConversionSchema, All){
-#define ConversionPairVector std::vector<std::tuple<ConditionalConversionFunction, context::Context*>>
+#define ConversionPairVector std::vector<std::tuple<ConversionFunction, context::Context*>>
 #define TYPE int, int, int
-  utils::converter::ConversionSchemaConditional schema;
+  utils::converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
@@ -1014,16 +1016,18 @@ protected:
     c.ClearConversionFunctions(coo->get_format_id(), csr->get_format_id(), false);
     c.ClearConversionFunctions(csc->get_format_id(), csr->get_format_id(), false);
     c.ClearConversionFunctions(csc->get_format_id(), coo->get_format_id(), false);
-    c.RegisterConditionalConversionFunction(
-        csr->get_format_id(),
-        coo->get_format_id(),
-        returnCoo,
-        [](context::Context *, context::Context *to) -> bool {return to->get_context_type_member() == context::CPUContext::get_context_type();});
-    c.RegisterConditionalConversionFunction(
-        coo->get_format_id(),
-        csr->get_format_id(),
-        returnCsr,
-        [](context::Context *from, context::Context *to) -> bool { return to->get_context_type_member() == FakeContext::get_context_type(); });
+    c.RegisterConversionFunction(
+        csr->get_format_id(), coo->get_format_id(), returnCoo,
+        [](context::Context *, context::Context *to) -> bool {
+          return to->get_context_type_member() ==
+                 context::CPUContext::get_context_type();
+        });
+    c.RegisterConversionFunction(
+        coo->get_format_id(), csr->get_format_id(), returnCsr,
+        [](context::Context *from, context::Context *to) -> bool {
+          return to->get_context_type_member() ==
+                 FakeContext::get_context_type();
+        });
   }
   void TearDown() override {
     delete csr;
@@ -1039,7 +1043,7 @@ protected:
 };
 
 TEST_F(ConversionChainFixture, SingleStep){
-  utils::converter::ConversionSchemaConditional schema;
+  utils::converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   ConversionChain chain;
   format::Format* output_format;
@@ -1070,15 +1074,15 @@ TEST_F(ConversionChainFixture, SingleStep){
 }
 
 TEST_F(ConversionChainFixture, MultiStep){
-  utils::converter::ConversionSchemaConditional schema;
+  utils::converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   ConversionChain chain;
   format::Format* output_format;
-  c.RegisterConditionalConversionFunction(
-      coo->get_format_id(),
-      csc->get_format_id(),
-      returnCsc,
-      [](context::Context *from, context::Context *to) -> bool { return to->get_context_type_member() == FakeContext::get_context_type(); });
+  c.RegisterConversionFunction(
+      coo->get_format_id(), csc->get_format_id(), returnCsc,
+      [](context::Context *from, context::Context *to) -> bool {
+        return to->get_context_type_member() == FakeContext::get_context_type();
+      });
   // single format
   // No conversion -- only one needed context
   chain = c.GetConversionChain(csr->get_format_id(), &cpu_c, csc->get_format_id(),{&cpu_c}, false);
