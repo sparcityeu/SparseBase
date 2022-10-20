@@ -4,7 +4,9 @@ SparseBase can be easily added to your project either through CMake's `find_pack
 
 ## Adding SparseBase through CMake
 
-> In the commands below replace 0.1.5 with the version of SparseBase you installed.
+```{note}
+In the commands below replace 0.1.5 with the version of SparseBase you installed.
+```
 
 If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
 ```cmake
@@ -78,11 +80,32 @@ This can be useful to reduce compile times if the header only build is being use
 #include "sparsebase/preprocess/preprocess.h"
 ```
 
+## Aliasing
+
+SparseBase classes and namespaces are named in a rather verbose way. 
+This is done to keep things well-structured during development.
+However users may find it difficult to work with. 
+In such cases the namespaces can be aliased using the C++11 `using` keyword.
+
+
+```cpp
+using sbfo = sparsebase::format;
+using sbio = sparsebase::utils::io;
+using sbco = sparsebase::utils::converter;
+using sbfe = spasebase::feature;
+using sbob = sparsebase::object;
+using sbpe = sparsebase::preprocess;
+using sbco = sparsebase::context;
+using sbut = sparsebase::utils;
+```
+
+
 ## Creating a Format Object
 
-Currently two sparse data formats are supported:
+Multiple sparse data formats are supported including:
 - COO (Coordinate List)
 - CSR (Compressed Sparse Row)
+- CSC (Compressed Sparse Column)
 
 In the code snippet below you can see the creation of a CSR type object 
 which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
@@ -105,38 +128,20 @@ int col[6] = {0, 1, 1, 2, 3, 3};
 int vals[6] = {10, 20, 30, 40, 50, 60};
 
 // Unlike the previous example we are storing integer type values here
-auto coo = new sparsebase::COO<int,int,int>(6, 6, 6, row, col, vals);
+auto coo = new sparsebase::format::COO<int,int,int>(6, 6, 6, row, col, vals);
 ```
 
-
-
-## Input
-
-Currently, we support two sparse data file formats:
-- Matrix Market Files (.mtx)
-- Edge List Files
-
-We can perform a read operation on these formats as shown below: 
-```cpp
-// Reading a mtx file into a COO format
-auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
-auto coo = reader->ReadCOO();
-
-// Reading an edge list file into a CSR format
-auto reader2 = new sparsebase::utils::io::EdgeListReader<vertex_type, edge_type, value_type>(file_name);
-auto csr = reader2->ReadCSR();
-```
 
 ## Casting Formats
 
-Many functions in the library return generic format pointers like ``FormatOrderTwo`` or ``FormatOrderOne`` to ensure flexibility. These pointers can easily be converted into concrete versions using the ``Convert<>()`` member function. 
+Many functions in the library return generic format pointers like ``FormatOrderTwo`` or ``FormatOrderOne`` to ensure flexibility. These pointers can easily be converted into concrete versions using the ``As<>()`` member function. 
 
 ```cpp
 // Consider the scenario where you obtained a generic pointer from a function
 sparsebase::format::FormatOrderTwo<int, int, int>* format = ...;
 
 // If the type of this pointer is known, then you can simply use the Convert function
-sparsebase::format::CSR<int,int,int>* csr = format->Convert<sparsebase::format::CSR>();
+sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR>();
 
 ```
 
@@ -152,11 +157,16 @@ sparsebase::format::CSR<int,int,int>* csr = format->AsAbsolute<sparsebase::forma
 ```
 
 
+```{warning}
+Casting can only be successful if the provided type is a valid type for the given pointer.
+The As and AsAbsolute functions will never perform a conversion. They will only cast.
+```
+
+
 ## Converting Formats
 
-AsAbsolute explained in the previous section, readers will read to different formats.
+We can convert between different data formats using the `Convert<>()` function.
 
-However, we can convert the data into the format we desire using the ``Convert`` member funciton:
 ```cpp
 // Consider the scenario where you obtained a COO and want to convert it to a CSR
 auto coo = ...; 
@@ -172,7 +182,46 @@ auto csr = coo->Convert<sparsebase::format::CSR>(&cpu_context, true);
 
 ```
 
-> If the source and destination formats are the same the converter will simply do nothing.
+```{note}
+If the format object is already of the desired type, the Convert function is a no-op.
+```
+
+```{warning}
+Conversion is only allowed between formats of the same order.
+So you can not convert a FormatOrderOne to FormatOrderTwo.
+```
+
+## Input
+
+Currently, we support two sparse data file formats:
+- Matrix Market Files (.mtx)
+- Edge List Files
+
+Reading such files can easily done using the `IOBase` class.
+
+```cpp
+auto coo = sparsebase::utils::io::IOBase::ReadMTXtoCOO<int,int,float>();
+auto csr = sparsebase::utils::io::IOBase::ReadEdgeListtoCSR<int,int,float>();
+```
+
+```{note}
+Alternatively the ReadPigoMTX... and ReadPigoEdgeList... functions can be used.
+These use the PIGO library to read the files in a multi-threaded fashion.
+However they may not support all the options of our default readers.
+```
+
+
+Users can also use the underlying reader classes directly if need be. 
+```cpp
+// Reading a mtx file into a COO format
+auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
+auto coo = reader->ReadCOO();
+
+// Reading an edge list file into a CSR format
+auto reader2 = new sparsebase::utils::io::EdgeListReader<vertex_type, edge_type, value_type>(file_name);
+auto csr = reader2->ReadCSR();
+```
+
 
 ## Ownership
 
@@ -213,7 +262,7 @@ Alternatively we can create a graph by directly passing the reader.
  g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
-AsAbsolute of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
+As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
 
 ## Ordering
 
