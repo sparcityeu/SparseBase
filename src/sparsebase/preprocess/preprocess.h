@@ -35,6 +35,7 @@ struct PreprocessParams {};
 
 //! A generic type for all preprocessing types
 class PreprocessType {
+  //! The parameter class used to pass parameters to this preprocessing
   typedef PreprocessParams ParamsType;
 protected:
   //! Polymorphic pointer at a PreprocessParams object
@@ -408,17 +409,18 @@ public:
   virtual ~ReorderPreprocessType();
 };
 
+//! Parameters used in DegreeReordering, namely whether or not degrees are ordered in ascending order.
+struct DegreeReorderParams : PreprocessParams {
+  bool ascending;
+  DegreeReorderParams(bool ascending) : ascending(ascending) {}
+};
 //! Reordering preprocessing algorithm that reorders a format by representing it
 //! as an adjacency matrix of a graph and ordering its vertices by degree
 template <typename IDType, typename NNZType, typename ValueType>
 class DegreeReorder : public ReorderPreprocessType<IDType> {
 public:
   DegreeReorder(bool ascending);
-  //! The hyperparameters used by the implementation functions
-  struct DegreeReorderParams : PreprocessParams {
-    bool ascending;
-    DegreeReorderParams(bool ascending) : ascending(ascending) {}
-  };
+  //! The hyperparameters used by the implementation functions of DegreeReorder
   typedef DegreeReorderParams ParamsType;
   DegreeReorder(DegreeReorderParams);
 
@@ -444,6 +446,8 @@ public:
   typedef PreprocessType ParamsType;
   GenericReorder();
 };
+//! An empty struct used for the parameters of RCMReorder
+struct RCMReorderParams : PreprocessParams {};
 
 //! Reordering using the Reverse Cuthill-McKee algorithm:
 //! https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
@@ -452,7 +456,7 @@ class RCMReorder : public ReorderPreprocessType<IDType> {
   typedef typename std::make_signed<IDType>::type SignedID;
 
 public:
-  struct RCMReorderParams : PreprocessParams {};
+  //! An empty struct used for the parameters of RCMReorder
   typedef RCMReorderParams ParamsType;
   RCMReorder();
   RCMReorder(ParamsType p);
@@ -554,19 +558,28 @@ public:
   virtual ~TransformPreprocessType();
 };
 
+//! The hyperparameters of the PermuteOrderTwo transformation.
+/*!
+ * The permutation vectors used for permuting the rows and the columns of a 2D format.
+ * @tparam IDType the data type of row and column numbers (vertex IDs in the
+ */
+template <typename IDType>
+struct PermuteOrderTwoParams : PreprocessParams {
+  //! Permutation vector for reordering the rows.
+  IDType *row_order;
+  //! Permutation vector for reordering the columns.
+  IDType *col_order;
+  explicit PermuteOrderTwoParams(IDType *r_order, IDType* c_order) : row_order(r_order), col_order(c_order){};
+};
 template <typename IDType, typename NNZType, typename ValueType>
 class PermuteOrderTwo : public TransformPreprocessType<
                     format::FormatOrderTwo<IDType, NNZType, ValueType>,
                     format::FormatOrderTwo<IDType, NNZType, ValueType>> {
 public:
   PermuteOrderTwo(IDType *, IDType *);
-  struct PermuteOrderTwoParams : PreprocessParams {
-    IDType *row_order;
-    IDType *col_order;
-    explicit PermuteOrderTwoParams(IDType *r_order, IDType* c_order) : row_order(r_order), col_order(c_order){};
-  };
-  explicit PermuteOrderTwo(PermuteOrderTwoParams);
-  typedef PermuteOrderTwoParams ParamsType;
+  explicit PermuteOrderTwo(PermuteOrderTwoParams<IDType>);
+  //! Struct used to store permutation vectors used by each instance of PermuteOrderTwo
+  typedef PermuteOrderTwoParams<IDType> ParamsType;
 
 protected:
   //! An implementation function that will transform a CSR format into another
@@ -581,17 +594,26 @@ protected:
                                       PreprocessParams *);
 };
 
+
+//! The hyperparameters of the PermuteOrderTwo transformation.
+/*!
+ * The permutation vectors used for permuting the rows and the columns of a 2D format.
+ * @tparam IDType the data type of row and column numbers (vertex IDs in the
+ */
+template <typename IDType>
+struct PermuteOrderOneParams : PreprocessParams {
+  //! Permutation vector
+  IDType *order;
+  explicit PermuteOrderOneParams(IDType *order) : order(order){};
+};
 template <typename IDType, typename ValueType>
 class PermuteOrderOne
     : public TransformPreprocessType<format::FormatOrderOne<ValueType>,
                                      format::FormatOrderOne<ValueType>> {
 public:
   PermuteOrderOne(IDType *);
-  struct PermuteOrderOneParams : PreprocessParams {
-    IDType *order;
-    explicit PermuteOrderOneParams(IDType *order) : order(order){};
-  };
-  typedef PermuteOrderOneParams ParamsType;
+  //! Struct used to store permutation vectors used by each instance of PermuteOrderTwo
+  typedef PermuteOrderOneParams<IDType> ParamsType;
   explicit PermuteOrderOne(ParamsType);
 
 protected:
@@ -626,13 +648,15 @@ public:
   ~FeaturePreprocessType();
 };
 
+//! An empty struct used for the parameters of JaccardWeights
+struct JaccardWeightsParams : PreprocessParams{};
 //! Calculate the Jaccard Weights of the edges in a graph representation of a
 //! format object
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class JaccardWeights : public FunctionMatcherMixin<format::Format *> {
 public:
-  struct JaccardWeightsParams : PreprocessParams{};
+  //! An empty struct used for the parameters of JaccardWeights
   typedef JaccardWeightsParams ParamsType;
   JaccardWeights();
   JaccardWeights(ParamsType);
@@ -666,6 +690,8 @@ public:
   ~JaccardWeights();
 };
 
+//! An empty struct used for the parameters of DegreeDistribution
+struct DegreeDistributionParams : PreprocessParams {};
 //! Find the degree distribution of the graph representation of a format object
 /*!
  *
@@ -677,7 +703,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
 
 public:
-  struct DegreeDistributionParams : PreprocessParams {};
+  //! An empty struct used for the parameters of DegreeDistribution
   typedef DegreeDistributionParams ParamsType;
   DegreeDistribution();
   DegreeDistribution(DegreeDistributionParams);
@@ -754,13 +780,15 @@ protected:
   void Register();
 };
 
+//! An empty struct used for the parameters of Degrees
+struct DegreesParams : PreprocessParams {};
 //! Count the degrees of every vertex in the graph representation of a format
 //! object
 template <typename IDType, typename NNZType, typename ValueType>
 class Degrees : public FeaturePreprocessType<IDType *> {
 
 public:
-  struct DegreesParams : PreprocessParams {};
+  //! An empty struct used for the parameters of Degrees
   typedef DegreesParams ParamsType;
   Degrees();
   Degrees(DegreesParams);
@@ -816,6 +844,8 @@ protected:
   void Register();
 };
 
+//! An empty struct used for the parameters of Degrees_DegreeDistribution
+struct Params : PreprocessParams {};
 //! Find the degree and degree distribution of each vertex in the graph
 //! representation of a format object
 template <typename IDType, typename NNZType, typename ValueType,
@@ -823,7 +853,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 class Degrees_DegreeDistribution
     : public FeaturePreprocessType<
           std::unordered_map<std::type_index, std::any>> {
-  struct Params : PreprocessParams {};
+  //! An empty struct used for the parameters of Degrees_DegreeDistribution
   typedef Params ParamsType;
 
 public:
@@ -915,6 +945,71 @@ public:
 
 #ifdef USE_METIS
 
+namespace metis {
+//! Objectives to be optimized by METIS
+typedef enum {
+  METIS_OBJTYPE_CUT,
+  METIS_OBJTYPE_VOL,
+  METIS_OBJTYPE_NODE
+} mobjtype_et;
+
+//! Partitiong Methods
+typedef enum {
+  METIS_PTYPE_RB,
+  METIS_PTYPE_KWAY
+} mptype_et;
+
+//! Coarsening Schemes
+typedef enum {
+  METIS_CTYPE_RM,
+  METIS_CTYPE_SHEM
+} mctype_et;
+
+//! Determines the algorithm used for initial partitioning
+typedef enum {
+  METIS_IPTYPE_GROW,
+  METIS_IPTYPE_RANDOM,
+  METIS_IPTYPE_EDGE,
+  METIS_IPTYPE_NODE,
+  METIS_IPTYPE_METISRB
+} miptype_et;
+
+
+//! Determines the algorithm used for refinement
+typedef enum {
+  METIS_RTYPE_FM,
+  METIS_RTYPE_GREEDY,
+  METIS_RTYPE_SEP2SIDED,
+  METIS_RTYPE_SEP1SIDED
+} mrtype_et;
+
+}
+//! Parameters for metis partitioning
+/*!
+ * This struct replaces the options array of METIS
+ * The names of the options are identical to the array
+ * and can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
+ */
+struct MetisParams : PreprocessParams{
+  int64_t num_partitions = 2;
+  int64_t ptype = metis::METIS_PTYPE_KWAY;
+  int64_t objtype = metis::METIS_OBJTYPE_CUT;
+  int64_t ctype = metis::METIS_CTYPE_RM;
+  int64_t iptype = metis::METIS_IPTYPE_GROW;
+  int64_t rtype = metis::METIS_RTYPE_FM;
+  int64_t ncuts = 1;
+  int64_t nseps = 1;
+  int64_t numbering = 0;
+  int64_t niter = 10;
+  int64_t seed = 42;
+  int64_t minconn = 0;
+  int64_t no2hop = 0;
+  int64_t contig = 0;
+  int64_t compress = 0;
+  int64_t ccorder = 0;
+  int64_t pfactor = 0;
+  int64_t ufactor = 30;
+};
 
 //! A wrapper for the METIS partitioner
 /* !
@@ -932,70 +1027,8 @@ private:
 public:
   MetisPartition();
 
-  //! Objectives to be optimized by METIS
-  typedef enum {
-    METIS_OBJTYPE_CUT,
-    METIS_OBJTYPE_VOL,
-    METIS_OBJTYPE_NODE
-  } mobjtype_et;
-
-  //! Partitiong Methods
-  typedef enum {
-    METIS_PTYPE_RB,
-    METIS_PTYPE_KWAY
-  } mptype_et;
-
-  //! Coarsening Schemes
-  typedef enum {
-    METIS_CTYPE_RM,
-    METIS_CTYPE_SHEM
-  } mctype_et;
-
-  //! Determines the algorithm used for initial partitioning
-  typedef enum {
-    METIS_IPTYPE_GROW,
-    METIS_IPTYPE_RANDOM,
-    METIS_IPTYPE_EDGE,
-    METIS_IPTYPE_NODE,
-    METIS_IPTYPE_METISRB
-  } miptype_et;
-
-
-  //! Determines the algorithm used for refinement
-  typedef enum {
-    METIS_RTYPE_FM,
-    METIS_RTYPE_GREEDY,
-    METIS_RTYPE_SEP2SIDED,
-    METIS_RTYPE_SEP1SIDED
-  } mrtype_et;
-
-  //! Parameters for metis partitioning
-  /*!
-   * This struct replaces the options array of METIS
-   * The names of the options are identical to the array
-   * and can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
-   */
-  struct MetisParams : PreprocessParams{
-    int64_t num_partitions = 2;
-    int64_t ptype = METIS_PTYPE_KWAY;
-    int64_t objtype = METIS_OBJTYPE_CUT;
-    int64_t ctype = METIS_CTYPE_RM;
-    int64_t iptype = METIS_IPTYPE_GROW;
-    int64_t rtype = METIS_RTYPE_FM;
-    int64_t ncuts = 1;
-    int64_t nseps = 1;
-    int64_t numbering = 0;
-    int64_t niter = 10;
-    int64_t seed = 42;
-    int64_t minconn = 0;
-    int64_t no2hop = 0;
-    int64_t contig = 0;
-    int64_t compress = 0;
-    int64_t ccorder = 0;
-    int64_t pfactor = 0;
-    int64_t ufactor = 30;
-  };
 };
+
 #endif
 
 
@@ -1075,6 +1108,13 @@ public:
   }
 };
 
+//! A class containing the interface for reordering and permuting data.
+/*!
+ * The class contains all the functionalities needed for reordering. That includes a function generate reordering
+ * permutations from data, functions to permute data using a permutation vector, and a function to inverse the
+ * permutation of data. In the upcoming release, ReorderBase will include functions to extract feeatures from
+ * permutation vectors and permuted data.
+ */
 class ReorderBase {
 public:
   //! Generates a permutation array from a FormatOrderTwo object using the Reordering class `Reordering`.
@@ -1472,23 +1512,25 @@ enum BitMapSize{
   BitSize32 = 32/*,
   BitSize64 = 64*/ //at the moment, using 64 bits is not working as intended
 };
+//! Params struct for GrayReorder
+struct GrayReorderParams : PreprocessParams {
+  BitMapSize resolution;
+  int nnz_threshold;
+  int sparse_density_group_size;
+  explicit GrayReorderParams(){}
+  GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size): resolution(r), nnz_threshold(nnz_threshold), sparse_density_group_size(group_size){}
+};
 
 template <typename IDType, typename NNZType, typename ValueType>
 class GrayReorder : public ReorderPreprocessType<IDType> {
   typedef std::pair<IDType, unsigned long> row_grey_pair;
 
 public:
-  struct GrayReorderParams : PreprocessParams {
-    BitMapSize resolution;
-    int nnz_threshold;
-    int sparse_density_group_size;
-    GrayReorderParams(){}
-    GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size): resolution(r), nnz_threshold(nnz_threshold), sparse_density_group_size(group_size){}
-  };
+  //! Parameter type for GrayReorder
   typedef GrayReorderParams ParamsType;
   GrayReorder(BitMapSize resolution, int nnz_threshold,
               int sparse_density_group_size);
-  GrayReorder(GrayReorderParams);
+  explicit GrayReorder(GrayReorderParams);
 
 protected:
   static bool desc_comparator(const row_grey_pair &l, const row_grey_pair &r);
