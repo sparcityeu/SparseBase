@@ -18,5 +18,10 @@ namespace sparsebase::utils {
     std::string demangle(std::type_index type){
       return demangle(type.name());
     }
+
+    LogLevel Logger::level = LOG_LVL_WARNING;
+    std::string Logger::filename;
+    bool Logger::use_stdout = true;
+    bool Logger::use_stderr = false;
 }
 

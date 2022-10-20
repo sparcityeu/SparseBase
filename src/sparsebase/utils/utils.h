@@ -13,8 +13,12 @@
 #include <typeindex>
 #include <typeinfo>
 #include <limits>
-#include <stdint.h>
+#include <cstdint>
 #include "exception.h"
+#include <fstream>
+#include <algorithm>
+#include <sstream>
+#include <ctime>
 
 namespace sparsebase::utils {
 
@@ -146,6 +150,90 @@ private:
 std::string demangle(const std::string& name);
 
 std::string demangle(std::type_index type);
+
+
+enum LogLevel {
+  LOG_LVL_INFO,
+  LOG_LVL_WARNING,
+  LOG_LVL_NONE,
+};
+
+class Logger {
+
+private:
+
+  std::string root;
+  static LogLevel level;
+  static bool use_stdout;
+  static bool use_stderr;
+  static std::string filename;
+  std::ofstream file;
+
+
+
+public:
+  Logger() {
+    if(!Logger::filename.empty()) file.open(filename);
+  }
+
+  Logger(std::type_index root_type) {
+    root = demangle(root_type);
+    root.erase(std::remove(root.begin(), root.end(), '*'), root.end());
+    if(!Logger::filename.empty()) file.open(filename);
+  }
+
+  ~Logger(){
+    if(file.is_open()) file.close();
+  }
+
+  static void SetLogLevel(LogLevel new_level){
+    Logger::level = new_level;
+  }
+
+  static void SetStdOut(bool use){
+    Logger::use_stdout = use;
+  }
+
+  static void SetStdErr(bool use){
+    Logger::use_stderr = use;
+  }
+
+  static void SetFile(const std::string& new_filename){
+    Logger::filename = new_filename;
+  }
+
+  void Log(const std::string& message, LogLevel msg_level = LOG_LVL_INFO){
+
+    if(msg_level < Logger::level){
+      return;
+    }
+
+    std::time_t current = std::time(0);
+    auto now_tm = std::localtime(&current);
+    char buffer[30];
+    size_t size = strftime(buffer, 30, "%x %X", now_tm);
+    std::string now_str(buffer, buffer + size);
+
+    std::stringstream ss;
+    ss << "[" << now_str << "]" << " ";
+
+    std::string level_str = "INFO";
+    if(msg_level == LOG_LVL_WARNING){
+      level_str = "WARNING";
+    }
+    ss << "[" << level_str << "]" << " ";
+
+    ss << "[" << root << "]" << " ";
+
+    ss << message;
+
+    std::string log = ss.str();
+
+    if(file.is_open()) file << log << std::endl;
+    if(Logger::use_stdout) std::cout << log << std::endl;
+    if(Logger::use_stderr) std::cerr << log << std::endl;
+  }
+};
 
 }
 
