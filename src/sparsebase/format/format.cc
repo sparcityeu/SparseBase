@@ -7,6 +7,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
+#include "sparsebase/utils/utils.h"
 
 using namespace sparsebase::utils;
 
@@ -118,7 +119,9 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
   }
 
   if (not_sorted) {
-    std::cerr << "COO arrays must be sorted. Sorting..." << std::endl;
+    utils::Logger logger(typeid(this));
+    logger.Log("COO arrays must be sorted. Sorting...", utils::LOG_LVL_INFO);
+
     if constexpr (std::is_same_v<ValueType, void>){
       std::vector<std::pair<IDType, IDType>> sort_vec;
       for (DimensionType i = 0; i < nnz; i++) {
@@ -386,7 +389,9 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
     }
 
     if (not_sorted) {
-      std::cerr << "CSR column array must be sorted. Sorting..." << std::endl;
+      utils::Logger logger(typeid(this));
+      logger.Log("CSR column array must be sorted. Sorting...", utils::LOG_LVL_INFO);
+
 
 #pragma omp parallel for default(none) shared(row_ptr, col, vals, n)
       for (IDType i = 0; i < n; i++) {
@@ -634,7 +639,8 @@ CSC<IDType, NNZType, ValueType>::CSC(IDType n, IDType m, NNZType *col_ptr,
     }
 
     if (not_sorted) {
-      std::cerr << "CSR column array must be sorted. Sorting..." << std::endl;
+      utils::Logger logger(typeid(this));
+      logger.Log("CSC column array must be sorted. Sorting...", utils::LOG_LVL_INFO);
 
 #pragma omp parallel for default(none) shared(col_ptr, row, vals, n)
       for (IDType i = 0; i < n; i++) {
