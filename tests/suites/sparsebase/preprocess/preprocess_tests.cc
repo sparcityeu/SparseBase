@@ -353,7 +353,7 @@ TEST(DegreeReorder, TwoParamsConversion) {
 }
 TEST(ReorderTypeTest, DescendingWithParams) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(true);
-  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams
+  sparsebase::preprocess::DegreeReorderParams
       param(false);
   auto order = reorder.GetReorder(&global_csr, &param, {&cpu_context}, true);
   check_degree_ordering(order, n, row_ptr, false);
@@ -363,7 +363,7 @@ TEST(ReorderTypeTest, DescendingWithParams) {
 }
 TEST(ReorderTypeTest, AscendingWithParams) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
-  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams
+  sparsebase::preprocess::DegreeReorderParams
       param(true);
   auto order = reorder.GetReorder(&global_csr, &param, {&cpu_context}, true);
   check_degree_ordering(order, n, row_ptr, true);
@@ -373,8 +373,7 @@ TEST(ReorderTypeTest, AscendingWithParams) {
 }
 TEST(ReorderTypeTest, NoCachConversion) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
-  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams
-      param(true);
+  sparsebase::preprocess::DegreeReorderParams param(true);
   auto order = reorder.GetReorder(&global_coo, &param, {&cpu_context}, true);
   check_degree_ordering(order, n, row_ptr, true);
   EXPECT_NO_THROW(reorder.GetReorder(&global_coo, &param, {&cpu_context}, true));
@@ -384,7 +383,7 @@ TEST(ReorderTypeTest, NoCachConversion) {
 
 TEST(ReorderTypeTest, CachedNoConversion) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
-  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams
+  sparsebase::preprocess::DegreeReorderParams
       param(true);
   auto order =
       reorder.GetReorderCached(&global_csr, &param, {&cpu_context}, true);
@@ -435,7 +434,7 @@ TEST(ReorderTypeTest, CachedNoConversionTwoParams) {
 
 TEST(ReorderTypeTest, CachedConversion) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
-  sparsebase::preprocess::DegreeReorder<int, int, int>::DegreeReorderParams
+  sparsebase::preprocess::DegreeReorderParams
       param(true);
   auto order =
       reorder.GetReorderCached(&global_coo, &param, {&cpu_context}, true);
@@ -830,7 +829,7 @@ TEST(PermuteTest, NoConversionParam) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_csr, {&cpu_context}, true);
   sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, nullptr);
-  sparsebase::preprocess::PermuteOrderTwo<int, int, int>::PermuteOrderTwoParams params(
+  sparsebase::preprocess::PermuteOrderTwoParams<int> params(
       order, order);
   auto transformed_format =
       transformer.GetTransformation(&global_csr, &params, {&cpu_context}, true)
@@ -846,7 +845,7 @@ TEST(PermuteTest, ConversionParamCached) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
   sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, nullptr);
-  sparsebase::preprocess::PermuteOrderTwo<int, int, int>::PermuteOrderTwoParams params(
+  sparsebase::preprocess::PermuteOrderTwoParams<int> params(
       order, order);
   auto transformed_output = transformer.GetTransformationCached(
       &global_coo, &params, {&cpu_context}, true);
@@ -867,7 +866,7 @@ TEST(PermuteTest, NoConversionNoParamCached) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(false);
   auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
   sparsebase::preprocess::PermuteOrderTwo<int, int, int> transformer(nullptr, nullptr);
-  sparsebase::preprocess::PermuteOrderTwo<int, int, int>::PermuteOrderTwoParams params(
+  sparsebase::preprocess::PermuteOrderTwoParams<int> params(
       order, order);
   auto transformed_output = transformer.GetTransformationCached(
       &global_csr, &params, {&cpu_context}, true);

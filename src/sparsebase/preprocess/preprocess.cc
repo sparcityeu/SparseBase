@@ -441,7 +441,7 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 }
 
 template <typename IDType, typename ValueType>
-PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(PermuteOrderOneParams params) {
+PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(ParamsType params) {
   PermuteOrderOne(params.order);
 }
 template <typename IDType, typename ValueType>
@@ -450,13 +450,13 @@ PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
       utils::converter::ConverterOrderOne<ValueType>{});
   this->RegisterFunction(
       {Array<ValueType>::get_format_id_static()}, PermuteArray);
-  this->params_ = std::unique_ptr<PermuteOrderOneParams>(new PermuteOrderOneParams(order));
+  this->params_ = std::unique_ptr<PermuteOrderOneParams<IDType>>(new PermuteOrderOneParams<IDType>(order));
 }
 template <typename IDType, typename ValueType>
 format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteArray(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->AsAbsolute<Array<ValueType>>();
-  auto order = static_cast<PermuteOrderOneParams *>(params)->order;
+  auto order = static_cast<PermuteOrderOneParams<IDType> *>(params)->order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType length = dimensions[0];
   ValueType *vals = sp->get_vals();
@@ -478,10 +478,10 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(IDType *row_order, 
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteOrderTwoCSR);
-  this->params_ = std::unique_ptr<PermuteOrderTwoParams>(new PermuteOrderTwoParams(row_order, col_order));
+  this->params_ = std::unique_ptr<PermuteOrderTwoParams<IDType>>(new PermuteOrderTwoParams(row_order, col_order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams params) {
+PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams<IDType> params) {
   PermuteOrderTwo(params.row_order, params.col_order);
 }
 template <typename InputFormatType, typename ReturnFormtType>
@@ -490,8 +490,8 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
-  auto row_order = static_cast<PermuteOrderTwoParams *>(params)->row_order;
-  auto col_order = static_cast<PermuteOrderTwoParams *>(params)->col_order;
+  auto row_order = static_cast<PermuteOrderTwoParams<IDType> *>(params)->row_order;
+  auto col_order = static_cast<PermuteOrderTwoParams<IDType> *>(params)->col_order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
@@ -930,10 +930,9 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});
   std::shared_ptr<PreprocessParams> deg_dist_param(
-      new typename DegreeDistribution<IDType, NNZType, ValueType,
-                                      FeatureType>::DegreeDistributionParams);
+      new DegreeDistributionParams);
   std::shared_ptr<PreprocessParams> degs_param(
-      new typename Degrees<IDType, NNZType, ValueType>::DegreesParams);
+      new DegreesParams);
   this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
                                  FeatureType>::get_feature_id_static()] =
       deg_dist_param;
@@ -1521,12 +1520,12 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   idx_t objval;
 
   if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
-                && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
+               && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
 
     if(mparams->ptype == METIS_PTYPE_RB){
-     METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
-                        nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
-                        &objval, partition);
+      METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
+                               nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
+                               &objval, partition);
 
     } else {
 
@@ -1540,6 +1539,7 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   }
   return partition;
 }
+
 
 #endif
 
