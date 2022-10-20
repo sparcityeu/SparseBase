@@ -120,7 +120,7 @@ COO<IDType, NNZType, ValueType>::COO(IDType n, IDType m, NNZType nnz,
 
   if (not_sorted) {
     utils::Logger logger(typeid(this));
-    logger.Log("COO arrays must be sorted. Sorting...", utils::LOG_LVL_INFO);
+    logger.Log("COO arrays must be sorted. Sorting...", utils::LOG_LVL_WARNING);
 
     if constexpr (std::is_same_v<ValueType, void>){
       std::vector<std::pair<IDType, IDType>> sort_vec;
@@ -390,7 +390,7 @@ CSR<IDType, NNZType, ValueType>::CSR(IDType n, IDType m, NNZType *row_ptr,
 
     if (not_sorted) {
       utils::Logger logger(typeid(this));
-      logger.Log("CSR column array must be sorted. Sorting...", utils::LOG_LVL_INFO);
+      logger.Log("CSR column array must be sorted. Sorting...", utils::LOG_LVL_WARNING);
 
 
 #pragma omp parallel for default(none) shared(row_ptr, col, vals, n)
@@ -640,7 +640,7 @@ CSC<IDType, NNZType, ValueType>::CSC(IDType n, IDType m, NNZType *col_ptr,
 
     if (not_sorted) {
       utils::Logger logger(typeid(this));
-      logger.Log("CSC column array must be sorted. Sorting...", utils::LOG_LVL_INFO);
+      logger.Log("CSC column array must be sorted. Sorting...", utils::LOG_LVL_WARNING);
 
 #pragma omp parallel for default(none) shared(col_ptr, row, vals, n)
       for (IDType i = 0; i < n; i++) {
