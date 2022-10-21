@@ -26,7 +26,7 @@ unordered_map<string, Format*> get_data_f( string & file_name ) {
 };
 
 // create custom preprocess function
-void preprocess_f(unordered_map<string, Format*> & data) {
+void preprocess_f(unordered_map<string, Format*> & data, std::any params) {
   context::CPUContext cpu_context;
   auto perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
   auto A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
@@ -61,12 +61,22 @@ int main(int argc, char **argv){
 
   experiment::ConcreteExperiment exp;
   string file_name = argv[1];
+  string file_name2 = argv[1];
   auto v = new double[958];
   std::fill_n(v, 958, 1);
   // add custom dataLoader
   exp.AddDataLoader(get_data_f, {make_pair(file_name, v)});
+
+  auto lol = [file_name2] ( string & file_name ) {
+    CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name2)
+        .ReadCSR();
+    unordered_map<string, Format*> r;
+    r.emplace("graph", csr);
+    return r;
+  };
+  exp.AddDataLoader(lol, {make_pair(file_name, v)});
   // add custom preprocessing
-  exp.AddPreprocess("mypreprocess", preprocess_f);
+  exp.AddPreprocess("mypreprocess", preprocess_f, {});
 
   // since the vector is all 1s, this kernel calculates the number of nnz per row
   exp.AddKernel("mykernel", kernel_f, {});

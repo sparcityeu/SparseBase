@@ -4,7 +4,7 @@
  * All rights reserved.
  *
  * This file is distributed under MIT license.
- * The complete license agreement can be obtained at:
+ * The complete license agreement can be obtained at
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
 #ifndef SPARSEBASE_SPARSEBASE_EXPERIMENT_EXPERIMENT_H_
@@ -24,17 +24,18 @@ namespace sparsebase::experiment {
 //! All data that is going to be used in the experiment must be provided via a function that follows this template.
 /*!
  *
- * \param file_path Path of the file to be read.
- * \return data extracted from the file.
+ * \param file_paths File paths that store the target data.
+ * \return data extracted from the files.
  */
-using LoadDataFunction = std::unordered_map<std::string, format::Format*> (std::string & file_path);
+using LoadDataFunction = std::function<std::unordered_map<std::string, format::Format*> (std::vector<std::string> & file_paths)>;
 //! Function template for preprocess.
 //! All preprocessing methods that are going to be applied on the data must follow this function definition.
 /*!
  *
  * \param data Contains the data needed for the preprocessing. This map is returned by the DataLoader
+ * \param params Preprocessing parameters.
  */
-using PreprocessFunction = void (std::unordered_map<std::string, format::Format*> & data);
+using PreprocessFunction = std::function<void (std::unordered_map<std::string, format::Format*> & data, std::any params)>;
 //! Function template for kernel.
 //! All kernel methods that are going to be run must follow this function definition.
 /*!
@@ -44,7 +45,7 @@ using PreprocessFunction = void (std::unordered_map<std::string, format::Format*
  * \param kparams Parameters specific to the kernel.
  * \return The results of the kernel. The results are stored in _results.
  */
-using KernelFunction = std::any (std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any kparams);
+using KernelFunction = std::function<std::any (std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any kparams)>;
 
 //! Abstract class that defines a common interface for experiments
 class ExperimentType{
@@ -66,15 +67,16 @@ class ExperimentType{
          * \param func The function which follows the LoadDataFunction definition.
          * \param targets File paths and file specific parameters.
          */
-        virtual void AddDataLoader(LoadDataFunction func, std::vector<std::pair<std::string, std::any>> targets) = 0;
+        virtual void AddDataLoader(LoadDataFunction func, std::vector<std::pair<std::vector<std::string>, std::any>> targets) = 0;
         //! Adds a preprocessing to the experiment.
         //! Each preprocessing operation is added to experiment via a PreprocessFunction.
         /*!
          *
          * \param id Preprocessing ID is used to store results, runtimes and auxiliary data.
          * \param func The function which follows the PreprocessFunction definition.
+         * \param params Parameters to be passed to the respective function.
          */
-        virtual void AddPreprocess(std::string id, PreprocessFunction func) = 0;
+        virtual void AddPreprocess(std::string id, PreprocessFunction func, std::any params) = 0;
         //! Adds a kernel to the experiment.
         //! Each kernel is added to experiment via a KernelFunction.
         /*!
@@ -122,7 +124,7 @@ class ConcreteExperiment : public ExperimentType {
          * \param func The function which follows the LoadDataFunction definition.
          * \param targets File paths and file specific parameters.
          */
-        void AddDataLoader(LoadDataFunction func, std::vector<std::pair<std::string, std::any>> targets) override;
+        void AddDataLoader(LoadDataFunction func, std::vector<std::pair<std::vector<std::string>, std::any>> targets) override;
         //! Adds a preprocessing to the experiment.
         //! Each preprocessing operation is added to experiment via a PreprocessFunction.
         /*!
@@ -130,7 +132,7 @@ class ConcreteExperiment : public ExperimentType {
          * \param id Preprocessing id, used to store results, runtimes and auxiliary data.
          * \param func The function which follows the PreprocessFunction definition.
          */
-        void AddPreprocess(std::string id, PreprocessFunction func) override;
+        void AddPreprocess(std::string id, PreprocessFunction func, std::any params) override;
         //! Adds a kernel to the experiment.
         //! Each kernel is added to experiment via a KernelFunction.
         /*!
@@ -160,15 +162,15 @@ class ConcreteExperiment : public ExperimentType {
     protected:
         //! Stores the file_paths of the files to be extracted,
         //! along with the file specific parameters attached.
-        std::vector<std::vector<std::pair<std::string, std::any>>> _targets;
+        std::vector<std::vector<std::pair<std::vector<std::string>, std::any>>> _targets;
         //! Stores the kernel functions that are going to be run.
-        std::unordered_map<std::string, std::function<KernelFunction>> _kernels;
-        //! Stores the kernel params.
-        std::unordered_map<std::string, std::any> _kernel_parameters;
+        std::unordered_map<std::string, std::pair<KernelFunction, std::any>> _kernels;
+        ////! Stores the kernel params.
+        //std::unordered_map<std::string, std::any> _kernel_parameters;
         //! Stores dataLoaders.
-        std::vector<std::function<LoadDataFunction>> _dataLoaders;
+        std::vector<LoadDataFunction> _dataLoaders;
         //! Stores preprocesses.
-        std::unordered_map<std::string, std::function<PreprocessFunction>> _preprocesses;
+        std::unordered_map<std::string, std::pair<PreprocessFunction, std::any>> _preprocesses;
         //! Stores auxiliary data.
         std::map<std::string, std::any> _auxiliary;
         //! Stores runtimes.
@@ -181,11 +183,11 @@ class ConcreteExperiment : public ExperimentType {
 
 //! Example dataLoader function.
 //! Generic DataLoader.
-template< template<typename, typename, typename> typename FormatType, template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename VALType>
-std::unordered_map<std::string, format::Format*> LoadFormat(std::string & file_name) {
-  auto reader = ReaderType<IDType, NNZType, VALType>(file_name);
-  format::FormatOrderTwo<IDType, NNZType, VALType> * coo = reader.ReadCOO();
-  FormatType<IDType, NNZType, VALType> * format = coo->template Convert<FormatType>();
+template< template<typename, typename, typename> typename FormatType, template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::string, format::Format*> LoadFormat(std::vector<std::string> & file_names) {
+  auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
+  format::FormatOrderTwo<IDType, NNZType, ValueType> * coo = reader.ReadCOO();
+  FormatType<IDType, NNZType, ValueType> * format = coo->template Convert<FormatType>();
   std::unordered_map<std::string, format::Format*> r;
   r.emplace("format", format);
   return r;
@@ -193,10 +195,10 @@ std::unordered_map<std::string, format::Format*> LoadFormat(std::string & file_n
 
 //! Example dataLoader function.
 //! CSR Loader.
-template< template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename VALType>
-std::unordered_map<std::string, format::Format*> LoadCSR(std::string & file_name) {
-  auto reader = ReaderType<IDType, NNZType, VALType>(file_name);
-  format::CSR<IDType, NNZType, VALType> * csr = reader.ReadCSR();
+template< template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::string, format::Format*> LoadCSR(std::vector<std::string> & file_names) {
+  auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
+  format::CSR<IDType, NNZType, ValueType> * csr = reader.ReadCSR();
   std::unordered_map<std::string, format::Format*> r;
   r.emplace("format", csr);
   return r;
@@ -204,10 +206,10 @@ std::unordered_map<std::string, format::Format*> LoadCSR(std::string & file_name
 
 //! Example dataLoader function.
 //! COO Loader.
-template< template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename VALType>
-std::unordered_map<std::string, format::Format*> LoadCOO(std::string & file_name) {
-  auto reader = ReaderType<IDType, NNZType, VALType>(file_name);
-  format::COO<IDType, NNZType, VALType> * csr = reader.ReadCOO();
+template< template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::string, format::Format*> LoadCOO(std::vector<std::string> & file_names) {
+  auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
+  format::COO<IDType, NNZType, ValueType> * csr = reader.ReadCOO();
   std::unordered_map<std::string, format::Format*> r;
   r.emplace("format", csr);
   return r;
@@ -215,11 +217,11 @@ std::unordered_map<std::string, format::Format*> LoadCOO(std::string & file_name
 
 //! Example dataLoader function.
 //! CSC Loader.
-template< template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename VALType>
-std::unordered_map<std::string, format::Format*> LoadCSC(std::string & file_name) {
-  auto reader = ReaderType<IDType, NNZType, VALType>(file_name);
-  format::COO<IDType, NNZType, VALType> * coo = reader.ReadCOO();
-  format::CSC<IDType, NNZType, VALType> * csc = coo->template Convert<format::CSC>();
+template< template<typename, typename, typename> typename ReaderType, typename IDType, typename NNZType, typename ValueType>
+std::unordered_map<std::string, format::Format*> LoadCSC(std::vector<std::string> & file_names) {
+  auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
+  format::COO<IDType, NNZType, ValueType> * coo = reader.ReadCOO();
+  format::CSC<IDType, NNZType, ValueType> * csc = coo->template Convert<format::CSC>();
   std::unordered_map<std::string, format::Format*> r;
   r.emplace("format", csc);
   return r;
@@ -227,29 +229,30 @@ std::unordered_map<std::string, format::Format*> LoadCSC(std::string & file_name
 
 //! example preprocessing function.
 //! Generic reordering function for CSR format.
-template< template<typename, typename, typename> typename ReorderType, typename ContextType, typename IDType, typename NNZType, typename VALType>
-void ReorderCSR(std::unordered_map<std::string, format::Format*> & data) {
+template< template<typename, typename, typename> typename ReorderType, typename ContextType, typename IDType, typename NNZType, typename ValueType>
+void ReorderCSR(std::unordered_map<std::string, format::Format*> & data, std::any params) {
   ContextType context;
-  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>({}, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, VALType>>(), {&context}, true);
-  auto * A_reordered = preprocess::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, VALType>>(), {&context}, true);
+  auto p = std::any_cast<typename ReorderType<IDType, NNZType, ValueType>::ParamsType>(params);
+  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
+  auto * A_reordered = preprocess::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
   data.emplace("processed_format", A_csc);
 }
 
 //! Example preprocessing function.
 //! Does nothing, can be used to run the experiment with the original data.
-template<typename IDType, typename NNZType, typename VALType>
-void Pass(std::unordered_map<std::string, format::Format*> & data) {
+inline void Pass(std::unordered_map<std::string, format::Format*> & data, std::any params) {
   data["processed_format"] = data["format"];
 }
 
 //! Example preprocessing function.
 //! Generic reordering function.
-template< template<typename, typename, typename> typename ReorderType, template<typename, typename, typename> typename FormatType, typename ContextType, typename IDType, typename NNZType, typename VALType>
-void Reorder(std::unordered_map<std::string, format::Format*> & data) {
+template< template<typename, typename, typename> typename ReorderType, template<typename, typename, typename> typename FormatType, typename ContextType, typename IDType, typename NNZType, typename ValueType>
+void Reorder(std::unordered_map<std::string, format::Format*> & data, std::any params) {
   ContextType context;
-  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>({}, data["format"]->AsAbsolute<FormatType<IDType, NNZType, VALType>>(), {&context}, true);
-  auto * A_reordered = preprocess::ReorderBase::Permute2D<FormatType>(perm, data["format"]->AsAbsolute<FormatType<IDType, NNZType, VALType>>(), {&context}, true);
+  auto p = std::any_cast<typename ReorderType<IDType, NNZType, ValueType>::ParamsType>(params);
+  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
+  auto * A_reordered = preprocess::ReorderBase::Permute2D<FormatType>(perm, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
   data.emplace("processed_format", A_csc);
 }
