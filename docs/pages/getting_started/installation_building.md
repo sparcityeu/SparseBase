@@ -29,10 +29,14 @@ We suggest using the most recent versions when possible.
 
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA={$CUDA} ..
+cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=$CUDA ..
 make
 ```
-Where `${CUDA}` is `ON` if CUDA support is needed and `OFF` otherwise.
+Where `$CUDA` is `ON` if CUDA support is needed and `OFF` otherwise.
+
+```{warning}
+If the library is installed with cuda support, the user code must be compiled using `nvcc`.
+```
 
 This will generate the library as a static library. In addition, the example codes are compiled and their binaries are located in `build/examples`.
 
@@ -65,7 +69,9 @@ make
 ```
 Where `${CUDA}` is `ON` if CUDA support is needed and `OFF` otherwise.
 
-> Note: if the library is installed with `${CUDA}=ON`, the user code must be compiled using `nvcc`.
+```{warning}
+If the library is installed with cuda support, the user code must be compiled using `nvcc`.
+```
 
 This will prepare the library for installation and compile the example codes located in `build/examples`.
 

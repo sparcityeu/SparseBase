@@ -84,7 +84,7 @@ This can be useful to reduce compile times if the header only build is being use
 
 SparseBase classes and namespaces are named in a rather verbose way. 
 This is done to keep things well-structured during development.
-However users may find it difficult to work with. 
+However, users may find it difficult to work with. 
 In such cases the namespaces can be aliased using the C++11 `using` keyword.
 
 
@@ -97,6 +97,22 @@ using sbob = sparsebase::object;
 using sbpe = sparsebase::preprocess;
 using sbco = sparsebase::context;
 using sbut = sparsebase::utils;
+```
+
+## Template Types
+
+To be flexible, efficient and safe, SparseBase classes take most of the types they use as
+template parameters. However, users may find this difficult to work with.
+In such cases, the commonly used types can be combined in a `#define` statement for ease of use.
+
+```cpp
+// Definitions
+#define iif int,int,float
+#define iid int,int,double
+#define iii int,int,int
+
+// Usage
+CSR<iif> csr = ...;
 ```
 
 
@@ -129,6 +145,11 @@ int vals[6] = {10, 20, 30, 40, 50, 60};
 
 // Unlike the previous example we are storing integer type values here
 auto coo = new sparsebase::format::COO<int,int,int>(6, 6, 6, row, col, vals);
+```
+
+```{note}
+SparseBase is designed with HPC users in mind, so the underlying arrays of the formats
+are always accessible through the various get_... functions.
 ```
 
 
@@ -183,7 +204,8 @@ auto csr = coo->Convert<sparsebase::format::CSR>(&cpu_context, true);
 ```
 
 ```{note}
-If the format object is already of the desired type, the Convert function is a no-op.
+If the format object is already of the desired type, 
+the Convert function will not do anything besides type checking.
 ```
 
 ```{warning}
@@ -266,25 +288,33 @@ As of the current version of the library, graphs function as containers of spars
 
 ## Ordering
 
-Various orderings can be generated for a graph using the ``ReorderPreprocessType`` classes. 
-Currently these include ``RCMReoder`` and ``DegreeReorder``. There is also a ``GenericReorder`` class
-allowing the users to define their own custom orderings. For more details, please see the examples
-in the Github repository.
+Sparse data formats can be reordered easily using the `ReorderBase` class.
 
-Below you can see an example of an RCM reordering of a graph.
 ```cpp
-sparsebase::preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer(1, 4);
-sparsebase::format::Format<vertex_type, edge_type, value_type> * con = g.get_connectivity();
 sparsebase::context::CPUContext cpu_context;
-vertex_type * order = orderer.GetReorder(con, {&cpu_context});
+IDType* new_order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
 ```
 
-Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
-So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `PermuteOrderTwo` class
-to mutate the graph.
+Multiple different reordering algorithms are supported including `DegreeReorder`, `RCMReorder` and `GrayReorder`.
+
+Alternatively the user can directly call the underlying reordering classes.
+Below you can see an example of an RCM reordering of a graph using this method.
 
 ```cpp
-// use `order` to permute both rows and columns
-sparsebase::preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> permute(order, order);
-sparsebase::format::Format *result = permute.GetTransformation(con, {&cpu_context});
+sparsebase::preprocess::RCMReorder<int,int,float> orderer(1, 4);
+sparsebase::context::CPUContext cpu_context;
+IDType * order = orderer.GetReorder(format, {&cpu_context});
+```
+
+In both cases the returned value is an array describing the reordering.
+So if a reordered format is desired, the reordering needs to be applied to the format.
+This can be done using `ReorderBase` or again manually as shown below.
+
+```cpp
+// Using ReorderBase
+auto new_format = ReorderBase.Permute2D(order, format, {&cpu_context}, true);
+
+// Manual Method
+preprocess::PermuteOrderTwo<int, int, float> permute(order, order);
+auto new_format = permute.GetTransformation(format, {&cpu_context});
 ```

@@ -1,7 +1,7 @@
 # Optional Dependencies
 
 Optional dependencies in the context of sparsebase are libraries that for one reason 
-or another can not be directly bundled sparsebase. 
+or another can not be directly bundled with sparsebase. 
 
 ## Optional Dependency List
 
@@ -21,7 +21,7 @@ However, if cmake fails to find the library the following options could also be 
 - `<dependency>_LIB_DIR` : Path to the directory containing the `.so`, `.a`, `.dll` file.
 - `<dependency>_INC_DIR` : Path to the directory containing the header files.
 
-```{note}
+```{warning}
 When passing paths to cmake, we suggest using absolute paths and avoiding symbols like `~` and `*`
 ```
 
