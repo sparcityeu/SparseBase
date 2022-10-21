@@ -169,12 +169,15 @@ int main(int argc, char **argv){
   v = new row_type[317080];
   std::fill_n(v, 317080, 1);
   auto dblp_v = Array<row_type>(317080, v);
-  exp.AddDataLoader(experiment::LoadCSR<MTXReader, row_type, nnz_type, value_type>, {make_pair(argv[1], ash_v)});
-  exp.AddDataLoader(experiment::LoadCSR<EdgeListReader, row_type, nnz_type, value_type>, {make_pair(argv[2], dblp_v)});
+  vector<string> files = {argv[1]};
+  exp.AddDataLoader(experiment::LoadCSR<MTXReader, row_type, nnz_type, value_type>, {make_pair(files, ash_v)});
+  files = {argv[2]};
+  exp.AddDataLoader(experiment::LoadCSR<EdgeListReader, row_type, nnz_type, value_type>, {make_pair(files, dblp_v)});
 
   // reorder matrices
-  exp.AddPreprocess("original", experiment::Pass<row_type, nnz_type, value_type>); // add dummy preprocessing to run kernels without reordering
-  exp.AddPreprocess("RCM", experiment::Reorder<RCMReorder, CSR, CPUContext, row_type, nnz_type, value_type>);
+  exp.AddPreprocess("original", experiment::Pass, {}); // add dummy preprocessing to run kernels without reordering
+  RCMReorder<row_type, nnz_type, value_type>::ParamsType params = {};
+  exp.AddPreprocess("RCM", experiment::Reorder<RCMReorder, CSR, CPUContext, row_type, nnz_type, value_type>, params);
 
   // add kernels that will carry out the sparse matrix vector multiplication
   exp.AddKernel("single-threaded", spmv, {});
