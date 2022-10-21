@@ -10,6 +10,7 @@ In this tutorial, you will use SparseBase to do the following:
 1. Read a graph from an unordered edge list file.
 2. Reorder the vertices of the graph according to their degree.
 3. Permute the graph according to the generated ordering.
+4. Compile the program and execute it.
 
 ## Preliminaries
 Start by navigating to the directory `tutorials/001_reordering/start_here/`. Open the file `tutorial_001.cc` using a code editor and follow along with the tutorial. The file contains some boilerplate code that includes the appropriate headers, creates some type definitions, and uses the `sparsebase` namespace.
@@ -19,16 +20,16 @@ The completed tutorial can be found in `tutorials/001_reordering/solved/solved.c
 ## Steps
 
 ### 1. Read the graph from disk
-Begin your main program by reading the undirected edge list file into a `CSR` object using the `ReadCSRFromEdgeList` function in `IOBase`. 
+Begin your main program by reading the undirected edge list file into a `CSR` object using the `ReadEdgeListToCSR` function in `IOBase`. 
 
 ```c++
     // The name of the edge list file in disk
     std::string filename(argv[1]);
     // Read the edge list file into a CSR object
-    CSR<IDType, NNZType, ValueType>* csr = IOBase::ReadEdgeListToCSR<IDType, NNZType, ValueType>(filename);
+    CSR<id_type, nnz_type, value_type>* csr = IOBase::ReadEdgeListToCSR<id_type, nnz_type, value_type>(filename);
 ```
 
-The three templated type parameters of the `CSR` and `ReadEdgeListToCSR` objects determine the data types that will store the IDs, the number of non-zeros, and the values of the weights of the graph, respectively. These types are defined at the beginning of the file. Notice that, since the graph we read is unweighted, there will be no values in the `CSR` format object, only connectivity information. That is why we set `ValueType` to void, though we could have set it to other types.
+The three templated type parameters of the `CSR` and `ReadEdgeListToCSR` objects determine the data types that will store the IDs, the number of non-zeros, and the values of the weights of the graph, respectively. These types are defined at the beginning of the file. Notice that, since the graph we read is unweighted, there will be no values in the `CSR` format object, only connectivity information. That is why we set `value_type` to void, though we could have set it to other types.
 
 You will find that these three template types are used by most classes of the library.
 
@@ -61,7 +62,7 @@ DegreeReorderParams params(ascending);
 // Create a permutation array of `csr` using one of the passed contexts 
 // (in this case, only one is passed)
 // The last argument tells the function to convert the input format if needed
-IDType* new_order = ReorderBase::Reorder<DegreeReorder>(params, csr, {&cpu_context}, true);
+id_type* new_order = ReorderBase::Reorder<DegreeReorder>(params, csr, {&cpu_context}, true);
 ```
 
 When calling the `Reorder` function, we pass the reordering class we want to use as a template parameter, in this case, that would be `DegreeReorder`. We also pass a struct containing the hyperparameters of this specific reordering as the first argument of the function.
@@ -75,10 +76,10 @@ Finally, use the permutation array `new_order` to restructure the graph and appl
 // Permute2D permutes the rows and columns of `csr` according to `new_order`
 // Similar to `Reorder`, we specify the contexts to use, 
 // and whether the library can convert the input if needed
-FormatOrderTwo<IDType, NNZType, ValueType>* new_format = 
+FormatOrderTwo<id_type, nnz_type, value_type>* new_format = 
         ReorderBase::Permute2D(new_order, csr, {&cpu_context}, true);
 // Cast the polymorphic pointer to a pointer at CSR
-CSR<IDType, NNZType, ValueType>* new_csr = new_format->As<CSR>();
+CSR<id_type, nnz_type, value_type>* new_csr = new_format->As<CSR>();
 ```
 
 The `Permute2D()` call returns a `CSR` object, but it returns it as a polymorphic pointer to the superclass `FormatOrderTwo` which is the parent of `CSR` and other order-2 formats. The `As` function will safely cast that pointer to the correct type.

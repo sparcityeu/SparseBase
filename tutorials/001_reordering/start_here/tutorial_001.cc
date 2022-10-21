@@ -5,9 +5,9 @@
 #include <string>
 #include <iostream>
 
-typedef unsigned int IDType;
-typedef unsigned int NNZType;
-typedef void ValueType;
+typedef unsigned int id_type;
+typedef unsigned int nnz_type;
+typedef void value_type;
 
 using namespace sparsebase;
 using namespace utils::io;
