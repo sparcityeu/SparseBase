@@ -5,9 +5,9 @@
 #include <string>
 #include <iostream>
 
-typedef unsigned int IDType;
-typedef unsigned int NNZType;
-typedef void ValueType;
+typedef unsigned int id_type;
+typedef unsigned int nnz_type;
+typedef void value_type;
 
 using namespace sparsebase;
 using namespace utils::io;
@@ -22,7 +22,7 @@ int main(int argc, char * argv[]){
     // The name of the edge list file in disk
     std::string filename(argv[1]);
     // Read the edge list file into a CSR object
-    CSR<IDType, NNZType, ValueType>* csr = IOBase::ReadEdgeListToCSR<IDType, NNZType, ValueType>(filename);
+    CSR<id_type, nnz_type, value_type>* csr = IOBase::ReadEdgeListToCSR<id_type, nnz_type, value_type>(filename);
     std::cout << "Original graph:" << std::endl;
     // get a array representing the dimensions of the matrix represented by `csr`,
     // i.e, the adjacency matrix of the graph
@@ -45,15 +45,15 @@ int main(int argc, char * argv[]){
     // Create a permutation array of `csr` using one of the passed contexts
     // (in this case, only one is passed)
     // The last argument tells the function to convert the input format if needed
-    IDType* new_order = ReorderBase::Reorder<DegreeReorder>(params, csr, {&cpu_context}, true);
+    id_type* new_order = ReorderBase::Reorder<DegreeReorder>(params, csr, {&cpu_context}, true);
 
     // Permute2D permutes the rows and columns of `csr` according to `new_order`
     // Similar to `Reorder`, we specify the contexts to use,
     // and whether the library can convert the input if needed
-    FormatOrderTwo<IDType, NNZType, ValueType>* new_format =
+    FormatOrderTwo<id_type, nnz_type, value_type>* new_format =
         ReorderBase::Permute2D(new_order, csr, {&cpu_context}, true);
     // Cast the polymorphic pointer to a pointer at CSR
-    CSR<IDType, NNZType, ValueType>* new_csr = new_format->As<CSR>();
+    CSR<id_type, nnz_type, value_type>* new_csr = new_format->As<CSR>();
     std::cout << "Reordered graph:" << std::endl;
     std::cout << "Number of vertices: " << new_csr->get_dimensions()[0] << std::endl;
     std::cout << "Number of edges: " << new_csr->get_num_nnz() << std::endl;

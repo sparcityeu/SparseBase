@@ -993,7 +993,6 @@ TEST(ApplyConversionSchema, All){
 #undef TYPE
 }
 
-#define ConversionPairVector std::vector<std::tuple<ConditionalConversionFunction, context::Context*>>
 #define TYPE int, int, int
 class ConversionChainFixture : public ::testing::Test {
 protected:
