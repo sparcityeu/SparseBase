@@ -3,35 +3,35 @@
 namespace sparsebase::experiment {
 
 void ConcreteExperiment::AddDataLoader(LoadDataFunction func, std::vector<std::pair<std::vector<std::string>, std::any>> targets){
-  this->_targets.push_back(targets);
-  this->_dataLoaders.emplace_back(func);
+  this->targets_.push_back(targets);
+  this->dataLoaders_.emplace_back(func);
 }
 
 void ConcreteExperiment::AddKernel(std::string id, KernelFunction func, std::any params){
-  this->_kernels.insert(std::make_pair(id, std::make_pair(func, params)));
+  this->kernels_.insert(std::make_pair(id, std::make_pair(func, params)));
   //this->_kernel_parameters.insert(std::make_pair(id, params));
 }
 
 void ConcreteExperiment::AddPreprocess(std::string id, PreprocessFunction func, std::any params){
-  this->_preprocesses.insert(std::make_pair(id, std::make_pair(func, params)));
+  this->preprocesses_.insert(std::make_pair(id, std::make_pair(func, params)));
 }
 
 std::map<std::string, std::vector<double>> ConcreteExperiment::GetRunTimes(){
-  return this->_runtimes;
+  return this->runtimes_;
 }
 
 std::map<std::string, std::vector<std::any>> ConcreteExperiment::GetResults(){
-  return this->_results;
+  return this->results_;
 }
 
 std::map<std::string, std::any> ConcreteExperiment::GetAuxiliary(){
-  return this->_auxiliary;
+  return this->auxiliary_;
 }
 
 void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
-  for(unsigned int l = 0; l < this->_dataLoaders.size(); l++){
-    auto loader = this->_dataLoaders[l];
-    for(auto & [file_names, file_param] : this->_targets[l]){
+  for(unsigned int l = 0; l < this->dataLoaders_.size(); l++){
+    auto loader = this->dataLoaders_[l];
+    for(auto & [file_names, file_param] : this->targets_[l]){
       //auto file_name = t.first;
       //auto file_param = t.second;
       auto data = loader(file_names);
@@ -45,14 +45,14 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
           auto aid = d.first;
           aid.append(",");
           aid.append(file_id);
-          this->_auxiliary[aid] = d.second;
+          this->auxiliary_[aid] = d.second;
         }
       }
-      for( const auto & [pid, ppair]: this->_preprocesses){
+      for( const auto & [pid, ppair]: this->preprocesses_){
         auto pfunc = ppair.first;
         auto pparams = ppair.second;
         pfunc(data, pparams);
-        for(const auto & [kid, kpair]: this->_kernels){
+        for(const auto & [kid, kpair]: this->kernels_){
           auto kfunc = kpair.first;
           auto kparams = kpair.second;
           for(unsigned int i = 0; i < times; i++) {
@@ -66,9 +66,9 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
             id.append(kid);
             id.append(",");
             id.append(std::to_string(i));
-            this->_results[id].push_back(res);
+            this->results_[id].push_back(res);
             std::chrono::duration<double> secs = end - start;
-            this->_runtimes[id].push_back(secs.count());
+            this->runtimes_[id].push_back(secs.count());
           }
         }
         if(store_auxiliary){
@@ -76,10 +76,10 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
             auto aid = d.first;
             aid.append(",");
             aid.append(file_id);
-            if(this->_auxiliary.find(aid) == this->_auxiliary.end()){
+            if(this->auxiliary_.find(aid) == this->auxiliary_.end()){
               aid.append(",");
               aid.append(pid);
-              this->_auxiliary[aid] = d.second;
+              this->auxiliary_[aid] = d.second;
             }
           }
         }
