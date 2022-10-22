@@ -42,10 +42,11 @@ using PreprocessFunction = std::function<void (std::unordered_map<std::string, f
  *
  * \param data Contains the data needed for the preprocessing. This map is returned by the DataLoader and extended by the preprocessing.
  * \param fparams Parameters specific to the target file.
+ * \param pparams Parameters specific to the preprocessing.
  * \param kparams Parameters specific to the kernel.
  * \return The results of the kernel. The results are stored in _results.
  */
-using KernelFunction = std::function<std::any (std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any kparams)>;
+using KernelFunction = std::function<std::any (std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any pparams, std::any kparams)>;
 
 //! Abstract class that defines a common interface for experiments
 class ExperimentType{

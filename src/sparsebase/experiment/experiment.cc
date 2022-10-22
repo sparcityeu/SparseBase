@@ -57,7 +57,7 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
           auto kparams = kpair.second;
           for(unsigned int i = 0; i < times; i++) {
             auto start = std::chrono::high_resolution_clock::now();
-            auto res = kfunc(data, file_param, kparams);
+            auto res = kfunc(data, file_param, pparams, kparams);
             auto end = std::chrono::high_resolution_clock::now();
             auto id = file_id;
             id.append(",");

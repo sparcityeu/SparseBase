@@ -22,7 +22,7 @@ using value_type = unsigned int;
 #define NUM_RUNS 1
 
 // single threaded spmv
-std::any spmv(unordered_map<string, Format *> & data, std::any fparams, std::any kparams){
+std::any spmv(unordered_map<string, Format *> & data, std::any fparams, std::any pparams, std::any kparams){
   auto v_arr = any_cast<Array<row_type>>(fparams);
   auto v = v_arr.get_vals();
   auto spm = data["processed_format"]->AsAbsolute<CSR<row_type, nnz_type, value_type>>();
@@ -46,7 +46,7 @@ std::any spmv(unordered_map<string, Format *> & data, std::any fparams, std::any
 
 
 //omp parallel spmv
-std::any spmv_par(unordered_map<string, Format*> & data, std::any fparams, std::any kparams){
+std::any spmv_par(unordered_map<string, Format*> & data, std::any fparams, std::any pparams, std::any kparams){
   auto v_arr = any_cast<Array<row_type>>(fparams);
   auto v = v_arr.get_vals();
   auto spm = data["processed_format"]->AsAbsolute<CSR<row_type, nnz_type, value_type>>();
@@ -103,12 +103,11 @@ __global__ void spmv_1w1r(nnz_type * row_ptr, row_type * cols, row_type * v, row
       s += v[cols[j]];
     }
     atomicAdd(res+rid, s);
-    //res[rid] += s;
   }
 }
 
 // many-core accelerated spmv
-std::any spmv_gpu(unordered_map<string, Format *> & data, std::any fparams, std::any kparams){
+std::any spmv_gpu(unordered_map<string, Format *> & data, std::any fparams, std::any pparams, std::any kparams){
   CUDAContext gpu_context{0};
   auto s_v = any_cast<Array<row_type>>(fparams);
   auto c_v = s_v.Convert<CUDAArray>(&gpu_context);
@@ -133,7 +132,7 @@ std::any spmv_gpu(unordered_map<string, Format *> & data, std::any fparams, std:
 }
 
 // many-core accelerated spmv
-std::any spmv_gpu2(unordered_map<string, Format *> & data, std::any fparams, std::any kparams){
+std::any spmv_gpu2(unordered_map<string, Format *> & data, std::any fparams, std::any pparams, std::any kparams){
   CUDAContext gpu_context{0};
   auto s_v = any_cast<Array<row_type>>(fparams);
   auto c_v = s_v.Convert<CUDAArray>(&gpu_context);
