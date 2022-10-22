@@ -17,8 +17,8 @@ using edge_type = unsigned int;
 using value_type = unsigned int;
 
 // create custom dataLoader
-unordered_map<string, Format*> get_data_f( string & file_name ) {
-  CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name)
+unordered_map<string, Format*> get_data_f( vector<string> & file_names ) {
+  CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_names[0])
       .ReadCSR();
   unordered_map<string, Format*> r;
   r.emplace("graph", csr);
@@ -36,7 +36,7 @@ void preprocess_f(unordered_map<string, Format*> & data, std::any params) {
 
 // kernel function is always provided by the user
 // this kernel carries out an spmv
-std::any kernel_f(unordered_map<string, Format*> & data, std::any fparams, std::any kparams) {
+std::any kernel_f(unordered_map<string, Format*> & data, std::any fparams, std::any pparams, std::any kparams) {
   auto v = any_cast<double*>(fparams);
   auto spm = data["ordered"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   auto dimensions = spm->get_dimensions();
@@ -60,21 +60,22 @@ std::any kernel_f(unordered_map<string, Format*> & data, std::any fparams, std::
 int main(int argc, char **argv){
 
   experiment::ConcreteExperiment exp;
+  vector<string> file_names = {argv[1]};
   string file_name = argv[1];
-  string file_name2 = argv[1];
   auto v = new double[958];
   std::fill_n(v, 958, 1);
   // add custom dataLoader
-  exp.AddDataLoader(get_data_f, {make_pair(file_name, v)});
+  exp.AddDataLoader(get_data_f, {make_pair(file_names, v)});
 
-  auto lol = [file_name2] ( string & file_name ) {
-    CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name2)
+  // experiment functions are wrapped with std::function, thus can be any allable function that abides by the function definition.
+  auto get_data_l = [file_name] ( vector<string> & file_names ) {
+    CSR<vertex_type, edge_type, value_type> * csr = MTXReader<vertex_type, edge_type, value_type>(file_name)
         .ReadCSR();
     unordered_map<string, Format*> r;
     r.emplace("graph", csr);
     return r;
   };
-  exp.AddDataLoader(lol, {make_pair(file_name, v)});
+  exp.AddDataLoader(get_data_l, {make_pair(file_names, v)});
   // add custom preprocessing
   exp.AddPreprocess("mypreprocess", preprocess_f, {});
 
