@@ -80,9 +80,10 @@ This can be useful to reduce compile times if the header only build is being use
 
 ## Creating a Format Object
 
-Currently two sparse data formats are supported:
+Currently three sparse data formats are supported:
 - COO (Coordinate List)
 - CSR (Compressed Sparse Row)
+- CSC (Compressed Sparse Column)
 
 In the code snippet below you can see the creation of a CSR type object 
 which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
@@ -218,7 +219,7 @@ AsAbsolute of the current version of the library, graphs function as containers 
 ## Ordering
 
 Various orderings can be generated for a graph using the ``ReorderPreprocessType`` classes. 
-Currently these include ``RCMReoder`` and ``DegreeReorder``. There is also a ``GenericReorder`` class
+You can find a full list of available reordering algithms [here](available.md). There is also a ``GenericReorder`` class
 allowing the users to define their own custom orderings. For more details, please see the examples
 in the Github repository.
 

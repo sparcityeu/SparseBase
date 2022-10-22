@@ -1120,7 +1120,7 @@ public:
   //! Generates a permutation array from a FormatOrderTwo object using the Reordering class `Reordering`.
   /*!
    *
-   * @tparam Reordering a reordering class defining a reordering algorithm. For a full list of available reordering algorithms, please check: xxx
+   * @tparam Reordering a reordering class defining a reordering algorithm. For a full list of available reordering algorithms, please check [here](../pages/getting_started/available.html).
    * @param params a struct containing the parameters specific for the reordering algorithm `Reordering`. Please check the documentation of each reordering for the specifications of its parameters.
    * @param format FormatOrderTwo object to be used to generate permutation array.
    * @param contexts vector of contexts that can be used for permutation.
