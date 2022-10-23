@@ -35,7 +35,7 @@ using LoadDataFunction = std::function<std::unordered_map<std::string, format::F
  * \param data Contains the data needed for the preprocessing. This map is returned by the DataLoader
  * \param params Preprocessing parameters.
  */
-using PreprocessFunction = std::function<void (std::unordered_map<std::string, format::Format*> & data, std::any params)>;
+using PreprocessFunction = std::function<void (std::unordered_map<std::string, format::Format*> & data, std::any & params)>;
 //! Function template for kernel.
 //! All kernel methods that are going to be run must follow this function definition.
 /*!
@@ -46,7 +46,7 @@ using PreprocessFunction = std::function<void (std::unordered_map<std::string, f
  * \param kparams Parameters specific to the kernel.
  * \return The results of the kernel. The results are stored in _results.
  */
-using KernelFunction = std::function<std::any (std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any pparams, std::any kparams)>;
+using KernelFunction = std::function<std::any (std::unordered_map<std::string, format::Format*> & data, std::any & fparams, std::any & pparams, std::any & kparams)>;
 
 //! Abstract class that defines a common interface for experiments
 class ExperimentType{
