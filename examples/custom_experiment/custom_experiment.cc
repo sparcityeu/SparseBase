@@ -17,7 +17,7 @@ using edge_type = unsigned int;
 using value_type = unsigned int;
 
 // create custom preprocess function
-void preprocess_f(unordered_map<string, Format*> & data, std::any & params) {
+void preprocess_f(unordered_map<string, Format*> & data, std::any & fparams, std::any & params) {
   context::CPUContext cpu_context;
   auto perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
   auto A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);

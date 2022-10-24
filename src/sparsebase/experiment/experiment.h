@@ -33,9 +33,10 @@ using LoadDataFunction = std::function<std::unordered_map<std::string, format::F
 /*!
  *
  * \param data Contains the data needed for the preprocessing. This map is returned by the DataLoader
+ * \param fparams Parameters specific to the target file.
  * \param params Preprocessing parameters.
  */
-using PreprocessFunction = std::function<void (std::unordered_map<std::string, format::Format*> & data, std::any & params)>;
+using PreprocessFunction = std::function<void (std::unordered_map<std::string, format::Format*> & data, std::any & fparams, std::any & params)>;
 //! Function template for kernel.
 //! All kernel methods that are going to be run must follow this function definition.
 /*!
@@ -231,7 +232,7 @@ std::unordered_map<std::string, format::Format*> LoadCSC(std::vector<std::string
 //! example preprocessing function.
 //! Generic reordering function for CSR format.
 template< template<typename, typename, typename> typename ReorderType, typename ContextType, typename IDType, typename NNZType, typename ValueType>
-void ReorderCSR(std::unordered_map<std::string, format::Format*> & data, std::any params) {
+void ReorderCSR(std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any params) {
   ContextType context;
   auto p = std::any_cast<typename ReorderType<IDType, NNZType, ValueType>::ParamsType>(params);
   auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
@@ -242,14 +243,14 @@ void ReorderCSR(std::unordered_map<std::string, format::Format*> & data, std::an
 
 //! Example preprocessing function.
 //! Does nothing, can be used to run the experiment with the original data.
-inline void Pass(std::unordered_map<std::string, format::Format*> & data, std::any params) {
+inline void Pass(std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any params) {
   data["processed_format"] = data["format"];
 }
 
 //! Example preprocessing function.
 //! Generic reordering function.
 template< template<typename, typename, typename> typename ReorderType, template<typename, typename, typename> typename FormatType, typename ContextType, typename IDType, typename NNZType, typename ValueType>
-void Reorder(std::unordered_map<std::string, format::Format*> & data, std::any params) {
+void Reorder(std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any params) {
   ContextType context;
   auto p = std::any_cast<typename ReorderType<IDType, NNZType, ValueType>::ParamsType>(params);
   auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
