@@ -9,7 +9,6 @@ void ConcreteExperiment::AddDataLoader(LoadDataFunction func, std::vector<std::p
 
 void ConcreteExperiment::AddKernel(std::string id, KernelFunction func, std::any params){
   this->kernels_.insert(std::make_pair(id, std::make_pair(func, params)));
-  //this->_kernel_parameters.insert(std::make_pair(id, params));
 }
 
 void ConcreteExperiment::AddPreprocess(std::string id, PreprocessFunction func, std::any params){
@@ -51,7 +50,7 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
       for( const auto & [pid, ppair]: this->preprocesses_){
         auto pfunc = ppair.first;
         auto pparams = ppair.second;
-        pfunc(data, pparams);
+        pfunc(data, file_param, pparams);
         for(const auto & [kid, kpair]: this->kernels_){
           auto kfunc = kpair.first;
           auto kparams = kpair.second;
