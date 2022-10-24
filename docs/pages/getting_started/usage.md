@@ -125,6 +125,7 @@ Multiple sparse data formats are supported including:
 
 In the code snippet below you can see the creation of a CSR type object 
 which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
+
 ```cpp
 unsigned int row_ptr[4] = {0, 2, 3, 4};
 unsigned int col[4] = {1, 2, 0, 0};
@@ -161,7 +162,7 @@ Many functions in the library return generic format pointers like ``FormatOrderT
 // Consider the scenario where you obtained a generic pointer from a function
 sparsebase::format::FormatOrderTwo<int, int, int>* format = ...;
 
-// If the type of this pointer is known, then you can simply use the Convert function
+// If the type of this pointer is known, then you can simply use the As function
 sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR>();
 
 ```
@@ -219,7 +220,7 @@ Currently, we support two sparse data file formats:
 - Matrix Market Files (.mtx)
 - Edge List Files
 
-Reading such files can easily done using the `IOBase` class.
+Reading such files can easily be done using the `IOBase` class.
 
 ```cpp
 auto coo = sparsebase::utils::io::IOBase::ReadMTXtoCOO<int,int,float>();
@@ -236,11 +237,11 @@ However they may not support all the options of our default readers.
 Users can also use the underlying reader classes directly if need be. 
 ```cpp
 // Reading a mtx file into a COO format
-auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
+auto reader = new sparsebase::utils::io::MTXReader<int, int, float>(file_name);
 auto coo = reader->ReadCOO();
 
 // Reading an edge list file into a CSR format
-auto reader2 = new sparsebase::utils::io::EdgeListReader<vertex_type, edge_type, value_type>(file_name);
+auto reader2 = new sparsebase::utils::io::EdgeListReader<int, int, float>(file_name);
 auto csr = reader2->ReadCSR();
 ```
 
