@@ -293,19 +293,26 @@ As of the current version of the library, graphs function as containers of spars
 
 Sparse data formats can be reordered easily using the `ReorderBase` class.
 
+
 ```cpp
+sparsebase::preprocess::DegreeReorderParams params(true);
 sparsebase::context::CPUContext cpu_context;
-IDType* order = ReorderBase::Reorder<DegreeReorder>(format, {&cpu_context}, true);
+IDType* order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
 ```
 
-Multiple different reordering algorithms are supported including `DegreeReorder`, `RCMReorder` and `GrayReorder`
+Multiple different reordering algorithms are supported including `DegreeReorder`, `RCMReorder` and `GrayReorder`.
+
+Each reordering algorithm supports a set of parameters which is represented by a struct named in 
+the `<Algorithm>Params` format. It is also accessible as a static member of each algorithm as `<Class>::ParamsType`.
+The user can override these parameters by creating an object of this struct and changing its member variables.
+This object can then be passed to the `Reorder` function as shown on the code snippet above.
 
 
-Alternatively the user can directly call the underlying reordering classes.
+As an alternative to `ReorderBase`, the user can also directly call the underlying reordering classes.
 Below you can see an example of an RCM reordering of a graph using this method.
 
 ```cpp
-sparsebase::preprocess::RCMReorder<int,int,float> orderer(1, 4);
+sparsebase::preprocess::RCMReorder<int,int,float> orderer();
 sparsebase::context::CPUContext cpu_context;
 IDType * order = orderer.GetReorder(format, {&cpu_context});
 ```
@@ -321,15 +328,4 @@ auto new_format = ReorderBase.Permute2D(order, format, {&cpu_context}, true);
 // Manual Method
 preprocess::PermuteOrderTwo<int, int, float> permute(order, order);
 auto new_format = permute.GetTransformation(format, {&cpu_context});
-```
-
-Each reordering algorithm supports a set of parameters which is represented by a struct named in 
-the `<Algorithm>Params` format. It is also accessible as a static member of each algorithm as `<Class>::ParamsType`.
-The user can override these parameters by creating an object of this struct and changing its member variables.
-This object can then be passed to the `Reorder` function.
-
-```cpp
-sparsebase::preprocess::DegreeReorderParams params(true);
-sparsebase::context::CPUContext cpu_context;
-IDType* order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
 ```
