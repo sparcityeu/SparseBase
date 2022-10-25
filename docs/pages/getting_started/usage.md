@@ -312,7 +312,7 @@ As an alternative to `ReorderBase`, the user can also directly call the underlyi
 Below you can see an example of an RCM reordering of a graph using this method.
 
 ```cpp
-sparsebase::preprocess::RCMReorder<int,int,float> orderer();
+sparsebase::preprocess::RCMReorder<int,int,float> orderer;
 sparsebase::context::CPUContext cpu_context;
 IDType * order = orderer.GetReorder(format, {&cpu_context});
 ```
