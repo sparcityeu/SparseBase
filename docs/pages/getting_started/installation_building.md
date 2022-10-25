@@ -17,7 +17,11 @@ We suggest using the most recent versions when possible.
 - Build tools:
     - cmake (version 3.12 or above) (with CUDA support enabled 3.18 or above)
     - GNU make (version 4.1 or above) or ninja (version 1.11 or above)
+
     
+- Other dependencies:
+  - Python (version 3.6 or above)
+
 
 ## Compiling
 
