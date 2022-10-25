@@ -8,7 +8,7 @@ SparseBase can be easily added to your project either through CMake's `find_pack
 In the commands below replace 0.1.5 with the version of SparseBase you installed.
 ```
 
-If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
+If you installed SparseBase to the default system directory, use the following command in your `CMakeLists.txt` file to add the library to your project:
 ```cmake
 find_package(sparsebase 0.1.5 REQUIRED)
 ```
@@ -137,7 +137,7 @@ unsigned int col[4] = {1, 2, 0, 0};
 sparsebase::format::CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
-In the code snippet below you can see the creation of a COO type object also contains value information.
+In the code snippet below you can see the creation of a COO type object which contains value information.
 
 ```cpp
 int row[6] = {0, 0, 1, 1, 2, 2};
@@ -264,13 +264,15 @@ auto* vals = csr_owned->release_vals();
 auto* csr_not_owned = new sparsebase::format::CSR<int,int,int>(4, 4, row_ptr, col, vals, sparsebase::format::kNotOwned);
 ```
 
-> Format instances created within the library (for example when a matrix is read from a file using an MTXReader)
-> will almost always be owned by the instance. The user can release the arrays manually as discussed 
-> above if this is not desired.
+```{note}
+Format instances created within the library (for example when a matrix is read from a file using an MTXReader)
+will almost always be owned by the instance. The user can release the arrays manually as discussed 
+above if this is not desired.
+```
 
 ## Working with Graphs
 
-Graphs can be created using any SparseFormat as the connectivity information of the graph.
+Graphs can be created using any Format as the connectivity information of the graph.
 
 ```cpp
 auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
@@ -281,8 +283,8 @@ auto g = sparsebase::object::Graph<vertex_type, edge_type, value_type>(data);
 Alternatively we can create a graph by directly passing the reader.
 
 ```cpp
- sparsebase::object::Graph<vertex_type, edge_type, value_type> g;
- g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
+sparsebase::object::Graph<vertex_type, edge_type, value_type> g;
+g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
 As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
@@ -293,10 +295,11 @@ Sparse data formats can be reordered easily using the `ReorderBase` class.
 
 ```cpp
 sparsebase::context::CPUContext cpu_context;
-IDType* new_order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
+IDType* order = ReorderBase::Reorder<DegreeReorder>(format, {&cpu_context}, true);
 ```
 
-Multiple different reordering algorithms are supported including `DegreeReorder`, `RCMReorder` and `GrayReorder`.
+Multiple different reordering algorithms are supported including `DegreeReorder`, `RCMReorder` and `GrayReorder`
+
 
 Alternatively the user can directly call the underlying reordering classes.
 Below you can see an example of an RCM reordering of a graph using this method.
@@ -318,4 +321,15 @@ auto new_format = ReorderBase.Permute2D(order, format, {&cpu_context}, true);
 // Manual Method
 preprocess::PermuteOrderTwo<int, int, float> permute(order, order);
 auto new_format = permute.GetTransformation(format, {&cpu_context});
+```
+
+Each reordering algorithm supports a set of parameters which is represented by a struct named in 
+the `<Algorithm>Params` format. It is also accessible as a static member of each algorithm as `<Class>::ParamsType`.
+The user can override these parameters by creating an object of this struct and changing its member variables.
+This object can then be passed to the `Reorder` function.
+
+```cpp
+sparsebase::preprocess::DegreeReorderParams params(true);
+sparsebase::context::CPUContext cpu_context;
+IDType* order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
 ```

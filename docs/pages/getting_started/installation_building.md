@@ -15,7 +15,7 @@ We suggest using the most recent versions when possible.
 
 
 - Build tools:
-    - cmake (version 3.0 or above)
+    - cmake (version 3.12 or above) (with CUDA support enabled 3.18 or above)
     - GNU make (version 4.1 or above) or ninja (version 1.11 or above)
     
 
@@ -29,10 +29,10 @@ We suggest using the most recent versions when possible.
 
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=$CUDA ..
+cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=CUDA ..
 make
 ```
-Where `$CUDA` is `ON` if CUDA support is needed and `OFF` otherwise.
+Where `CUDA` is `ON` if CUDA support is needed and `OFF` otherwise.
 
 ```{warning}
 If the library is installed with cuda support, the user code must be compiled using `nvcc`.
@@ -64,10 +64,10 @@ Alternatively, you can edit the `CMakeCache.txt` file located in the build direc
 Additionally, the library has a header-only setting, in which none of the classes of the library will be explicitly instantiated at library-build time. Building the library to be header-only can be done as shown:
 ```
 mkdir build && cd build
-cmake -D_HEADER_ONLY=ON -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=${CUDA} ..
+cmake -D_HEADER_ONLY=ON -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=CUDA ..
 make
 ```
-Where `${CUDA}` is `ON` if CUDA support is needed and `OFF` otherwise.
+Where `CUDA` is `ON` if CUDA support is needed and `OFF` otherwise.
 
 ```{warning}
 If the library is installed with cuda support, the user code must be compiled using `nvcc`.
