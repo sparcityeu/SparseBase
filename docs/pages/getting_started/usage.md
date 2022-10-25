@@ -4,9 +4,11 @@ SparseBase can be easily added to your project either through CMake's `find_pack
 
 ## Adding SparseBase through CMake
 
-> In the commands below replace 0.1.5 with the version of SparseBase you installed.
+```{note}
+In the commands below replace 0.1.5 with the version of SparseBase you installed.
+```
 
-If you installed SparseBase to the default system directory, use the following the command in your `CMakeLists.txt` file to add the library to your project:
+If you installed SparseBase to the default system directory, use the following command in your `CMakeLists.txt` file to add the library to your project:
 ```cmake
 find_package(sparsebase 0.1.5 REQUIRED)
 ```
@@ -78,14 +80,52 @@ This can be useful to reduce compile times if the header only build is being use
 #include "sparsebase/preprocess/preprocess.h"
 ```
 
+## Aliasing
+
+SparseBase classes and namespaces are named in a rather verbose way. 
+This is done to keep things well-structured during development.
+However, users may find it difficult to work with. 
+In such cases the namespaces can be aliased using the C++11 `using` keyword.
+
+
+```cpp
+using sbfo = sparsebase::format;
+using sbio = sparsebase::utils::io;
+using sbco = sparsebase::utils::converter;
+using sbfe = spasebase::feature;
+using sbob = sparsebase::object;
+using sbpe = sparsebase::preprocess;
+using sbco = sparsebase::context;
+using sbut = sparsebase::utils;
+```
+
+## Template Types
+
+To be flexible, efficient and safe, SparseBase classes take most of the types they use as
+template parameters. However, users may find this difficult to work with.
+In such cases, the commonly used types can be combined in a `#define` statement for ease of use.
+
+```cpp
+// Definitions
+#define iif int,int,float
+#define iid int,int,double
+#define iii int,int,int
+
+// Usage
+CSR<iif> csr = ...;
+```
+
+
 ## Creating a Format Object
 
-Currently two sparse data formats are supported:
+Multiple sparse data formats are supported including:
 - COO (Coordinate List)
 - CSR (Compressed Sparse Row)
+- CSC (Compressed Sparse Column)
 
 In the code snippet below you can see the creation of a CSR type object 
 which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
+
 ```cpp
 unsigned int row_ptr[4] = {0, 2, 3, 4};
 unsigned int col[4] = {1, 2, 0, 0};
@@ -97,7 +137,7 @@ unsigned int col[4] = {1, 2, 0, 0};
 sparsebase::format::CSR<unsigned int, unsigned int, void> csr(3, 3, row_ptr, col, nullptr);
 ```
 
-In the code snippet below you can see the creation of a COO type object also contains value information.
+In the code snippet below you can see the creation of a COO type object which contains value information.
 
 ```cpp
 int row[6] = {0, 0, 1, 1, 2, 2};
@@ -105,38 +145,25 @@ int col[6] = {0, 1, 1, 2, 3, 3};
 int vals[6] = {10, 20, 30, 40, 50, 60};
 
 // Unlike the previous example we are storing integer type values here
-auto coo = new sparsebase::COO<int,int,int>(6, 6, 6, row, col, vals);
+auto coo = new sparsebase::format::COO<int,int,int>(6, 6, 6, row, col, vals);
 ```
 
-
-
-## Input
-
-Currently, we support two sparse data file formats:
-- Matrix Market Files (.mtx)
-- Edge List Files
-
-We can perform a read operation on these formats as shown below: 
-```cpp
-// Reading a mtx file into a COO format
-auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
-auto coo = reader->ReadCOO();
-
-// Reading an edge list file into a CSR format
-auto reader2 = new sparsebase::utils::io::EdgeListReader<vertex_type, edge_type, value_type>(file_name);
-auto csr = reader2->ReadCSR();
+```{note}
+SparseBase is designed with HPC users in mind, so the underlying arrays of the formats
+are always accessible through the various get_... functions.
 ```
+
 
 ## Casting Formats
 
-Many functions in the library return generic format pointers like ``FormatOrderTwo`` or ``FormatOrderOne`` to ensure flexibility. These pointers can easily be converted into concrete versions using the ``Convert<>()`` member function. 
+Many functions in the library return generic format pointers like ``FormatOrderTwo`` or ``FormatOrderOne`` to ensure flexibility. These pointers can easily be converted into concrete versions using the ``As<>()`` member function. 
 
 ```cpp
 // Consider the scenario where you obtained a generic pointer from a function
 sparsebase::format::FormatOrderTwo<int, int, int>* format = ...;
 
-// If the type of this pointer is known, then you can simply use the Convert function
-sparsebase::format::CSR<int,int,int>* csr = format->Convert<sparsebase::format::CSR>();
+// If the type of this pointer is known, then you can simply use the As function
+sparsebase::format::CSR<int,int,int>* csr = format->As<sparsebase::format::CSR>();
 
 ```
 
@@ -152,11 +179,16 @@ sparsebase::format::CSR<int,int,int>* csr = format->AsAbsolute<sparsebase::forma
 ```
 
 
+```{warning}
+Casting can only be successful if the provided type is a valid type for the given pointer.
+The As and AsAbsolute functions will never perform a conversion. They will only cast.
+```
+
+
 ## Converting Formats
 
-AsAbsolute explained in the previous section, readers will read to different formats.
+We can convert between different data formats using the `Convert<>()` function.
 
-However, we can convert the data into the format we desire using the ``Convert`` member funciton:
 ```cpp
 // Consider the scenario where you obtained a COO and want to convert it to a CSR
 auto coo = ...; 
@@ -172,7 +204,47 @@ auto csr = coo->Convert<sparsebase::format::CSR>(&cpu_context, true);
 
 ```
 
-> If the source and destination formats are the same the converter will simply do nothing.
+```{note}
+If the format object is already of the desired type, 
+the Convert function will not do anything besides type checking.
+```
+
+```{warning}
+Conversion is only allowed between formats of the same order.
+So you can not convert a FormatOrderOne to FormatOrderTwo.
+```
+
+## Input
+
+Currently, we support two sparse data file formats:
+- Matrix Market Files (.mtx)
+- Edge List Files
+
+Reading such files can easily be done using the `IOBase` class.
+
+```cpp
+auto coo = sparsebase::utils::io::IOBase::ReadMTXtoCOO<int,int,float>();
+auto csr = sparsebase::utils::io::IOBase::ReadEdgeListtoCSR<int,int,float>();
+```
+
+```{note}
+Alternatively the ReadPigoMTX... and ReadPigoEdgeList... functions can be used.
+These use the PIGO library to read the files in a multi-threaded fashion.
+However they may not support all the options of our default readers.
+```
+
+
+Users can also use the underlying reader classes directly if need be. 
+```cpp
+// Reading a mtx file into a COO format
+auto reader = new sparsebase::utils::io::MTXReader<int, int, float>(file_name);
+auto coo = reader->ReadCOO();
+
+// Reading an edge list file into a CSR format
+auto reader2 = new sparsebase::utils::io::EdgeListReader<int, int, float>(file_name);
+auto csr = reader2->ReadCSR();
+```
+
 
 ## Ownership
 
@@ -192,13 +264,15 @@ auto* vals = csr_owned->release_vals();
 auto* csr_not_owned = new sparsebase::format::CSR<int,int,int>(4, 4, row_ptr, col, vals, sparsebase::format::kNotOwned);
 ```
 
-> Format instances created within the library (for example when a matrix is read from a file using an MTXReader)
-> will almost always be owned by the instance. The user can release the arrays manually as discussed 
-> above if this is not desired.
+```{note}
+Format instances created within the library (for example when a matrix is read from a file using an MTXReader)
+will almost always be owned by the instance. The user can release the arrays manually as discussed 
+above if this is not desired.
+```
 
 ## Working with Graphs
 
-Graphs can be created using any SparseFormat as the connectivity information of the graph.
+Graphs can be created using any Format as the connectivity information of the graph.
 
 ```cpp
 auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
@@ -209,33 +283,49 @@ auto g = sparsebase::object::Graph<vertex_type, edge_type, value_type>(data);
 Alternatively we can create a graph by directly passing the reader.
 
 ```cpp
- sparsebase::object::Graph<vertex_type, edge_type, value_type> g;
- g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
+sparsebase::object::Graph<vertex_type, edge_type, value_type> g;
+g.read_connectivity_to_coo(sparsebase::MTXReader<vertex_type, edge_type, value_type>(file_name));
 ```
 
-AsAbsolute of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
+As of the current version of the library, graphs function as containers of sparse data. However, there are plans to expand this in future releases.
 
 ## Ordering
 
-Various orderings can be generated for a graph using the ``ReorderPreprocessType`` classes. 
-Currently these include ``RCMReoder`` and ``DegreeReorder``. There is also a ``GenericReorder`` class
-allowing the users to define their own custom orderings. For more details, please see the examples
-in the Github repository.
+Sparse data formats can be reordered easily using the `ReorderBase` class.
 
-Below you can see an example of an RCM reordering of a graph.
+
 ```cpp
-sparsebase::preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer(1, 4);
-sparsebase::format::Format<vertex_type, edge_type, value_type> * con = g.get_connectivity();
+sparsebase::preprocess::DegreeReorderParams params(true);
 sparsebase::context::CPUContext cpu_context;
-vertex_type * order = orderer.GetReorder(con, {&cpu_context});
+IDType* order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
 ```
 
-Orders are returned as arrays which describe the transformation that needs to take place for the graph to be reordered.
-So by default, reordering won't actually mutate the graph. If the user wishes to do so, they can use the `PermuteOrderTwo` class
-to mutate the graph.
+Multiple different reordering algorithms are supported including `DegreeReorder`, `RCMReorder` and `GrayReorder`.
+
+Each reordering algorithm supports a set of parameters which is represented by a struct named in 
+the `<Algorithm>Params` format. It is also accessible as a static member of each algorithm as `<Class>::ParamsType`.
+The user can override these parameters by creating an object of this struct and changing its member variables.
+This object can then be passed to the `Reorder` function as shown on the code snippet above.
+
+
+As an alternative to `ReorderBase`, the user can also directly call the underlying reordering classes.
+Below you can see an example of an RCM reordering of a graph using this method.
 
 ```cpp
-// use `order` to permute both rows and columns
-sparsebase::preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> permute(order, order);
-sparsebase::format::Format *result = permute.GetTransformation(con, {&cpu_context});
+sparsebase::preprocess::RCMReorder<int,int,float> orderer;
+sparsebase::context::CPUContext cpu_context;
+IDType * order = orderer.GetReorder(format, {&cpu_context});
+```
+
+In both cases the returned value is an array describing the reordering.
+So if a reordered format is desired, the reordering needs to be applied to the format.
+This can be done using `ReorderBase` or again manually as shown below.
+
+```cpp
+// Using ReorderBase
+auto new_format = ReorderBase.Permute2D(order, format, {&cpu_context}, true);
+
+// Manual Method
+preprocess::PermuteOrderTwo<int, int, float> permute(order, order);
+auto new_format = permute.GetTransformation(format, {&cpu_context});
 ```
