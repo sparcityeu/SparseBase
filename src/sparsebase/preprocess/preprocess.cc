@@ -11,7 +11,12 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <set>
+#include <map>
 
+#ifdef USE_RABBIT_ORDER
+#include "rabbit_order.hpp"
+#endif
 using namespace sparsebase::format;
 
 namespace sparsebase {
@@ -1548,9 +1553,250 @@ IDType *PartitionPreprocessType<IDType>::Partition(
 template <typename IDType>
 PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 
+#ifdef USE_RABBIT_ORDER
+
+template <typename IDType, typename NNZType, typename ValueType>
+RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      CalculateReorderCSR);
+  this->params_ =
+      std::unique_ptr<RabbitReorderParams>(new RabbitReorderParams);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder(RabbitReorderParams params): RabbitReorder(){}
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *RabbitReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
+    std::vector<format::Format *> formats, PreprocessParams *params) {
+  using rabbit_order::vint;
+  typedef std::vector<std::vector< std::pair<vint, float>  > > adjacency_list;
+
+  CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  IDType n = csr->get_dimensions()[0];
+  IDType *counts = new IDType[n]();
+  auto* idx = csr->get_row_ptr();
+  auto* adj = csr->get_col();
+
+  adjacency_list G(n);
+  for (size_t i = 0; i < n; i++) {
+    for (size_t j = idx[i]; j < idx[i + 1]; j++) {
+      vint source = i;
+      vint target = adj[j];
+      G[source].push_back(std::make_pair((vint)target,1.0f));
+    }
+  }
+  const auto g = rabbit_order::aggregate(std::move(G));
+  const auto p = rabbit_order::compute_perm(g);
+  IDType *ptr = new IDType[n];
+  std::copy(p.get(),p.get()+n, ptr);
+  return ptr;
+}
+
+#endif
+
+template <typename IDType, typename NNZType, typename ValueType>
+SlashburnReorder<IDType, NNZType, ValueType>::SlashburnReorder(SlashburnReorderParams) {
+  // this->map[{kCSRFormat}]= calculate_order_csr;
+  // this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      CalculateReorderCSR);
+  this->params_ =
+      std::unique_ptr<SlashburnReorderParams>(new SlashburnReorderParams);
+}
+
+template <typename T>
+static void dfs(size_t node, std::set<size_t> *visited, T &G) {
+  if (visited->find(node) == visited->end()) {
+    visited->insert(node);
+    for (size_t j : G[node])
+      dfs(j, visited, G);
+  }
+}
+template <typename T>
+static std::set<size_t> component(size_t node, std::set<size_t> *visited, T &G) {
+  if (visited == NULL)
+    visited = new std::set<size_t>();
+  dfs(node, visited, G);
+  return *visited;
+}
+template <typename T>
+static bool connected(T &G) {
+  if (G.size() == 0)
+    return false;
+  size_t first = G.begin()->first;
+  return component(first, NULL, G).size() == G.size();
+}
+template <typename T> static std::set<std::set<size_t>> components(T &G) {
+  //  prsize_tf("COMPONENT\n");
+
+  std::set<std::set<size_t>> ret;
+
+  //  prsize_tf("COMPONENT\n");
+  std::set<size_t> key;
+  for (auto &i : G)
+    key.insert(i.first);
+  //  prsize_tf("COMPONENT 2\n");
+  while (key.size()) {
+    //  prsize_tf("COMPONENT 3\n");
+    std::set<size_t> cc = component(*key.begin(), NULL, G);
+    //    prsize_tf("COMPONENT 4\n");
+    for (size_t ccc : cc) {
+      key.erase(ccc);
+      //    prsize_tf("COMPONENT 5\n");
+      ret.insert(cc);
+    }
+    //    prsize_tf("COMPONENT 6\n");
+  }
+
+  return ret;
+}
+template <typename T, typename T2>
+static void slashburn(T &G, T2* order ) {
+  size_t iteration = 0;
+  size_t removedHubs = 0;
+
+  std::vector<size_t> hubs;
+  std::map<size_t, std::set<size_t>> replications;
+
+  // printf("OK\n");
+  std::vector<std::set<size_t>> coms;
+
+  // printf("OK\n");
+  std::vector<size_t> degOrd;
+  for (size_t i = 0; i < G.size(); i++)
+    degOrd.push_back(i);
+  sort(degOrd.begin(), degOrd.end(),
+       [&](size_t x, size_t y) { return G[x].size() < G[y].size(); });
+
+  // printf("OK\n");
+  bool lastCommunity = false;
+
+  while (!degOrd.empty()) {
+    iteration++;
+    // printf("IT = %d || %zu\n", iteration, degOrd.size());
+
+    while (connected(G)) {
+      if (degOrd.size() <= 2) {
+        lastCommunity = true;
+        break;
+      }
+
+      size_t maxN = degOrd[degOrd.size() - 1];
+      degOrd.pop_back();
+
+      removedHubs++;
+      hubs.push_back(maxN);
+
+      replications[maxN] = std::set<size_t>();
+
+      for (size_t j : G[maxN]) {
+        G[j].erase(maxN);
+        replications[maxN].insert(j);
+      }
+
+      G.erase(maxN);
+
+      sort(degOrd.begin(), degOrd.end(),
+           [&](size_t x, size_t y) { return G[x].size() < G[y].size(); });
+    }
+    //    prsize_tf("DISCO\n");
+    std::set<std::set<size_t>> ccs = components(G);
+    //    prsize_tf("OK\n");
+    size_t maxSize = 0;
+    //    prsize_tf("OK\n");
+    std::set<size_t> maxc;
+    //    prsize_tf("OK\n");
+    for (auto cc : ccs) {
+      if (cc.size() > maxSize) {
+        maxSize = cc.size();
+        maxc = cc;
+      }
+    }
+    //    prsize_tf("OK\n");
+    ccs.erase(maxc);
+
+    //      prsize_tf("CCS OK\n");
+    if (lastCommunity) {
+      maxc.insert(hubs.begin(), hubs.end());
+      coms.push_back(maxc);
+    }
+
+    for (auto cc : ccs) {
+      std::set<size_t> icc = std::set<size_t>(cc.begin(), cc.end());
+
+      for (size_t i : cc) {
+        if (replications.find(i) != replications.end()) {
+          icc.insert(replications[i].begin(), replications[i].end());
+        }
+      }
+      coms.push_back(icc);
+    }
+
+    for (size_t i : degOrd)
+      if (maxc.find(i) == maxc.end())
+        G.erase(i);
+
+    for (auto & g : G)
+      for (size_t j : maxc)
+        G[g.first].erase(j);
+
+    std::vector<size_t> nDegOrd;
+    for (size_t i : degOrd)
+      if (maxc.find(i) == maxc.end())
+        nDegOrd.push_back(i);
+
+    degOrd = nDegOrd;
+
+    sort(degOrd.begin(), degOrd.end(),
+         [&](size_t x, size_t y) { return G[x].size() < G[y].size(); });
+    for(size_t i=0; i<degOrd.size(); i++)
+      order[i] = degOrd[i];
+  }
+
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType * SlashburnReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
+    std::vector<format::Format *> formats, PreprocessParams *params) {
+
+  CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  IDType N = csr->get_dimensions()[0];
+  IDType *counts = new IDType[N]();
+  auto* idx = csr->get_row_ptr();
+  auto* adj = csr->get_col();
+
+  std::map<size_t,std::set<size_t>> G;
+  for (size_t i = 0; i < N; i++)
+    G[i] = std::set<size_t>();
+  for (size_t i = 0; i < N; i++) {
+    for (size_t j = idx[i]; j < idx[i + 1]; j++) {
+      size_t a = i;
+      size_t b = adj[j];
+      G[a].insert(b);
+      G[b].insert(a);
+    }
+  }
+  IDType* order = new IDType[N];
+  slashburn(G, order);
+  return order;
+
+
+
+
+  return 0;
+}
 #ifdef USE_METIS
 
-#include "sparsebase/external/metis/metis.h"
+#include <metis.h>
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
