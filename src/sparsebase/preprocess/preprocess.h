@@ -14,6 +14,8 @@
 #include "sparsebase/object/object.h"
 #include "sparsebase/utils/converter/converter.h"
 
+#include "metis.h"
+
 #include <any>
 #include <iostream>
 #include <memory>
@@ -855,6 +857,41 @@ public:
                      std::vector<context::Context *> contexts, bool convert_input);
   virtual ~PartitionPreprocessType();
 };
+
+struct SlashburnReorderParams : PreprocessParams {};
+template <typename IDType, typename NNZType, typename ValueType>
+class SlashburnReorder : public ReorderPreprocessType<IDType> {
+public:
+  SlashburnReorder(SlashburnReorderParams);
+  typedef SlashburnReorderParams ParamsType;
+
+protected:
+  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
+                                     PreprocessParams *params);
+};
+
+#ifdef USE_RABBIT_ORDER
+
+#define BOOST_ATOMIC_DETAIL_NO_CXX11_IS_TRIVIALLY_COPYABLE
+#define BOOST_ATOMIC_DETAIL_NO_HAS_UNIQUE_OBJECT_REPRESENTATIONS
+#define BOOST_ATOMIC_NO_CLEAR_PADDING
+
+struct RabbitReorderParams : PreprocessParams {
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class RabbitReorder : public ReorderPreprocessType<IDType> {
+public:
+  typedef RabbitReorderParams ParamsType;
+  RabbitReorder();
+  explicit RabbitReorder(RabbitReorderParams);
+
+protected:
+  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
+                                     PreprocessParams *params);
+};
+
+#endif
 
 
 #ifdef USE_METIS

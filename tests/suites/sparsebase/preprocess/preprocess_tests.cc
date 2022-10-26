@@ -479,6 +479,20 @@ TEST(ReorderBase, RCMReorder) {
   check_reorder(order, n);
 }
 
+#ifdef USE_RABBIT_ORDER
+TEST(ReorderBase, RabbitReorder) {
+  EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<RabbitReorder>({}, &global_csr, {&cpu_context}, true)));
+  auto order = sparsebase::preprocess::ReorderBase::Reorder<RabbitReorder>({}, &global_csr, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+#endif
+
+//TEST(ReorderBase, SlashburnReorder) {
+//  EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<SlashburnReorder>({}, &global_csr, //{&cpu_context}, true)));
+//  auto order = sparsebase::preprocess::ReorderBase::Reorder<SlashburnReorder>({}, &global_csr, {&cpu_context}, true);
+//  check_reorder(order, n);
+//}
+
 TEST(ReorderBase, DegreeReorder) {
   EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<DegreeReorder>({true}, &global_csr, {&cpu_context}, true)));
   auto order = sparsebase::preprocess::ReorderBase::Reorder<DegreeReorder>({false}, &global_csr, {&cpu_context}, true);
