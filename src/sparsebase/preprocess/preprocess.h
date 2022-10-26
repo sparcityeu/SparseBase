@@ -14,8 +14,6 @@
 #include "sparsebase/object/object.h"
 #include "sparsebase/utils/converter/converter.h"
 
-#include "metis.h"
-
 #include <any>
 #include <iostream>
 #include <memory>
