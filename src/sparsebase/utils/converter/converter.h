@@ -60,7 +60,7 @@ std::function<bool(context::Context *, context::Context *)>
     ConversionCondition;
 
 //! A single conversion step composed of a conversion function and a context to use for the function
-typedef std::tuple<ConversionFunction, context::Context *> ConversionStep;
+typedef std::tuple<ConversionFunction, context::Context *, utils::CostType> ConversionStep;
 
 //! A chain of conversion functions-context pairs to be applied sequentially to a single formats
 typedef
@@ -297,26 +297,25 @@ public:
    * and last format in the chain.
    * @param cs ConversionSchema containing the an optional chain of conversion functions for every format in `packed_sfs`
    * @param packed_sfs formats to convert
-   * @param is_move_conversion whether conversion is move conversion
+   * @param clear_intermediate delete intermediate formats between the starting and destination one.
    * @return a vector of size `packed_sfs.size()`. Each element is a vector of size >= 1 containing the starting format
    * in the conversion chain, every intermediate format, and the final format. The first format is the original and the last
    * is the output format in each chain.
    */
   static std::vector<std::vector<format::Format *>>
   ApplyConversionSchema(const ConversionSchema & cs,
-                        const std::vector<format::Format *> &packed_sfs,
-                        bool is_move_conversion = false);
+                        const std::vector<format::Format *> &packed_sfs, bool clear_intermediate);
 
    //! Takes a conversion chain and a format and applies that chain on the format
    //! to produce some output format.
    /*!
     * \param chain a conversion chain containing conversion functions and contexts to use for each function.
-    * \param is_move_conversion whether it's a move conversion or not.
+    * \param clear_intermediate delete intermediate formats between the starting and destination one.
     * \return a vector of format with the first being the original format, the last being the target format,
     * and the rest being intermediate formats. If a conversion is empty or false, only returns the original format.
     */
   static std::vector<format::Format*> ApplyConversionChain(const ConversionChain& chain,
-                                              format::Format*, bool is_move_conversion);
+                                              format::Format*, bool clear_intermediate);
 
   virtual std::type_index get_converter_type() = 0;
   virtual Converter *Clone() const = 0;

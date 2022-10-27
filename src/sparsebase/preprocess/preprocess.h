@@ -308,7 +308,7 @@ protected:
   template <typename F, typename... SF>
   std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
   CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
-                std::vector<context::Context *> contexts, bool convert_input, F sf, SF... sfs);
+                std::vector<context::Context *> contexts, bool convert_input, bool clear_intermediate, F format, SF... formats);
 };
 
 template <typename ReturnType>
@@ -409,7 +409,7 @@ public:
   virtual ~ReorderPreprocessType();
 };
 
-//! Parameters used in DegreeReordering, namely whether or not degrees are ordered in ascending order.
+//! Parameters used in DegreeReorder, namely whether or not degrees are ordered in ascending order.
 struct DegreeReorderParams : PreprocessParams {
   bool ascending;
   DegreeReorderParams(bool ascending) : ascending(ascending) {}
@@ -1561,7 +1561,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::CachedExecute(PreprocessParams *params,
                                utils::converter::Converter *sc,
                                std::vector<context::Context *>
-                               contexts, bool convert_input,
+                               contexts, bool convert_input, bool clear_intermediate,
                                F format, SF... formats) {
   ConversionMap map = this->map_to_function_;
   // pack the Formats into a vector
@@ -1587,7 +1587,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   }
   std::vector<std::vector<format::Format *>> all_formats =
       sparsebase::utils::converter::Converter::ApplyConversionSchema(
-          cs, packed_formats);
+          cs, packed_formats, clear_intermediate);
   // The formats that will be used in the preprocessing implementation function calls
   std::vector<format::Format *> final_formats;
   std::transform(all_formats.begin(), all_formats.end(),
@@ -1619,7 +1619,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
                          std::vector<context::Context *>
                          contexts, bool convert_input,
                          F sf, SF... sfs) {
-  auto cached_output = CachedExecute(params, sc, contexts, convert_input, sf, sfs...);
+  auto cached_output = CachedExecute(params, sc, contexts, convert_input, true, sf, sfs...);
   auto converted_format_chains = std::get<0>(cached_output);
   auto return_object = std::get<1>(cached_output);
   for (const auto& converted_format_chain : converted_format_chains) {
