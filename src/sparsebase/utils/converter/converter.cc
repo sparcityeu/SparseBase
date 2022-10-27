@@ -433,7 +433,7 @@ std::vector<Format *>Converter::ConvertCached(Format *source, std::type_index to
                                              to_type, to_contexts, is_move_conversion);
   if(!chain)
     throw ConversionException(source->get_format_name(), utils::demangle(to_type));
-  auto outputs = ApplyConversionChain(chain, source, is_move_conversion);
+  auto outputs = ApplyConversionChain(chain, source, false);
   return std::vector<Format*>(outputs.begin()+1, outputs.end());
 }
 
@@ -471,7 +471,7 @@ std::optional<std::tuple<Converter::CostType, context::Context*>> Converter::Can
 std::vector<ConversionStep> Converter::ConversionBFS(std::type_index from_type, context::Context* from_context, std::type_index to_type, const std::vector<context::Context*>& to_contexts, ConversionMap* map){
   std::deque<std::type_index> frontier{from_type};
   std::unordered_map<std::type_index, std::pair<std::type_index, ConversionStep>> seen;
-  seen.emplace(from_type, std::make_pair(from_type, std::make_tuple(nullptr, nullptr)));
+  seen.emplace(from_type, std::make_pair(from_type, std::make_tuple(nullptr, nullptr, 0)));
   int level = 1;
   size_t level_size = 1;
   while (!frontier.empty()){
@@ -485,7 +485,7 @@ std::vector<ConversionStep> Converter::ConversionBFS(std::type_index from_type, 
             for (auto to_context : to_contexts) { // check if, with the given contexts, this edge exists
               if (std::get<0>(curr_to_neighbor_functions)(from_context,
                                                           to_context)) {
-                seen.emplace(neighbor.first, std::make_pair(curr, std::make_tuple(std::get<1>(curr_to_neighbor_functions), to_context)));
+                seen.emplace(neighbor.first, std::make_pair(curr, std::make_tuple(std::get<1>(curr_to_neighbor_functions), to_context, 1)));
                 frontier.emplace_back(neighbor.first);
                 if (neighbor.first == to_type) {
                   std::vector<ConversionStep> output(level);
@@ -560,14 +560,19 @@ bool Converter::CanConvert(std::type_index from_type,
   }
 
 std::vector<format::Format*> Converter::ApplyConversionChain(const ConversionChain& chain,
-                                            format::Format* input, bool is_move_conversion){
+                                            format::Format* input, bool clear_intermediate){
   std::vector<Format*> format_chain{input};
   if (chain) {
     auto conversion_chain = std::get<0>(*chain);
     Format * current_format = input;
-    for (const auto& conversion_step : conversion_chain ){
-      format_chain.push_back(std::get<0>(conversion_step)(current_format, std::get<1>(conversion_step)));
-      current_format = format_chain.back();
+    for (int i =0; i < conversion_chain.size(); i++){
+      const auto& conversion_step = conversion_chain[i];
+      auto* res = std::get<0>(conversion_step)(current_format, std::get<1>(conversion_step));
+      if (!clear_intermediate || i == conversion_chain.size()-1)
+        format_chain.push_back(res);
+      else if (i!=0)
+        delete current_format;
+      current_format = res;
     }
   }
   return format_chain;
@@ -575,14 +580,13 @@ std::vector<format::Format*> Converter::ApplyConversionChain(const ConversionCha
 
 std::vector<std::vector<Format *>>
 Converter::ApplyConversionSchema(const ConversionSchema & cs,
-                                   const std::vector<Format *> &packed_sfs,
-                                 bool is_move_conversion) {
+                                   const std::vector<Format *> &packed_sfs, bool clear_intermediate) {
   // Each element in ret is a chain of formats resulting from
   // converting one of the packed_sfs
   std::vector<std::vector<Format *>> ret;
   for (int i = 0; i < cs.size(); i++) {
     const auto& conversion = cs[i];
-    std::vector<format::Format*> format_chain = ApplyConversionChain(conversion, packed_sfs[i], is_move_conversion);
+    std::vector<format::Format*> format_chain = ApplyConversionChain(conversion, packed_sfs[i], clear_intermediate);
     ret.push_back(format_chain);
   }
   return ret;

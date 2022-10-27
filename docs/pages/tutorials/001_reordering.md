@@ -37,7 +37,7 @@ To get a feel for the graph you just read, print some of its statistics:
 
 ```c++
 std::cout << "Original graph:" << std::endl; 
-// get a array representing the dimensions of the matrix represented by `csr`, 
+// get an array representing the dimensions of the matrix represented by `csr`, 
 // i.e, the adjacency matrix of the graph
 std::cout << "Number of vertices: " << csr->get_dimensions()[0] << std::endl;
 // Number of non-zeros in the matrix represented by `csr`

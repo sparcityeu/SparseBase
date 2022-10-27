@@ -1264,10 +1264,11 @@ TEST(GraphFeatureBase, DegreeDistributionCached){
 }
 class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
 public:
-  std::tuple<std::vector<std::vector<format::Format*>>, int> GetCached(format::Format* f1, format::Format* f2, format::Format* f3, std::vector<context::Context*> contexts, bool convert_input){
+  std::tuple<std::vector<std::vector<format::Format*>>, int> GetCached(format::Format* f1, format::Format* f2, format::Format* f3, std::vector<context::Context*> contexts, bool convert_input, bool clear_intermediate){
     auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
+    c->ClearConversionFunctions(format::CSR<int, int, int>::get_format_id_static(), format::CSC<int, int, int>::get_format_id_static(), false);
     auto p = new PreprocessParams;
-    auto res = this->CachedExecute(p, c, std::move(contexts), convert_input, f1, f2, f3);
+    auto res = this->CachedExecute(p, c, std::move(contexts), convert_input, clear_intermediate, f1, f2, f3);
     delete c;
 
     return res;
@@ -1276,6 +1277,9 @@ public:
     this->RegisterFunction({format::CSR<int, int, int>::get_format_id_static(),
                             format::CSR<int, int, int>::get_format_id_static(),
                             format::CSR<int, int, int>::get_format_id_static()}, CSR_CSR_CSR);
+    this->RegisterFunction({format::CSR<int, int, int>::get_format_id_static(),
+                            format::CSC<int, int, int>::get_format_id_static(),
+                            format::CSC<int, int, int>::get_format_id_static()}, CSR_CSC_CSC);
     //this->RegisterFunction({format::CSR<int, int, int>::get_format_id_static(),
     //                        format::COO<int, int, int>::get_format_id_static(),
     //                        format::CSR<int, int, int>::get_format_id_static()}, CSR_COO_CSR);
@@ -1288,6 +1292,9 @@ public:
   }
 private:
   static int CSR_CSR_CSR(std::vector<format::Format*>, PreprocessParams*){
+    return 1;
+  }
+  static int CSR_CSC_CSC(std::vector<format::Format*>, PreprocessParams*){
     return 1;
   }
   //static int CSR_COO_CSR(std::vector<format::Format*>, PreprocessParams*){
@@ -1307,8 +1314,9 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey){
   context::CPUContext cpu;
   format::CSR<TYPE>* csr = &global_csr;
   format::COO<TYPE>* coo = &global_coo;
+  auto* csc = global_coo.Convert<format::CSC>();
   // No conversions needed on all three
-  auto output = x.GetCached(csr, csr, csr, {&cpu}, true);
+  auto output = x.GetCached(csr, csr, csr, {&cpu}, true, false);
   auto intermediate = std::get<0>(output);
   EXPECT_EQ(std::get<1>(output), 1);
   EXPECT_EQ(intermediate.size(), 3);
@@ -1316,7 +1324,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey){
   EXPECT_EQ(intermediate[1].size(), 0);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for first only
-  output = x.GetCached(coo, csr, csr, {&cpu}, true);
+  output = x.GetCached(coo, csr, csr, {&cpu}, true, false);
   intermediate = std::get<0>(output);
   EXPECT_EQ(std::get<1>(output), 1);
   EXPECT_EQ(intermediate.size(), 3);
@@ -1325,7 +1333,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey){
   EXPECT_EQ(intermediate[1].size(), 0);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for second only
-  output = x.GetCached(csr, coo, csr, {&cpu}, true);
+  output = x.GetCached(csr, coo, csr, {&cpu}, true, false);
   intermediate = std::get<0>(output);
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
@@ -1333,14 +1341,77 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey){
   EXPECT_EQ((intermediate[1][0]->Is<format::CSR<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for second and third
-  output = x.GetCached(csr, coo, coo, {&cpu}, true);
+  output = x.GetCached(csr, coo, coo, {&cpu}, true, false);
+  intermediate = std::get<0>(output);
+  EXPECT_EQ(intermediate.size(), 3);
+  EXPECT_EQ(intermediate[0].size(), 0);
+  EXPECT_EQ(intermediate[1].size(), 1);
+  EXPECT_EQ((intermediate[1][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ(intermediate[2].size(), 1);
+  EXPECT_EQ((intermediate[2][0]->Is<format::CSC<TYPE>>()), true);
+  // Conversion for second two-step
+  output = x.GetCached(csr, csr, csc, {&cpu}, true, false);
+  intermediate = std::get<0>(output);
+  EXPECT_EQ(intermediate.size(), 3);
+  EXPECT_EQ(intermediate[0].size(), 0);
+  ASSERT_EQ(intermediate[1].size(), 2);
+  EXPECT_EQ((intermediate[1][0]->Is<format::COO<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][1]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ(intermediate[2].size(), 0);
+  delete csc;
+#undef TYPE
+}
+
+TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate){
+#define TYPE int, int, int
+  MultiFormatKeyPreprocess x;
+  context::CPUContext cpu;
+  format::CSR<TYPE>* csr = &global_csr;
+  format::COO<TYPE>* coo = &global_coo;
+  auto* csc = global_coo.Convert<format::CSC>();
+  // No conversions needed on all three
+  auto output = x.GetCached(csr, csr, csr, {&cpu}, true, true);
+  auto intermediate = std::get<0>(output);
+  EXPECT_EQ(std::get<1>(output), 1);
+  EXPECT_EQ(intermediate.size(), 3);
+  EXPECT_EQ(intermediate[0].size(), 0);
+  EXPECT_EQ(intermediate[1].size(), 0);
+  EXPECT_EQ(intermediate[2].size(), 0);
+  // Conversion for first only
+  output = x.GetCached(coo, csr, csr, {&cpu}, true, true);
+  intermediate = std::get<0>(output);
+  EXPECT_EQ(std::get<1>(output), 1);
+  EXPECT_EQ(intermediate.size(), 3);
+  EXPECT_EQ(intermediate[0].size(), 1);
+  EXPECT_EQ((intermediate[0][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ(intermediate[1].size(), 0);
+  EXPECT_EQ(intermediate[2].size(), 0);
+  // Conversion for second only
+  output = x.GetCached(csr, coo, csr, {&cpu}, true, true);
   intermediate = std::get<0>(output);
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   EXPECT_EQ(intermediate[1].size(), 1);
   EXPECT_EQ((intermediate[1][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ(intermediate[2].size(), 0);
+  // Conversion for second and third
+  output = x.GetCached(csr, coo, coo, {&cpu}, true, true);
+  intermediate = std::get<0>(output);
+  EXPECT_EQ(intermediate.size(), 3);
+  EXPECT_EQ(intermediate[0].size(), 0);
+  EXPECT_EQ(intermediate[1].size(), 1);
+  EXPECT_EQ((intermediate[1][0]->Is<format::CSC<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 1);
-  EXPECT_EQ((intermediate[2][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((intermediate[2][0]->Is<format::CSC<TYPE>>()), true);
+  // Conversion for second two-step
+  output = x.GetCached(csr, csr, csc, {&cpu}, true, true);
+  intermediate = std::get<0>(output);
+  EXPECT_EQ(intermediate.size(), 3);
+  EXPECT_EQ(intermediate[0].size(), 0);
+  ASSERT_EQ(intermediate[1].size(), 1);
+  EXPECT_EQ((intermediate[1][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ(intermediate[2].size(), 0);
 
+  delete csc;
 #undef TYPE
 }

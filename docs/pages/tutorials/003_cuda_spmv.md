@@ -185,12 +185,14 @@ std::cout << "SpMV with Gray reordering takes: " << total_time.count() << " seco
 Now, let's try Reverse Cuthill McKee (RCM) reordering but this time, take advantage of the function matching capability in SparseBase.
 
 ```c++
-// We can pass the CUDACSR and the function will automatically convert it to CSR for reordering
+// We can pass the CUDACSR and the function will automatically convert it to CSR (i.e. move it to CPU) for reordering
 id_type* rcm_reorder = ReorderBase::Reorder<RCMReorder>({}, cuda_csr, {&cpu}, true);
 ```
 Every preprocessing algorithm in the library (reordering, partitioning, feature extraction, etc.) can be implemented for many format types. In this case, `RCMReorder`is only implemented for the `CSR` type. However, when we set the `convert_input` parameter (last parameter) to `true` in the call, this will allow function matching to take place. 
 
-Function matching takes the input formats to a preprocessing and the contexts the user passes to the function call, and, if the input format can't be used directly for the preprocessing (i.e., no function exists for the input's format type), it attempts to convert the input (using the passed contexts) to a format for which an implementation exists in the preprocessing. 
+Function matching takes the input formats to a preprocessing and the contexts the user passes to the function call, and, if the input format can't be used directly for the preprocessing (i.e., no function exists for the input's format type), it attempts to convert the input (using the passed contexts) to a format for which an implementation exists in the preprocessing. When the conversion context is different from input format's context, that entails copying data to the a different context.
+
+In this case, the `CUDACSR` input cannot be reordered directly, so it is converted to a `CSR` (copied to CPU), and then that `CSR` object is used for reordering.
 
 The procedure for `RCMReorder` is demonstrated in the following figure.
 ![Matching CUDACSR to CSR in RCM reordering](res/rcm_reorder_cudacsr.png)

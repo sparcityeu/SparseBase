@@ -924,7 +924,7 @@ EXPECT_EQ((v2->Is<format::COO<TYPE>>()), true); \
 EXPECT_EQ((v3->Is<format::CSC<TYPE>>()), true);
 
 TEST(ApplyConversionSchema, All){
-#define ConversionPairVector std::vector<std::tuple<ConversionFunction, context::Context*>>
+#define ConversionPairVector std::vector<std::tuple<ConversionFunction, context::Context*, utils::CostType>>
 #define TYPE int, int, int
   utils::converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
@@ -938,7 +938,7 @@ TEST(ApplyConversionSchema, All){
   // don't convert anything
   schema.clear();
   schema.insert(schema.end(), {{}, {}, {}});
-  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, false);
   EXPECT_EQ(output.size(), 3);
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
@@ -947,8 +947,8 @@ TEST(ApplyConversionSchema, All){
   // Convert first once
   schema.clear();
   schema.insert(schema.end(),
-                {std::make_tuple(ConversionPairVector{std::make_tuple(returnCoo, &cpu)}, 1), {}, {}});
-  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc});
+                {std::make_tuple(ConversionPairVector{std::make_tuple(returnCoo, &cpu, 1)}, 1), {}, {}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, false);
   EXPECT_EQ(output.size(), 3);
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 2);
@@ -959,9 +959,9 @@ TEST(ApplyConversionSchema, All){
   schema.clear();
   schema.insert(schema.end(),
                 {{},
-                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu)}, 1)},
-                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu)}, 1)}});
-  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc});
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1)}, 1)},
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1)}, 1)}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, false);
   EXPECT_EQ(output.size(), 3);
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
@@ -975,9 +975,9 @@ TEST(ApplyConversionSchema, All){
   schema.clear();
   schema.insert(schema.end(),
                 {{},
-                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu), std::make_tuple(returnCsc, &cpu)}, 1)},
-                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu)}, 1)}});
-  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc});
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1), std::make_tuple(returnCsc, &cpu, 1)}, 1)},
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1)}, 1)}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, false);
   EXPECT_EQ(output.size(), 3);
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
@@ -986,6 +986,74 @@ TEST(ApplyConversionSchema, All){
   delete output[1][1];
   EXPECT_EQ((output[1][2]->Is<format::CSC<TYPE>>()), true);
   delete output[1][2];
+  EXPECT_EQ(output[2].size(), 2);
+  EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
+  delete output[2][1];
+#undef ConversionPair
+#undef TYPE
+}
+
+TEST(ApplyConversionSchema, ClearIntermediate){
+#define ConversionPairVector std::vector<std::tuple<ConversionFunction, context::Context*, utils::CostType>>
+#define TYPE int, int, int
+  utils::converter::ConversionSchema schema;
+  std::vector<std::vector<format::Format*>> output;
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  sparsebase::format::COO<int, int, int> coo(
+      n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
+  sparsebase::format::CSC<int, int, int> csc(
+      n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
+  context::CPUContext cpu;
+  // don't convert anything
+  schema.clear();
+  schema.insert(schema.end(), {{}, {}, {}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, true);
+  EXPECT_EQ(output.size(), 3);
+  CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
+  EXPECT_EQ(output[0].size(), 1);
+  EXPECT_EQ(output[1].size(), 1);
+  EXPECT_EQ(output[1].size(), 1);
+  // Convert first once
+  schema.clear();
+  schema.insert(schema.end(),
+                {std::make_tuple(ConversionPairVector{std::make_tuple(returnCoo, &cpu, 1)}, 1), {}, {}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, true);
+  EXPECT_EQ(output.size(), 3);
+  CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
+  EXPECT_EQ(output[0].size(), 2);
+  EXPECT_EQ((output[0][1]->Is<format::COO<TYPE>>()), true);
+  EXPECT_EQ(output[1].size(), 1);
+  EXPECT_EQ(output[2].size(), 1);
+  // Convert second and third once
+  schema.clear();
+  schema.insert(schema.end(),
+                {{},
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1)}, 1)},
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1)}, 1)}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, true);
+  EXPECT_EQ(output.size(), 3);
+  CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
+  EXPECT_EQ(output[0].size(), 1);
+  EXPECT_EQ(output[1].size(), 2);
+  EXPECT_EQ((output[1][1]->Is<format::CSR<TYPE>>()), true);
+  delete output[1][1];
+  EXPECT_EQ(output[2].size(), 2);
+  EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
+  delete output[2][1];
+  // Convert second twice and third once
+  schema.clear();
+  schema.insert(schema.end(),
+                {{},
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1), std::make_tuple(returnCsc, &cpu, 1)}, 1)},
+                 {std::make_tuple(ConversionPairVector{std::make_tuple(returnCsr, &cpu, 1)}, 1)}});
+  output = Converter::ApplyConversionSchema(schema, {&csr, &coo, &csc}, true);
+  EXPECT_EQ(output.size(), 3);
+  CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
+  EXPECT_EQ(output[0].size(), 1);
+  EXPECT_EQ(output[1].size(), 2);
+  EXPECT_EQ((output[1][1]->Is<format::CSC<TYPE>>()), true);
+  delete output[1][1];
   EXPECT_EQ(output[2].size(), 2);
   EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
   delete output[2][1];

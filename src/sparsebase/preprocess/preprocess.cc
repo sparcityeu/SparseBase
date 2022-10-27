@@ -242,7 +242,7 @@ std::tuple<std::vector<std::vector<format::Format *>>, int>
 GenericPreprocessType<ReturnType>::GetOutputCached(
     format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, false, format);
 }
 template <typename IDType>
 IDType *ReorderPreprocessType<IDType>::GetReorder(
@@ -263,7 +263,7 @@ std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
     format::Format *format, std::vector<context::Context *> contexts,
     bool convert_input) {
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input, false,
                              format);
 }
 
@@ -272,7 +272,7 @@ std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
     format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, false, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -559,7 +559,7 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::
                             std::vector<context::Context *> contexts,
                             bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input, false,
                              format);
 }
 
@@ -570,7 +570,7 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::
                             std::vector<context::Context *> contexts,
                             bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
-  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, false, format);
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
@@ -762,7 +762,7 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
   // std::get<0>(func_formats); std::vector<SparseFormat<IDType, NNZType,
   // ValueType> *> sfs = std::get<1>(func_formats);
   DegreeDistributionParams params;
-  return this->CachedExecute(&params, (this->sc_.get()), contexts, convert_input,
+  return this->CachedExecute(&params, (this->sc_.get()), contexts, convert_input, false,
                              format); // func(sfs, this->params_.get());
 }
 template <typename IDType, typename NNZType, typename ValueType,
@@ -894,7 +894,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
     Format *format, std::vector<context::Context *> c, bool convert_input) {
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, false, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
