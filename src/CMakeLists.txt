@@ -252,7 +252,7 @@ install(FILES ${IO_FILES}
 install(FILES ${CONVERTER_FILES}
   DESTINATION include/sparsebase/utils/converter/)
 install(FILES ${UTILS_FILES}
-  DESTINATION include/sparsebase/utils/)
+        DESTINATION include/sparsebase/utils/)
 
 if(USE_PIGO)
   install(FILES sparsebase/external/pigo/pigo.hpp

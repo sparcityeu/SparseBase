@@ -2,22 +2,20 @@
 #include "sparsebase/utils/utils.h"
 #include "sparsebase/utils/converter/converter.h"
 #include <iostream>
+#include <deque>
 #include <set>
+#include <unordered_set>
+#include <algorithm>
 
 using namespace sparsebase::format;
 
 namespace sparsebase::utils::converter {
 
-std::unordered_map<
-    std::type_index,
-    std::unordered_map<std::type_index,
-                       std::vector<std::tuple<
-                           EdgeConditional, ConditionalConversionFunction>>>> *
-Converter::get_conversion_map(bool is_move_conversion) {
+ConversionMap * Converter::get_conversion_map(bool is_move_conversion) {
   if (is_move_conversion)
-    return &conditional_move_map_;
+    return &move_conversion_map_;
   else
-    return &conditional_map_;
+    return &copy_conversion_map_;
 }
 
 
@@ -248,23 +246,26 @@ Converter *ConverterOrderOne<ValueType>::Clone() const {
 }
 
 template <typename ValueType> void ConverterOrderOne<ValueType>::Reset() {
+  this->ResetConverterOrderOne();
+}
+template <typename ValueType> void ConverterOrderOne<ValueType>::ResetConverterOrderOne() {
 #ifdef USE_CUDA
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       Array<ValueType>::get_format_id_static(),
       format::cuda::CUDAArray<ValueType>::get_format_id_static(),
       converter::cuda::ArrayCUDAArrayConditionalFunction<ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::cuda::CUDAContext::get_context_type(); });
+  this->RegisterConversionFunction(
       format::cuda::CUDAArray<ValueType>::get_format_id_static(),
       Array<ValueType>::get_format_id_static(),
       converter::cuda::CUDAArrayArrayConditionalFunction<ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
+      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
 #endif
 }
 
 template <typename ValueType>
 ConverterOrderOne<ValueType>::ConverterOrderOne() {
-  this->Reset();
+  this->ResetConverterOrderOne();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -274,80 +275,110 @@ Converter *ConverterOrderTwo<IDType, NNZType, ValueType>::Clone() const {
 
 template <typename IDType, typename NNZType, typename ValueType>
 void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
-  this->RegisterConditionalConversionFunction(
+  this->ResetConverterOrderTwo();
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCsrFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCooFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      });
 #ifdef USE_CUDA
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       converter::cuda::CUDACsrCUDACsrConditionalFunction<IDType, NNZType,
                                                          ValueType>,
       converter::cuda::CUDAPeerToPeer);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       converter::cuda::CsrCUDACsrConditionalFunction<IDType, NNZType,
                                                      ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
-  this->RegisterConditionalConversionFunction(
+      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::cuda::CUDAContext::get_context_type(); });
+  this->RegisterConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       converter::cuda::CUDACsrCsrConditionalFunction<IDType, NNZType,
                                                      ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; });
+      [](context::Context *, context::Context *to) -> bool { return to->get_context_type_member()==context::CPUContext::get_context_type(); });
 #endif
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCsrMoveConditionalFunction<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       COO<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
-  this->RegisterConditionalConversionFunction(
+  this->RegisterConversionFunction(
       CSR<IDType, NNZType, ValueType>::get_format_id_static(),
       CSC<IDType, NNZType, ValueType>::get_format_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
-      [](context::Context *, context::Context *) -> bool { return true; },
+      [](context::Context *, context::Context *to) -> bool {
+        return to->get_context_type_member() ==
+               context::CPUContext::get_context_type();
+      },
       true);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 ConverterOrderTwo<IDType, NNZType, ValueType>::ConverterOrderTwo() {
-  this->Reset();
+  this->ResetConverterOrderTwo();
 }
 
-void Converter::RegisterConditionalConversionFunction(
+void Converter::RegisterConversionFunction(
     std::type_index from_type, std::type_index to_type,
-    ConditionalConversionFunction conv_func, EdgeConditional edge_condition,
+    ConversionFunction conv_func,
+                                           ConversionCondition edge_condition,
     bool is_move_conversion) {
   auto map = get_conversion_map(is_move_conversion);
   if (map->count(from_type) == 0) {
@@ -356,75 +387,70 @@ void Converter::RegisterConditionalConversionFunction(
         std::unordered_map<
             std::type_index,
             std::vector<
-                std::tuple<EdgeConditional, ConditionalConversionFunction>>>());
+                std::tuple<ConversionCondition, ConversionFunction>>>());
   }
 
   if ((*map)[from_type].count(to_type) == 0) {
     (*map)[from_type][to_type].push_back(
-        std::make_tuple<EdgeConditional, ConditionalConversionFunction>(
-            std::forward<EdgeConditional>(edge_condition),
-            std::forward<ConditionalConversionFunction>(conv_func)));
+        std::make_tuple<ConversionCondition, ConversionFunction>(
+            std::forward<ConversionCondition>(edge_condition),
+            std::forward<ConversionFunction>(conv_func)));
     //(*map)[from_type].emplace(to_type, {make_tuple<EdgeConditional,
     // ConversionFunction>(std::forward<EdgeConditional>(edge_condition),
     // std::forward<ConversionFunction>(conv_func))});
   } else {
     (*map)[from_type][to_type].push_back(
-        std::make_tuple<EdgeConditional, ConditionalConversionFunction>(
-            std::forward<EdgeConditional>(edge_condition),
-            std::forward<ConditionalConversionFunction>(conv_func)));
+        std::make_tuple<ConversionCondition, ConversionFunction>(
+            std::forward<ConversionCondition>(edge_condition),
+            std::forward<ConversionFunction>(conv_func)));
   }
+}
+
+Format *Converter::Convert(Format *source, std::type_index to_type,
+                           std::vector<context::Context *>to_contexts,
+                           bool is_move_conversion) {
+  auto outputs = ConvertCached(source, to_type, to_contexts, is_move_conversion);
+  if (outputs.size()>1)
+    std::transform(outputs.begin(), outputs.end()-1, outputs.begin(), [](format::Format* f){
+      delete f;
+      return nullptr;
+    });
+  return outputs.back();
+}
+
+std::vector<Format *>Converter::ConvertCached(Format *source, std::type_index to_type,
+                                              std::vector<context::Context *>to_contexts,
+                                              bool is_move_conversion) {
+
+  if (to_type == source->get_format_id() &&
+      std::find_if(to_contexts.begin(), to_contexts.end(), [&source](context::Context* from){
+        return from->IsEquivalent(source->get_context());
+      }) != to_contexts.end()) {
+    return {source};
+  }
+
+  ConversionChain chain = GetConversionChain(source->get_format_id(), source->get_context(),
+                                             to_type, to_contexts, is_move_conversion);
+  if(!chain)
+    throw ConversionException(source->get_format_name(), utils::demangle(to_type));
+  auto outputs = ApplyConversionChain(chain, source, false);
+  return std::vector<Format*>(outputs.begin()+1, outputs.end());
 }
 
 Format *Converter::Convert(Format *source, std::type_index to_type,
                            context::Context *to_context,
                            bool is_move_conversion) {
-
-  if (to_type == source->get_format_id() &&
-      source->get_context()->IsEquivalent(to_context)) {
-    return source;
-  }
-
-  try {
-    ConditionalConversionFunction conv_func =
-        GetConversionFunction(source->get_format_id(), source->get_context(),
-                              to_type, to_context, is_move_conversion);
-    return conv_func(source, to_context);
-  } catch (...) {
-    throw ConversionException(source->get_format_name(), utils::demangle(to_type));
-    // mechanism
-  }
+  return Convert(source, to_type, std::vector<context::Context*>({to_context}), is_move_conversion);
 }
 
-/*template <typename IDType, typename NNZType, typename ValueType>
-template <typename FormatType>
-FormatType* Converter<IDType,NNZType,ValueType>::ConvertAs(Format *source) {
-    auto* res = this->Convert(source, FormatType::get_format_id_static());
-    return res->template AsAbsolute<FormatType>();
-}*/
-ConditionalConversionFunction Converter::GetConversionFunction(
-    std::type_index from_type, context::Context *from_context,
-    std::type_index to_type, context::Context *to_context,
-    bool is_move_conversion) {
-  try {
-    auto map = get_conversion_map(is_move_conversion);
-    for (auto conditional_function_tuple : (*map)[from_type][to_type]) {
-      auto conditional = std::get<0>(conditional_function_tuple);
-      if (conditional(from_context, to_context)) {
-        return std::get<1>(conditional_function_tuple);
-      }
-    }
-    throw ConversionException(utils::demangle(from_type), utils::demangle(to_type));
-  } catch (...) {
-    throw ConversionException(utils::demangle(from_type), utils::demangle(to_type));
-    // mechanism
-  }
+std::vector<Format *>Converter::ConvertCached(Format *source, std::type_index to_type,
+                           context::Context *to_context,
+                           bool is_move_conversion) {
+  return ConvertCached(source, to_type, std::vector<context::Context*>({to_context}), is_move_conversion);
 }
 
-std::tuple<bool, context::Context *>
-Converter::CanConvert(std::type_index from_type, context::Context *from_context,
-                      std::type_index to_type,
-                      const std::vector<context::Context *> &to_contexts,
-                      bool is_move_conversion) {
+/*
+std::optional<std::tuple<Converter::CostType, context::Context*>> Converter::CanDirectlyConvert(std::type_index from_type, context::Context* from_context, std::type_index to_type, const std::vector<context::Context *> &to_contexts, bool is_move_conversion){
   auto map = get_conversion_map(is_move_conversion);
   if (map->find(from_type) != map->end()) {
     if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
@@ -438,24 +464,82 @@ Converter::CanConvert(std::type_index from_type, context::Context *from_context,
       }
     }
   }
-  return std::make_tuple<bool, context::Context *>(false, nullptr);
+  return {};
+}
+ */
+
+std::vector<ConversionStep> Converter::ConversionBFS(std::type_index from_type, context::Context* from_context, std::type_index to_type, const std::vector<context::Context*>& to_contexts, ConversionMap* map){
+  std::deque<std::type_index> frontier{from_type};
+  std::unordered_map<std::type_index, std::pair<std::type_index, ConversionStep>> seen;
+  seen.emplace(from_type, std::make_pair(from_type, std::make_tuple(nullptr, nullptr, 0)));
+  int level = 1;
+  size_t level_size = 1;
+  while (!frontier.empty()){
+    for (int i =0; i < level_size; i++){
+      auto curr = frontier.back();
+      frontier.pop_back();
+      for (const auto& neighbor : (*map)[curr]){
+        if (seen.find(neighbor.first) == seen.end()){
+          for (auto curr_to_neighbor_functions : neighbor.second){ // go over every edge curr->neighbor
+            bool found_an_edge = false;
+            for (auto to_context : to_contexts) { // check if, with the given contexts, this edge exists
+              if (std::get<0>(curr_to_neighbor_functions)(from_context,
+                                                          to_context)) {
+                seen.emplace(neighbor.first, std::make_pair(curr, std::make_tuple(std::get<1>(curr_to_neighbor_functions), to_context, 1)));
+                frontier.emplace_back(neighbor.first);
+                if (neighbor.first == to_type) {
+                  std::vector<ConversionStep> output(level);
+                  std::type_index tip = to_type;
+                  for (int j = level-1; j >= 0; j--){
+                    output[j] = seen.at(tip).second;
+                    tip = seen.at(tip).first;
+                  }
+                  return output;
+                }
+                found_an_edge = true;
+                break; // no need to check other contexts
+              }
+            }
+            if (found_an_edge) break; // no need to check other edges between curr->neighbor
+          }
+        }
+      }
+    }
+    level++;
+    level_size = frontier.size();
+  }
+  return {};
+}
+
+ConversionChain
+Converter::GetConversionChain(std::type_index from_type, context::Context *from_context,
+                      std::type_index to_type,
+                      const std::vector<context::Context *> &to_contexts,
+                      bool is_move_conversion) {
+  // If the source doesn't need conversion, return an empty but existing optional
+  if (from_type == to_type && std::find(to_contexts.begin(), to_contexts.end(), from_context) != to_contexts.end())
+    return ConversionChain(std::in_place);
+  auto map = get_conversion_map(is_move_conversion);
+  auto conversions =  ConversionBFS(from_type, from_context, to_type, to_contexts, map);
+  if (!conversions.empty())
+    return std::make_tuple(conversions, conversions.size());
+  else
+    return {};
 }
 bool Converter::CanConvert(std::type_index from_type,
                            context::Context *from_context,
                            std::type_index to_type,
                            context::Context *to_context,
                            bool is_move_conversion) {
-  auto map = get_conversion_map(is_move_conversion);
-  if (map->find(from_type) != map->end()) {
-    if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) {
-      for (auto condition_function_pair : (*map)[from_type][to_type]) {
-        if (std::get<0>(condition_function_pair)(from_context, to_context)) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
+  return GetConversionChain(from_type, from_context, to_type, {to_context}, is_move_conversion).has_value();
+}
+
+bool Converter::CanConvert(std::type_index from_type,
+                           context::Context *from_context,
+                           std::type_index to_type,
+                           const std::vector<context::Context *>&to_contexts,
+                           bool is_move_conversion) {
+  return GetConversionChain(from_type, from_context, to_type, to_contexts, is_move_conversion).has_value();
 }
 
   void Converter::ClearConversionFunctions(std::type_index from_type, std::type_index to_type, bool move_conversion){
@@ -474,23 +558,36 @@ bool Converter::CanConvert(std::type_index from_type,
     auto map = get_conversion_map(move_conversion);
     map->clear();
   }
-  
-  /*! Removes all move conversion functions from the current converter
-   */
-  void ClearMoveConversionFunctions(std::type_index from_type, std::type_index to_type);
-std::vector<Format *>
-Converter::ApplyConversionSchema(ConversionSchemaConditional cs,
-                                 std::vector<Format *> packed_sfs,
-                                 bool is_move_conversion) {
-  std::vector<Format *> ret;
-  for (int i = 0; i < cs.size(); i++) {
-    auto conversion = cs[i];
-    if (std::get<0>(conversion)) {
-      ret.push_back(this->Convert(packed_sfs[i], std::get<1>(conversion),
-                                  std::get<2>(conversion), is_move_conversion));
-    } else {
-      ret.push_back(packed_sfs[i]);
+
+std::vector<format::Format*> Converter::ApplyConversionChain(const ConversionChain& chain,
+                                            format::Format* input, bool clear_intermediate){
+  std::vector<Format*> format_chain{input};
+  if (chain) {
+    auto conversion_chain = std::get<0>(*chain);
+    Format * current_format = input;
+    for (int i =0; i < conversion_chain.size(); i++){
+      const auto& conversion_step = conversion_chain[i];
+      auto* res = std::get<0>(conversion_step)(current_format, std::get<1>(conversion_step));
+      if (!clear_intermediate || i == conversion_chain.size()-1)
+        format_chain.push_back(res);
+      else if (i!=0)
+        delete current_format;
+      current_format = res;
     }
+  }
+  return format_chain;
+}
+
+std::vector<std::vector<Format *>>
+Converter::ApplyConversionSchema(const ConversionSchema & cs,
+                                   const std::vector<Format *> &packed_sfs, bool clear_intermediate) {
+  // Each element in ret is a chain of formats resulting from
+  // converting one of the packed_sfs
+  std::vector<std::vector<Format *>> ret;
+  for (int i = 0; i < cs.size(); i++) {
+    const auto& conversion = cs[i];
+    std::vector<format::Format*> format_chain = ApplyConversionChain(conversion, packed_sfs[i], clear_intermediate);
+    ret.push_back(format_chain);
   }
   return ret;
 }
