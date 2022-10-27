@@ -114,8 +114,13 @@ macro(add_opt_library name)
   message(STATUS "${OPT_NAME_UPPER} was found")
   message(STATUS "${OPT_NAME_UPPER} include dir: ${OPT_INC}")
   message(STATUS "${OPT_NAME_UPPER} library dir: ${OPT_LIB}")
-  target_link_libraries(sparsebase PUBLIC ${OPT_LIB})
-  target_include_directories(sparsebase PUBLIC ${OPT_INC})
+  if (NOT ${_HEADER_ONLY})
+    target_link_libraries(sparsebase PUBLIC ${OPT_LIB})
+    target_include_directories(sparsebase PUBLIC ${OPT_INC})
+  else()
+    target_link_libraries(sparsebase INTERFACE ${OPT_LIB})
+    target_include_directories(sparsebase INTERFACE ${OPT_INC})
+  endif()
   file(GLOB OPT_INC_FILES ${inc_dir}/*.h ${inc_dir}/*.hpp ${inc_dir}/*.hxx)
   install(FILES ${OPT_INC_FILES} DESTINATION include/sparsebase/external/${lib_name})
   set(${OPT_DEF} ON)
@@ -213,6 +218,8 @@ install(FILES ${CONVERTER_FILES}
   DESTINATION include/sparsebase/utils/converter/)
 install(FILES ${EXCEPTION_FILES}
   DESTINATION include/sparsebase/utils/)
+install(FILES ${UTILS_FILES}
+        DESTINATION include/sparsebase/utils/)
 
 if(USE_PIGO)
   install(FILES sparsebase/external/pigo/pigo.hpp

@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
   // Custom conversion using the custom format
   utils::converter::ConverterOrderTwo<int, int, int> converter;
-  converter.RegisterConditionalConversionFunction(
+  converter.RegisterConversionFunction(
       COO<int, int, int>::get_format_id_static(),
       MyFormat::get_format_id_static(), COOToMyFormat,
       [](context::Context *, context::Context *) { return true; });

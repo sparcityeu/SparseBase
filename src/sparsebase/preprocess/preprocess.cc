@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <algorithm>
+#include <limits>
 
 using namespace sparsebase::format;
 
@@ -113,177 +115,96 @@ bool FunctionMatcherMixin<
  */
 template <typename ReturnType, class PreprocessingImpl, typename Function,
           typename Key, typename KeyHash, typename KeyEqualTo>
-std::tuple<Function, utils::converter::ConversionSchemaConditional>
+std::tuple<Function, utils::converter::ConversionSchema>
 FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::GetFunction(std::vector<format::Format *> packed_sfs, Key key,
                              ConversionMap map,
                              std::vector<context::Context *> contexts,
                              utils::converter::Converter *sc) {
-  utils::converter::ConversionSchemaConditional cs;
+  utils::converter::ConversionSchema cs;
   Function func = nullptr;
+  // When function and conversion costs are added,
+  // this 'if' should be removed  -- a conversion might be
+  // cheaper than direct call to matching key
   if (CheckIfKeyMatches(map, key, packed_sfs, contexts)) {
     for (auto f : key) {
-      cs.push_back(std::make_tuple(false, f, nullptr));
+      cs.push_back({});
     }
     func = map[key];
-  } else {
-    // the keys of all the possible functions
-    std::vector<Key> all_keys;
-    for (auto key_func : map) {
-      all_keys.push_back(key_func.first);
-    }
-    std::vector<std::tuple<unsigned int,
-                           utils::converter::ConversionSchemaConditional, Key>>
-        usable_keys;
-    for (auto potential_key : all_keys) {
-      if (potential_key.size() == key.size()) {
-        utils::converter::ConversionSchemaConditional temp_cs;
-        int conversions = 0;
-        bool is_usable = true;
-        for (int i = 0; i < potential_key.size(); i++) {
-          if (key[i] == potential_key[i]) {
-            temp_cs.push_back(
-                std::make_tuple(false, potential_key[i], nullptr));
-          } else { //  if (sc.CanConvert(key[i], potential_key[i])) {
-            if (sc == nullptr) {
-              throw utils::NoConverterException();
-            }
-            auto convertable =
-                sc->CanConvert(key[i], packed_sfs[i]->get_context(),
-                               potential_key[i], contexts);
-            if (std::get<0>(convertable)) {
-              temp_cs.push_back(std::make_tuple(true, potential_key[i],
-                                                std::get<1>(convertable)));
-              conversions++;
-            } else {
-              is_usable = false;
-            }
-          }
+    return std::make_tuple(func, cs);
+  }
+  // the keys of all the available functions in preprocessing
+  std::vector<Key> all_keys;
+  for (const auto& key_func : map) {
+    all_keys.push_back(key_func.first);
+  }
+  // Find all the keys that can potentially run with this input
+  std::vector<std::tuple<unsigned int,
+                         utils::converter::ConversionSchema, Key>>
+      usable_keys;
+  for (auto potential_key : all_keys) {
+    if (potential_key.size()!=key.size()) continue;
+    utils::converter::ConversionSchema temp_cs;
+    bool is_usable = true;
+    int conversion_cost = 0;
+    for (int i = 0; i < potential_key.size(); i++) {
+      if (key[i] == potential_key[i]) {
+        temp_cs.push_back({});
+        conversion_cost  += 0; // no conversion cost
+      } else {
+        if (sc == nullptr) {
+          throw utils::NoConverterException();
         }
-        if (is_usable) {
-          usable_keys.push_back(
-              std::make_tuple(conversions, temp_cs, potential_key));
+        auto conversion_chain =
+            sc->GetConversionChain(key[i], packed_sfs[i]->get_context(),
+                                   potential_key[i], contexts);
+        if (conversion_chain) {
+          temp_cs.push_back(*conversion_chain);
+          conversion_cost+=std::get<1>(*conversion_chain);
+        } else {
+          is_usable = false;
         }
       }
     }
-    if (usable_keys.size() == 0) {
-      std::string message;
-      message = "Could not find a function that matches the formats: {";
-      for (auto f : packed_sfs) {
-        message += f->get_format_name();
-        message += " ";
-      }
-      message += "} using the contexts {";
-      for (auto c : contexts) {
-        message += c->get_context_type_member().name();
-        message += " ";
-      }
-      message += "}";
+    // At this point, we can add the cost of the function with key "potential_key"
+    if (is_usable) {
+      int total_cost = conversion_cost; // add function cost in the future
+      usable_keys.push_back(
+          std::make_tuple(total_cost, temp_cs, potential_key));
+    }
+  }
+  if (usable_keys.empty()) {
+    std::string message;
+    message = "Could not find a function that matches the formats: {";
+    for (auto f : packed_sfs) {
+      message += f->get_format_name();
+      message += " ";
+    }
+    message += "} using the contexts {";
+    for (auto c : contexts) {
+      message += c->get_context_type_member().name();
+      message += " ";
+    }
+    message += "}";
 
-      throw sparsebase::utils::FunctionNotFoundException(
-          message); // TODO: add a custom exception type
-    }
-    std::tuple<Function, utils::converter::ConversionSchemaConditional>
-        best_conversion;
-    unsigned int num_conversions = (unsigned int)-1;
-    for (auto potential_usable_key : usable_keys) {
-      if (num_conversions > std::get<0>(potential_usable_key)) {
-        num_conversions = std::get<0>(potential_usable_key);
-        cs = std::get<1>(potential_usable_key);
-        func = map[std::get<2>(potential_usable_key)];
-      }
+    throw sparsebase::utils::FunctionNotFoundException(
+        message); // TODO: add a custom exception type
+  }
+  std::tuple<Function, utils::converter::ConversionSchema>
+      best_conversion;
+  float cost = std::numeric_limits<float>::max();
+  for (auto potential_usable_key : usable_keys) {
+    if (cost > std::get<0>(potential_usable_key)) {
+      cost = std::get<0>(potential_usable_key);
+      cs = std::get<1>(potential_usable_key);
+      func = map[std::get<2>(potential_usable_key)];
     }
   }
   return std::make_tuple(func, cs);
 }
-template <typename ReturnType, class PreprocessingImpl, typename Key,
-          typename KeyHash, typename KeyEqualTo, typename Function>
-template <typename Object>
-std::vector<Object>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
-                     Function>::PackObjects(Object object) {
-  return {object};
-}
-template <typename ReturnType, class PreprocessingImpl, typename Key,
-          typename KeyHash, typename KeyEqualTo, typename Function>
-template <typename Object, typename... Objects>
-std::vector<Object>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
-                     Function>::PackObjects(Object object, Objects... objects) {
-  std::vector<Object> v = {object};
-  std::vector<Object> remainder = PackObjects(objects...);
-  for (auto i : remainder) {
-    v.push_back(i);
-  }
-  return v;
-}
-template <typename ReturnType, class PreprocessingImpl, typename Function,
-          typename Key, typename KeyHash, typename KeyEqualTo>
-template <typename F, typename... SF>
-std::tuple<std::vector<format::Format *>, ReturnType>
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
-                     KeyEqualTo>::CachedExecute(PreprocessParams *params,
-                                                utils::converter::Converter *sc,
-                                                std::vector<context::Context *>
-                                                    contexts, bool convert_input,
-                                                F format, SF... formats) {
-  ConversionMap map = this->map_to_function_;
-  // pack the Formats into a vector
-  std::vector<format::Format *> packed_formats =
-      PackObjects(format, formats...);
-  // pack the types of Formats into a vector
-  std::vector<std::type_index> packed_format_types;
-  for (auto f : packed_formats)
-    packed_format_types.push_back(f->get_format_id());
-  // get conversion schema
-  std::tuple<Function, utils::converter::ConversionSchemaConditional> ret =
-      GetFunction(packed_formats, packed_format_types, map, contexts, sc);
-  Function func = std::get<0>(ret);
-  utils::converter::ConversionSchemaConditional cs = std::get<1>(ret);
-  // carry out conversion
-  // ready_formats contains the format to use in preprocessing
-  if (!convert_input){
-    for (auto convert_order : cs){
-      if (std::get<0>(convert_order))
-        throw utils::DirectExecutionNotAvailableException(packed_format_types, this->GetAvailableFormats());
-    }
-  }
-  std::vector<Format *> ready_formats =
-      sc->ApplyConversionSchema(cs, packed_formats);
-  // `converted` contains the results of conversions
-  std::vector<Format *> converted;
-  for (int i = 0; i < ready_formats.size(); i++) {
-    auto conversion = cs[i];
-    if (std::get<0>(conversion)) {
-      converted.push_back(ready_formats[i]);
-    } else {
-      converted.push_back(nullptr);
-    }
-  }
-  // carry out the correct call
-  return std::make_tuple(converted, func(ready_formats, params));
-}
 
-template <typename ReturnType, class PreprocessingImpl, typename Function,
-          typename Key, typename KeyHash, typename KeyEqualTo>
-template <typename F, typename... SF>
-ReturnType
-FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
-                     KeyEqualTo>::Execute(PreprocessParams *params,
-                                          utils::converter::Converter *sc,
-                                          std::vector<context::Context *>
-                                              contexts, bool convert_input,
-                                          F sf, SF... sfs) {
-  auto cached_output = CachedExecute(params, sc, contexts, convert_input, sf, sfs...);
-  auto converted_formats = std::get<0>(cached_output);
-  auto return_object = std::get<1>(cached_output);
-  for (auto *converted_format : converted_formats) {
-    if (converted_format != nullptr)
-      delete converted_format;
-  }
-  return return_object;
-}
+
 
 template <typename IDType, typename NNZType, typename ValueType>
 GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {
@@ -317,11 +238,11 @@ int GenericPreprocessType<ReturnType>::GetOutput(
 }
 
 template <typename ReturnType>
-std::tuple<std::vector<format::Format *>, int>
+std::tuple<std::vector<std::vector<format::Format *>>, int>
 GenericPreprocessType<ReturnType>::GetOutputCached(
-    Format *format, PreprocessParams *params,
+    format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, false, format);
 }
 template <typename IDType>
 IDType *ReorderPreprocessType<IDType>::GetReorder(
@@ -338,19 +259,20 @@ IDType *ReorderPreprocessType<IDType>::GetReorder(
 }
 
 template <typename IDType>
-std::tuple<std::vector<format::Format *>, IDType *>
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
-    Format *format, std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
+    format::Format *format, std::vector<context::Context *> contexts,
+    bool convert_input) {
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input, false,
                              format);
 }
 
 template <typename IDType>
-std::tuple<std::vector<format::Format *>, IDType *>
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 ReorderPreprocessType<IDType>::GetReorderCached(
-    Format *format, PreprocessParams *params,
+    format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, false, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -519,7 +441,7 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 }
 
 template <typename IDType, typename ValueType>
-PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(PermuteOrderOneParams params) {
+PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(ParamsType params) {
   PermuteOrderOne(params.order);
 }
 template <typename IDType, typename ValueType>
@@ -528,13 +450,13 @@ PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
       utils::converter::ConverterOrderOne<ValueType>{});
   this->RegisterFunction(
       {Array<ValueType>::get_format_id_static()}, PermuteArray);
-  this->params_ = std::unique_ptr<PermuteOrderOneParams>(new PermuteOrderOneParams(order));
+  this->params_ = std::unique_ptr<PermuteOrderOneParams<IDType>>(new PermuteOrderOneParams<IDType>(order));
 }
 template <typename IDType, typename ValueType>
 format::FormatOrderOne<ValueType> *PermuteOrderOne<IDType, ValueType>::PermuteArray(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->AsAbsolute<Array<ValueType>>();
-  auto order = static_cast<PermuteOrderOneParams *>(params)->order;
+  auto order = static_cast<PermuteOrderOneParams<IDType> *>(params)->order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType length = dimensions[0];
   ValueType *vals = sp->get_vals();
@@ -556,10 +478,10 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(IDType *row_order, 
       utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
   this->RegisterFunction(
       {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PermuteOrderTwoCSR);
-  this->params_ = std::unique_ptr<PermuteOrderTwoParams>(new PermuteOrderTwoParams(row_order, col_order));
+  this->params_ = std::unique_ptr<PermuteOrderTwoParams<IDType>>(new PermuteOrderTwoParams(row_order, col_order));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams params) {
+PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(PermuteOrderTwoParams<IDType> params) {
   PermuteOrderTwo(params.row_order, params.col_order);
 }
 template <typename InputFormatType, typename ReturnFormtType>
@@ -568,8 +490,8 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
     std::vector<Format *> formats, PreprocessParams *params) {
   auto *sp = formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
-  auto row_order = static_cast<PermuteOrderTwoParams *>(params)->row_order;
-  auto col_order = static_cast<PermuteOrderTwoParams *>(params)->col_order;
+  auto row_order = static_cast<PermuteOrderTwoParams<IDType> *>(params)->row_order;
+  auto col_order = static_cast<PermuteOrderTwoParams<IDType> *>(params)->col_order;
   std::vector<DimensionType> dimensions = sp->get_dimensions();
   IDType n = dimensions[0];
   IDType m = dimensions[1];
@@ -631,21 +553,24 @@ format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwo<IDType, NNZT
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-std::tuple<std::vector<format::Format *>, ReturnFormatType *>
-TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
-    format::Format *format, std::vector<context::Context *> contexts, bool convert_input) {
+std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::
+    GetTransformationCached(format::Format *format,
+                            std::vector<context::Context *> contexts,
+                            bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input,
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts, convert_input, false,
                              format);
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
-std::tuple<std::vector<format::Format *>, ReturnFormatType *>
-TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformationCached(
-    format::Format  *format, PreprocessParams *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
+std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
+TransformPreprocessType<InputFormatType, ReturnFormatType>::
+    GetTransformationCached(format::Format *format, PreprocessParams *params,
+                            std::vector<context::Context *> contexts,
+                            bool convert_input) {
   if (dynamic_cast<InputFormatType*>(format) == nullptr) throw utils::TypeException(format->get_format_name(), InputFormatType::get_format_name_static());
-  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, format);
+  return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input, false, format);
 }
 
 template <typename InputFormatType, typename ReturnFormatType>
@@ -825,7 +750,7 @@ DegreeDistribution<IDType, NNZType, ValueType,
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-std::tuple<std::vector<format::Format *>, FeatureType *>
+std::tuple<std::vector<std::vector<format::Format *>>, FeatureType *>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     GetDistributionCached(Format *format,
                           std::vector<context::Context *> contexts, bool convert_input) {
@@ -837,7 +762,7 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
   // std::get<0>(func_formats); std::vector<SparseFormat<IDType, NNZType,
   // ValueType> *> sfs = std::get<1>(func_formats);
   DegreeDistributionParams params;
-  return this->CachedExecute(&params, (this->sc_.get()), contexts, convert_input,
+  return this->CachedExecute(&params, (this->sc_.get()), contexts, convert_input, false,
                              format); // func(sfs, this->params_.get());
 }
 template <typename IDType, typename NNZType, typename ValueType,
@@ -966,9 +891,10 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegrees(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<format::Format *>,IDType *>Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
+Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
     Format *format, std::vector<context::Context *> c, bool convert_input) {
-  return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, format);
+  return this->CachedExecute(this->params_.get(), (this->sc_.get()), c, convert_input, false, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1004,10 +930,9 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
   this->params_ = std::shared_ptr<Params>(new Params());
   this->pmap_.insert({get_feature_id_static(), this->params_});
   std::shared_ptr<PreprocessParams> deg_dist_param(
-      new typename DegreeDistribution<IDType, NNZType, ValueType,
-                                      FeatureType>::DegreeDistributionParams);
+      new DegreeDistributionParams);
   std::shared_ptr<PreprocessParams> degs_param(
-      new typename Degrees<IDType, NNZType, ValueType>::DegreesParams);
+      new DegreesParams);
   this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
                                  FeatureType>::get_feature_id_static()] =
       deg_dist_param;
@@ -1206,10 +1131,10 @@ void GrayReorder<IDType, NNZType, ValueType>::print_dec_in_bin(unsigned long n, 
   }
 
   // printing binary array in reverse order
-  for (int j = i - 1; j >= 0; j--)
-    std::cout << binaryNum[j];
+  //for (int j = i - 1; j >= 0; j--)
+    //std::cout << binaryNum[j];
 
-  std::cout << "\n";
+  //std::cout << "\n";
 }
 
 // not sure if all IDTypes work for this
@@ -1243,7 +1168,7 @@ bool GrayReorder<IDType, NNZType, ValueType>::is_banded(int nnz, int n_cols, NNZ
   if (double(band_count) / nnz >= 0.3) {
     banded = true;
   }
-  std::cout << "NNZ % in band: " << double(band_count) / nnz << std::endl;
+  //std::cout << "NNZ % in band: " << double(band_count) / nnz << std::endl;
   return banded;
 }
 
@@ -1297,17 +1222,17 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
   bool is_sparse_banded =
       is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
                 csr->get_row_ptr(), csr->get_col(), sparse_v_order);
-  if (is_sparse_banded)
-    std::cout << "Sparse Sub-Matrix highly banded - Performing just density "
-                 "reordering"
-              << std::endl;
+  //if (is_sparse_banded)
+    //std::cout << "Sparse Sub-Matrix highly banded - Performing just density "
+      //           "reordering"
+       //       << std::endl;
 
   bool is_dense_banded =
       is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
                 csr->get_row_ptr(), csr->get_col(), dense_v_order);
-  if (is_dense_banded)
-    std::cout << "Dense Sub-Matrix highly banded - Maintaining structure"
-              << std::endl;
+  //if (is_dense_banded)
+    //std::cout << "Dense Sub-Matrix highly banded - Maintaining structure"
+      //        << std::endl;
 
   std::sort(sparse_v_order.begin(), sparse_v_order.end(),
             [&](int i, int j) -> bool {
@@ -1385,8 +1310,8 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
           (last_row_nnz_count != (csr->get_row_ptr()[sparse_v_order[i] + 1] -
                                   csr->get_row_ptr()[sparse_v_order[i]]))) {
         group_count = group_count + 1;
-        std::cout << "Rows[" << start_split_reorder << " -> " << i - 1
-                  << "] NNZ Count: " << last_row_nnz_count << "\n";
+        //std::cout << "Rows[" << start_split_reorder << " -> " << i - 1
+         //         << "] NNZ Count: " << last_row_nnz_count << "\n";
         // update nnz count for current row
         last_row_nnz_count = csr->get_row_ptr()[sparse_v_order[i] + 1] -
                              csr->get_row_ptr()[sparse_v_order[i]];
@@ -1394,8 +1319,8 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
         // if group size achieved, start reordering section until this row
         if (group_count == group_size) {
           end_split_reorder = i;
-          std::cout << "Reorder Group[" << start_split_reorder << " -> "
-                    << end_split_reorder - 1 << "]\n";
+          //std::cout << "Reorder Group[" << start_split_reorder << " -> "
+           //         << end_split_reorder - 1 << "]\n";
           // start next split the split for processing
 
           // process and reorder the reordered_matrix array till this point
@@ -1419,8 +1344,8 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
                  reorder_section[a - start_split_reorder].second) &&
                 (a < 100000)) {
 
-              std::cout << "Rows[" << dec_begin_ind << " -> " << a
-                        << "] Grey Order: " << dec_begin << "// Binary: \n";
+              //std::cout << "Rows[" << dec_begin_ind << " -> " << a
+                //        << "] Grey Order: " << dec_begin << "// Binary: \n";
               // print_dec_in_bin(bin_to_grey(dec_begin));
 
               dec_begin = reorder_section[a - start_split_reorder].second;
@@ -1455,9 +1380,9 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
       // when reaching end of sparse submatrix, reorder section
       if (i == sparse_v_order.size() - 1) {
         end_split_reorder = sparse_v_order.size();
-        std::cout << "Rows[" << start_split_reorder << " -> "
-                  << end_split_reorder - 1
-                  << "] NNZ Count: " << last_row_nnz_count << "\n";
+        //std::cout << "Rows[" << start_split_reorder << " -> "
+                  //<< end_split_reorder - 1
+                  //<< "] NNZ Count: " << last_row_nnz_count << "\n";
         if (!decresc_grey_order) {
           sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
           decresc_grey_order = !decresc_grey_order;
@@ -1476,8 +1401,8 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
 
   if (!is_dense_banded) {
 
-    std::cout << "Rows [" << sparse_dense_split << "-" << n_rows
-              << "] Starting Dense Sorting through NNZ and Grey code..\n";
+    //std::cout << "Rows [" << sparse_dense_split << "-" << n_rows
+      //        << "] Starting Dense Sorting through NNZ and Grey code..\n";
 
     for (int i = 0; i < dense_v_order.size(); i++) {
       // if first row, establish the nnz amount, and starting index
@@ -1505,7 +1430,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
       reorder_section.push_back(
           row_grey_pair(dense_v_order[i], grey_bin_to_dec(decimal_bit_map)));
     }
-    std::cout << "Reordering Rows based on grey values...\n";
+    //std::cout << "Reordering Rows based on grey values...\n";
     std::sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
 
     for (int a = 0; a < dense_v_order.size(); a++) {
@@ -1595,12 +1520,12 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   idx_t objval;
 
   if constexpr(std::is_signed_v<IDType> && std::is_signed_v<NNZType>
-                && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
+               && sizeof(IDType) == sizeof(idx_t) && sizeof(NNZType) == sizeof(idx_t)){
 
     if(mparams->ptype == METIS_PTYPE_RB){
-     METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
-                        nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
-                        &objval, partition);
+      METIS_PartGraphRecursive(&n, &nw, (idx_t*) csr->get_row_ptr(), (idx_t*) csr->get_col(),
+                               nullptr, nullptr, nullptr, &np, nullptr, nullptr, options,
+                               &objval, partition);
 
     } else {
 
@@ -1614,6 +1539,7 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   }
   return partition;
 }
+
 
 #endif
 
