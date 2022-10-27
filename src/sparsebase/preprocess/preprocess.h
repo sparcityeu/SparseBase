@@ -942,18 +942,6 @@ public:
   virtual ~PartitionPreprocessType();
 };
 
-struct SlashburnReorderParams : PreprocessParams {};
-template <typename IDType, typename NNZType, typename ValueType>
-class SlashburnReorder : public ReorderPreprocessType<IDType> {
-public:
-  SlashburnReorder(SlashburnReorderParams);
-  typedef SlashburnReorderParams ParamsType;
-
-protected:
-  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
-                                     PreprocessParams *params);
-};
-
 #ifdef USE_RABBIT_ORDER
 
 #define BOOST_ATOMIC_DETAIL_NO_CXX11_IS_TRIVIALLY_COPYABLE
