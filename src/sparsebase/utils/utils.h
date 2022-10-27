@@ -20,6 +20,8 @@
 
 namespace sparsebase::utils {
 
+//! Type used for calculating function costs
+typedef float CostType;
 // Thanks to artificial mind blog: https://artificial-mind.net/blog/2020/10/03/always-false
 template <typename ... T>
 constexpr bool always_false = false;

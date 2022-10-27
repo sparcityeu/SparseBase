@@ -121,7 +121,6 @@ CSR<iif> csr = ...;
 Multiple sparse data formats are supported including:
 - COO (Coordinate List)
 - CSR (Compressed Sparse Row)
-- CSC (Compressed Sparse Column)
 
 In the code snippet below you can see the creation of a CSR type object 
 which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
