@@ -24,7 +24,7 @@ int main(int argc, char** argv){
 
   cout << "Setting partition params..." << endl;
   preprocess::MetisPartition<TYPES> metis;
-  preprocess::MetisParams params;
+  preprocess::MetisPartitionParams params;
   params.seed = 12;
   params.ufactor = 50;
   params.rtype = preprocess::metis::METIS_RTYPE_GREEDY;
