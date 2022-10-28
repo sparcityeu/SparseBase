@@ -10,7 +10,7 @@ using namespace sparsebase::format;
 using namespace sparsebase::object;
 
 class MyFormat : public format::FormatImplementation<MyFormat> {
-public:
+ public:
   MyFormat() {
     order_ = 2;
     dimension_ = {4, 4};

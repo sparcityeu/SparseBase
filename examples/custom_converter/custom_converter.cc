@@ -12,7 +12,6 @@ format::Format *MyFunction(format::Format *source, context::Context *) {
 }
 
 int main() {
-
   int row[6] = {0, 0, 1, 1, 2, 2};
   int col[6] = {0, 1, 1, 2, 3, 3};
   int vals[6] = {10, 20, 30, 40, 50, 60};

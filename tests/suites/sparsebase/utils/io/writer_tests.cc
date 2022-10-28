@@ -1,9 +1,9 @@
-#include "sparsebase/sparsebase.h"
-#include "gtest/gtest.h"
 #include <string>
 
-TEST(IOBase, WriteArrayToBinary) {
+#include "gtest/gtest.h"
+#include "sparsebase/sparsebase.h"
 
+TEST(IOBase, WriteArrayToBinary) {
   // Initialize an array for testing
   int array[5]{1, 2, 3, 4, 5};
   sparsebase::format::Array<int> sbArray(5, array,
@@ -24,7 +24,6 @@ TEST(IOBase, WriteArrayToBinary) {
 }
 
 TEST(IOBase, WriteCOOToBinary) {
-
   // Initialize a COO for testing
   int row[4]{1, 2, 3, 4};
   int col[4]{5, 6, 7, 8};
@@ -33,8 +32,7 @@ TEST(IOBase, WriteCOOToBinary) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  utils::io::IOBase::WriteCOOToBinary(
-      &coo, "writer_test_order_two_coo.bin");
+  utils::io::IOBase::WriteCOOToBinary(&coo, "writer_test_order_two_coo.bin");
 
   // Read the COO from the binary file with sparsebase
   sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
@@ -54,7 +52,6 @@ TEST(IOBase, WriteCOOToBinary) {
 }
 
 TEST(IOBase, WriteBinaryToCSR) {
-
   // Initialize a CSR for testing
   int row_ptr[5]{0, 2, 3, 3, 4};
   int col[4]{0, 2, 1, 3};
@@ -64,8 +61,7 @@ TEST(IOBase, WriteBinaryToCSR) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  utils::io::IOBase::WriteCSRToBinary(&csr,
-      "writer_test_order_two_csr.bin");
+  utils::io::IOBase::WriteCSRToBinary(&csr, "writer_test_order_two_csr.bin");
 
   // Read the COO from the binary file with sparsebase
   sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
@@ -87,7 +83,6 @@ TEST(IOBase, WriteBinaryToCSR) {
   }
 }
 TEST(BinaryOrderOneWriter, Basics) {
-
   // Initialize an array for testing
   int array[5]{1, 2, 3, 4, 5};
   sparsebase::format::Array<int> sbArray(5, array,
@@ -110,7 +105,6 @@ TEST(BinaryOrderOneWriter, Basics) {
 }
 
 TEST(BinaryOrderTwoWriter, COO) {
-
   // Initialize a COO for testing
   int row[4]{1, 2, 3, 4};
   int col[4]{5, 6, 7, 8};
@@ -141,7 +135,6 @@ TEST(BinaryOrderTwoWriter, COO) {
 }
 
 TEST(BinaryOrderTwoWriter, CSR) {
-
   // Initialize a CSR for testing
   int row_ptr[5]{0, 2, 3, 3, 4};
   int col[4]{0, 2, 1, 3};
