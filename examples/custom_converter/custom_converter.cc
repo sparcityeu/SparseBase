@@ -23,7 +23,7 @@ int main() {
 
   auto converter = new utils::converter::ConverterOrderTwo<int, int, int>();
 
-  converter->RegisterConditionalConversionFunction(
+  converter->RegisterConversionFunction(
       format::COO<int, int, int>::get_format_id_static(),
       format::CSR<int, int, int>::get_format_id_static(),
       MyFunction<int, int, int>,

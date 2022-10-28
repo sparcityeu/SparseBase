@@ -9,8 +9,6 @@
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/utils.h"
 
-using namespace sparsebase::utils;
-
 namespace sparsebase::format {
 
 
@@ -802,7 +800,7 @@ Array<ValueType> &Array<ValueType>::operator=(const Array<ValueType> &rhs) {
         vals, Deleter<ValueType>());
     return *this;
   } else {
-    throw TypeException("Cannot create an array with ValueType == void");
+    throw utils::TypeException("Cannot create an array with ValueType == void");
   }
 }
 template <typename ValueType>
