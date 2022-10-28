@@ -9,7 +9,7 @@ In this tutorial, you will use SparseBase to do the following:
 
 1. Read multiple matrix files (sparse matrices) from different file formats.
 2. Reorder the rows of the matrices using Reverse Cuthill-McKee (RCM) reordering and permute the matrices using the obtained order.
-3. Create multiple kernels that use various architectures to carry out sparse matrix / vector (SPMV) multiplication.
+3. Create multiple kernels that carry out sparse matrix / vector (SPMV) multiplication.
 4. Use the `sparsebase::experiment::ConcreteExperiment` api to automate the above steps.
 
 A single experiment runs all the preprocessings on all the loaded data. Then for all the generated data, i.e. loaded data times preprocessings, the experiment suite runs user defined kernels.
@@ -31,7 +31,7 @@ In order to run a Sparsebase experiment first we need to create a `sparsebase::e
 
 Then we will add `DataLoader`, `Preprocess`, and `Kernel`functions, run the experiment, and analyze its results.
 
-### 2. Add `DataLoader` functions to the Experiment.
+### 2. Add `DataLoaderFunction` to the Experiment.
 Create data loaders for the two different file formats we are going to use. Also create and pass the vectors as file specific parameters. These vectors are going to be used in the calculation.
 
 ```c++
@@ -55,7 +55,7 @@ Note that functions passed to `AddDataLoader` member function of the `experiment
 In this example we are using the pre-written `experiment::LoadCSR`function by passing the correct file reader for the respective files.
 We also provide the file/files to be read for each data loader, and file specific parameters that are going to be used throughout the experiment as pairs.
 
-### 3. Add multiple `PreprocessFunction` to the experiment.
+### 3. Add `PreprocessFunction` to the experiment.
 Next, create two preprocessing functions, first use `experiment::Pass` function to run your kernels on the original data. Also add `experiment::Reorder` with the ordering of your choosing. In this case we add `RCMReorder`.
 ```c++
   // add dummy preprocessing to run kernels without reordering
@@ -69,7 +69,7 @@ The second parameter, preprocess function, must follow the function definition `
 Last parameter of this function is the preprocessing specific parameters. Here the preprocessing algorithms we wish to use does not use any parameters.
 
 
-### 4. Add multiple `KernelFunction` to the experiment.
+### 4. Add `KernelFunction` to the experiment.
 After loading data and applying some preprocessing on it, now, we can add our own functions that we are actually interested in. In the file you can find two functions for SMPV; `spmv` and `spmv_par`. The first one is a single-threaded implementation and the second one uses `omp` to parallelization. 
 
 Use the `AddKernel` function of the experiment api to add these functions to the pipeline.
@@ -142,8 +142,8 @@ Compile the code using `g++`. We assume SparseBase has already been installed in
 
 While in the directory `tutorials/003_experiment/start_here`, execute the following commands:
 ```bash
-g++ -std=c++17 tutorial_003.cc -lsparsebase -lopenmp -std=c++17 -o experiment.out
-./experiment.out ../../../examples/data/com-dblp.uedgelist ../../../examples/data/ash958.mtx
+g++ -std=c++17 tutorial_003.cc -lsparsebase -lgomp -fopenmp -std=c++17 -o experiment.out
+./experiment.out ../../../examples/data/ash958.mtx ../../../examples/data/com-dblp.uedgelist 
 ```
 
 You should see an output similar to the following:

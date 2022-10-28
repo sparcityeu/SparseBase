@@ -83,7 +83,10 @@ void fill_r(float * arr, unsigned int size){
 
 int main(int argc, char **argv){
 
-  experiment::ConcreteExperiment exp;
+  // create the experiment
+  /*
+   * YOUR CODE GOES HERE
+   */
 
   // add data loaders for the files we will use
   // also init the vector for the kernels and pass it as a file specific parameter
