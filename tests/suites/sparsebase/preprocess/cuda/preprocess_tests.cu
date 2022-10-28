@@ -30,8 +30,10 @@ TEST(JaccardTest, Jaccard) {
             format::cuda::CUDAArray<float>::get_format_id_static());
   utils::converter::ConverterOrderOne<float> converter;
   auto jac_cpu_array =
-      converter.Convert<format::Array<float>>(jac_array, {&gpu_context});
+      converter.Convert<format::Array<float>>(jac_array, {&cpu_context});
   EXPECT_EQ(jac_cpu_array->get_dimensions()[0], 4);
-  EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, false),
+  EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&gpu_context}, false),
                utils::DirectExecutionNotAvailableException<std::vector<std::type_index>>);
+  EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, false),
+               utils::FunctionNotFoundException);
 }
