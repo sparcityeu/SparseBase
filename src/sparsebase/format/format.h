@@ -204,6 +204,10 @@ class FormatOrderOne : public FormatImplementation<FormatOrderOne<ValueType>, Fo
     ToType<ValueType> *Convert(context::Context *to_context=nullptr,
                                bool is_move_conversion = false);
 
+  template <template <typename> typename ToType>
+  ToType<ValueType> *Convert(const std::vector<context::Context *>&to_context,
+                             bool is_move_conversion = false);
+
   template <template <typename> typename ToType, typename ToValueType>
   ToType<ToValueType> *Convert(bool is_move_conversion = false);
 
@@ -243,6 +247,9 @@ class FormatOrderTwo
     ToType<IDType, NNZType, ValueType> *
     Convert(context::Context *to_context=nullptr, bool is_move_conversion = false);
 
+  template <template <typename, typename, typename> class ToType>
+  ToType<IDType, NNZType, ValueType> *
+  Convert(const std::vector<context::Context *>&to_context, bool is_move_conversion = false);
 
   template <template <typename, typename, typename> class ToType, typename ToIDType, typename ToNNZType, typename ToValueType>
   ToType<ToIDType, ToNNZType, ToValueType> *
@@ -596,6 +603,22 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
       ->template AsAbsolute<ToType<ValueType>>();
 }
 template <typename ValueType>
+template <template <typename> class ToType>
+ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
+    const std::vector<context::Context *>&to_contexts, bool is_move_conversion) {
+  static_assert(std::is_base_of<format::FormatOrderOne<ValueType>,
+      ToType<ValueType>>::value,
+      "T must be a format::Format");
+  sparsebase::utils::converter::ConverterOrderOne<ValueType> converter;
+  std::vector<context::Context*> vec = {this->get_context()};
+  std::vector<context::Context *>actual_contexts =
+      to_contexts.empty() ?  vec : to_contexts;
+  return converter
+      .Convert(this, ToType<ValueType>::get_format_id_static(), actual_contexts,
+               is_move_conversion)
+      ->template AsAbsolute<ToType<ValueType>>();
+}
+template <typename ValueType>
 template <template <typename> typename ToType, typename ToValueType>
 ToType<ToValueType> *FormatOrderOne<ValueType>::Convert(bool is_move_conversion){
   static_assert(
@@ -634,6 +657,26 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
   return converter
       .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                actual_context, is_move_conversion)
+      ->template AsAbsolute<ToType<IDType, NNZType, ValueType>>();
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+template <template <typename, typename, typename> class ToType>
+ToType<IDType, NNZType, ValueType> *
+FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
+    const std::vector<context::Context *>&to_contexts, bool is_move_conversion) {
+  static_assert(
+      std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
+          ToType<IDType, NNZType, ValueType>>::value,
+      "T must be an order two format");
+  sparsebase::utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>
+      converter;
+  std::vector<context::Context*> vec = {this->get_context()};
+  std::vector<context::Context *>actual_contexts =
+      to_contexts.empty() ?  vec : to_contexts;
+  return converter
+      .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
+               actual_contexts, is_move_conversion)
       ->template AsAbsolute<ToType<IDType, NNZType, ValueType>>();
 }
 

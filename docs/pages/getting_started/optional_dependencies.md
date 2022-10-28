@@ -1,11 +1,14 @@
 # Optional Dependencies
 
 Optional dependencies in the context of sparsebase are libraries that for one reason 
-or another can not be directly bundled sparsebase. 
+or another can not be directly bundled with sparsebase. 
 
 ## Optional Dependency List
 
 - [METIS](https://github.com/KarypisLab/METIS)
+  - If your code is compiled without CMake, make sure to linking against metis.  
+- [Rabbit order](https://github.com/araij/rabbit_order)
+  - If your code is compiled without CMake, make sure to link against [numa](https://man7.org/linux/man-pages/man3/numa.3.html).
 
 ## Compiling With An Optional Dependency
 
@@ -21,7 +24,7 @@ However, if cmake fails to find the library the following options could also be 
 - `<dependency>_LIB_DIR` : Path to the directory containing the `.so`, `.a`, `.dll` file.
 - `<dependency>_INC_DIR` : Path to the directory containing the header files.
 
-```{note}
+```{warning}
 When passing paths to cmake, we suggest using absolute paths and avoiding symbols like `~` and `*`
 ```
 
