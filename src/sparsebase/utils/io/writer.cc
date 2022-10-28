@@ -1,7 +1,9 @@
 #include "writer.h"
+
+#include <string>
+
 #include "sparse_file_format.h"
 #include "sparsebase/utils/exception.h"
-#include <string>
 
 namespace sparsebase {
 
@@ -17,7 +19,6 @@ BinaryWriterOrderTwo<IDType, NNZType, ValueType>::BinaryWriterOrderTwo(
 template <typename IDType, typename NNZType, typename ValueType>
 void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCOO(
     format::COO<IDType, NNZType, ValueType> *coo) const {
-
   SbffObject sbff("coo");
   sbff.AddDimensions(coo->get_dimensions());
   sbff.AddArray("row", coo->get_row(), coo->get_num_nnz());
@@ -33,7 +34,6 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCOO(
 template <typename IDType, typename NNZType, typename ValueType>
 void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCSR(
     format::CSR<IDType, NNZType, ValueType> *csr) const {
-
   SbffObject sbff("csr");
 
   int n, m;
@@ -68,15 +68,14 @@ void BinaryWriterOrderOne<T>::WriteArray(format::Array<T> *arr) const {
   } else {
     throw WriterException("Cannot write an Array with void ValueType");
   }
-
 }
 
 #if !defined(_HEADER_ONLY)
 #include "init/writer.inc"
 #endif
 
-} // namespace io
+}  // namespace io
 
-} // namespace utils
+}  // namespace utils
 
-} // namespace sparsebase
+}  // namespace sparsebase
