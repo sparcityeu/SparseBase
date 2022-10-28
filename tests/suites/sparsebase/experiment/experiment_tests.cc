@@ -43,6 +43,7 @@ TEST(experiment, Basics){
   exp.AddPreprocess("id", preprocess_f, {});
   exp.Run(2, true);
   auto aux = exp.GetAuxiliary();
+  EXPECT_EQ(aux.size(), 1);
   for(const auto & [id, data]: aux){
     cout << id << endl;
 

@@ -106,9 +106,9 @@ int main(int argc, char **argv){
 
   // add kernels that will carry out the SPMV
   // init random vals large enough for all the files and pass it as a kernel specific parameter
-  auto vals = new float[1049866];
-  fill_r(vals, 1049866);
-  auto vals_v = Array<float>(1049866, vals);
+  auto vals = new float[2*1049866];
+  fill_r(vals, 2*1049866);
+  auto vals_v = Array<float>(2*1049866, vals);
   exp.AddKernel("single-threaded", spmv, vals_v);
   exp.AddKernel("omp-parallel", spmv_par, vals_v);
 
