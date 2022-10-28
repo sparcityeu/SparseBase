@@ -942,6 +942,29 @@ public:
   virtual ~PartitionPreprocessType();
 };
 
+#ifdef USE_RABBIT_ORDER
+
+#define BOOST_ATOMIC_DETAIL_NO_CXX11_IS_TRIVIALLY_COPYABLE
+#define BOOST_ATOMIC_DETAIL_NO_HAS_UNIQUE_OBJECT_REPRESENTATIONS
+#define BOOST_ATOMIC_NO_CLEAR_PADDING
+
+struct RabbitReorderParams : PreprocessParams {
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class RabbitReorder : public ReorderPreprocessType<IDType> {
+public:
+  typedef RabbitReorderParams ParamsType;
+  RabbitReorder();
+  explicit RabbitReorder(RabbitReorderParams);
+
+protected:
+  static IDType *CalculateReorderCSR(std::vector<format::Format *> formats,
+                                     PreprocessParams *params);
+};
+
+#endif
+
 
 #ifdef USE_METIS
 
@@ -1518,7 +1541,7 @@ struct GrayReorderParams : PreprocessParams {
   int nnz_threshold;
   int sparse_density_group_size;
   explicit GrayReorderParams(){}
-  GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size): resolution(r), nnz_threshold(nnz_threshold), sparse_density_group_size(group_size){}
+  GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size): resolution(r), nnz_threshold(nnz_thresh), sparse_density_group_size(group_size){}
 };
 
 template <typename IDType, typename NNZType, typename ValueType>

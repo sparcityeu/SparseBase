@@ -11,9 +11,14 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <set>
+#include <map>
 #include <algorithm>
 #include <limits>
 
+#ifdef USE_RABBIT_ORDER
+#include "rabbit_order.hpp"
+#endif
 using namespace sparsebase::format;
 
 namespace sparsebase {
@@ -1131,10 +1136,11 @@ void GrayReorder<IDType, NNZType, ValueType>::print_dec_in_bin(unsigned long n, 
   }
 
   // printing binary array in reverse order
-  //for (int j = i - 1; j >= 0; j--)
-    //std::cout << binaryNum[j];
-
-  //std::cout << "\n";
+  std::string bin_nums="";
+  for (int j = i - 1; j >= 0; j--)
+    bin_nums=bin_nums+std::to_string(binaryNum[j]);
+  utils::Logger l(typeid(GrayReorder));
+  l.Log(bin_nums, utils::LogLevel::LOG_LVL_INFO);
 }
 
 // not sure if all IDTypes work for this
@@ -1168,7 +1174,8 @@ bool GrayReorder<IDType, NNZType, ValueType>::is_banded(int nnz, int n_cols, NNZ
   if (double(band_count) / nnz >= 0.3) {
     banded = true;
   }
-  //std::cout << "NNZ % in band: " << double(band_count) / nnz << std::endl;
+  utils::Logger logger(typeid(GrayReorder));
+  logger.Log("NNZ % in band: "+std::to_string(double(band_count) / nnz), utils::LogLevel::LOG_LVL_INFO);
   return banded;
 }
 
@@ -1222,17 +1229,15 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
   bool is_sparse_banded =
       is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
                 csr->get_row_ptr(), csr->get_col(), sparse_v_order);
-  //if (is_sparse_banded)
-    //std::cout << "Sparse Sub-Matrix highly banded - Performing just density "
-      //           "reordering"
-       //       << std::endl;
+  utils::Logger logger(typeid(GrayReorder));
+  if (is_sparse_banded)
+    logger.Log("Sparse Sub-Matrix highly banded - Performing just density reordering", utils::LogLevel::LOG_LVL_INFO);
 
   bool is_dense_banded =
       is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
                 csr->get_row_ptr(), csr->get_col(), dense_v_order);
-  //if (is_dense_banded)
-    //std::cout << "Dense Sub-Matrix highly banded - Maintaining structure"
-      //        << std::endl;
+  if (is_dense_banded)
+    logger.Log("Dense Sub-Matrix highly banded - Maintaining structure", utils::LogLevel::LOG_LVL_INFO);
 
   std::sort(sparse_v_order.begin(), sparse_v_order.end(),
             [&](int i, int j) -> bool {
@@ -1310,8 +1315,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
           (last_row_nnz_count != (csr->get_row_ptr()[sparse_v_order[i] + 1] -
                                   csr->get_row_ptr()[sparse_v_order[i]]))) {
         group_count = group_count + 1;
-        //std::cout << "Rows[" << start_split_reorder << " -> " << i - 1
-         //         << "] NNZ Count: " << last_row_nnz_count << "\n";
+        logger.Log("Rows["+std::to_string(start_split_reorder)+" -> "+std::to_string(i - 1)+"] NNZ Count: "+std::to_string(last_row_nnz_count), utils::LogLevel::LOG_LVL_INFO);
         // update nnz count for current row
         last_row_nnz_count = csr->get_row_ptr()[sparse_v_order[i] + 1] -
                              csr->get_row_ptr()[sparse_v_order[i]];
@@ -1319,8 +1323,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
         // if group size achieved, start reordering section until this row
         if (group_count == group_size) {
           end_split_reorder = i;
-          //std::cout << "Reorder Group[" << start_split_reorder << " -> "
-           //         << end_split_reorder - 1 << "]\n";
+          logger.Log("Reorder Group["+std::to_string(start_split_reorder)+" -> "+std::to_string(end_split_reorder - 1)+"]", utils::LogLevel::LOG_LVL_INFO);
           // start next split the split for processing
 
           // process and reorder the reordered_matrix array till this point
@@ -1344,8 +1347,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
                  reorder_section[a - start_split_reorder].second) &&
                 (a < 100000)) {
 
-              //std::cout << "Rows[" << dec_begin_ind << " -> " << a
-                //        << "] Grey Order: " << dec_begin << "// Binary: \n";
+              logger.Log("Rows["+std::to_string(dec_begin_ind)+" -> "+std::to_string(a)+"] Grey Order: "+std::to_string(dec_begin)+"// Binary:", utils::LogLevel::LOG_LVL_INFO);
               // print_dec_in_bin(bin_to_grey(dec_begin));
 
               dec_begin = reorder_section[a - start_split_reorder].second;
@@ -1380,9 +1382,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
       // when reaching end of sparse submatrix, reorder section
       if (i == sparse_v_order.size() - 1) {
         end_split_reorder = sparse_v_order.size();
-        //std::cout << "Rows[" << start_split_reorder << " -> "
-                  //<< end_split_reorder - 1
-                  //<< "] NNZ Count: " << last_row_nnz_count << "\n";
+        logger.Log("Rows["+std::to_string(start_split_reorder)+ " -> "+ std::to_string(end_split_reorder - 1)+"] NNZ Count: "+std::to_string(last_row_nnz_count), utils::LogLevel::LOG_LVL_INFO);
         if (!decresc_grey_order) {
           sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
           decresc_grey_order = !decresc_grey_order;
@@ -1401,8 +1401,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
 
   if (!is_dense_banded) {
 
-    //std::cout << "Rows [" << sparse_dense_split << "-" << n_rows
-      //        << "] Starting Dense Sorting through NNZ and Grey code..\n";
+    logger.Log("Rows ["+std::to_string(sparse_dense_split)+"-"+std::to_string(n_rows)+"] Starting Dense Sorting through NNZ and Grey code..", utils::LogLevel::LOG_LVL_INFO);
 
     for (int i = 0; i < dense_v_order.size(); i++) {
       // if first row, establish the nnz amount, and starting index
@@ -1430,7 +1429,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(std::vector<format::F
       reorder_section.push_back(
           row_grey_pair(dense_v_order[i], grey_bin_to_dec(decimal_bit_map)));
     }
-    //std::cout << "Reordering Rows based on grey values...\n";
+    logger.Log("Reordering Rows based on grey values...", utils::LogLevel::LOG_LVL_INFO);
     std::sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
 
     for (int a = 0; a < dense_v_order.size(); a++) {
@@ -1473,9 +1472,55 @@ IDType *PartitionPreprocessType<IDType>::Partition(
 template <typename IDType>
 PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 
+#ifdef USE_RABBIT_ORDER
+
+template <typename IDType, typename NNZType, typename ValueType>
+RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      CalculateReorderCSR);
+  this->params_ =
+      std::unique_ptr<RabbitReorderParams>(new RabbitReorderParams);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder(RabbitReorderParams params): RabbitReorder(){}
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *RabbitReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
+    std::vector<format::Format *> formats, PreprocessParams *params) {
+  using rabbit_order::vint;
+  typedef std::vector<std::vector< std::pair<vint, float>  > > adjacency_list;
+
+  CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  IDType n = csr->get_dimensions()[0];
+  IDType *counts = new IDType[n]();
+  auto* idx = csr->get_row_ptr();
+  auto* adj = csr->get_col();
+
+  adjacency_list G(n);
+  for (size_t i = 0; i < n; i++) {
+    for (size_t j = idx[i]; j < idx[i + 1]; j++) {
+      vint source = i;
+      vint target = adj[j];
+      G[source].push_back(std::make_pair((vint)target,1.0f));
+    }
+  }
+  const auto g = rabbit_order::aggregate(std::move(G));
+  const auto p = rabbit_order::compute_perm(g);
+  IDType *ptr = new IDType[n];
+  std::copy(p.get(),p.get()+n, ptr);
+  return ptr;
+}
+
+#endif
+
 #ifdef USE_METIS
 
-#include "sparsebase/external/metis/metis.h"
+#include <metis.h>
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition(){
@@ -1539,7 +1584,6 @@ IDType* MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(std::vector<for
   }
   return partition;
 }
-
 
 #endif
 
