@@ -969,13 +969,6 @@ protected:
 #ifdef USE_METIS
 
 namespace metis {
-//! Objectives to be optimized by METIS
-typedef enum {
-  METIS_OBJTYPE_CUT,
-  METIS_OBJTYPE_VOL,
-  METIS_OBJTYPE_NODE
-} mobjtype_et;
-namespace metis {
   //! Objectives to be optimized by METIS
   typedef enum {
     METIS_OBJTYPE_CUT,
