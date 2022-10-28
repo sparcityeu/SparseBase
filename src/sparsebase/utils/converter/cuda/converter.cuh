@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -17,37 +17,32 @@ namespace utils {
 namespace converter {
 namespace cuda {
 template <typename ValueType>
-sparsebase::format::Format *
-CUDAArrayArrayConditionalFunction(sparsebase::format::Format *source,
-                                  sparsebase::context::Context *context);
+sparsebase::format::Format *CUDAArrayArrayConditionalFunction(
+    sparsebase::format::Format *source, sparsebase::context::Context *context);
 
 template <typename ValueType>
-sparsebase::format::Format *
-ArrayCUDAArrayConditionalFunction(sparsebase::format::Format *source,
-                                  sparsebase::context::Context *context);
+sparsebase::format::Format *ArrayCUDAArrayConditionalFunction(
+    sparsebase::format::Format *source, sparsebase::context::Context *context);
 
 template <typename IDType, typename NNZType, typename ValueType>
-sparsebase::format::Format *
-CsrCUDACsrConditionalFunction(sparsebase::format::Format *source,
-                              sparsebase::context::Context *context);
+sparsebase::format::Format *CsrCUDACsrConditionalFunction(
+    sparsebase::format::Format *source, sparsebase::context::Context *context);
 
 template <typename IDType, typename NNZType, typename ValueType>
-sparsebase::format::Format *
-CUDACsrCsrConditionalFunction(sparsebase::format::Format *source,
-                              sparsebase::context::Context *context);
+sparsebase::format::Format *CUDACsrCsrConditionalFunction(
+    sparsebase::format::Format *source, sparsebase::context::Context *context);
 
 template <typename IDType, typename NNZType, typename ValueType>
-sparsebase::format::Format *
-CUDACsrCUDACsrConditionalFunction(sparsebase::format::Format *source,
-                                  sparsebase::context::Context *context);
+sparsebase::format::Format *CUDACsrCUDACsrConditionalFunction(
+    sparsebase::format::Format *source, sparsebase::context::Context *context);
 
 bool CUDAPeerToPeer(sparsebase::context::Context *from,
                     sparsebase::context::Context *to);
 
-} // namespace cuda
+}  // namespace cuda
 
-} // namespace converter
-} // namespace utils
-} // namespace sparsebase
+}  // namespace converter
+}  // namespace utils
+}  // namespace sparsebase
 
-#endif // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
+#endif  // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_

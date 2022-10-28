@@ -12,4 +12,4 @@ bool CPUContext::IsEquivalent(Context *rhs) const {
   }
 }
 Context::~Context() {}
-} // namespace sparsebase::context
+}  // namespace sparsebase::context

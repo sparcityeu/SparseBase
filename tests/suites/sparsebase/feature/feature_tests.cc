@@ -3,9 +3,9 @@
 //
 #include <iostream>
 
+#include "gtest/gtest.h"
 #include "sparsebase/feature/feature.h"
 #include "sparsebase/format/format.h"
-#include "gtest/gtest.h"
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
@@ -21,7 +21,7 @@ using namespace feature;
 using namespace context;
 
 class COOMock : public ::testing::Test {
-protected:
+ protected:
   COO<vertex_type, edge_type, value_type> *coo;
   vertex_type rows[6] = {0, 0, 1, 1, 2, 3};
   edge_type cols[6] = {0, 1, 1, 2, 3, 3};
@@ -111,7 +111,9 @@ TEST_F(COOMock, ExtractorExtract) {
       raw[Degrees<vertex_type, edge_type,
                   value_type>::get_feature_id_static()]);
 
-  EXPECT_THROW(engine.Extract(coo, {&cpu_context}, false), utils::DirectExecutionNotAvailableException<std::vector<std::type_index>>);
+  EXPECT_THROW(engine.Extract(coo, {&cpu_context}, false),
+               utils::DirectExecutionNotAvailableException<
+                   std::vector<std::type_index>>);
   engine.Add(Feature(
       DegreeDistribution<vertex_type, edge_type, value_type, feature_type>{}));
   auto raw2 = engine.Extract(coo, {&cpu_context}, true);
@@ -120,7 +122,9 @@ TEST_F(COOMock, ExtractorExtract) {
       raw2[DegreeDistribution<vertex_type, edge_type, value_type,
                               feature_type>::get_feature_id_static()]);
   EXPECT_EQ(degree_dist[4], 0);
-  EXPECT_THROW(engine.Extract(coo, {&cpu_context}, false),  utils::DirectExecutionNotAvailableException<std::vector<std::type_index>>);
+  EXPECT_THROW(engine.Extract(coo, {&cpu_context}, false),
+               utils::DirectExecutionNotAvailableException<
+                   std::vector<std::type_index>>);
 }
 
 TEST_F(COOMock, ExtractorExtractGiven) {
@@ -136,7 +140,9 @@ TEST_F(COOMock, ExtractorExtractGiven) {
 
   auto results = Extractor::Extract(features, coo, {&cpu_context}, true);
   EXPECT_EQ(results.size(), 2);
-  EXPECT_THROW(Extractor::Extract(features, coo, {&cpu_context}, false), utils::DirectExecutionNotAvailableException<std::vector<std::type_index>>);
+  EXPECT_THROW(Extractor::Extract(features, coo, {&cpu_context}, false),
+               utils::DirectExecutionNotAvailableException<
+                   std::vector<std::type_index>>);
 }
 
 // ClassMatcherMixin functions are protected
