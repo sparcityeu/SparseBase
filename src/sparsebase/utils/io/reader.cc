@@ -1,8 +1,5 @@
 #include "sparsebase/utils/io/reader.h"
-#include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
-#include "sparsebase/utils/exception.h"
-#include "sparsebase/utils/io/sparse_file_format.h"
+
 #include <algorithm>
 #include <cstring>
 #include <iostream>
@@ -10,6 +7,11 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "sparsebase/format/format.h"
+#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/utils/exception.h"
+#include "sparsebase/utils/io/sparse_file_format.h"
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
@@ -25,18 +27,19 @@ template <typename IDType, typename NNZType, typename ValueType>
 EdgeListReader<IDType, NNZType, ValueType>::EdgeListReader(
     std::string filename, bool weighted, bool remove_duplicates,
     bool remove_self_edges, bool read_undirected, bool square)
-    : filename_(filename), weighted_(weighted),
+    : filename_(filename),
+      weighted_(weighted),
       remove_duplicates_(remove_duplicates),
-      remove_self_edges_(remove_self_edges), read_undirected_(read_undirected),
+      remove_self_edges_(remove_self_edges),
+      read_undirected_(read_undirected),
       square_(square) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType> *
-EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
+format::COO<IDType, NNZType, ValueType>
+    *EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
-
-    if constexpr (std::is_same_v<ValueType, void>){
+    if constexpr (std::is_same_v<ValueType, void>) {
       if (weighted_) {
         throw ReaderException("Cannot read weights into ValueType void");
       }
@@ -47,8 +50,6 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       std::vector<std::tuple<IDType, IDType>> edges;
       // vertices are 0-based
       while (infile >> u >> v) {
-
-
         if (u != v || !remove_self_edges_) {
           edges.push_back(std::tuple<IDType, IDType>(u, v));
 
@@ -76,13 +77,12 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
            });
 
       if (remove_duplicates_) {
-        auto unique_it =
-            unique(edges.begin(), edges.end(),
-                   [](const std::tuple<IDType, IDType> &t1,
-                      const std::tuple<IDType, IDType> t2) {
-                     return (std::get<0>(t1) == std::get<0>(t2)) &&
-                            (std::get<1>(t1) == std::get<1>(t2));
-                   });
+        auto unique_it = unique(edges.begin(), edges.end(),
+                                [](const std::tuple<IDType, IDType> &t1,
+                                   const std::tuple<IDType, IDType> t2) {
+                                  return (std::get<0>(t1) == std::get<0>(t2)) &&
+                                         (std::get<1>(t1) == std::get<1>(t2));
+                                });
         edges.erase(unique_it, edges.end());
       }
 
@@ -99,8 +99,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 
       return new format::COO<IDType, NNZType, ValueType>(n, m, nnz, row, col,
                                                          vals, format::kOwned);
-    }
-    else {
+    } else {
       IDType u, v;
       ValueType w = 0;
       IDType m = 0;
@@ -109,7 +108,6 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
       std::vector<std::tuple<IDType, IDType, ValueType>> edges;
       // vertices are 0-based
       while (infile >> u >> v) {
-
         if (weighted_) {
           infile >> w;
         }
@@ -164,8 +162,7 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
         row[i] = std::get<0>(edges[i]);
         col[i] = std::get<1>(edges[i]);
 
-        if (weighted_)
-          vals[i] = std::get<2>(edges[i]);
+        if (weighted_) vals[i] = std::get<2>(edges[i]);
       }
 
       return new format::COO<IDType, NNZType, ValueType>(n, m, nnz, row, col,
@@ -178,8 +175,8 @@ EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType> *
-EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
+format::CSR<IDType, NNZType, ValueType>
+    *EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
@@ -193,8 +190,7 @@ EdgeListReader<IDType, NNZType, ValueType>::~EdgeListReader(){};
 template <typename IDType, typename NNZType, typename ValueType>
 MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
                                                  bool convert_to_zero_index)
-    : filename_(filename),
-      convert_to_zero_index_(convert_to_zero_index) {
+    : filename_(filename), convert_to_zero_index_(convert_to_zero_index) {
   std::ifstream fin(filename_);
 
   if (fin.is_open()) {
@@ -224,7 +220,8 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (object == "vector") {
     options.object =
         MTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
-    throw ReaderException("Matrix market reader does not currently support reading vectors.");
+    throw ReaderException(
+        "Matrix market reader does not currently support reading vectors.");
   } else {
     throw ReaderException(
         "Illegal value for the 'object' option in matrix market header");
@@ -244,19 +241,31 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   if (field == "real") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::real;
-    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "double") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::double_field;
-    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "complex") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
-    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "integer") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
-    if constexpr(std::is_same<void, ValueType>::value) throw ReaderException("You are reading the values of the matrix market file into a void array");
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "pattern") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::pattern;
@@ -277,7 +286,8 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (symmetry == "hermitian") {
     options.symmetry =
         MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::hermitian;
-    throw ReaderException("Matrix market reader does not currently support hermitian symmetry.");
+    throw ReaderException(
+        "Matrix market reader does not currently support hermitian symmetry.");
   } else {
     throw ReaderException(
         "Illegal value for the 'symmetry' option in matrix market header");
@@ -287,8 +297,8 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
 
 template <typename IDType, typename NNZType, typename ValueType>
 template <bool weighted>
-format::COO<IDType, NNZType, ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
+format::COO<IDType, NNZType, ValueType>
+    *MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   std::ifstream fin(filename_);
   // Ignore headers and comments:
   while (fin.peek() == '%')
@@ -303,101 +313,117 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   IDType *long_rows = new IDType[total_values];
   IDType *long_cols = new IDType[total_values];
   ValueType *long_vals = nullptr;
-  if constexpr (weighted)
-    long_vals= new ValueType[total_values];
+  if constexpr (weighted) long_vals = new ValueType[total_values];
   NNZType num_nnz = 0;
   for (format::DimensionType l = 0; l < total_values; l++) {
     ValueType w;
     fin >> w;
 
-    if (w != 0){
-      long_cols[num_nnz] = l/N;
-      long_rows[num_nnz] = l%N;
-      if constexpr (weighted)
-        long_vals[num_nnz] = w;
+    if (w != 0) {
+      long_cols[num_nnz] = l / N;
+      long_rows[num_nnz] = l % N;
+      if constexpr (weighted) long_vals[num_nnz] = w;
       num_nnz++;
-
     }
-    //nnz_counter += w != 0;
+    // nnz_counter += w != 0;
   }
 
   IDType *row = new IDType[num_nnz];
   IDType *col = new IDType[num_nnz];
-  std::copy(long_rows, long_rows+num_nnz, row);
-  std::copy(long_cols, long_cols+num_nnz, col);
+  std::copy(long_rows, long_rows + num_nnz, row);
+  std::copy(long_cols, long_cols + num_nnz, col);
   ValueType *vals = nullptr;
   if constexpr (weighted) {
     vals = new ValueType[num_nnz];
-    std::copy(long_vals, long_vals+num_nnz, vals);
+    std::copy(long_vals, long_vals + num_nnz, vals);
   }
 
-  return new format::COO<IDType, NNZType, ValueType>(N, M, num_nnz, row, col, vals, format::kOwned);
+  return new format::COO<IDType, NNZType, ValueType>(N, M, num_nnz, row, col,
+                                                     vals, format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+format::COO<IDType, NNZType, ValueType>
+    *MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   bool weighted = options_.field != MTXFieldOptions::pattern;
-  if (options_.format == MTXFormatOptions::array){
-    if (weighted){
+  if (options_.format == MTXFormatOptions::array) {
+    if (weighted) {
       if constexpr (!std::is_same_v<ValueType, void>) {
         return this->ReadArrayIntoCOO<true>();
-      } else{
-        throw utils::ReaderException("Weight type for weighted graphs can not be void");
+      } else {
+        throw utils::ReaderException(
+            "Weight type for weighted graphs can not be void");
       }
-    }
-    else
-      throw utils::ReaderException("Matrix market files with array format cannot have the field 'pattern' ");
-  } else if (options_.format == MTXFormatOptions::coordinate){
-    if (weighted){
+    } else
+      throw utils::ReaderException(
+          "Matrix market files with array format cannot have the field "
+          "'pattern' ");
+  } else if (options_.format == MTXFormatOptions::coordinate) {
+    if (weighted) {
       if (options_.symmetry == MTXSymmetryOptions::general)
         if (this->convert_to_zero_index_)
-          return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::general, true>();
+          return this->ReadCoordinateIntoCOO<
+              true, (int)MTXSymmetryOptions::general, true>();
         else
-          return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::general, false>();
+          return this->ReadCoordinateIntoCOO<
+              true, (int)MTXSymmetryOptions::general, false>();
       else if (options_.symmetry == MTXSymmetryOptions::symmetric)
         if (this->convert_to_zero_index_)
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::symmetric, true>();
+          return this->ReadCoordinateIntoCOO<
+              true, (int)MTXSymmetryOptions::symmetric, true>();
         else
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::symmetric, false>();
+          return this->ReadCoordinateIntoCOO<
+              true, (int)MTXSymmetryOptions::symmetric, false>();
       else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
         if (this->convert_to_zero_index_)
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::skew_symmetric, true>();
+          return this->ReadCoordinateIntoCOO<
+              true, (int)MTXSymmetryOptions::skew_symmetric, true>();
         else
-        return this->ReadCoordinateIntoCOO<true, (int)MTXSymmetryOptions::skew_symmetric, false>();
+          return this->ReadCoordinateIntoCOO<
+              true, (int)MTXSymmetryOptions::skew_symmetric, false>();
       else
         throw ReaderException(
-            "Can't read matrix market symmetry options besides general, symmetric, and skew_symmetric");
+            "Can't read matrix market symmetry options besides general, "
+            "symmetric, and skew_symmetric");
     } else {
       if (options_.symmetry == MTXSymmetryOptions::general)
         if (this->convert_to_zero_index_)
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::general, true>();
+          return this->ReadCoordinateIntoCOO<
+              false, (int)MTXSymmetryOptions::general, true>();
         else
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::general, false>();
+          return this->ReadCoordinateIntoCOO<
+              false, (int)MTXSymmetryOptions::general, false>();
       else if (options_.symmetry == MTXSymmetryOptions::symmetric)
         if (this->convert_to_zero_index_)
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::symmetric, true>();
+          return this->ReadCoordinateIntoCOO<
+              false, (int)MTXSymmetryOptions::symmetric, true>();
         else
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::symmetric, false>();
+          return this->ReadCoordinateIntoCOO<
+              false, (int)MTXSymmetryOptions::symmetric, false>();
       else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
         if (this->convert_to_zero_index_)
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::skew_symmetric, true>();
+          return this->ReadCoordinateIntoCOO<
+              false, (int)MTXSymmetryOptions::skew_symmetric, true>();
         else
-        return this->ReadCoordinateIntoCOO<false, (int)MTXSymmetryOptions::skew_symmetric, false>();
+          return this->ReadCoordinateIntoCOO<
+              false, (int)MTXSymmetryOptions::skew_symmetric, false>();
       else
         throw ReaderException(
-            "Can't read matrix market symmetry options besides general, symmetric, and skew_symmetric");
+            "Can't read matrix market symmetry options besides general, "
+            "symmetric, and skew_symmetric");
     }
   } else {
-    throw ReaderException("Can't read matrix market formats besides array and coordinate");
+    throw ReaderException(
+        "Can't read matrix market formats besides array and coordinate");
   }
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
+format::Array<ValueType>
+    *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
   if constexpr (std::is_same_v<ValueType, void>)
-    throw ReaderException("Cannot read a matrix market file into an Array with void ValueType");
-  else{
+    throw ReaderException(
+        "Cannot read a matrix market file into an Array with void ValueType");
+  else {
     std::ifstream fin(filename_);
 
     // Ignore headers and comments:
@@ -410,8 +436,9 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
 
     fin >> M >> N >> L;
     if (M != 1 && N != 1) {
-      throw ReaderException("Trying to read a 2D matrix with multiple rows "
-                            "and multiple columns into dense array");
+      throw ReaderException(
+          "Trying to read a 2D matrix with multiple rows "
+          "and multiple columns into dense array");
     }
     fin.close();
     auto coo = ReadCOO();
@@ -434,8 +461,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
 
 template <typename IDType, typename NNZType, typename ValueType>
 template <bool weighted, int symm, bool conv_to_zero>
-format::COO<IDType, NNZType, ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
+format::COO<IDType, NNZType, ValueType>
+    *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
@@ -496,7 +523,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
             M, N, L, row, col, nullptr, format::kOwned);
         return coo;
       }
-    } else if constexpr (symm == (int)MTXSymmetryOptions::symmetric || symm == (int)MTXSymmetryOptions::skew_symmetric) {
+    } else if constexpr (symm == (int)MTXSymmetryOptions::symmetric ||
+                         symm == (int)MTXSymmetryOptions::skew_symmetric) {
       IDType *row = new IDType[L * 2];
       IDType *col = new IDType[L * 2];
       NNZType actual_nnzs = 0;
@@ -530,8 +558,9 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
         if (check_diagonal && m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
-          if constexpr (weighted && !std::is_same_v<void, ValueType> && weighted)
-            vals[actual_nnzs] = vals[actual_nnzs-1];
+          if constexpr (weighted && !std::is_same_v<void, ValueType> &&
+                        weighted)
+            vals[actual_nnzs] = vals[actual_nnzs - 1];
           actual_nnzs++;
         }
       }
@@ -541,13 +570,13 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
       if (symm == (int)MTXSymmetryOptions::symmetric && actual_nnzs != L * 2) {
         actual_rows = new IDType[actual_nnzs];
         actual_cols = new IDType[actual_nnzs];
-        std::copy(row, row+actual_nnzs, actual_rows);
-        std::copy(col, col+actual_nnzs, actual_cols);
+        std::copy(row, row + actual_nnzs, actual_rows);
+        std::copy(col, col + actual_nnzs, actual_cols);
         delete[] row;
         delete[] col;
         if constexpr (weighted && !std::is_same_v<void, ValueType>) {
           actual_vals = new ValueType[actual_nnzs];
-          std::copy(vals, vals+actual_nnzs, actual_vals);
+          std::copy(vals, vals + actual_nnzs, actual_vals);
           delete[] vals;
         }
       }
@@ -556,15 +585,17 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
           format::kOwned);
       return coo;
     } else {
-      throw ReaderException("Reader only supports general, symmetric, and skew-symmetric symmetry options");
+      throw ReaderException(
+          "Reader only supports general, symmetric, and skew-symmetric "
+          "symmetry options");
     }
   } else {
     throw ReaderException("file does not exists!!");
   }
 }
 template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
+format::Array<ValueType>
+    *MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
   if constexpr (!std::is_same_v<void, ValueType>) {
     std::ifstream fin(filename_);
     // Ignore headers and comments:
@@ -578,40 +609,49 @@ MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
     fin >> M >> N;
 
     if (M != 1 && N != 1) {
-      throw ReaderException("Trying to read a 2D matrix with multiple rows "
-                            "and multiple columns into dense array");
+      throw ReaderException(
+          "Trying to read a 2D matrix with multiple rows "
+          "and multiple columns into dense array");
     }
     format::DimensionType total_values = M * N;
     // T ODO
-    // Currently num_nnz is defined all wrong. Once it's fixed add back nnz_counter
-    //NNZType nnz_counter = 0;
+    // Currently num_nnz is defined all wrong. Once it's fixed add back
+    // nnz_counter
+    // NNZType nnz_counter = 0;
     ValueType *vals = new ValueType[total_values];
     for (format::DimensionType l = 0; l < total_values; l++) {
       ValueType w;
       fin >> w;
 
       vals[l] = w;
-      //nnz_counter += w != 0;
+      // nnz_counter += w != 0;
     }
 
-    auto array = new format::Array<ValueType>(/*nnz_counter*/total_values, vals, format::kOwned);
+    auto array = new format::Array<ValueType>(/*nnz_counter*/ total_values,
+                                              vals, format::kOwned);
     return array;
 
   } else {
-    throw ReaderException("Cannot read a matrix market file into an Array whose ValueType is void");
+    throw ReaderException(
+        "Cannot read a matrix market file into an Array whose ValueType is "
+        "void");
   }
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+format::Array<ValueType> *MTXReader<IDType, NNZType, ValueType>::ReadArray()
+    const {
   // check object
-  if constexpr (std::is_same_v<ValueType, void>){
-    throw ReaderException("Cannot read a matrix market file into an Array whose ValueType is void");
+  if constexpr (std::is_same_v<ValueType, void>) {
+    throw ReaderException(
+        "Cannot read a matrix market file into an Array whose ValueType is "
+        "void");
   } else {
     bool weighted = options_.field != MTXFieldOptions::pattern;
-    if (!weighted){
-      throw ReaderException("Cannot read a matrix market file into an Array if it is in pattern format");
+    if (!weighted) {
+      throw ReaderException(
+          "Cannot read a matrix market file into an Array if it is in pattern "
+          "format");
     }
     if (options_.format == MTXFormatOptions::coordinate) {
       if constexpr (!std::is_same_v<ValueType, void>) {
@@ -629,8 +669,8 @@ MTXReader<IDType, NNZType, ValueType>::ReadArray() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType> *
-MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
+format::CSR<IDType, NNZType, ValueType>
+    *MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
@@ -644,20 +684,20 @@ MTXReader<IDType, NNZType, ValueType>::~MTXReader(){};
 template <typename IDType, typename NNZType, typename ValueType>
 PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
     std::string filename, bool weighted, bool convert_to_zero_index)
-    : filename_(filename), weighted_(weighted),
+    : filename_(filename),
+      weighted_(weighted),
       convert_to_zero_index_(convert_to_zero_index) {}
 
-//template <typename IDType, typename NNZType, typename ValueType>
-//format::Array<ValueType> *
-//PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
+// template <typename IDType, typename NNZType, typename ValueType>
+// format::Array<ValueType> *
+// PigoMTXReader<IDType, NNZType, ValueType>::ReadArray() const {
 //  MTXReader<IDType, NNZType, ValueType> reader(filename_, weighted_);
 //  return reader.ReadArray();
 //}
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType> *
-PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
-
+format::COO<IDType, NNZType, ValueType>
+    *PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #ifdef USE_PIGO
   format::COO<IDType, NNZType, ValueType> *coo;
 
@@ -670,7 +710,9 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
           pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(),
           pigo_coo.x(), pigo_coo.y(), pigo_coo.w(), format::kOwned);
     } else {
-      throw ReaderException("Cannot read a matrix market with weights into Format with void ValueType");
+      throw ReaderException(
+          "Cannot read a matrix market with weights into Format with void "
+          "ValueType");
     }
   } else {
     if constexpr (!std::is_same_v<ValueType, void>) {
@@ -682,7 +724,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
           pigo_coo.x(), pigo_coo.y(), nullptr, format::kOwned);
     } else {
       pigo::COO<IDType, IDType, IDType *, false, false, false, false, char,
-          char *>
+                char *>
           pigo_coo(filename_, pigo::MATRIX_MARKET);
       coo = new format::COO<IDType, NNZType, ValueType>(
           pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(),
@@ -713,18 +755,20 @@ PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType> *
-PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
+format::CSR<IDType, NNZType, ValueType>
+    *PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
   utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
-  std::cout << "nnz " << coo->get_num_nnz() << " dim " << coo->get_dimensions()[0] << " " << coo->get_dimensions()[1] << std::endl;
+  std::cout << "nnz " << coo->get_num_nnz() << " dim "
+            << coo->get_dimensions()[0] << " " << coo->get_dimensions()[1]
+            << std::endl;
   return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, coo->get_context(), true);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType> *
-PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
+format::CSR<IDType, NNZType, ValueType>
+    *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
   utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
   return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
@@ -732,8 +776,8 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType> *
-PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
+format::COO<IDType, NNZType, ValueType>
+    *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #ifdef USE_PIGO
   if (weighted_) {
     if constexpr (!std::is_same_v<ValueType, void>) {
@@ -744,7 +788,8 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
           coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
           format::kOwned);
     } else {
-      throw ReaderException("Cannot read a weighted edge list into format with void ValueType");
+      throw ReaderException(
+          "Cannot read a weighted edge list into format with void ValueType");
     }
   } else {
     if constexpr (!std::is_same_v<ValueType, void>) {
@@ -756,12 +801,11 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
           format::kOwned);
     } else {
       pigo::COO<IDType, IDType, IDType *, false, false, false, false, char,
-          char *>
+                char *>
           coo(filename_, pigo::EDGE_LIST);
       return new format::COO<IDType, NNZType, ValueType>(
           coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), nullptr,
           format::kOwned);
-
     }
   }
 #else
@@ -786,8 +830,8 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::BinaryReaderOrderTwo(
     : filename_(filename) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType> *
-BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
+format::CSR<IDType, NNZType, ValueType>
+    *BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
   if (sbff.get_name() != "csr") {
@@ -803,19 +847,20 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
   sbff.template GetArray("row_ptr", row_ptr);
   sbff.template GetArray("col", col);
 
-    if constexpr (!std::is_same_v<ValueType, void>){
-      sbff.template GetArray("vals", vals);
-    } else {
-      throw ReaderException("Cannot read a weighted COO into a format with void ValueType");
-    }
+  if constexpr (!std::is_same_v<ValueType, void>) {
+    sbff.template GetArray("vals", vals);
+  } else {
+    throw ReaderException(
+        "Cannot read a weighted COO into a format with void ValueType");
+  }
 
   return new format::CSR<IDType, NNZType, ValueType>(
       dimensions[0], dimensions[1], row_ptr, col, vals, format::kOwned);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType> *
-BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
+format::COO<IDType, NNZType, ValueType>
+    *BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
   if (sbff.get_name() != "coo") {
@@ -832,10 +877,11 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
   sbff.template GetArray("col", col);
 
   if (sbff.get_array_count() == 3) {
-    if constexpr (!std::is_same_v<ValueType, void>){
+    if constexpr (!std::is_same_v<ValueType, void>) {
       sbff.template GetArray("vals", vals);
     } else {
-      throw ReaderException("Cannot read a weighted COO into a format with void ValueType");
+      throw ReaderException(
+          "Cannot read a weighted COO into a format with void ValueType");
     }
   }
 
@@ -847,12 +893,14 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
 template <typename T>
 BinaryReaderOrderOne<T>::BinaryReaderOrderOne(std::string filename)
     : filename_(filename) {
-  static_assert(!std::is_same_v<T, void>, "A BinaryReaderOrderOne cannot read an Array of type void");
+  static_assert(!std::is_same_v<T, void>,
+                "A BinaryReaderOrderOne cannot read an Array of type void");
 }
 
 template <typename T>
 format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
-  static_assert(!std::is_same_v<T, void>, "A BinaryReaderOrderOne cannot read an Array of type void");
+  static_assert(!std::is_same_v<T, void>,
+                "A BinaryReaderOrderOne cannot read an Array of type void");
   auto sbff = SbffObject::ReadObject(filename_);
 
   if (sbff.get_name() != "array") {
@@ -861,7 +909,7 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 
   format::DimensionType size = sbff.get_dimensions()[0];
   T *arr;
-  if constexpr (!std::is_same_v<T, void>){
+  if constexpr (!std::is_same_v<T, void>) {
     sbff.template GetArray("array", arr);
   } else {
     throw ReaderException("Cannot read an into an Array with void ValueType");
@@ -873,8 +921,8 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 #include "init/reader.inc"
 #endif
 
-} // namespace io
+}  // namespace io
 
-} // namespace utils
+}  // namespace utils
 
-} // namespace sparsebase
+}  // namespace sparsebase

@@ -7,7 +7,6 @@ using namespace std;
 using namespace sparsebase;
 
 int main() {
-
   int row[6] = {0, 0, 1, 1, 2, 2};
   int col[6] = {0, 1, 1, 2, 3, 3};
   int vals[6] = {10, 20, 30, 40, 50, 60};
@@ -26,16 +25,13 @@ int main() {
 
   cout << "CSR" << endl;
 
-  for (int i = 0; i < nnz; i++)
-    cout << csr2->get_vals()[i] << ",";
+  for (int i = 0; i < nnz; i++) cout << csr2->get_vals()[i] << ",";
   cout << endl;
 
-  for (int i = 0; i < nnz; i++)
-    cout << csr2->get_col()[i] << ",";
+  for (int i = 0; i < nnz; i++) cout << csr2->get_col()[i] << ",";
   cout << endl;
 
-  for (int i = 0; i < n + 1; i++)
-    cout << csr2->get_row_ptr()[i] << ",";
+  for (int i = 0; i < n + 1; i++) cout << csr2->get_row_ptr()[i] << ",";
   cout << endl;
 
   cout << endl;
@@ -44,16 +40,13 @@ int main() {
   auto coo2 = csr2->Convert<format::COO>(&cpu_context);
   cout << "COO" << endl;
 
-  for (int i = 0; i < nnz; i++)
-    cout << coo2->get_vals()[i] << ",";
+  for (int i = 0; i < nnz; i++) cout << coo2->get_vals()[i] << ",";
   cout << endl;
 
-  for (int i = 0; i < nnz; i++)
-    cout << coo2->get_row()[i] << ",";
+  for (int i = 0; i < nnz; i++) cout << coo2->get_row()[i] << ",";
   cout << endl;
 
-  for (int i = 0; i < nnz; i++)
-    cout << coo2->get_col()[i] << ",";
+  for (int i = 0; i < nnz; i++) cout << coo2->get_col()[i] << ",";
   cout << endl;
 
   delete coo;

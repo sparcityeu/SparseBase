@@ -25,7 +25,7 @@ jobs:
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
 
       - name: Run Examples
         working-directory: ${{github.workspace}}/build/examples
@@ -43,7 +43,7 @@ jobs:
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D_HEADER_ONLY=ON -DRUN_TESTS=ON
 
       - name: Build (Header Only)
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
 
       - name: Run Examples (Header Only)
         working-directory: ${{github.workspace}}/build/examples
@@ -77,7 +77,7 @@ jobs:
 
       - name: Build
         working-directory: ${{github.workspace}}
-        run: cmake --build build --config ${{env.BUILD_TYPE}}
+        run: cmake --build build --config ${{env.BUILD_TYPE}} -j 2
 
       - name: Run Examples
         working-directory: ${{github.workspace}}/build/examples
@@ -102,7 +102,7 @@ jobs:
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 3
 
       - name: Run Examples
         working-directory: ${{github.workspace}}/build/examples
@@ -111,19 +111,3 @@ jobs:
       - name: Run Tests
         working-directory: ${{github.workspace}}/build
         run: ctest -V
-
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: cpp-linter/cpp-linter-action@v2
-        id: linter
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          style: 'file'
-          lines-changed-only: true
-          tidy-checks: 'bugprone-*,performance-*,readability-*,portability-*,modernize-*,cppcoreguidelines-*'
-          extra-args: '-std=c++17 -Wall -fopenmp'
-          version: '14'
