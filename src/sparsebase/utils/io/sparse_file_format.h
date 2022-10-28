@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -13,11 +13,12 @@
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
 
-#include "sparsebase/external/json/json.hpp"
 #include <climits>
 #include <iostream>
 #include <string>
 #include <type_traits>
+
+#include "sparsebase/external/json/json.hpp"
 
 namespace sparsebase {
 
@@ -28,20 +29,20 @@ namespace io {
 #ifdef USE_PIGO
 
 class SbffWriteFile {
-private:
+ private:
   pigo::WFile file;
 
-public:
+ public:
   SbffWriteFile(std::string filename, size_t size) : file(filename, size) {}
 
   void Write(char *data, size_t size) { file.parallel_write(data, size); }
 };
 
 class SbffReadOnlyFile {
-private:
+ private:
   pigo::ROFile file;
 
-public:
+ public:
   explicit SbffReadOnlyFile(std::string filename) : file(filename) {}
 
   void Read(char *buffer, size_t size) { file.parallel_read(buffer, size); }
@@ -50,10 +51,10 @@ public:
 #else
 
 class SbffWriteFile {
-private:
+ private:
   std::ofstream ofs;
 
-public:
+ public:
   SbffWriteFile(std::string filename, size_t size) {
     ofs.open(filename, std::ios::out | std::ios::binary);
   }
@@ -62,10 +63,10 @@ public:
 };
 
 class SbffReadOnlyFile {
-private:
+ private:
   std::ifstream ifs;
 
-public:
+ public:
   explicit SbffReadOnlyFile(std::string filename) {
     ifs.open(filename, std::ios::in | std::ios::binary);
   }
@@ -76,7 +77,7 @@ public:
 #endif
 
 class SbffArray {
-private:
+ private:
   std::string name;
   size_t array_size;
   size_t type_size;
@@ -88,7 +89,7 @@ private:
 
   friend class SbffObject;
 
-public:
+ public:
   template <typename T>
   static SbffArray Create(std::string name, T *arr, size_t size) {
     static_assert(!std::is_same_v<T, void>, "Cannot create a void array");
@@ -163,7 +164,6 @@ public:
   }
 
   void WriteArray(SbffWriteFile &file) {
-
     nlohmann::json header;
     header["name"] = name;
     header["type"] = type;
@@ -184,7 +184,8 @@ public:
     return (*least_significant_address == 0x01) ? "little" : "big";
   }
 
-  template <typename T> static T SwapEndian(T u) {
+  template <typename T>
+  static T SwapEndian(T u) {
     static_assert(CHAR_BIT == 8, "CHAR_BIT != 8");
 
     union {
@@ -202,20 +203,21 @@ public:
 };
 
 struct SbffObject {
-private:
+ private:
   std::string name;
   std::unordered_map<std::string, SbffArray> arrays;
   std::vector<int> dimensions;
   size_t total_size = 1024;
 
-public:
+ public:
   explicit SbffObject(std::string name) : name(name) {}
 
   void AddDimensions(const std::vector<format::DimensionType> &dims) {
     dimensions.insert(dimensions.end(), dims.begin(), dims.end());
   }
 
-  template <typename T> void AddArray(std::string name, T *arr, size_t size) {
+  template <typename T>
+  void AddArray(std::string name, T *arr, size_t size) {
     auto sbas_arr = SbffArray::Create(name, arr, size);
     arrays.emplace(name, sbas_arr);
     total_size += 1024 + sizeof(T) * size;
@@ -226,10 +228,9 @@ public:
     total_size += 1024 + sbas_arr.array_size * sbas_arr.type_size;
   }
 
-  template <typename T> size_t GetArray(std::string name, T *&ptr) {
-
+  template <typename T>
+  size_t GetArray(std::string name, T *&ptr) {
     try {
-
       SbffArray &arr = arrays.at(name);
 
       if (arr.type == "float" && !std::is_floating_point_v<T>) {
@@ -324,10 +325,10 @@ public:
   std::vector<int> get_dimensions() { return dimensions; }
 };
 
-} // namespace io
+}  // namespace io
 
-} // namespace utils
+}  // namespace utils
 
-} // namespace sparsebase
+}  // namespace sparsebase
 
-#endif // SPARSEBASE_SPARSEBASE_UTILS_IO_SPARSE_FILE_FORMAT_H_
+#endif  // SPARSEBASE_SPARSEBASE_UTILS_IO_SPARSE_FILE_FORMAT_H_

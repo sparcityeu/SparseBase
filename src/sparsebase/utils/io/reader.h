@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -9,14 +9,15 @@
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
 
-#include "sparsebase/config.h"
-#include "sparsebase/format/format.h"
 #include <algorithm>
 #include <cstring>
 #include <fstream>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/format.h"
 
 namespace sparsebase {
 
@@ -26,14 +27,14 @@ namespace io {
 
 //! Base class for all readers, has no special functionality on its own
 class Reader {
-public:
+ public:
   virtual ~Reader() = default;
 };
 
 //! Interface for readers that can return a CSR instance
 template <typename IDType, typename NNZType, typename ValueType>
 class ReadsCSR {
-public:
+ public:
   //! Reads the file to a CSR instance and returns a pointer to it
   virtual format::CSR<IDType, NNZType, ValueType> *ReadCSR() const = 0;
 };
@@ -41,14 +42,15 @@ public:
 //! Interface for readers that can return a COO instance
 template <typename IDType, typename NNZType, typename ValueType>
 class ReadsCOO {
-public:
+ public:
   //! Reads the file to a COO instance and returns a pointer to it
   virtual format::COO<IDType, NNZType, ValueType> *ReadCOO() const = 0;
 };
 
 //! Interface for readers that can return an Array instance
-template <typename T> class ReadsArray {
-public:
+template <typename T>
+class ReadsArray {
+ public:
   //! Reads the file to an Array instance and returns a pointer to it
   virtual format::Array<T> *ReadArray() const = 0;
 };
@@ -66,7 +68,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class EdgeListReader : public Reader,
                        public ReadsCSR<IDType, NNZType, ValueType>,
                        public ReadsCOO<IDType, NNZType, ValueType> {
-public:
+ public:
   /*!
    * Constructor for the EdgeListReader class
    * @param filename path to the file to be read
@@ -86,7 +88,7 @@ public:
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   ~EdgeListReader() override;
 
-private:
+ private:
   std::string filename_;
   bool weighted_;
   bool remove_duplicates_;
@@ -106,7 +108,7 @@ class MTXReader : public Reader,
                   public ReadsCSR<IDType, NNZType, ValueType>,
                   public ReadsCOO<IDType, NNZType, ValueType>,
                   public ReadsArray<ValueType> {
-public:
+ public:
   /*!
    * Constructor for the MTXReader class
    * @param filename path to the file to be read
@@ -119,22 +121,10 @@ public:
   format::Array<ValueType> *ReadArray() const override;
   ~MTXReader() override;
 
-private:
-  enum MTXObjectOptions {
-    matrix,
-    vector
-  };
-  enum MTXFormatOptions {
-    coordinate,
-    array
-  };
-  enum MTXFieldOptions {
-    real,
-    double_field,
-    complex,
-    integer,
-    pattern
-  };
+ private:
+  enum MTXObjectOptions { matrix, vector };
+  enum MTXFormatOptions { coordinate, array };
+  enum MTXFieldOptions { real, double_field, complex, integer, pattern };
   enum MTXSymmetryOptions {
     general = 0,
     symmetric = 1,
@@ -169,15 +159,15 @@ template <typename IDType, typename NNZType, typename ValueType>
 class PigoMTXReader : public Reader,
                       public ReadsCOO<IDType, NNZType, ValueType>,
                       public ReadsCSR<IDType, NNZType, ValueType> {
-public:
+ public:
   PigoMTXReader(std::string filename, bool weighted,
                 bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
-  //format::Array<ValueType> *ReadArray() const override;
+  // format::Array<ValueType> *ReadArray() const override;
   virtual ~PigoMTXReader() = default;
 
-private:
+ private:
   std::string filename_;
   bool weighted_;
   bool convert_to_zero_index_;
@@ -193,13 +183,13 @@ template <typename IDType, typename NNZType, typename ValueType>
 class PigoEdgeListReader : public Reader,
                            public ReadsCSR<IDType, NNZType, ValueType>,
                            public ReadsCOO<IDType, NNZType, ValueType> {
-public:
+ public:
   PigoEdgeListReader(std::string filename, bool weighted);
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   virtual ~PigoEdgeListReader() = default;
 
-private:
+ private:
   std::string filename_;
   bool weighted_;
 };
@@ -209,34 +199,34 @@ template <typename IDType, typename NNZType, typename ValueType>
 class BinaryReaderOrderTwo : public Reader,
                              public ReadsCSR<IDType, NNZType, ValueType>,
                              public ReadsCOO<IDType, NNZType, ValueType> {
-public:
+ public:
   explicit BinaryReaderOrderTwo(std::string filename);
   ~BinaryReaderOrderTwo() override = default;
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
 
-private:
+ private:
   std::string filename_;
 };
 
 //! Reads files encoded in SparseBase's custom binary format (Array)
 template <typename T>
 class BinaryReaderOrderOne : public Reader, public ReadsArray<T> {
-public:
+ public:
   explicit BinaryReaderOrderOne(std::string filename);
   ~BinaryReaderOrderOne() override = default;
   format::Array<T> *ReadArray() const override;
 
-private:
+ private:
   std::string filename_;
 };
 
-} // namespace io
+}  // namespace io
 
-} // namespace utils
+}  // namespace utils
 
-} // namespace sparsebase
+}  // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/utils/io/reader.cc"
 #endif
-#endif // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
+#endif  // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_
