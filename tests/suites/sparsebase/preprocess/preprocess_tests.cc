@@ -465,6 +465,17 @@ TEST(RCMReorderTest, BasicTest) {
   auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
   check_reorder(order, n);
 }
+
+#ifdef USE_METIS
+
+TEST(MetisReorder, BasicTest){
+  sparsebase::preprocess::MetisReorder<int,int,int> reorder;
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+
+#endif
+
 template <typename a, typename b, typename c>
 class TestFormat : public sparsebase::format::FormatImplementation<TestFormat<a,b,c>, sparsebase::format::FormatOrderTwo<a,b,c>>{
   format::Format *Clone() const override{
@@ -487,6 +498,15 @@ TEST(ReorderBase, RCMReorder) {
   auto order = sparsebase::preprocess::ReorderBase::Reorder<RCMReorder>({}, &global_csr, {&cpu_context}, true);
   check_reorder(order, n);
 }
+
+#ifdef USE_METIS
+TEST(ReorderBase, MetisReorder) {
+  EXPECT_NO_THROW(EXECUTE_AND_DELETE(sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>({}, &global_csr, {&cpu_context}, true)));
+  auto order = sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>({}, &global_csr, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+#endif
+
 
 #ifdef USE_RABBIT_ORDER
 TEST(ReorderBase, RabbitReorder) {
