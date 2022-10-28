@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -9,29 +9,30 @@
 #ifndef SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_
 #define SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_
 
+#include <functional>
+#include <memory>
+
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/io/reader.h"
-#include <functional>
-#include <memory>
 
 namespace sparsebase {
 
 namespace object {
 
 class Object {
-public:
+ public:
   virtual ~Object();
   virtual void VerifyStructure() = 0;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class AbstractObject : public Object {
-protected:
+ protected:
   std::unique_ptr<format::Format, std::function<void(format::Format *)>>
       connectivity_;
 
-public:
+ public:
   virtual ~AbstractObject();
   AbstractObject();
   AbstractObject(const AbstractObject<IDType, NNZType, ValueType> &);
@@ -44,13 +45,13 @@ public:
 
 template <typename VertexID, typename NumEdges, typename Weight>
 class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
-public:
+ public:
   Graph(format::Format *connectivity);
   Graph();
   Graph(const Graph<VertexID, NumEdges, Weight> &);
   Graph(Graph<VertexID, NumEdges, Weight> &&);
-  Graph<VertexID, NumEdges, Weight> &
-  operator=(const Graph<VertexID, NumEdges, Weight> &);
+  Graph<VertexID, NumEdges, Weight> &operator=(
+      const Graph<VertexID, NumEdges, Weight> &);
   void ReadConnectivityToCSR(
       const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &);
   void ReadConnectivityToCOO(
@@ -84,11 +85,11 @@ public:
 //     // ...
 // };
 
-} // namespace object
+}  // namespace object
 
-} // namespace sparsebase
+}  // namespace sparsebase
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/object/object.cc"
 #endif
-#endif // SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_
+#endif  // SPARSEBASE_SPARSEBASE_OBJECT_OBJECT_H_

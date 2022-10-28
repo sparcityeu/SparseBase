@@ -62,7 +62,7 @@ Format *CsrCUDACsrConditionalFunction(Format *source,
   cudaMemcpy(col, csr->get_col(), csr->get_num_nnz() * sizeof(IDType),
              cudaMemcpyHostToDevice);
   if (csr->get_vals() != nullptr) {
-    if constexpr (std::is_same_v<ValueType, void>){
+    if constexpr (std::is_same_v<ValueType, void>) {
       throw utils::TypeException("Cannot create values array for type void");
     } else {
       cudaMalloc(&vals, csr->get_num_nnz() * sizeof(ValueType));
@@ -96,7 +96,7 @@ Format *CUDACsrCUDACsrConditionalFunction(Format *source,
   cudaMemcpy(col, cuda_csr->get_col(), cuda_csr->get_num_nnz() * sizeof(IDType),
              cudaMemcpyDeviceToDevice);
   if (cuda_csr->get_vals() != nullptr) {
-    if constexpr (std::is_same_v<ValueType, void>){
+    if constexpr (std::is_same_v<ValueType, void>) {
       throw utils::TypeException("Cannot create values array for type void");
     } else {
       cudaMalloc(&vals, cuda_csr->get_num_nnz() * sizeof(ValueType));
@@ -127,7 +127,7 @@ Format *CUDACsrCsrConditionalFunction(Format *source,
   cudaMemcpy(col, cuda_csr->get_col(), nnz * sizeof(IDType),
              cudaMemcpyDeviceToHost);
   if (cuda_csr->get_vals() != nullptr) {
-    if constexpr (std::is_same_v<ValueType, void>){
+    if constexpr (std::is_same_v<ValueType, void>) {
       throw utils::TypeException("Cannot create values array for type void");
     } else {
       vals = new ValueType[nnz];
@@ -139,7 +139,11 @@ Format *CUDACsrCsrConditionalFunction(Format *source,
 }
 
 bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
-  if (!(to->get_context_type_member()==context::cuda::CUDAContext::get_context_type() || from->get_context_type_member()==context::cuda::CUDAContext::get_context_type()) ) return false;
+  if (!(to->get_context_type_member() ==
+            context::cuda::CUDAContext::get_context_type() ||
+        from->get_context_type_member() ==
+            context::cuda::CUDAContext::get_context_type()))
+    return false;
   auto from_gpu = static_cast<context::cuda::CUDAContext *>(from);
   auto to_gpu = static_cast<context::cuda::CUDAContext *>(to);
   int can_access;
@@ -149,7 +153,7 @@ bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/converter.inc"
 #endif
-} // namespace cuda
-} // namespace converter
-} // namespace utils
-} // namespace sparsebase
+}  // namespace cuda
+}  // namespace converter
+}  // namespace utils
+}  // namespace sparsebase

@@ -1,14 +1,14 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
-#include "sparsebase/format/format.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda/context.cuh"
+#include "sparsebase/format/format.h"
 #ifndef SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 #define SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 
@@ -17,21 +17,23 @@ namespace sparsebase {
 namespace format {
 namespace cuda {
 
-template <typename T> struct CUDADeleter {
+template <typename T>
+struct CUDADeleter {
   void operator()(T *obj) { cudaFree(obj); }
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CUDACSR
-    : public FormatImplementation<CUDACSR<IDType, NNZType, ValueType>, FormatOrderTwo<IDType, NNZType, ValueType>> {
-public:
+    : public FormatImplementation<CUDACSR<IDType, NNZType, ValueType>,
+                                  FormatOrderTwo<IDType, NNZType, ValueType>> {
+ public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
           ValueType *vals, context::cuda::CUDAContext context,
           Ownership own = kNotOwned);
   CUDACSR(const CUDACSR<IDType, NNZType, ValueType> &);
   CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&);
-  CUDACSR<IDType, NNZType, ValueType> &
-  operator=(const CUDACSR<IDType, NNZType, ValueType> &);
+  CUDACSR<IDType, NNZType, ValueType> &operator=(
+      const CUDACSR<IDType, NNZType, ValueType> &);
   Format *Clone() const override;
   virtual ~CUDACSR();
   NNZType *get_row_ptr() const;
@@ -55,15 +57,16 @@ public:
 
   context::cuda::CUDAContext *get_cuda_context() const;
 
-protected:
+ protected:
   std::unique_ptr<NNZType, std::function<void(NNZType *)>> row_ptr_;
   std::unique_ptr<IDType, std::function<void(IDType *)>> col_;
   std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
 template <typename ValueType>
-class CUDAArray : public FormatImplementation<CUDAArray<ValueType>, FormatOrderOne<ValueType>> {
-public:
+class CUDAArray : public FormatImplementation<CUDAArray<ValueType>,
+                                              FormatOrderOne<ValueType>> {
+ public:
   CUDAArray(DimensionType nnz, ValueType *row_ptr,
             context::cuda::CUDAContext context, Ownership own = kNotOwned);
   CUDAArray(const CUDAArray<ValueType> &);
@@ -79,12 +82,12 @@ public:
 
   virtual bool ValsIsOwned();
 
-protected:
+ protected:
   std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
-}; // namespace cuda
-} // namespace format
+};  // namespace cuda
+}  // namespace format
 
-} // namespace sparsebase
-#endif // SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
+}  // namespace sparsebase
+#endif  // SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
