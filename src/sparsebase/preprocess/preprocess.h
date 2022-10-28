@@ -859,6 +859,64 @@ public:
 
 #ifdef USE_METIS
 
+namespace metis {
+  //! Objectives to be optimized by METIS
+  typedef enum {
+    METIS_OBJTYPE_CUT,
+    METIS_OBJTYPE_VOL,
+    METIS_OBJTYPE_NODE
+  } mobjtype_et;
+
+  //! Partitiong Methods
+  typedef enum { METIS_PTYPE_RB, METIS_PTYPE_KWAY } mptype_et;
+
+  //! Coarsening Schemes
+  typedef enum { METIS_CTYPE_RM, METIS_CTYPE_SHEM } mctype_et;
+
+  //! Determines the algorithm used for initial partitioning
+  typedef enum {
+    METIS_IPTYPE_GROW,
+    METIS_IPTYPE_RANDOM,
+    METIS_IPTYPE_EDGE,
+    METIS_IPTYPE_NODE,
+    METIS_IPTYPE_METISRB
+  } miptype_et;
+
+  //! Determines the algorithm used for refinement
+  typedef enum {
+    METIS_RTYPE_FM,
+    METIS_RTYPE_GREEDY,
+    METIS_RTYPE_SEP2SIDED,
+    METIS_RTYPE_SEP1SIDED
+  } mrtype_et;
+};
+
+//! Parameters for metis partitioning
+/*!
+ * This struct replaces the options array of METIS
+ * The names of the options are identical to the array
+ * and can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
+ */
+struct MetisPartitionParams : PreprocessParams{
+  int64_t num_partitions = 2;
+  int64_t ptype = metis::METIS_PTYPE_KWAY;
+  int64_t objtype = metis::METIS_OBJTYPE_CUT;
+  int64_t ctype = metis::METIS_CTYPE_RM;
+  int64_t iptype = metis::METIS_IPTYPE_GROW;
+  int64_t rtype = metis::METIS_RTYPE_FM;
+  int64_t ncuts = 1;
+  int64_t nseps = 1;
+  int64_t numbering = 0;
+  int64_t niter = 10;
+  int64_t seed = 42;
+  int64_t minconn = 0;
+  int64_t no2hop = 0;
+  int64_t contig = 0;
+  int64_t compress = 0;
+  int64_t ccorder = 0;
+  int64_t pfactor = 0;
+  int64_t ufactor = 30;
+};
 
 //! A wrapper for the METIS partitioner
 /* !
@@ -874,72 +932,38 @@ private:
   static IDType* PartitionCSR(std::vector<format::Format*> formats, PreprocessParams* params);
 
 public:
+  typedef MetisPartitionParams ParamsType;
   MetisPartition();
-
-  //! Objectives to be optimized by METIS
-  typedef enum {
-    METIS_OBJTYPE_CUT,
-    METIS_OBJTYPE_VOL,
-    METIS_OBJTYPE_NODE
-  } mobjtype_et;
-
-  //! Partitiong Methods
-  typedef enum {
-    METIS_PTYPE_RB,
-    METIS_PTYPE_KWAY
-  } mptype_et;
-
-  //! Coarsening Schemes
-  typedef enum {
-    METIS_CTYPE_RM,
-    METIS_CTYPE_SHEM
-  } mctype_et;
-
-  //! Determines the algorithm used for initial partitioning
-  typedef enum {
-    METIS_IPTYPE_GROW,
-    METIS_IPTYPE_RANDOM,
-    METIS_IPTYPE_EDGE,
-    METIS_IPTYPE_NODE,
-    METIS_IPTYPE_METISRB
-  } miptype_et;
-
-
-  //! Determines the algorithm used for refinement
-  typedef enum {
-    METIS_RTYPE_FM,
-    METIS_RTYPE_GREEDY,
-    METIS_RTYPE_SEP2SIDED,
-    METIS_RTYPE_SEP1SIDED
-  } mrtype_et;
-
-  //! Parameters for metis partitioning
-  /*!
-   * This struct replaces the options array of METIS
-   * The names of the options are identical to the array
-   * and can be found here: http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/manual.pdf
-   */
-  struct MetisParams : PreprocessParams{
-    int64_t num_partitions = 2;
-    int64_t ptype = METIS_PTYPE_KWAY;
-    int64_t objtype = METIS_OBJTYPE_CUT;
-    int64_t ctype = METIS_CTYPE_RM;
-    int64_t iptype = METIS_IPTYPE_GROW;
-    int64_t rtype = METIS_RTYPE_FM;
-    int64_t ncuts = 1;
-    int64_t nseps = 1;
-    int64_t numbering = 0;
-    int64_t niter = 10;
-    int64_t seed = 42;
-    int64_t minconn = 0;
-    int64_t no2hop = 0;
-    int64_t contig = 0;
-    int64_t compress = 0;
-    int64_t ccorder = 0;
-    int64_t pfactor = 0;
-    int64_t ufactor = 30;
-  };
+  MetisPartition(ParamsType params);
 };
+
+
+struct MetisReorderParams : PreprocessParams {
+  int64_t ctype = metis::METIS_CTYPE_RM;
+  int64_t rtype = metis::METIS_RTYPE_SEP2SIDED;
+  int64_t nseps = 1;
+  int64_t numbering = 0;
+  int64_t niter = 10;
+  int64_t seed = 42;
+  int64_t no2hop = 0;
+  int64_t compress = 0;
+  int64_t ccorder = 0;
+  int64_t pfactor = 0;
+  int64_t ufactor = 30;
+};
+
+template <typename IDType, typename NNZType, typename ValueType>
+class MetisReorder : public ReorderPreprocessType<IDType>{
+public:
+
+  typedef MetisReorderParams ParamsType;
+  MetisReorder();
+  MetisReorder(ParamsType params);
+  static IDType *GetReorderCSR(std::vector<format::Format *> formats,
+                               PreprocessParams *);
+};
+
+
 #endif
 
 
