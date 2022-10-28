@@ -62,34 +62,40 @@ endif()
 
 # Function for adding optional libraries to sparsebase
 # Example : add_opt_library("metis" ${METIS_LIB_DIR} ${METIS_INC_DIR})
-macro(add_opt_library name)
+macro(add_opt_library name LOCAL_HEADER_ONLY)
 
   string(TOUPPER ${name} OPT_NAME_UPPER)
   string(TOLOWER ${name} OPT_NAME_LOWER)
 
-  set(OPT_LIB "LIB-NOTFOUND")
+  if (NOT "${LOCAL_HEADER_ONLY}")
+    set(OPT_LIB "LIB-NOTFOUND")
+  endif()
   set(OPT_INC "INC-NOTFOUND")
   set(OPT_DEF USE_${OPT_NAME_UPPER})
 
   set(${OPT_NAME_UPPER}_INC_DIR "" CACHE STRING "Include directory for ${OPT_NAME_UPPER}")
-  set(${OPT_NAME_UPPER}_LIB_DIR "" CACHE STRING "Library directory for ${OPT_NAME_UPPER}")
+  if (NOT "${LOCAL_HEADER_ONLY}")
+    set(${OPT_NAME_UPPER}_LIB_DIR "" CACHE STRING "Library directory for ${OPT_NAME_UPPER}")
+  endif()
 
-  find_library(
-          OPT_LIB
-          NAMES ${OPT_NAME_LOWER} lib${OPT_NAME_LOWER}
-          PATH_SUFFIXES lib lib32 lib64 lib{OPT_NAME_LOWER}
-          PATHS
-            ${${OPT_NAME_UPPER}_LIB_DIR}
-            $ENV{${OPT_NAME_UPPER}_LIB_DIR}
-            ${CMAKE_PREFIX_PATH}
-            ${CMAKE_SYSTEM_PREFIX_PATH}
-          NO_DEFAULT_PATH
+  if (NOT "${LOCAL_HEADER_ONLY}")
+    find_library(
+            OPT_LIB
+            NAMES ${OPT_NAME_LOWER} lib${OPT_NAME_LOWER}
+            PATH_SUFFIXES lib lib32 lib64 lib{OPT_NAME_LOWER}
+            PATHS
+              ${${OPT_NAME_UPPER}_LIB_DIR}
+              $ENV{${OPT_NAME_UPPER}_LIB_DIR}
+              ${CMAKE_PREFIX_PATH}
+              ${CMAKE_SYSTEM_PREFIX_PATH}
+            NO_DEFAULT_PATH
 
-  )
+    )
 
-  if(NOT OPT_LIB)
-    message(FATAL_ERROR "${OPT_NAME_UPPER} library file was not found. "
-            "Try setting the ${OPT_NAME_UPPER}_LIB_DIR environment variable")
+    if(NOT OPT_LIB)
+      message(FATAL_ERROR "${OPT_NAME_UPPER} library file was not found. "
+              "Try setting the ${OPT_NAME_UPPER}_LIB_DIR environment variable")
+    endif()
   endif()
 
 
@@ -113,26 +119,55 @@ macro(add_opt_library name)
 
   message(STATUS "${OPT_NAME_UPPER} was found")
   message(STATUS "${OPT_NAME_UPPER} include dir: ${OPT_INC}")
-  message(STATUS "${OPT_NAME_UPPER} library dir: ${OPT_LIB}")
-  if (NOT ${_HEADER_ONLY})
-    target_link_libraries(sparsebase PUBLIC ${OPT_LIB})
+  if (NOT "${LOCAL_HEADER_ONLY}")
+    message(STATUS "${OPT_NAME_UPPER} library dir: ${OPT_LIB}")
+  else()
+    message(STATUS "${OPT_NAME_UPPER} library added as a header-only library")
+  endif()
+  if (NOT "${LOCAL_HEADER_ONLY}")
+    if (NOT "${_HEADER_ONLY}")
+      target_link_libraries(sparsebase PUBLIC ${OPT_LIB})
+    else()
+      target_link_libraries(sparsebase INTERFACE ${OPT_LIB})
+    endif()
+  endif()
+
+  if (NOT "${_HEADER_ONLY}")
     target_include_directories(sparsebase PUBLIC ${OPT_INC})
   else()
-    target_link_libraries(sparsebase INTERFACE ${OPT_LIB})
     target_include_directories(sparsebase INTERFACE ${OPT_INC})
   endif()
-  file(GLOB OPT_INC_FILES ${inc_dir}/*.h ${inc_dir}/*.hpp ${inc_dir}/*.hxx)
-  install(FILES ${OPT_INC_FILES} DESTINATION include/sparsebase/external/${lib_name})
   set(${OPT_DEF} ON)
 endmacro()
 
 ### External Optional Libraries
 option(USE_METIS "Enable METIS integration" OFF)
 if(USE_METIS)
-add_opt_library("metis")
+  add_opt_library("metis" "OFF")
 endif()
 
-
+option(USE_RABBIT_ORDER "Enable Rabbit order integration" OFF)
+if(USE_RABBIT_ORDER)
+  find_package(Boost)
+  if (NOT Boost_FOUND)
+    message(FATAL_ERROR "Boost is required to use Rabbit order")
+  endif()
+  if (NOT ${_HEADER_ONLY})
+  target_include_directories(sparsebase PRIVATE ${Boost_INCLUDE_DIRS} )
+  else()
+  target_include_directories(sparsebase INTERFACE ${Boost_INCLUDE_DIRS} )
+  endif()
+  find_library(NUMA_LIBRARIES NAMES numa)
+  if (NOT NUMA_LIBRARIES)
+    message(FATAL_ERROR "Numa is required to use Rabbit order")
+  endif()
+  if (NOT ${_HEADER_ONLY})
+  target_link_libraries(sparsebase PUBLIC numa)
+  else()
+  target_link_libraries(sparsebase INTERFACE numa)
+  endif()
+  add_opt_library("rabbit_order" "ON")
+endif()
 
 ### Create configuration file for install
 configure_file(
@@ -216,8 +251,6 @@ install(FILES ${IO_FILES}
   DESTINATION include/sparsebase/utils/io/)
 install(FILES ${CONVERTER_FILES}
   DESTINATION include/sparsebase/utils/converter/)
-install(FILES ${EXCEPTION_FILES}
-  DESTINATION include/sparsebase/utils/)
 install(FILES ${UTILS_FILES}
         DESTINATION include/sparsebase/utils/)
 
