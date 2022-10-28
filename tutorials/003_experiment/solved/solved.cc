@@ -106,6 +106,7 @@ int main(int argc, char **argv){
 
   // add kernels that will carry out the SPMV
   // init random vals large enough for all the files and pass it as a kernel specific parameter
+  // the larger matrix com-dblp has 1049866 number of zeros. This will be doubled since it being read as an edgelist.
   auto vals = new float[2*1049866];
   fill_r(vals, 2*1049866);
   auto vals_v = Array<float>(2*1049866, vals);
