@@ -62,6 +62,15 @@ exhale_args = {
         EXTRACT_PRIVATE = YES
         EXCLUDE_PATTERNS = */external/*
         EXCLUDE_PATTERNS += *.py
+        FILE_PATTERNS += *.cu
+        FILE_PATTERNS += *.cuh
+        EXTENSION_MAPPING  += cu=C++ 
+        EXTENSION_MAPPING  += cuhpp=C++
+        EXTENSION_MAPPING  += cuh=C++ 
+        PREDEFINED +=  USE_PIGO 
+        PREDEFINED +=  USE_CUDA
+        PREDEFINED +=  USE_RABBIT_ORDER
+        PREDEFINED +=  USE_METIS
     """
 }
 
