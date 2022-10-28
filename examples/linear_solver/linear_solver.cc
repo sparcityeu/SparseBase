@@ -67,7 +67,7 @@ int main() {
 }
 
 //// compares two vectors of numbers element wise and returns (mean, std,
-///num_different)
+/// num_different)
 // template<typename T, typename C>
 // std::tuple<double, double, ull> compare_vectors(T* v1, T* v2, C count, T
 // threshold, std::vector<C>& indexes){

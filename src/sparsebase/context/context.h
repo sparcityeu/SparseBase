@@ -11,6 +11,8 @@
 
 #include <typeindex>
 
+#include "sparsebase/config.h"
+
 namespace sparsebase {
 
 namespace context {

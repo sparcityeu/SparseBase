@@ -126,4 +126,4 @@ jobs:
           lines-changed-only: true
           tidy-checks: 'bugprone-*,performance-*,readability-*,portability-*,modernize-*,cppcoreguidelines-*'
           extra-args: '-std=c++17 -Wall -fopenmp'
-          version: '14'
+          version: '11'
