@@ -560,9 +560,9 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::
     GetTransformationCached(format::Format *format,
                             std::vector<context::Context *> contexts,
                             bool convert_input) {
-  if (dynamic_cast<InputFormatType *>(format) == nullptr)
-    throw utils::TypeException(format->get_format_name(),
-                               InputFormatType::get_format_name_static());
+  //if (dynamic_cast<InputFormatType *>(format) == nullptr)
+  //  throw utils::TypeException(format->get_format_name(),
+  //                             InputFormatType::get_format_name_static());
   return this->CachedExecute(this->params_.get(), (this->sc_.get()), contexts,
                              convert_input, false, format);
 }
@@ -573,9 +573,9 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::
     GetTransformationCached(format::Format *format, PreprocessParams *params,
                             std::vector<context::Context *> contexts,
                             bool convert_input) {
-  if (dynamic_cast<InputFormatType *>(format) == nullptr)
-    throw utils::TypeException(format->get_format_name(),
-                               InputFormatType::get_format_name_static());
+  //if (dynamic_cast<InputFormatType *>(format) == nullptr)
+  //  throw utils::TypeException(format->get_format_name(),
+  //                             InputFormatType::get_format_name_static());
   return this->CachedExecute(params, (this->sc_.get()), contexts, convert_input,
                              false, format);
 }
@@ -585,9 +585,9 @@ ReturnFormatType *
 TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, std::vector<context::Context *> contexts,
     bool convert_input) {
-  if (dynamic_cast<InputFormatType *>(format) == nullptr)
-    throw utils::TypeException(format->get_format_name(),
-                               InputFormatType::get_format_name_static());
+  ////if (dynamic_cast<InputFormatType *>(format) == nullptr)
+  ////  throw utils::TypeException(format->get_format_name(),
+  ////                             InputFormatType::get_format_name_static());
   return this->Execute(this->params_.get(), (this->sc_.get()), contexts,
                        convert_input, format);
 }
@@ -597,9 +597,9 @@ ReturnFormatType *
 TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
-  if (dynamic_cast<InputFormatType *>(format) == nullptr)
-    throw utils::TypeException(format->get_format_name(),
-                               InputFormatType::get_format_name_static());
+  ////if (dynamic_cast<InputFormatType *>(format) == nullptr)
+  ////  throw utils::TypeException(format->get_format_name(),
+  ////                             InputFormatType::get_format_name_static());
   return this->Execute(params, (this->sc_.get()), contexts, convert_input,
                        format);
 }

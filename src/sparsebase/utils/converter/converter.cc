@@ -20,6 +20,13 @@ ConversionMap *Converter::get_conversion_map(bool is_move_conversion) {
     return &copy_conversion_map_;
 }
 
+const ConversionMap * Converter::get_conversion_map(bool is_move_conversion) const {
+  if (is_move_conversion)
+    return &move_conversion_map_;
+  else
+    return &copy_conversion_map_;
+}
+
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CooCscFunctionConditional(Format *source, context::Context *context) {
   auto *coo = source->AsAbsolute<COO<IDType, NNZType, ValueType>>();
@@ -423,7 +430,7 @@ void Converter::RegisterConversionFunction(std::type_index from_type,
 
 Format *Converter::Convert(Format *source, std::type_index to_type,
                            std::vector<context::Context *> to_contexts,
-                           bool is_move_conversion) {
+                           bool is_move_conversion) const {
   auto outputs =
       ConvertCached(source, to_type, to_contexts, is_move_conversion);
   if (outputs.size() > 1)
@@ -435,9 +442,9 @@ Format *Converter::Convert(Format *source, std::type_index to_type,
   return outputs.back();
 }
 
-std::vector<Format *> Converter::ConvertCached(
+std::vector<Format *> Converter::ConvertCached (
     Format *source, std::type_index to_type,
-    std::vector<context::Context *> to_contexts, bool is_move_conversion) {
+    std::vector<context::Context *> to_contexts, bool is_move_conversion) const {
   if (to_type == source->get_format_id() &&
       std::find_if(to_contexts.begin(), to_contexts.end(),
                    [&source](context::Context *from) {
@@ -458,7 +465,7 @@ std::vector<Format *> Converter::ConvertCached(
 
 Format *Converter::Convert(Format *source, std::type_index to_type,
                            context::Context *to_context,
-                           bool is_move_conversion) {
+                           bool is_move_conversion) const {
   return Convert(source, to_type, std::vector<context::Context *>({to_context}),
                  is_move_conversion);
 }
@@ -466,7 +473,7 @@ Format *Converter::Convert(Format *source, std::type_index to_type,
 std::vector<Format *> Converter::ConvertCached(Format *source,
                                                std::type_index to_type,
                                                context::Context *to_context,
-                                               bool is_move_conversion) {
+                                               bool is_move_conversion) const {
   return ConvertCached(source, to_type,
                        std::vector<context::Context *>({to_context}),
                        is_move_conversion);
@@ -495,7 +502,7 @@ std::forward<context::Context *>(to_context));
 std::vector<ConversionStep> Converter::ConversionBFS(
     std::type_index from_type, context::Context *from_context,
     std::type_index to_type, const std::vector<context::Context *> &to_contexts,
-    ConversionMap *map) {
+    const ConversionMap * map) {
   std::deque<std::type_index> frontier{from_type};
   std::unordered_map<std::type_index,
                      std::pair<std::type_index, ConversionStep>>
@@ -508,40 +515,41 @@ std::vector<ConversionStep> Converter::ConversionBFS(
     for (int i = 0; i < level_size; i++) {
       auto curr = frontier.back();
       frontier.pop_back();
-      for (const auto &neighbor : (*map)[curr]) {
-        if (seen.find(neighbor.first) == seen.end()) {
-          for (auto curr_to_neighbor_functions :
-               neighbor.second) {  // go over every edge curr->neighbor
-            bool found_an_edge = false;
-            for (auto to_context : to_contexts) {  // check if, with the given
-                                                   // contexts, this edge exists
-              if (std::get<0>(curr_to_neighbor_functions)(from_context,
-                                                          to_context)) {
-                seen.emplace(
-                    neighbor.first,
-                    std::make_pair(
-                        curr,
-                        std::make_tuple(std::get<1>(curr_to_neighbor_functions),
-                                        to_context, 1)));
-                frontier.emplace_back(neighbor.first);
-                if (neighbor.first == to_type) {
-                  std::vector<ConversionStep> output(level);
-                  std::type_index tip = to_type;
-                  for (int j = level - 1; j >= 0; j--) {
-                    output[j] = seen.at(tip).second;
-                    tip = seen.at(tip).first;
+      if (map->find(curr) != map->end())
+        for (const auto &neighbor : map->at(curr)) {
+          if (seen.find(neighbor.first) == seen.end()) {
+            for (auto curr_to_neighbor_functions :
+                neighbor.second) {  // go over every edge curr->neighbor
+              bool found_an_edge = false;
+              for (auto to_context : to_contexts) {  // check if, with the given
+                                                    // contexts, this edge exists
+                if (std::get<0>(curr_to_neighbor_functions)(from_context,
+                                                            to_context)) {
+                  seen.emplace(
+                      neighbor.first,
+                      std::make_pair(
+                          curr,
+                          std::make_tuple(std::get<1>(curr_to_neighbor_functions),
+                                          to_context, 1)));
+                  frontier.emplace_back(neighbor.first);
+                  if (neighbor.first == to_type) {
+                    std::vector<ConversionStep> output(level);
+                    std::type_index tip = to_type;
+                    for (int j = level - 1; j >= 0; j--) {
+                      output[j] = seen.at(tip).second;
+                      tip = seen.at(tip).first;
+                    }
+                    return output;
                   }
-                  return output;
+                  found_an_edge = true;
+                  break;  // no need to check other contexts
                 }
-                found_an_edge = true;
-                break;  // no need to check other contexts
               }
+              if (found_an_edge)
+                break;  // no need to check other edges between curr->neighbor
             }
-            if (found_an_edge)
-              break;  // no need to check other edges between curr->neighbor
           }
         }
-      }
     }
     level++;
     level_size = frontier.size();
@@ -552,7 +560,7 @@ std::vector<ConversionStep> Converter::ConversionBFS(
 ConversionChain Converter::GetConversionChain(
     std::type_index from_type, context::Context *from_context,
     std::type_index to_type, const std::vector<context::Context *> &to_contexts,
-    bool is_move_conversion) {
+    bool is_move_conversion) const {
   // If the source doesn't need conversion, return an empty but existing
   // optional
   if (from_type == to_type && std::find(to_contexts.begin(), to_contexts.end(),
@@ -570,7 +578,7 @@ bool Converter::CanConvert(std::type_index from_type,
                            context::Context *from_context,
                            std::type_index to_type,
                            context::Context *to_context,
-                           bool is_move_conversion) {
+                           bool is_move_conversion) const {
   return GetConversionChain(from_type, from_context, to_type, {to_context},
                             is_move_conversion)
       .has_value();

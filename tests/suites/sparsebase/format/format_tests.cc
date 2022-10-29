@@ -484,6 +484,26 @@ TEST(FormatImplementation, FormatName) {
   EXPECT_NE(name_csriii, name_csriii_mangled);
 }
 
+#define spf sparsebase::format
+
+sparsebase::format::COO<int, int, int> g_coo(4, 4, 4, coo_row, coo_col,
+                                            coo_vals);
+sparsebase::format::Format* dummy_conversion(sparsebase::format::Format* p, sparsebase::context::Context*){
+  return &g_coo;
+}
+
+TEST(FormatImplementation, SetConverter){
+  sparsebase::utils::converter::ConverterOrderTwo<int, int, int> conv;
+  conv.ClearConversionFunctions();
+  conv.RegisterConversionFunction(spf::CSR<int, int, int>::get_format_id_static(), spf::COO<int, int, int>::get_format_id_static(), dummy_conversion, [](sparsebase::context::Context*, sparsebase::context::Context*){ return true;});
+  sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
+                                             csr_vals);
+  csr.set_converter(&conv);
+
+  EXPECT_EQ(csr.Convert<spf::COO>((&csr)->get_context()), &g_coo);
+}
+#undef spf
+
 TEST(Format, Is) {
   int *new_csr_row_ptr = new int[5];
   int *new_csr_col = new int[4];
@@ -509,7 +529,7 @@ TEST(Format, Is) {
 
   delete csr;
 }
-class TestFormat : format::FormatImplementation<TestFormat> {
+class TestFormat : format::FormatCRTP<TestFormat, format::FormatImplementation> {
  public:
   TestFormat() {
     this->context_ = std::unique_ptr<context::Context>(new context::CPUContext);

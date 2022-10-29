@@ -9,7 +9,7 @@ using namespace sparsebase;
 using namespace sparsebase::format;
 using namespace sparsebase::object;
 
-class MyFormat : public format::FormatImplementation<MyFormat> {
+class MyFormat : public format::FormatCRTP<MyFormat, format::FormatImplementation> {
  public:
   MyFormat() {
     order_ = 2;

@@ -524,14 +524,14 @@ TEST(MetisReorder, BasicTest) {
 
 template <typename a, typename b, typename c>
 class TestFormat
-    : public sparsebase::format::FormatImplementation<
+    : public sparsebase::format::FormatCRTP<
           TestFormat<a, b, c>, sparsebase::format::FormatOrderTwo<a, b, c>> {
   format::Format *Clone() const override { return nullptr; }
 };
 
 template <typename a>
 class TestFormatOrderOne
-    : public sparsebase::format::FormatImplementation<
+    : public sparsebase::format::FormatCRTP<
           TestFormatOrderOne<a>, sparsebase::format::FormatOrderOne<a>> {
   format::Format *Clone() const override { return nullptr; }
 };
@@ -1067,7 +1067,7 @@ TEST(PermuteTest, WrongInputType) {
                                                                      order);
   EXPECT_THROW((transformer.GetTransformation(&orig_arr, {&cpu_context}, true)
                     ->As<format::CSR>()),
-               utils::TypeException);
+               utils::FunctionNotFoundException);
 }
 
 TEST(PermuteTest, NoConversionParam) {

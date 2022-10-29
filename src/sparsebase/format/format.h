@@ -27,6 +27,14 @@
 
 namespace sparsebase {
 
+namespace utils::converter {
+class Converter;
+template <typename ValueType>
+class ConverterOrderOne;
+template <typename IDType, typename NNZType, typename ValueType>
+class ConverterOrderTwo;
+}
+
 namespace format {
 
 //! Enum depicting the ownership status of a Format instance
@@ -111,6 +119,12 @@ class Format {
   //! Returns the type_index for the context for the format instance
   virtual std::type_index get_context_type() const = 0;
 
+  //! Returns a pointer at the converter of this format instance
+  virtual utils::converter::Converter* get_converter() const = 0;
+  
+  //! Sets a new converter for this format instance
+  //virtual void set_converter(utils::converter::Converter*) = 0;
+
   //! Templated function that can be used to cast to a concrete format class
   /*!
    * \tparam T a concrete format class (for example: CSR<int,int,int>)
@@ -164,16 +178,39 @@ class Format {
  * \tparam FormatType used for CRTP, should be a concrete format class
  * (for example: CSR<int,int,int>)
  */
-template <typename FormatType, typename Base = Format>
-class FormatImplementation : public Base {
+class FormatImplementation : public Format {
  public:
   virtual std::vector<DimensionType> get_dimensions() const {
-    return dimension_;
+    return this->dimension_;
   }
-  virtual DimensionType get_num_nnz() const { return nnz_; }
-  virtual DimensionType get_order() const { return order_; }
-  virtual context::Context *get_context() const { return context_.get().get(); }
+  virtual DimensionType get_num_nnz() const { return this->nnz_; }
+  virtual DimensionType get_order() const { return this->order_; }
+  virtual context::Context *get_context() const { return this->context_.get().get(); }
 
+  virtual std::type_index get_context_type() const {
+    return this->context_.get()->get_context_type_member();
+  }
+  virtual utils::converter::Converter* get_converter()
+      const {
+        std::cout << "getting converter " << this->converter_ << std::endl;
+        return this->converter_;
+        //return std::dynamic_pointer_cast<utils::converter::Converter>(this->converter_).get();
+      };
+  void set_converter(utils::converter::Converter* converter)
+      {
+        this->converter_ = converter;
+      };
+ protected:
+  DimensionType order_;
+  std::vector<DimensionType> dimension_;
+  DimensionType nnz_;
+  utils::OnceSettable<std::unique_ptr<sparsebase::context::Context>> context_;
+  utils::converter::Converter* converter_;
+};
+
+template <typename FormatType, typename Base>
+class FormatCRTP : public Base{
+  public:
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
   virtual std::type_index get_format_id() { return typeid(FormatType); }
@@ -189,21 +226,19 @@ class FormatImplementation : public Base {
     return utils::demangle(get_format_id_static());
   };
 
-  virtual std::type_index get_context_type() const {
-    return this->context_.get()->get_context_type_member();
-  }
-
- protected:
-  DimensionType order_;
-  std::vector<DimensionType> dimension_;
-  DimensionType nnz_;
-  utils::OnceSettable<std::unique_ptr<sparsebase::context::Context>> context_;
 };
 
 template <typename ValueType>
 class FormatOrderOne
-    : public FormatImplementation<FormatOrderOne<ValueType>, Format> {
+    : public FormatImplementation {
  public:
+   FormatOrderOne(){
+    //this->converter_ = std::static_pointer_cast<utils::converter::Converter>(std::make_shared<utils::converter::ConverterOrderOne<ValueType>>());
+    this->set_converter(new utils::converter::ConverterOrderOne<ValueType>);
+    //std::cout << "constructing the format " << this->converter_ << std::endl;;
+  }
+
+
   //! Converts `this` to a FormatOrderOne object of type ToType<ValueType>
   /*!
    * \param to_context context used to carry out the conversion.
@@ -252,9 +287,13 @@ class FormatOrderOne
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
-    : public FormatImplementation<FormatOrderTwo<IDType, NNZType, ValueType>,
-                                  Format> {
+    : public FormatImplementation {
  public:
+   FormatOrderTwo(){
+    //this->converter_ = std::static_pointer_cast<utils::converter::Converter>(std::make_shared<utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>>());
+    this->set_converter(new utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>);
+  }
+
   //! Converts `this` to a FormatOrderTwo object of type ToType<IDType, NNZType,
   //! ValueType>
   /*!
@@ -327,7 +366,7 @@ class FormatOrderTwo
  */
 template <typename IDType, typename NNZType, typename ValueType>
 class COO
-    : public FormatImplementation<COO<IDType, NNZType, ValueType>,
+    : public FormatCRTP<COO<IDType, NNZType, ValueType>,
                                   FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col,
@@ -368,7 +407,7 @@ class COO
  */
 template <typename ValueType>
 class Array
-    : public FormatImplementation<Array<ValueType>, FormatOrderOne<ValueType>> {
+    : public FormatCRTP<Array<ValueType>, FormatOrderOne<ValueType>> {
  public:
   Array(DimensionType nnz, ValueType *row_ptr, Ownership own = kNotOwned);
   Array(const Array<ValueType> &);
@@ -406,7 +445,7 @@ class Array
  */
 template <typename IDType, typename NNZType, typename ValueType>
 class CSR
-    : public FormatImplementation<CSR<IDType, NNZType, ValueType>,
+    : public FormatCRTP<CSR<IDType, NNZType, ValueType>,
                                   FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
@@ -457,7 +496,7 @@ class CSR
  */
 template <typename IDType, typename NNZType, typename ValueType>
 class CSC
-    : public FormatImplementation<CSC<IDType, NNZType, ValueType>,
+    : public FormatCRTP<CSC<IDType, NNZType, ValueType>,
                                   FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   CSC(IDType n, IDType m, NNZType *col_ptr, IDType *col, ValueType *vals,
@@ -645,11 +684,12 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
   static_assert(std::is_base_of<format::FormatOrderOne<ValueType>,
                                 ToType<ValueType>>::value,
                 "T must be a format::Format");
-  sparsebase::utils::converter::ConverterOrderOne<ValueType> converter;
+  //auto* converter = this->converter_.get();
+  auto* converter = this->get_converter();
   context::Context *actual_context =
       to_context == nullptr ? this->get_context() : to_context;
   return converter
-      .Convert(this, ToType<ValueType>::get_format_id_static(), actual_context,
+      ->Convert(this, ToType<ValueType>::get_format_id_static(), actual_context,
                is_move_conversion)
       ->template AsAbsolute<ToType<ValueType>>();
 }
@@ -661,12 +701,13 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
   static_assert(std::is_base_of<format::FormatOrderOne<ValueType>,
                                 ToType<ValueType>>::value,
                 "T must be a format::Format");
-  sparsebase::utils::converter::ConverterOrderOne<ValueType> converter;
+  //auto* converter = this->converter_.get();
+  auto* converter = this->get_converter();
   std::vector<context::Context *> vec = {this->get_context()};
   std::vector<context::Context *> actual_contexts =
       to_contexts.empty() ? vec : to_contexts;
   return converter
-      .Convert(this, ToType<ValueType>::get_format_id_static(), actual_contexts,
+      ->Convert(this, ToType<ValueType>::get_format_id_static(), actual_contexts,
                is_move_conversion)
       ->template AsAbsolute<ToType<ValueType>>();
 }
@@ -678,9 +719,10 @@ ToType<ToValueType> *FormatOrderOne<ValueType>::Convert(
                                 ToType<ToValueType>>::value,
                 "T must be an order one format");
 
-  utils::converter::ConverterOrderOne<ValueType> converter;
+  //auto* converter = this->converter_.get();
+  auto* converter = this->get_converter();
   if (this->get_format_id() != ToType<ValueType>::get_format_id_static()) {
-    auto converted_format = converter.template Convert<ToType<ValueType>>(
+    auto converted_format = converter->template Convert<ToType<ValueType>>(
         this, this->get_context(), is_move_conversion);
     auto type_converted_format = TypeConverter<ToType, ToValueType>()(
         converted_format, is_move_conversion);
@@ -700,12 +742,12 @@ ToType<IDType, NNZType, ValueType>
       std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
                       ToType<IDType, NNZType, ValueType>>::value,
       "T must be an order two format");
-  sparsebase::utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>
-      converter;
+  //utils::converter::Converter* converter = this->converter_.get();
+  auto* converter = this->get_converter();
   context::Context *actual_context =
       to_context == nullptr ? this->get_context() : to_context;
   return converter
-      .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
+      ->Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                actual_context, is_move_conversion)
       ->template AsAbsolute<ToType<IDType, NNZType, ValueType>>();
 }
@@ -720,13 +762,13 @@ ToType<IDType, NNZType, ValueType>
       std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
                       ToType<IDType, NNZType, ValueType>>::value,
       "T must be an order two format");
-  sparsebase::utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>
-      converter;
+  //auto* converter = this->converter_.get();
+  auto* converter = this->get_converter();
   std::vector<context::Context *> vec = {this->get_context()};
   std::vector<context::Context *> actual_contexts =
       to_contexts.empty() ? vec : to_contexts;
   return converter
-      .Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
+      ->Convert(this, ToType<IDType, NNZType, ValueType>::get_format_id_static(),
                actual_contexts, is_move_conversion)
       ->template AsAbsolute<ToType<IDType, NNZType, ValueType>>();
 }
@@ -740,11 +782,12 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
       std::is_base_of<format::FormatOrderTwo<ToIDType, ToNNZType, ToValueType>,
                       ToType<ToIDType, ToNNZType, ToValueType>>::value,
       "T must be an order two format");
-  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  //auto* converter = this->converter_.get();
+  auto* converter = this->get_converter();
   if (this->get_format_id() !=
       ToType<IDType, NNZType, ValueType>::get_format_id_static()) {
     auto converted_format =
-        converter.template Convert<ToType<IDType, NNZType, ValueType>>(
+        converter->template Convert<ToType<IDType, NNZType, ValueType>>(
             this, this->get_context(), is_move_conversion);
     auto type_converted_format =
         TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(
@@ -760,6 +803,14 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
 }  // namespace format
 
 }  // namespace sparsebase
+//#include "sparsebase/utils/converter/converter.h"
+
+//namespace sparsebase::format {
+//template <typename FormatType, typename Base>
+//void FormatImplementation<FormatType, Base>::set_converter(utils::converter::Converter* ptr) {
+//  this->converter_ = std::shared_ptr<utils::converter::Converter>(ptr->Clone());
+//}
+//}
 #ifdef _HEADER_ONLY
 #include "sparsebase/format/format.cc"
 #ifdef USE_CUDA
