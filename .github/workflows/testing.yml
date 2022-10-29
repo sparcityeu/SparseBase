@@ -8,6 +8,9 @@ on:
 
 env:
   BUILD_TYPE: Release
+  METIS_LIB_DIR: /usr/lib/x86_64-linux-gnu
+  METIS_INC_DIR: /usr/include
+  RABBIT_ORDER_INC_DIR: /usr/include
 
 jobs:
 
@@ -135,12 +138,6 @@ jobs:
 
       - name: Install Non-System Dependencies
         run: sudo wget https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp -O /usr/include/rabbit_order.hpp
-
-      - name: Setting Search Paths
-        run: |
-          export METIS_LIB_DIR=/usr/lib/x86_64-linux-gnu
-          export METIS_INC_DIR=/usr/include
-          export RABBIT_ORDER_INC_DIR=/usr/include
 
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON
