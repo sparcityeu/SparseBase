@@ -1,6 +1,5 @@
 
 #include "gtest/gtest.h"
-
 #include "sparsebase/config.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda/context.cuh"
@@ -33,7 +32,8 @@ TEST(JaccardTest, Jaccard) {
       converter.Convert<format::Array<float>>(jac_array, {&cpu_context});
   EXPECT_EQ(jac_cpu_array->get_dimensions()[0], 4);
   EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&gpu_context}, false),
-               utils::DirectExecutionNotAvailableException<std::vector<std::type_index>>);
+               utils::DirectExecutionNotAvailableException<
+                   std::vector<std::type_index>>);
   EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, false),
                utils::FunctionNotFoundException);
 }
