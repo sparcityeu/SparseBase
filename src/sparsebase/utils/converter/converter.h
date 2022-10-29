@@ -13,8 +13,17 @@
 #include <optional>
 #include <tuple>
 #include <unordered_map>
+#include <algorithm>
+#include <cstring>
+#include <fstream>
+#include <functional>
+#include <memory>
+#include <typeindex>
+#include <typeinfo>
+#include <vector>
 
 #include "sparsebase/config.h"
+#include "sparsebase/utils/utils.h"
 
 #ifdef USE_CUDA
 #include "sparsebase/format/cuda/format.cuh"
@@ -24,23 +33,12 @@
 // Forward declerations for the `Convert` functions in
 // sparsebase/format/format.h
 namespace sparsebase {
-namespace utils {
-namespace converter {
-class Converter;
-template <class ConverterType>
-class ConverterImpl;
-template <typename IDType, typename NNZType, typename ValueType>
-class ConverterOrderTwo;
-template <typename ValueType>
-class ConverterOrderOne;
-
-}  // namespace converter
-}  // namespace utils
-}  // namespace sparsebase
-
-#include "sparsebase/format/format.h"
-namespace sparsebase {
-
+namespace format {
+class Format;
+}
+namespace context {
+class Context;
+}
 namespace utils {
 
 namespace converter {
@@ -89,6 +87,13 @@ class Converter {
    * @return
    */
   ConversionMap *get_conversion_map(bool is_move_conversion);
+  //! Returns one of the member conversion maps
+  /*!
+   *
+   * @param is_move_conversion to get the move ConversionMap or the copy one.
+   * @return
+   */
+  const ConversionMap * get_conversion_map(bool is_move_conversion) const;
 
   //! Returns a conversion path from from_type to to_type using contexts in
   //! to_contexts.
@@ -105,7 +110,7 @@ class Converter {
   static std::vector<ConversionStep> ConversionBFS(
       std::type_index from_type, context::Context *from_context,
       std::type_index to_type,
-      const std::vector<context::Context *> &to_contexts, ConversionMap *map);
+      const std::vector<context::Context *> &to_contexts, const ConversionMap * map);
 
  public:
   //! Register a conversion function from one type to another.
@@ -143,7 +148,7 @@ class Converter {
    */
   format::Format *Convert(format::Format *source, std::type_index to_type,
                           context::Context *to_context,
-                          bool is_move_conversion = false);
+                          bool is_move_conversion = false) const;
 
   //! Converts a source format to a destination format with cached output.
   /*!
@@ -162,7 +167,7 @@ class Converter {
   std::vector<format::Format *> ConvertCached(format::Format *source,
                                               std::type_index to_type,
                                               context::Context *to_context,
-                                              bool is_move_conversion = false);
+                                              bool is_move_conversion = false) const;
 
   //! Converts a source format to a destination format.
   /*!
@@ -179,7 +184,7 @@ class Converter {
    */
   format::Format *Convert(format::Format *source, std::type_index to_type,
                           std::vector<context::Context *> to_contexts,
-                          bool is_move_conversion = false);
+                          bool is_move_conversion = false) const;
 
   //! Converts the source to to_type and returns all the formats created
   //! during the conversion process.
@@ -196,7 +201,7 @@ class Converter {
   std::vector<format::Format *> ConvertCached(
       format::Format *source, std::type_index to_type,
       std::vector<context::Context *> to_context,
-      bool is_move_conversion = false);
+      bool is_move_conversion = false) const;
   //! Converts a format to another format and returns a cast pointer to the
   //! destination format.
   /*! An overload of the Convert function where the to_type parameter is
@@ -211,7 +216,7 @@ class Converter {
    */
   template <typename FormatType>
   FormatType *Convert(format::Format *source, context::Context *to_context,
-                      bool is_move_conversion = false) {
+                      bool is_move_conversion = false) const {
     auto *res = this->Convert(source, FormatType::get_format_id_static(),
                               to_context, is_move_conversion);
     return res->template AsAbsolute<FormatType>();
@@ -233,7 +238,7 @@ class Converter {
   template <typename FormatType>
   FormatType *Convert(format::Format *source,
                       std::vector<context::Context *> to_contexts,
-                      bool is_move_conversion = false) {
+                      bool is_move_conversion = false) const {
     auto *res = this->Convert(source, FormatType::get_format_id_static(),
                               to_contexts, is_move_conversion);
     return res->template AsAbsolute<FormatType>();
@@ -260,7 +265,7 @@ class Converter {
       std::type_index from_type, context::Context *from_context,
       std::type_index to_type,
       const std::vector<context::Context *> &to_contexts,
-      bool is_move_conversion = false);
+      bool is_move_conversion = false) const;
 
   //! Returns true if a conversion from (from_type, from_context) to (to_type,
   //! to_context) is possible
@@ -275,7 +280,7 @@ class Converter {
    */
   bool CanConvert(std::type_index from_type, context::Context *from_context,
                   std::type_index to_type, context::Context *to_context,
-                  bool is_move_conversion = false);
+                  bool is_move_conversion = false) const;
 
   //! Returns true if a conversion from (from_type, from_context) to (to_type,
   //! to_context) is possible
@@ -345,7 +350,7 @@ class Converter {
   static std::vector<format::Format *> ApplyConversionChain(
       const ConversionChain &chain, format::Format *, bool clear_intermediate);
 
-  virtual std::type_index get_converter_type() = 0;
+  virtual std::type_index get_converter_type() const = 0;
   virtual Converter *Clone() const = 0;
   virtual void Reset() = 0;
   virtual ~Converter();
@@ -363,7 +368,7 @@ template <class ConverterType>
 class ConverterImpl : public Converter {
  public:
   //! Returns the type_index for the Converter instance
-  virtual std::type_index get_converter_type() { return typeid(ConverterType); }
+  virtual std::type_index get_converter_type() const { return typeid(ConverterType); }
 };
 
 //! An instance of this class can be used to convert between order two formats
