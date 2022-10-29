@@ -31,8 +31,6 @@ void ConcreteExperiment::Run(unsigned int times, bool store_auxiliary) {
   for(unsigned int l = 0; l < this->dataLoaders_.size(); l++){
     auto loader = this->dataLoaders_[l];
     for(auto & [file_names, file_param] : this->targets_[l]){
-      //auto file_name = t.first;
-      //auto file_param = t.second;
       auto data = loader(file_names);
       std::string file_id;
       for(const auto & file_name: file_names){
