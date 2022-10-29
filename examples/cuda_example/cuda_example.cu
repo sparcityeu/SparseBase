@@ -8,14 +8,16 @@
 using namespace std;
 using namespace sparsebase;
 
-template <typename T> void print_array(T *vals, int n) {
+template <typename T>
+void print_array(T *vals, int n) {
   printf("Printing the Array on the CPU\n");
   for (int i = 0; i < n; i++) {
     printf("%f ", vals[i]);
   }
   printf("\n");
 }
-template <typename T> __global__ void print_array_cuda(T *vals, int n) {
+template <typename T>
+__global__ void print_array_cuda(T *vals, int n) {
   printf("Printing the Array on the GPU\n");
   for (int i = 0; i < n; i++) {
     printf("%f ", vals[i]);
@@ -44,7 +46,6 @@ __global__ void print_csr_cuda(int *row_ptr, int *col, int n) {
 }
 
 int main() {
-
   int row_ptr[6] = {0, 2, 4, 6, 6, 6};
   int col[6] = {1, 3, 0, 2, 0, 1};
   int vals[6] = {10, 20, 30, 40, 50, 60};

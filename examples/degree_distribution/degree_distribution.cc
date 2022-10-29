@@ -1,6 +1,7 @@
+#include <iostream>
+
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include <iostream>
 
 using namespace std;
 using namespace sparsebase;

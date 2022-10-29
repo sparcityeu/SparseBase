@@ -10,15 +10,15 @@ namespace sparsebase {
 namespace preprocess {
 namespace cuda {
 template <typename IDType, typename NNZType, typename FeatureType>
-__global__ void
-jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
-                                      NNZType n, FeatureType *emetrics,
-                                      IDType SM_FAC);
+__global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj,
+                                                      const IDType *adj,
+                                                      NNZType n,
+                                                      FeatureType *emetrics,
+                                                      IDType SM_FAC);
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-format::cuda::CUDAArray<FeatureType> *
-RunJaccardKernel(format::cuda::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
-
+format::cuda::CUDAArray<FeatureType> *RunJaccardKernel(
+    format::cuda::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(gpu_context->device_id);
@@ -58,8 +58,7 @@ RunJaccardKernel(format::cuda::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
 #define FULL_MASK 0xffffffff
 __inline__ __device__ unsigned calculateMask(char length,
                                              unsigned long long thread_id) {
-  if (length >= 32)
-    return FULL_MASK;
+  if (length >= 32) return FULL_MASK;
   // unsigned mask = 0x80000000;
   unsigned mask = 1;
   for (char i = 1; i < length; i++) {
@@ -102,10 +101,11 @@ __inline__ __device__ int warpReduce(int val, unsigned int length,
   return val;
 }
 template <typename IDType, typename NNZType, typename FeatureType>
-__global__ void
-jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
-                                      NNZType n, FeatureType *emetrics,
-                                      IDType SM_FAC) {
+__global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj,
+                                                      const IDType *adj,
+                                                      NNZType n,
+                                                      FeatureType *emetrics,
+                                                      IDType SM_FAC) {
   const bool directed = false;
   // int no_threads = blockDim.z * blockDim.y * blockDim.x * gridDim.x;
   unsigned int block_local_id = blockDim.x * blockDim.y * threadIdx.z +
@@ -116,7 +116,7 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
       (long long)blockDim.z * blockDim.x * blockDim.y * grid_id +
       (unsigned long long)block_local_id;
   unsigned mask =
-      calculateMask(blockDim.x, tid); // threadIdx.y*blockDim.x+threadIdx.x);
+      calculateMask(blockDim.x, tid);  // threadIdx.y*blockDim.x+threadIdx.x);
 
   for (NNZType ptr = blockIdx.y + blockIdx.z * gridDim.y; ptr < n;
        ptr += gridDim.y * gridDim.z) {
@@ -129,11 +129,9 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
       IDType v = adj[neigh_ptr + xadj[u]];
       bool skippable = (xadj[v + 1] - xadj[v] < degu ||
                         (xadj[v + 1] - xadj[v] == degu && v > u));
-      if (!directed && skippable)
-        continue;
+      if (!directed && skippable) continue;
       NNZType other_ptr = bst(xadj, adj, v, u);
-      if (directed && other_ptr != (NNZType)-1 && skippable)
-        continue;
+      if (directed && other_ptr != (NNZType)-1 && skippable) continue;
       NNZType intersection_size = 0;
 
       for (NNZType t_ptr = threadIdx.x; t_ptr < degu; t_ptr += blockDim.x) {
@@ -149,8 +147,7 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
             float(intersection_size) /
             float(degu + (xadj[v + 1] - xadj[v]) - intersection_size);
         emetrics[(xadj[u] + neigh_ptr)] = J;
-        if (other_ptr != (NNZType)-1)
-          emetrics[other_ptr] = J;
+        if (other_ptr != (NNZType)-1) emetrics[other_ptr] = J;
       }
     }
     //    __syncthreads();
@@ -160,7 +157,7 @@ jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj, const IDType *adj,
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/preprocess.inc"
 #endif
-} // namespace cuda
-} // namespace preprocess
+}  // namespace cuda
+}  // namespace preprocess
 
-} // namespace sparsebase
+}  // namespace sparsebase

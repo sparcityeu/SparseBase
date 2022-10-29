@@ -22,6 +22,6 @@ bool CUDAContext::IsEquivalent(Context *rhs) const {
   }
   return false;
 }
-} // namespace cuda
-} // namespace context
-} // namespace sparsebase
+}  // namespace cuda
+}  // namespace context
+}  // namespace sparsebase

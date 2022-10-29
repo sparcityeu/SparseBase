@@ -1,6 +1,7 @@
+#include "object.h"
+
 #include <iostream>
 
-#include "object.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/io/reader.h"
 
@@ -44,7 +45,6 @@ Format *AbstractObject<IDType, NNZType, ValueType>::release_connectivity() {
 template <typename IDType, typename NNZType, typename ValueType>
 void AbstractObject<IDType, NNZType, ValueType>::set_connectivity(Format *conn,
                                                                   bool own) {
-
   if (own)
     connectivity_ = std::unique_ptr<Format, std::function<void(Format *)>>(
         conn, Deleter<Format>());
@@ -88,7 +88,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  //std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  // std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] <<
+  // ", "
   //          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -97,7 +98,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  ///std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  /// std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] <<
+  /// ", "
   ///          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -108,7 +110,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  ///std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  /// std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] <<
+  /// ", "
   ///          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -118,7 +121,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
-  ///std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] << ", "
+  /// std::cout << "dimensions " << this->connectivity_->get_dimensions()[0] <<
+  /// ", "
   ///          << this->connectivity_->get_dimensions()[1] << std::endl;
 }
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -134,8 +138,7 @@ Graph<VertexID, NumEdges, ValueType>::~Graph(){};
 template <typename VertexID, typename NumEdges, typename ValueType>
 void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
   // check order
-  if (this->connectivity_->get_order() != 2)
-    throw -1;
+  if (this->connectivity_->get_order() != 2) throw -1;
   // check dimensions
 }
 
@@ -162,4 +165,4 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
 //     // ...
 // };
 
-} // namespace sparsebase::object
+}  // namespace sparsebase::object

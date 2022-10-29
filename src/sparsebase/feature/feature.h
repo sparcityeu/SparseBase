@@ -1,6 +1,6 @@
 /*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
- * All rights reserved.
+ * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+ *Sener All rights reserved.
  *
  * This file is distributed under MIT license.
  * The complete license agreement can be obtained at:
@@ -9,18 +9,20 @@
 #ifndef SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
 #define SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
 
-#include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include <any>
 #include <set>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
 
+#include "sparsebase/format/format.h"
+#include "sparsebase/preprocess/preprocess.h"
+
 namespace sparsebase::feature {
 
-template <typename Interface> struct Implementation {
-public:
+template <typename Interface>
+struct Implementation {
+ public:
   Implementation() = default;
   template <typename ConcreteType>
   explicit Implementation(ConcreteType &&object)
@@ -40,7 +42,7 @@ public:
 
   Interface *operator->() { return &getter(storage); }
 
-private:
+ private:
   std::any storage;
   Interface &(*getter)(std::any &);
 };
@@ -51,23 +53,22 @@ template <class ClassType, typename Key = std::vector<std::type_index>,
           typename KeyHash = preprocess::TypeIndexVectorHash,
           typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class ClassMatcherMixin {
-
 #ifdef DEBUG
-public:
+ public:
 #else
-protected:
+ protected:
 #endif
 
   std::unordered_map<Key, ClassType, KeyHash, KeyEqualTo> map_;
   void RegisterClass(std::vector<std::type_index> instants, ClassType);
-  std::tuple<ClassType, std::vector<std::type_index>>
-  MatchClass(std::unordered_map<std::type_index, ClassType> &source,
-             std::vector<std::type_index> &ordered, unsigned int K);
+  std::tuple<ClassType, std::vector<std::type_index>> MatchClass(
+      std::unordered_map<std::type_index, ClassType> &source,
+      std::vector<std::type_index> &ordered, unsigned int K);
   void GetClassesHelper(std::unordered_map<std::type_index, ClassType> &source,
                         std::vector<std::type_index> &ordered,
                         std::vector<ClassType> &res);
-  std::vector<ClassType>
-  GetClasses(std::unordered_map<std::type_index, ClassType> &source);
+  std::vector<ClassType> GetClasses(
+      std::unordered_map<std::type_index, ClassType> &source);
 };
 
 //! Extractor provides an interface for users to generate multiple features
@@ -76,7 +77,7 @@ protected:
  *  Detailed
  */
 class Extractor : public ClassMatcherMixin<preprocess::ExtractableType *> {
-public:
+ public:
   ~Extractor();
   //! Computes the features that are passed.
   /*!
@@ -86,9 +87,9 @@ public:
     \param con vector of contexts to be used to determine the where the
     computation will take place. \return void
   */
-  static std::unordered_map<std::type_index, std::any>
-  Extract(std::vector<Feature> &features, format::Format *format,
-          const std::vector<context::Context *> &, bool convert_input);
+  static std::unordered_map<std::type_index, std::any> Extract(
+      std::vector<Feature> &features, format::Format *format,
+      const std::vector<context::Context *> &, bool convert_input);
   std::
       unordered_map<std::type_index, std::any>
       //! Computes the features that are added to in_ private data member.
@@ -128,10 +129,10 @@ public:
   void PrintFuncList();
   std::vector<preprocess::ExtractableType *> GetFuncList();
 
-protected:
+ protected:
   Extractor() noexcept = default;
 
-private:
+ private:
   //! Stores the features that are going to be extracted once the Extract
   //! function is called.
   /*!
@@ -143,14 +144,14 @@ private:
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class FeatureExtractor : public Extractor {
-public:
+ public:
   FeatureExtractor();
 };
 
-} // namespace sparsebase::feature
+}  // namespace sparsebase::feature
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/feature/feature.cc"
 #endif
 
-#endif // SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
+#endif  // SPARSEBASE_SPARSEBASE_FEATURE_FEATURE_H_
