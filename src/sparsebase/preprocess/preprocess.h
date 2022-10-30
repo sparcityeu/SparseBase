@@ -120,34 +120,6 @@ class ExtractableType {
   std::unordered_map<std::type_index, std::shared_ptr<PreprocessParams>> pmap_;
 };
 
-//! A mixin class that attaches to its templated parameter a
-//! sparsebase::utils::converter::Converter
-/*!
- *
- * @tparam Parent any class to which a converter should be added
- */
-template <class Parent>
-class ConverterMixin : public Parent {
-  using Parent::Parent;
-
- protected:
-  //! A unique pointer at an abstract sparsebase::utils::converter::Converter
-  //! object
-  std::unique_ptr<utils::converter::Converter> sc_ = nullptr;
-
- public:
-  //! Set the data member `sc_` to be a clone of `new_sc`
-  /*!
-   * @param new_sc a reference to a Converter object
-   */
-  void SetConverter(const utils::converter::Converter &new_sc);
-  //! Resets the concrete converter pointed at by `sc_` to its initial state
-  void ResetConverter();
-  //! Returns a unique pointer at a copy of the current Converter pointed to by
-  //! `new_sc`
-  std::unique_ptr<utils::converter::Converter> GetConverter();
-};
-
 //! Template for implementation functions of all preprocesses
 /*!
   \tparam ReturnType the return type of preprocessing functions
@@ -171,7 +143,7 @@ using PreprocessFunction = ReturnType (*)(std::vector<format::Format *> formats,
   keys. \tparam KeyEqualTo the function used to evaluate equality of keys
 */
 template <typename ReturnType,
-          class PreprocessingImpl = ConverterMixin<PreprocessType>,
+          class PreprocessingImpl = PreprocessType,
           typename Function = PreprocessFunction<ReturnType>,
           typename Key = std::vector<std::type_index>,
           typename KeyHash = TypeIndexVectorHash,
@@ -223,15 +195,13 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * \param key the Key representing the input formats.
    * \param map the map between Keys and Functions used to find the needed
    * function. \param contexts Contexts available for execution of the
-   * preprocessing. \param converter Converter object to be used for determining
-   * available Format conversions. \return a tuple of a) the Function to use,
+   * preprocessing. \return a tuple of a) the Function to use,
    * and b) a utils::converter::ConversionSchemaConditional indicating
    * conversions to be done on input Format objects.
    */
   std::tuple<Function, utils::converter::ConversionSchema> GetFunction(
       std::vector<format::Format *> packed_formats, Key key, ConversionMap map,
-      std::vector<context::Context *> contexts,
-      utils::converter::Converter *converter);
+      std::vector<context::Context *> contexts);
   //! Check if a given Key has a function that can be used without any
   //! conversions.
   /*!
@@ -262,9 +232,6 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * to a conversion.
    * \param PreprocessParams a polymorphic pointer at the
    * object containing hyperparameters needed for preprocessing.
-   * \param
-   * converter Converter object to be used for determining available Format
-   * conversions.
    * \param contexts Contexts available for execution of the
    * preprocessing.
    * \param convert_input whether or not to convert the input formats if that is
@@ -278,7 +245,6 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    */
   template <typename F, typename... SF>
   ReturnType Execute(PreprocessParams *params,
-                     utils::converter::Converter *converter,
                      std::vector<context::Context *> contexts,
                      bool convert_input, F sf, SF... sfs);
   //! Executes preprocessing on input formats (given variadically)
@@ -311,7 +277,7 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    */
   template <typename F, typename... SF>
   std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
-  CachedExecute(PreprocessParams *params, utils::converter::Converter *sc,
+  CachedExecute(PreprocessParams *params,
                 std::vector<context::Context *> contexts, bool convert_input,
                 bool clear_intermediate, F format, SF... formats);
 };
@@ -659,7 +625,7 @@ class PermuteOrderOne
 template <typename FeatureType>
 class FeaturePreprocessType
     : public FunctionMatcherMixin<FeatureType,
-                                  ConverterMixin<ExtractableType>> {
+                                  ExtractableType> {
  public:
   std::shared_ptr<PreprocessParams> get_params() override;
   std::shared_ptr<PreprocessParams> get_params(std::type_index) override;
@@ -1918,7 +1884,6 @@ template <typename F, typename... SF>
 std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
                      KeyEqualTo>::CachedExecute(PreprocessParams *params,
-                                                utils::converter::Converter *sc,
                                                 std::vector<context::Context *>
                                                     contexts,
                                                 bool convert_input,
@@ -1977,7 +1942,6 @@ template <typename F, typename... SF>
 ReturnType FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::Execute(PreprocessParams *params,
-                         utils::converter::Converter *sc,
                          std::vector<context::Context *> contexts,
                          bool convert_input, F sf, SF... sfs) {
   auto cached_output =

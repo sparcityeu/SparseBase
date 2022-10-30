@@ -66,21 +66,6 @@ bool FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash,
     return true;
   }
 }
-template <class Parent>
-void ConverterMixin<Parent>::SetConverter(
-    const utils::converter::Converter &new_sc) {
-  sc_ = std::unique_ptr<utils::converter::Converter>(new_sc.Clone());
-}
-template <class Parent>
-void ConverterMixin<Parent>::ResetConverter() {
-  sc_->Reset();
-}
-template <class Parent>
-std::unique_ptr<utils::converter::Converter>
-ConverterMixin<Parent>::GetConverter() {
-  if (sc_ == nullptr) return nullptr;
-  return std::unique_ptr<utils::converter::Converter>(sc_->Clone());
-}
 template <typename IDType>
 ReorderPreprocessType<IDType>::~ReorderPreprocessType() = default;
 ;
