@@ -258,9 +258,6 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * created due to a conversion.
    * \param PreprocessParams a polymorphic pointer
    * at the object containing hyperparameters needed for preprocessing.
-   * \param
-   * converter Converter object to be used for determining available Format
-   * conversions.
    * \param contexts Contexts available for execution of the
    * preprocessing.
    * \param convert_input whether or not to convert the input formats if that is
@@ -617,7 +614,7 @@ class PermuteOrderOne
 
 //! A class that does feature extraction.
 /*!
- * An ExtractableType class that has a Converter and the function matching
+ * An ExtractableType class that has a function matching
  * capability. In other words, an Extractable to which implementation functions
  * can be added and used. \tparam FeatureType the return type of feature
  * extraction
@@ -1899,7 +1896,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     packed_format_types.push_back(f->get_format_id());
   // get conversion schema
   std::tuple<Function, utils::converter::ConversionSchema> ret =
-      GetFunction(packed_formats, packed_format_types, map, contexts, sc);
+      GetFunction(packed_formats, packed_format_types, map, contexts);
   Function func = std::get<0>(ret);
   utils::converter::ConversionSchema cs = std::get<1>(ret);
   // carry out conversion
@@ -1945,7 +1942,7 @@ ReturnType FunctionMatcherMixin<
                          std::vector<context::Context *> contexts,
                          bool convert_input, F sf, SF... sfs) {
   auto cached_output =
-      CachedExecute(params, sc, contexts, convert_input, true, sf, sfs...);
+      CachedExecute(params, contexts, convert_input, true, sf, sfs...);
   auto converted_format_chains = std::get<0>(cached_output);
   auto return_object = std::get<1>(cached_output);
   for (const auto &converted_format_chain : converted_format_chains) {

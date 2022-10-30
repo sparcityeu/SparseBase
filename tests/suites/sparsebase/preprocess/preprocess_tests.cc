@@ -169,31 +169,6 @@ TEST(TypeIndexHash, Basic) {
   EXPECT_EQ(hash, hasher(vec));
 }
 
-TEST(ConverterMixin, Basics) {
-  ConverterMixin<PreprocessType> instance;
-  //! Check getting an empty converter
-  ASSERT_EQ(instance.GetConverter(), nullptr);
-
-  //! Check setting a converter
-  utils::converter::ConverterOrderOne<int> converter;
-  instance.SetConverter(converter);
-  // Same type
-  ASSERT_NE(dynamic_cast<utils::converter::ConverterOrderOne<int> *>(
-                instance.GetConverter().get()),
-            nullptr);
-  // Different object
-  ASSERT_NE(instance.GetConverter().get(), &converter);
-
-  //! Check resetting a converter
-  instance.ResetConverter();
-  // Same type
-  ASSERT_NE(dynamic_cast<utils::converter::ConverterOrderOne<int> *>(
-                instance.GetConverter().get()),
-            nullptr);
-  // Different object
-  ASSERT_NE(instance.GetConverter().get(), &converter);
-}
-
 class FunctionMatcherMixinTest : public ::testing::Test {
  protected:
   GenericPreprocessType<int> concrete_preprocess;
@@ -256,27 +231,6 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
           {sparsebase::format::CSR<int, int, int>::get_format_id_static()}),
       false);
 
-  // Check calling with one conversion needed and no converter registered
-  concrete_preprocess.RegisterFunction(
-      {sparsebase::format::COO<int, int, int>::get_format_id_static()},
-      TwoImplementationFunction);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-      utils::NoConverterException);
-  // should fail with different exception
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-      utils::NoConverterException);
-
-  // Check calling with one conversion needed and a converter registered
-  concrete_preprocess.SetConverter(
-      utils::converter::ConverterOrderTwo<int, int, int>{});
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            2);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-      utils::DirectExecutionNotAvailableException<
-          std::vector<std::type_index>>);
 
   // Check calling with no conversion needed even though one is possible
   concrete_preprocess.RegisterFunction({csr->get_format_id()},
@@ -329,6 +283,8 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
   // One conversion is done
   concrete_preprocess.UnregisterFunction(
       {sparsebase::format::CSR<int, int, int>::get_format_id_static()});
+  concrete_preprocess.RegisterFunction(
+      {sparsebase::format::COO<int, int, int>::get_format_id_static()}, TwoImplementationFunction);
   auto tup2 =
       concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, true);
   ASSERT_NE(std::get<0>(tup2)[0][0], nullptr);
@@ -1538,15 +1494,9 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
       format::Format *f1, format::Format *f2, format::Format *f3,
       std::vector<context::Context *> contexts, bool convert_input,
       bool clear_intermediate) {
-    auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
-    c->ClearConversionFunctions(
-        format::CSR<int, int, int>::get_format_id_static(),
-        format::CSC<int, int, int>::get_format_id_static(), false);
     auto p = new PreprocessParams;
-    auto res = this->CachedExecute(p, c, std::move(contexts), convert_input,
+    auto res = this->CachedExecute(p, std::move(contexts), convert_input,
                                    clear_intermediate, f1, f2, f3);
-    delete c;
-
     return res;
   }
   MultiFormatKeyPreprocess() {
@@ -1558,21 +1508,6 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
                             format::CSC<int, int, int>::get_format_id_static(),
                             format::CSC<int, int, int>::get_format_id_static()},
                            CSR_CSC_CSC);
-    // this->RegisterFunction({format::CSR<int, int,
-    // int>::get_format_id_static(),
-    //                        format::COO<int, int,
-    //                        int>::get_format_id_static(), format::CSR<int,
-    //                        int, int>::get_format_id_static()}, CSR_COO_CSR);
-    // this->RegisterFunction({format::CSR<int, int,
-    // int>::get_format_id_static(),
-    //                        format::COO<int, int,
-    //                        int>::get_format_id_static(), format::COO<int,
-    //                        int, int>::get_format_id_static()}, CSR_COO_COO);
-    // this->RegisterFunction({format::COO<int, int,
-    // int>::get_format_id_static(),
-    //                        format::COO<int, int,
-    //                        int>::get_format_id_static(), format::COO<int,
-    //                        int, int>::get_format_id_static()}, COO_COO_COO);
   }
 
  private:
@@ -1582,24 +1517,22 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
   static int CSR_CSC_CSC(std::vector<format::Format *>, PreprocessParams *) {
     return 1;
   }
-  // static int CSR_COO_CSR(std::vector<format::Format*>, PreprocessParams*){
-  //  return 1;
-  //}
-  // static int CSR_COO_COO(std::vector<format::Format*>, PreprocessParams*){
-  //  return 1;
-  //}
-  // static int COO_COO_COO(std::vector<format::Format*>, PreprocessParams*){
-  //  return 1;
-  //}
 };
 
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
+  auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
+  c->ClearConversionFunctions(
+      format::CSR<int, int, int>::get_format_id_static(),
+      format::CSC<int, int, int>::get_format_id_static(), false);
   context::CPUContext cpu;
-  format::CSR<TYPE> *csr = &global_csr;
-  format::COO<TYPE> *coo = &global_coo;
+  format::CSR<TYPE> *csr = global_csr.Clone()->AsAbsolute<format::CSR<TYPE>>();
+  format::COO<TYPE> *coo = global_coo.Clone()->AsAbsolute<format::COO<TYPE>>();
   auto *csc = global_coo.Convert<format::CSC>();
+  csr->set_converter(c);
+  coo->set_converter(c);
+  csc->set_converter(c);
   // No conversions needed on all three
   auto output = x.GetCached(csr, csr, csr, {&cpu}, true, false);
   auto intermediate = std::get<0>(output);
@@ -1650,10 +1583,17 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
+  auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
+  c->ClearConversionFunctions(
+      format::CSR<int, int, int>::get_format_id_static(),
+      format::CSC<int, int, int>::get_format_id_static(), false);
   context::CPUContext cpu;
-  format::CSR<TYPE> *csr = &global_csr;
-  format::COO<TYPE> *coo = &global_coo;
+  format::CSR<TYPE> *csr = global_csr.Clone()->AsAbsolute<format::CSR<TYPE>>();
+  format::COO<TYPE> *coo = global_coo.Clone()->AsAbsolute<format::COO<TYPE>>();
   auto *csc = global_coo.Convert<format::CSC>();
+  csr->set_converter(c);
+  coo->set_converter(c);
+  csc->set_converter(c);
   // No conversions needed on all three
   auto output = x.GetCached(csr, csr, csr, {&cpu}, true, true);
   auto intermediate = std::get<0>(output);
