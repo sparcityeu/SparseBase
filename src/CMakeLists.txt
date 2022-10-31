@@ -26,6 +26,7 @@ if(NOT ${_HEADER_ONLY})
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
     sparsebase/utils/io/writer.cc
+    sparsebase/experiment/experiment.cc
     sparsebase/utils/utils.cc
   )
   if (${USE_CUDA})
@@ -207,6 +208,9 @@ set(UTILS_FILES
   sparsebase/utils/exception.h
   sparsebase/utils/utils.h
 )
+set(EXPERIMENT_FILES 
+  sparsebase/experiment/experiment.h
+)
 if(${_HEADER_ONLY})
   set(CONTEXT_FILES ${CONTEXT_FILES}
     sparsebase/context/context.cc
@@ -230,7 +234,9 @@ if(${_HEADER_ONLY})
   set(CONVERTER_FILES ${CONVERTER_FILES}
     sparsebase/utils/converter/converter.cc
   )
-
+  set(EXPERIMENT_FILES ${EXPERIMENT_FILES}
+    sparsebase/experiment/experiment.cc
+  )
   set(UTILS_FILES ${UTILS_FILES}
      sparsebase/utils/utils.cc
           )
@@ -251,6 +257,8 @@ install(FILES ${IO_FILES}
   DESTINATION include/sparsebase/utils/io/)
 install(FILES ${CONVERTER_FILES}
   DESTINATION include/sparsebase/utils/converter/)
+install(FILES ${EXPERIMENT_FILES}
+  DESTINATION include/sparsebase/experiment/)
 install(FILES ${UTILS_FILES}
         DESTINATION include/sparsebase/utils/)
 
