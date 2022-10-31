@@ -16,11 +16,11 @@ In this tutorial, you will use SparseBase to do the following:
 7. Compile and run the code.
 
 ## Preliminaries
-Start by navigating to the directory `tutorials/003_cuda_spmv/start_here/`. Open the file `tutorial_003.cu` using a code editor and follow along with the tutorial. 
+Start by navigating to the directory `tutorials/004_cuda_spmv/start_here/`. Open the file `tutorial_004.cu` using a code editor and follow along with the tutorial. 
 
 The file contains some boilerplate code that includes the appropriate headers, creates some type definitions, and uses the `sparsebase` namespace. It also includes the `CUDA` kernel `spmv_1w1r` which carries out sparse matrix-vector multiplication. It takes the sparse matrix operand as a Compressed Sparse Row (CSR) matrix, and the vector operand as a dense array, and writes the multiplication result in a dense array.
 
-The completed tutorial code can be found in `tutorials/003_reordering/solved/solved.cu`. 
+The completed tutorial code can be found in `tutorials/004_reordering/solved/solved.cu`. 
 
 To demonstrate our code, we will use a matrix from the [SuiteSparse](http://sparse.tamu.edu) matrix collection. In this example, we use the `POLYFLOW/mixtank_new` matrix, however, any symmetric matrix can be used as well. This code sample works with the matrix market file format. You can get this file from the following [link](https://sparse.tamu.edu/POLYFLOW/mixtank_new).
 
@@ -252,14 +252,14 @@ Array<value_type>* arr_result = foo_result->As<Array>();
 Since `Permute1D` is only implemented on `Array` format types, the call to `Permute1D` above will convert the `CUDACSR` input to an `Array`, permute it, and return an `Array` with the result.
 
 ### 7. Compile and run the code
-While in the directory `tutorials/003_cuda_spmv/start_here`, download the matrix file and extract it:
+While in the directory `tutorials/004_cuda_spmv/start_here`, download the matrix file and extract it:
 ```bash
 wget https://suitesparse-collection-website.herokuapp.com/MM/POLYFLOW/mixtank_new.tar.gz
 tar -xvf mixtank_new.tar.gz
 ```
 Then, compile and execute the code with the following commands:
 ```bash
-nvcc -std=c++17 tutorial_003.cu -lsparsebase -lgomp -std=c++17 -o spmv.out
+nvcc -std=c++17 tutorial_004.cu -lsparsebase -lgomp -std=c++17 -o spmv.out
 ./spmv.out mixtank_new/mixtank_new.mtx 
 ```
 
