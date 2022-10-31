@@ -120,7 +120,7 @@ class Format {
   virtual std::type_index get_context_type() const = 0;
 
   //! Returns a pointer at the converter of this format instance
-  virtual utils::converter::Converter* get_converter() const = 0;
+  virtual std::shared_ptr<utils::converter::Converter const> get_converter() const = 0;
   
   //! Sets a new converter for this format instance
   //virtual void set_converter(utils::converter::Converter*) = 0;
@@ -190,13 +190,13 @@ class FormatImplementation : public Format {
   virtual std::type_index get_context_type() const {
     return this->context_.get()->get_context_type_member();
   }
-  virtual utils::converter::Converter* get_converter()
+  virtual std::shared_ptr<utils::converter::Converter const> get_converter()
       const {
-        std::cout << "getting converter " << this->converter_ << std::endl;
+        std::cout << "getting converter " << this->converter_.get() << std::endl;
         return this->converter_;
         //return std::dynamic_pointer_cast<utils::converter::Converter>(this->converter_).get();
       };
-  void set_converter(utils::converter::Converter* converter)
+  void set_converter(std::shared_ptr<utils::converter::Converter> converter)
       {
         this->converter_ = converter;
       };
@@ -205,7 +205,7 @@ class FormatImplementation : public Format {
   std::vector<DimensionType> dimension_;
   DimensionType nnz_;
   utils::OnceSettable<std::unique_ptr<sparsebase::context::Context>> context_;
-  utils::converter::Converter* converter_;
+  std::shared_ptr<utils::converter::Converter> converter_;
 };
 
 template <typename FormatType, typename Base>
@@ -232,11 +232,7 @@ template <typename ValueType>
 class FormatOrderOne
     : public FormatImplementation {
  public:
-   FormatOrderOne(){
-    //this->converter_ = std::static_pointer_cast<utils::converter::Converter>(std::make_shared<utils::converter::ConverterOrderOne<ValueType>>());
-    this->set_converter(new utils::converter::ConverterOrderOne<ValueType>);
-    //std::cout << "constructing the format " << this->converter_ << std::endl;;
-  }
+   FormatOrderOne();
 
 
   //! Converts `this` to a FormatOrderOne object of type ToType<ValueType>
@@ -289,10 +285,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
     : public FormatImplementation {
  public:
-   FormatOrderTwo(){
-    //this->converter_ = std::static_pointer_cast<utils::converter::Converter>(std::make_shared<utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>>());
-    this->set_converter(new utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>);
-  }
+   FormatOrderTwo();
 
   //! Converts `this` to a FormatOrderTwo object of type ToType<IDType, NNZType,
   //! ValueType>
@@ -685,7 +678,7 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
                                 ToType<ValueType>>::value,
                 "T must be a format::Format");
   //auto* converter = this->converter_.get();
-  auto* converter = this->get_converter();
+  auto converter = this->get_converter();
   context::Context *actual_context =
       to_context == nullptr ? this->get_context() : to_context;
   return converter
@@ -702,7 +695,7 @@ ToType<ValueType> *sparsebase::format::FormatOrderOne<ValueType>::Convert(
                                 ToType<ValueType>>::value,
                 "T must be a format::Format");
   //auto* converter = this->converter_.get();
-  auto* converter = this->get_converter();
+  auto converter = this->get_converter();
   std::vector<context::Context *> vec = {this->get_context()};
   std::vector<context::Context *> actual_contexts =
       to_contexts.empty() ? vec : to_contexts;
@@ -720,7 +713,7 @@ ToType<ToValueType> *FormatOrderOne<ValueType>::Convert(
                 "T must be an order one format");
 
   //auto* converter = this->converter_.get();
-  auto* converter = this->get_converter();
+  auto converter = this->get_converter();
   if (this->get_format_id() != ToType<ValueType>::get_format_id_static()) {
     auto converted_format = converter->template Convert<ToType<ValueType>>(
         this, this->get_context(), is_move_conversion);
@@ -743,7 +736,7 @@ ToType<IDType, NNZType, ValueType>
                       ToType<IDType, NNZType, ValueType>>::value,
       "T must be an order two format");
   //utils::converter::Converter* converter = this->converter_.get();
-  auto* converter = this->get_converter();
+  auto converter = this->get_converter();
   context::Context *actual_context =
       to_context == nullptr ? this->get_context() : to_context;
   return converter
@@ -763,7 +756,7 @@ ToType<IDType, NNZType, ValueType>
                       ToType<IDType, NNZType, ValueType>>::value,
       "T must be an order two format");
   //auto* converter = this->converter_.get();
-  auto* converter = this->get_converter();
+  auto converter = this->get_converter();
   std::vector<context::Context *> vec = {this->get_context()};
   std::vector<context::Context *> actual_contexts =
       to_contexts.empty() ? vec : to_contexts;
@@ -783,7 +776,7 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
                       ToType<ToIDType, ToNNZType, ToValueType>>::value,
       "T must be an order two format");
   //auto* converter = this->converter_.get();
-  auto* converter = this->get_converter();
+  auto converter = this->get_converter();
   if (this->get_format_id() !=
       ToType<IDType, NNZType, ValueType>::get_format_id_static()) {
     auto converted_format =

@@ -493,12 +493,13 @@ sparsebase::format::Format* dummy_conversion(sparsebase::format::Format* p, spar
 }
 
 TEST(FormatImplementation, SetConverter){
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int> conv;
-  conv.ClearConversionFunctions();
-  conv.RegisterConversionFunction(spf::CSR<int, int, int>::get_format_id_static(), spf::COO<int, int, int>::get_format_id_static(), dummy_conversion, [](sparsebase::context::Context*, sparsebase::context::Context*){ return true;});
+  auto conv = std::make_shared<sparsebase::utils::converter::ConverterOrderTwo<int, int, int>>();
+  conv->ClearConversionFunctions();
+  conv->RegisterConversionFunction(spf::CSR<int, int, int>::get_format_id_static(), spf::COO<int, int, int>::get_format_id_static(), dummy_conversion, [](sparsebase::context::Context*, sparsebase::context::Context*){ return true;});
   sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
                                              csr_vals);
-  csr.set_converter(&conv);
+                                             
+  csr.set_converter(conv);
 
   EXPECT_EQ(csr.Convert<spf::COO>((&csr)->get_context()), &g_coo);
 }

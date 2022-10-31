@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "gtest/gtest.h"
 #include "sparsebase/config.h"
@@ -1522,7 +1523,7 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
-  auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
+  auto c = std::make_shared<utils::converter::ConverterOrderTwo<int, int, int>>();
   c->ClearConversionFunctions(
       format::CSR<int, int, int>::get_format_id_static(),
       format::CSC<int, int, int>::get_format_id_static(), false);
@@ -1583,7 +1584,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
-  auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
+  auto c = std::make_shared<utils::converter::ConverterOrderTwo<int, int, int>>();
   c->ClearConversionFunctions(
       format::CSR<int, int, int>::get_format_id_static(),
       format::CSC<int, int, int>::get_format_id_static(), false);

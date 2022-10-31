@@ -1374,5 +1374,30 @@ TEST_F(ConversionChainFixture, CanConvert) {
   EXPECT_FALSE(c.CanConvert(csr->get_format_id(), &cpu_c, csc->get_format_id(),
                             {&fake_c, &fake_c}));
 }
+#include "sparsebase/utils/converter/converter_store.h"
+
+TEST(ConverterStore, All){
+  using ConvStore = sparsebase::utils::converter::ConverterStore;
+  using ConvType = sparsebase::utils::converter::ConverterOrderTwo<unsigned int, int, unsigned int>;
+  // check the singleton-ness
+  EXPECT_EQ(&ConvStore::GetStore(), &ConvStore::GetStore());
+  // Check the reference counter value
+  sparsebase::format::CSR<int, int, int> csr(
+      n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
+  auto new_csr = csr.Convert<sparsebase::format::CSR, unsigned int, int, unsigned int>();
+  auto ptr = ConvStore::GetStore().get_converter<ConvType>();
+  EXPECT_EQ(ptr.use_count(), 2);
+  auto ptr2 = ConvStore::GetStore().get_converter<ConvType>();
+  EXPECT_EQ(ptr.use_count(), 3);
+  EXPECT_EQ(ptr.get(), ptr2.get());
+  std::weak_ptr<sparsebase::utils::converter::Converter> w_ptr(ptr);
+  ptr.reset();
+  EXPECT_NE(w_ptr.lock(), nullptr);
+  ptr2.reset();
+  EXPECT_NE(w_ptr.lock(), nullptr);
+  delete new_csr;
+  EXPECT_EQ(w_ptr.lock(), nullptr);
+}
+
 #undef ConversionPair
 #undef TYPE
