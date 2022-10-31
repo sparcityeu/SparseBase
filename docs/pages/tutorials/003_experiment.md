@@ -66,7 +66,7 @@ Next, create two preprocessing functions, first use `experiment::Pass` function 
 
 As the first parameter of the `AddPreprocess` function we provide an identifier that is necessary to distinguish the results, auxiliary data, and runtimes generated as a result of the experiment.
 The second parameter, preprocess function, must follow the function definition `experiment::PreprocessFunction`. Here we use the pre-written `experiment::Pass`to run kernels on the original data, and `experiment::Reorder`to reorder the matrices with RCM reordering.
-Last parameter of this function is the preprocessing specific parameters. Here the preprocessing algorithms we wish to use does not use any parameters.
+Last parameter of this function is the preprocessing specific parameters. Here the preprocessing algorithms we wish to use do not use any parameters.
 
 
 ### 4. Add `KernelFunction` to the experiment.
