@@ -24,7 +24,7 @@ struct CUDADeleter {
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CUDACSR
-    : public FormatImplementation<CUDACSR<IDType, NNZType, ValueType>,
+    : public FormatCRTP<CUDACSR<IDType, NNZType, ValueType>,
                                   FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
@@ -64,7 +64,7 @@ class CUDACSR
 };
 
 template <typename ValueType>
-class CUDAArray : public FormatImplementation<CUDAArray<ValueType>,
+class CUDAArray : public FormatCRTP<CUDAArray<ValueType>,
                                               FormatOrderOne<ValueType>> {
  public:
   CUDAArray(DimensionType nnz, ValueType *row_ptr,

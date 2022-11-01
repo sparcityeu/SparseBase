@@ -14,6 +14,10 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
+#ifdef USE_CUDA
+#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/format/cuda/format.cuh"
+#endif
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
 const int n = 3;
