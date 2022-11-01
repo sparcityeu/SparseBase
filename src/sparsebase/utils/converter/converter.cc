@@ -1,4 +1,8 @@
 #include "sparsebase/utils/converter/converter.h"
+#ifdef USE_CUDA
+#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/format/cuda/format.cuh"
+#endif
 
 #include <algorithm>
 #include <deque>

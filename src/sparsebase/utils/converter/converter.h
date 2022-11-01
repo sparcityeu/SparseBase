@@ -25,11 +25,6 @@
 #include "sparsebase/config.h"
 #include "sparsebase/utils/utils.h"
 
-#ifdef USE_CUDA
-#include "sparsebase/format/cuda/format.cuh"
-#include "sparsebase/utils/converter/cuda/converter.cuh"
-#endif
-
 // Forward declerations for the `Convert` functions in
 // sparsebase/format/format.h
 namespace sparsebase {

@@ -30,7 +30,7 @@ public:
         std::shared_ptr<Converter> s_ptr;
         if (type_to_wptr_.find(type) == type_to_wptr_.end() || !(s_ptr = type_to_wptr_[type].lock())){
             s_ptr = std::make_shared<ConverterType>();
-            type_to_wptr_.emplace(type, s_ptr);
+            type_to_wptr_[type] = s_ptr;
         }
         lock_.unlock();
         return std::static_pointer_cast<Converter>(s_ptr);
