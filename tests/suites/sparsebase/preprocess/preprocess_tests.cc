@@ -13,6 +13,7 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
+
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
 const int n = 3;
@@ -513,11 +514,18 @@ TEST(RCMReorderTest, BasicTest) {
 }
 
 #ifdef USE_METIS
-
+#include <metis.h>
 TEST(MetisReorder, BasicTest) {
-  sparsebase::preprocess::MetisReorder<int, int, int> reorder;
-  auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
-  check_reorder(order, n);
+  if(typeid(idx_t) == typeid(int)){
+    sparsebase::preprocess::MetisReorder<int, int, int> reorder;
+    auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
+    check_reorder(order, n);
+  } else {
+    auto global_coo_64_bit = global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(false);
+    sparsebase::preprocess::MetisReorder<int64_t, int64_t, int64_t> reorder;
+    auto order = reorder.GetReorder(global_coo_64_bit, {&cpu_context}, true);
+    check_reorder(order, (int64_t) n);
+  }
 }
 
 #endif
@@ -551,13 +559,21 @@ TEST(ReorderBase, RCMReorder) {
 }
 
 #ifdef USE_METIS
+#include <metis.h>
 TEST(ReorderBase, MetisReorder) {
-  EXPECT_NO_THROW(EXECUTE_AND_DELETE(
-      sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>(
-          {}, &global_csr, {&cpu_context}, true)));
-  auto order = sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>(
-      {}, &global_csr, {&cpu_context}, true);
-  check_reorder(order, n);
+  if(typeid(idx_t) == typeid(int)) {
+    EXPECT_NO_THROW(EXECUTE_AND_DELETE(
+        sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>(
+            {}, &global_csr, {&cpu_context}, true)));
+    auto order = sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>(
+        {}, &global_csr, {&cpu_context}, true);
+    check_reorder(order, n);
+  } else {
+    auto global_csr_64_bit = global_csr.Convert<sparsebase::format::CSR, int64_t, int64_t, int64_t>(false);
+    auto order = sparsebase::preprocess::ReorderBase::Reorder<MetisReorder>(
+        {}, global_csr_64_bit, {&cpu_context}, true);
+    check_reorder(order, (int64_t) n);
+  }
 }
 #endif
 
