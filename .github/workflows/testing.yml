@@ -8,50 +8,11 @@ on:
 
 env:
   BUILD_TYPE: Release
+  METIS_LIB_DIR: /usr/lib/x86_64-linux-gnu
+  METIS_INC_DIR: /usr/include
+  RABBIT_ORDER_INC_DIR: /usr/include
 
 jobs:
-  test_ubuntu:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Install Dependencies
-        run: sudo apt update && sudo apt install -y build-essential bison flex swig libreadline-dev libomp-dev python3
-
-      - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
-
-      - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
-
-      - name: Run Examples
-        working-directory: ${{github.workspace}}/build/examples
-        run: python3 run_all_examples.py
-
-      - name: Run Tests
-        working-directory: ${{github.workspace}}/build
-        run: ctest -V
-
-      - name: Clean
-        working-directory: ${{github.workspace}}
-        run: rm -rf build
-
-      - name: Configure CMake (Header Only)
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D_HEADER_ONLY=ON -DRUN_TESTS=ON
-
-      - name: Build (Header Only)
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
-
-      - name: Run Examples (Header Only)
-        working-directory: ${{github.workspace}}/build/examples
-        run: python3 run_all_examples.py
-
-      - name: Run Tests (Header Only)
-        working-directory: ${{github.workspace}}/build
-        run: ctest -V
 
   test_win:
     runs-on: windows-latest
@@ -68,8 +29,8 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          update: true
-          install: git base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja
+          update: false
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja
 
       - name: Configure CMake
         working-directory: ${{github.workspace}}
@@ -103,6 +64,86 @@ jobs:
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 3
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+  test_ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+
+  test_header_only:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3
+
+      - name: Configure CMake (Header Only)
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D_HEADER_ONLY=ON -DRUN_TESTS=ON
+
+      - name: Build (Header Only)
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
+
+      - name: Run Examples (Header Only)
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests (Header Only)
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+
+  test_opt_dep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3 libmetis-dev libboost-all-dev
+
+      - name: Install Non-System Dependencies
+        run: sudo wget https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp -O /usr/include/rabbit_order.hpp
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
 
       - name: Run Examples
         working-directory: ${{github.workspace}}/build/examples

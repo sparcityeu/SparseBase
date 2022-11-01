@@ -1676,6 +1676,7 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   options[METIS_OPTION_COMPRESS] = (idx_t)mparams->compress;
   options[METIS_OPTION_CCORDER] = (idx_t)mparams->ccorder;
   options[METIS_OPTION_PFACTOR] = (idx_t)mparams->pfactor;
+  options[METIS_OPTION_NSEPS] = (idx_t) mparams->nseps;
   options[METIS_OPTION_DBGLVL] = (idx_t)0;
 
   if constexpr (std::is_signed_v<IDType> && std::is_signed_v<NNZType> &&
