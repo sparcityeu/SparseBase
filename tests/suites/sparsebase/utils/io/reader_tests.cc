@@ -220,7 +220,7 @@ TEST(IOBase, ReadBinaryToCOO) {
   writerOrderTwo.WriteCOO(&coo);
 
   // Read the COO from the binary file with sparsebase
-  auto coo2 = utils::io::IOBase::ReadBinaryToCOO<int, int, float>(
+  auto coo2 = sparsebase::utils::io::IOBase::ReadBinaryToCOO<int, int, float>(
       "reader_test_order_two_coo.bin");
 
   // Compare the dimensions
@@ -250,7 +250,7 @@ TEST(IOBase, ReadBinaryToCSR) {
   writerOrderTwo.WriteCSR(&csr);
 
   // Read the COO from the binary file with sparsebase
-  auto csr2 = utils::io::IOBase::ReadBinaryToCSR<int, int, float>(
+  auto csr2 = sparsebase::utils::io::IOBase::ReadBinaryToCSR<int, int, float>(
       "reader_test_order_two_csr.bin");
 
   // Compare the dimensions
@@ -279,7 +279,7 @@ TEST(IOBase, ReadBinaryToArray) {
   writerOrderOne.WriteArray(&sbArray);
 
   // Read the array from the binary file using sparsebase
-  auto array2 = utils::io::IOBase::ReadBinaryToArray<int>("test_order_one.bin");
+  auto array2 = sparsebase::utils::io::IOBase::ReadBinaryToArray<int>("test_order_one.bin");
 
   // Compare the arrays
   for (int i = 0; i < 5; i++) {
@@ -298,7 +298,7 @@ TEST(IOBase, ReadPigoMTXToCSR) {
   ofs2 << mtx_data_with_values;
   ofs2.close();
 
-  auto csr = utils::io::IOBase::ReadPigoMTXToCSR<int, int, int>("test_pigo.mtx",
+  auto csr = sparsebase::utils::io::IOBase::ReadPigoMTXToCSR<int, int, int>("test_pigo.mtx",
                                                                 false);
 
   // Check the dimensions
@@ -318,7 +318,7 @@ TEST(IOBase, ReadPigoMTXToCSR) {
     EXPECT_EQ(csr->get_col()[i], col[i]);
   }
 
-  auto csr2 = utils::io::IOBase::ReadPigoMTXToCSR<int, int, float>(
+  auto csr2 = sparsebase::utils::io::IOBase::ReadPigoMTXToCSR<int, int, float>(
       "test_values_pigo.mtx", true);
 
   // Check the dimensions
@@ -352,7 +352,7 @@ TEST(IOBase, ReadPigoMTXReadToCOO) {
   ofs2 << mtx_data_with_values;
   ofs2.close();
 
-  auto coo = utils::io::IOBase::ReadPigoMTXToCOO<int, int, int>("test_pigo.mtx",
+  auto coo = sparsebase::utils::io::IOBase::ReadPigoMTXToCOO<int, int, int>("test_pigo.mtx",
                                                                 false);
 
   // Check the dimensions
@@ -370,7 +370,7 @@ TEST(IOBase, ReadPigoMTXReadToCOO) {
     EXPECT_EQ(coo->get_col()[i], col[i]);
   }
 
-  auto coo2 = utils::io::IOBase::ReadPigoMTXToCOO<int, int, float>(
+  auto coo2 = sparsebase::utils::io::IOBase::ReadPigoMTXToCOO<int, int, float>(
       "test_values_pigo.mtx", true);
 
   // Check the dimensions
@@ -402,7 +402,7 @@ TEST(IOBase, ReadMTXReadToCSR) {
   ofs2.close();
 
   auto csr =
-      utils::io::IOBase::ReadMTXToCSR<int, int, int>("test_pigo.mtx", true);
+      sparsebase::utils::io::IOBase::ReadMTXToCSR<int, int, int>("test_pigo.mtx", true);
 
   // Check the dimensions
   EXPECT_EQ(csr->get_dimensions()[0], 5);
@@ -421,7 +421,7 @@ TEST(IOBase, ReadMTXReadToCSR) {
     EXPECT_EQ(csr->get_col()[i], col[i]);
   }
 
-  auto csr2 = utils::io::IOBase::ReadMTXToCSR<int, int, float>(
+  auto csr2 = sparsebase::utils::io::IOBase::ReadMTXToCSR<int, int, float>(
       "test_values_pigo.mtx", true);
 
   // Check the dimensions
@@ -507,7 +507,7 @@ TEST(IOBase, ReadEdgeListToCSR) {
   ofs2.close();
 
   // Read it using sparsebase (undirected)
-  auto csr = utils::io::IOBase::ReadEdgeListToCSR<int, int, int>("test.edges");
+  auto csr = sparsebase::utils::io::IOBase::ReadEdgeListToCSR<int, int, int>("test.edges");
 
   // Check the dimensions (double the edges due to undirected read)
   EXPECT_EQ(csr->get_num_nnz(), 10);
@@ -530,7 +530,7 @@ TEST(IOBase, ReadEdgeListToCSR) {
   }
 
   // Read it using sparsebase (directed)
-  auto csr2 = utils::io::IOBase::ReadEdgeListToCSR<int, int, float>(
+  auto csr2 = sparsebase::utils::io::IOBase::ReadEdgeListToCSR<int, int, float>(
       "test.edges", false, false, false);
 
   // Check the dimensions
@@ -548,7 +548,7 @@ TEST(IOBase, ReadEdgeListToCSR) {
   }
 
   // Read it using sparsebase (weighted, directed)
-  auto csr3 = utils::io::IOBase::ReadEdgeListToCSR<int, int, float>(
+  auto csr3 = sparsebase::utils::io::IOBase::ReadEdgeListToCSR<int, int, float>(
       "test_values.edges", true, false, false);
 
   // Check the dimensions
@@ -580,7 +580,7 @@ TEST(IOBase, ReadEdgeListToCOO) {
   ofs2.close();
 
   // Read it using sparsebase (undirected)
-  auto coo = utils::io::IOBase::ReadEdgeListToCOO<int, int, int>("test.edges");
+  auto coo = sparsebase::utils::io::IOBase::ReadEdgeListToCOO<int, int, int>("test.edges");
 
   // Check the dimensions (double the edges due to undirected read)
   EXPECT_EQ(coo->get_num_nnz(), 10);
@@ -601,7 +601,7 @@ TEST(IOBase, ReadEdgeListToCOO) {
   }
 
   // Read it using sparsebase (directed)
-  auto coo2 = utils::io::IOBase::ReadEdgeListToCOO<int, int, int>(
+  auto coo2 = sparsebase::utils::io::IOBase::ReadEdgeListToCOO<int, int, int>(
       "test.edges", false, false, false);
 
   // Check the dimensions
@@ -616,7 +616,7 @@ TEST(IOBase, ReadEdgeListToCOO) {
   }
 
   // Read it using sparsebase (weighted, directed)
-  auto coo3 = utils::io::IOBase::ReadEdgeListToCOO<int, int, float>(
+  auto coo3 = sparsebase::utils::io::IOBase::ReadEdgeListToCOO<int, int, float>(
       "test_values.edges", true, false, false);
 
   // Check the dimensions
@@ -645,7 +645,7 @@ TEST(IOBase, ReadPigoEdgeListToCOO) {
   ofs2 << edge_list_data_with_values;
   ofs2.close();
 
-  auto coo = utils::io::IOBase::ReadPigoEdgeListToCOO<int, int, int>(
+  auto coo = sparsebase::utils::io::IOBase::ReadPigoEdgeListToCOO<int, int, int>(
       "test_pigo.edges", false);
 
   // Check the dimensions (double the edges due to undirected read)
@@ -659,7 +659,7 @@ TEST(IOBase, ReadPigoEdgeListToCOO) {
     EXPECT_EQ(coo->get_col()[i], col[i]);
   }
 
-  auto coo2 = utils::io::IOBase::ReadPigoEdgeListToCOO<int, int, float>(
+  auto coo2 = sparsebase::utils::io::IOBase::ReadPigoEdgeListToCOO<int, int, float>(
       "test_values_pigo.edges", true);
 
   // Check the dimensions (double the edges due to undirected read)
@@ -687,7 +687,7 @@ TEST(IOBase, ReadPigoEdgeListToCSR) {
   ofs2 << edge_list_data_with_values;
   ofs2.close();
 
-  auto csr = utils::io::IOBase::ReadPigoEdgeListToCSR<int, int, int>(
+  auto csr = sparsebase::utils::io::IOBase::ReadPigoEdgeListToCSR<int, int, int>(
       "test_pigo.edges", false);
 
   // Check the dimensions (double the edges due to undirected read)
@@ -703,7 +703,7 @@ TEST(IOBase, ReadPigoEdgeListToCSR) {
     EXPECT_EQ(csr->get_col()[i], col[i]);
   }
 
-  auto csr2 = utils::io::IOBase::ReadPigoEdgeListToCSR<int, int, float>(
+  auto csr2 = sparsebase::utils::io::IOBase::ReadPigoEdgeListToCSR<int, int, float>(
       "test_values_pigo.edges", true);
 
   // Check the dimensions (double the edges due to undirected read)
@@ -727,7 +727,7 @@ TEST(IOBase, ReadToOrderOne) {
   ofs.close();
   // Read one column file
   auto array =
-      utils::io::IOBase::ReadMTXToArray<int, int, float>("one_col.mtx");
+      sparsebase::utils::io::IOBase::ReadMTXToArray<int, int, float>("one_col.mtx");
   // Check that the arrays are populated
   EXPECT_NE(array->get_vals(), nullptr);
   for (int i = 0; i < 10; i++) std::cout << array->get_vals()[i] << " ";

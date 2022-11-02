@@ -37,4 +37,7 @@ public:
     }
 };
 }
+#ifdef _HEADER_ONLY
+#include "converter_store.cc"
+#endif
 #endif

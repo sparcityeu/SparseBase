@@ -1,5 +1,8 @@
-add_executable(feature_tests.test feature_tests.cc)
-target_link_libraries(feature_tests.test sparsebase)
-target_link_libraries(feature_tests.test gtest gtest_main)
+if(${USE_CUDA})
+set_source_files_properties(feature_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_feature_tests.test feature_tests.cc)
+target_link_libraries(sparsebase_feature_feature_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_feature_tests.test gtest gtest_main)
 
-add_test(NAME feature_tests.test COMMAND feature_tests.test)
+add_test(NAME sparsebase_feature_feature_tests.test COMMAND sparsebase_feature_feature_tests.test)

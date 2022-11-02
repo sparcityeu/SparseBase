@@ -1977,7 +1977,11 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
 }  // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
 #include "sparsebase/preprocess/preprocess.cc"
+#endif
+
 #ifdef USE_CUDA
+#include "cuda/preprocess.cuh"
+#ifdef _HEADER_ONLY
 #include "cuda/preprocess.cu"
 #endif
 #endif
