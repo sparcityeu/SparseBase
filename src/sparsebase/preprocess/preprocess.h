@@ -1105,6 +1105,44 @@ class MetisReorder : public ReorderPreprocessType<IDType> {
 
 #endif
 
+#ifdef USE_PULP
+
+//! Parameters for the PulpPartition class
+struct PulpPartitionParams{
+  double vert_balance = 1.1;
+  double edge_balance = 1.5;
+  bool do_lp_init = false;
+  bool do_bfs_init = true;
+  bool do_repart = false;
+  bool do_edge_balance = false;
+  bool do_maxcut_balance = false;
+  bool verbose_output = false;
+  int pulp_seed = 42;
+  int num_partitions = 2;
+};
+
+
+//! A wrapper for the PULP graph partitioner
+/* !
+ * Wraps the PULP partitioner available here:
+ * https://github.com/HPCGraphAnalysis/PuLP. The library must be compiled with the
+ * USE_PULP option turned on and the pre-built PULP library should be
+ * available. See the Optional Dependencies page (under Getting Started) in our
+ * documentation for more info.
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class PulpPartition : public PartitionPreprocessType<IDType> {
+ private:
+  static IDType *PartitionCSR(std::vector<format::Format *> formats,
+                              PreprocessParams *params);
+
+ public:
+  typedef PulpPartitionParams ParamsType;
+  PulpPartition();
+  PulpPartition(ParamsType params);
+};
+#endif
+
 class GraphFeatureBase {
  public:
   //! Calculates the degree distribution of every vertex represented by the
