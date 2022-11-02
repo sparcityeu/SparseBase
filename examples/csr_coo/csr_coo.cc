@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     auto coo_col = coo->get_col();
     auto coo_row = coo->get_row();
     auto coo_vals = coo->get_vals();
-    cout << "Format: " << coo->get_id().name() << endl;
+    cout << "Format: " << coo->get_name() << endl;
     cout << "# of dimensions: " << dimensions.size() << endl;
     for (int i = 0; i < dimensions.size(); i++) {
       cout << "Dim " << i << " size " << dimensions[i] << endl;

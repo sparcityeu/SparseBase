@@ -139,7 +139,7 @@ class Format : public utils::Identifiable {
     if (this->get_id() == std::type_index(typeid(TBase))) {
       return static_cast<TBase *>(this);
     }
-    throw utils::TypeException(get_id().name(), typeid(TBase).name());
+    throw utils::TypeException(get_name(), typeid(TBase).name());
   }
   template <template <typename...> typename T>
   void *AsAbsolute() {
@@ -257,7 +257,7 @@ class FormatOrderOne
     if (this->get_id() == std::type_index(typeid(TBase))) {
       return static_cast<TBase *>(this);
     }
-    throw utils::TypeException(this->get_id().name(),
+    throw utils::TypeException(this->get_name(),
                                typeid(TBase).name());
   }
 };
@@ -317,7 +317,7 @@ class FormatOrderTwo
     if (this->get_id() == std::type_index(typeid(TBase))) {
       return static_cast<TBase *>(this);
     }
-    throw utils::TypeException(this->get_id().name(),
+    throw utils::TypeException(this->get_name(),
                                typeid(TBase).name());
   }
 };
