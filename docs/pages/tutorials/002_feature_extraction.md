@@ -67,7 +67,7 @@ cout << endl;
 
 Define a `context` that selects the architecture in which the computations will occur.
 Then use the `Extract` function of the `FeatureExtractor` to get the features as a `map`.
-The map is of type `std::unordered_map<std::type, std::any>`. The features are accessed by calling the respective `::get_feature_id_static()` member function. 
+The map is of type `std::unordered_map<std::type, std::any>`. The features are accessed by calling the respective `::get_id_static()` member function. 
 
 ```c++
 // Create a context, CPUcontext for this case.
@@ -86,9 +86,9 @@ Note that all the computations takes place using c arrays of the respective prim
 ```c++
 cout << "#features extracted: " << raws.size() << endl;
 auto dgrs =
-    std::any_cast<vertex_type *>(raws[degrees::get_feature_id_static()]);
+    std::any_cast<vertex_type *>(raws[degrees::get_id_static()]);
 auto dst = std::any_cast<feature_type *>(
-    raws[degree_dist::get_feature_id_static()]);
+    raws[degree_dist::get_id_static()]);
 cout << "vertex 0 => degree: " << dgrs[2] << endl;
 cout << "dst[0] " << dst[2] << endl;
 ```

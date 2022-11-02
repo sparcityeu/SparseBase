@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "gtest/gtest.h"
 #include "sparsebase/config.h"
@@ -13,7 +14,10 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
-
+#ifdef USE_CUDA
+#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/format/cuda/format.cuh"
+#endif
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
 const int n = 3;
@@ -170,31 +174,6 @@ TEST(TypeIndexHash, Basic) {
   EXPECT_EQ(hash, hasher(vec));
 }
 
-TEST(ConverterMixin, Basics) {
-  ConverterMixin<PreprocessType> instance;
-  //! Check getting an empty converter
-  ASSERT_EQ(instance.GetConverter(), nullptr);
-
-  //! Check setting a converter
-  utils::converter::ConverterOrderOne<int> converter;
-  instance.SetConverter(converter);
-  // Same type
-  ASSERT_NE(dynamic_cast<utils::converter::ConverterOrderOne<int> *>(
-                instance.GetConverter().get()),
-            nullptr);
-  // Different object
-  ASSERT_NE(instance.GetConverter().get(), &converter);
-
-  //! Check resetting a converter
-  instance.ResetConverter();
-  // Same type
-  ASSERT_NE(dynamic_cast<utils::converter::ConverterOrderOne<int> *>(
-                instance.GetConverter().get()),
-            nullptr);
-  // Different object
-  ASSERT_NE(instance.GetConverter().get(), &converter);
-}
-
 class FunctionMatcherMixinTest : public ::testing::Test {
  protected:
   GenericPreprocessType<int> concrete_preprocess;
@@ -232,7 +211,7 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
       utils::FunctionNotFoundException);
 
   // Check calling with no conversion needed
-  concrete_preprocess.RegisterFunction({csr->get_format_id()},
+  concrete_preprocess.RegisterFunction({csr->get_id()},
                                        OneImplementationFunction);
   EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
             1);
@@ -242,7 +221,7 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
   // Check unregistering
   EXPECT_EQ(
       concrete_preprocess.UnregisterFunction(
-          {sparsebase::format::CSR<int, int, int>::get_format_id_static()}),
+          {sparsebase::format::CSR<int, int, int>::get_id_static()}),
       true);
   EXPECT_THROW(
       concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
@@ -254,33 +233,12 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
   // Check unregistering an already unregistered key
   EXPECT_EQ(
       concrete_preprocess.UnregisterFunction(
-          {sparsebase::format::CSR<int, int, int>::get_format_id_static()}),
+          {sparsebase::format::CSR<int, int, int>::get_id_static()}),
       false);
 
-  // Check calling with one conversion needed and no converter registered
-  concrete_preprocess.RegisterFunction(
-      {sparsebase::format::COO<int, int, int>::get_format_id_static()},
-      TwoImplementationFunction);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-      utils::NoConverterException);
-  // should fail with different exception
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-      utils::NoConverterException);
-
-  // Check calling with one conversion needed and a converter registered
-  concrete_preprocess.SetConverter(
-      utils::converter::ConverterOrderTwo<int, int, int>{});
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            2);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-      utils::DirectExecutionNotAvailableException<
-          std::vector<std::type_index>>);
 
   // Check calling with no conversion needed even though one is possible
-  concrete_preprocess.RegisterFunction({csr->get_format_id()},
+  concrete_preprocess.RegisterFunction({csr->get_id()},
                                        OneImplementationFunction);
   EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
             1);
@@ -289,7 +247,7 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
 
   // Checking override
   // Override an existing function in the map
-  concrete_preprocess.RegisterFunction({csr->get_format_id()},
+  concrete_preprocess.RegisterFunction({csr->get_id()},
                                        ThreeImplementationFunction);
   EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
             3);
@@ -298,7 +256,7 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
 
   // Try to override but fail
   EXPECT_EQ(concrete_preprocess.RegisterFunctionNoOverride(
-                {csr->get_format_id()}, FourImplementationFunction),
+                {csr->get_id()}, FourImplementationFunction),
             false);
   EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
             3);
@@ -307,9 +265,9 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
 
   // Try to override and succeed
   concrete_preprocess.UnregisterFunction(
-      {sparsebase::format::CSR<int, int, int>::get_format_id_static()});
+      {sparsebase::format::CSR<int, int, int>::get_id_static()});
   EXPECT_EQ(concrete_preprocess.RegisterFunctionNoOverride(
-                {csr->get_format_id()}, FourImplementationFunction),
+                {csr->get_id()}, FourImplementationFunction),
             true);
   EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
             4);
@@ -329,11 +287,13 @@ TEST_F(FunctionMatcherMixinTest, BlackBox) {
 
   // One conversion is done
   concrete_preprocess.UnregisterFunction(
-      {sparsebase::format::CSR<int, int, int>::get_format_id_static()});
+      {sparsebase::format::CSR<int, int, int>::get_id_static()});
+  concrete_preprocess.RegisterFunction(
+      {sparsebase::format::COO<int, int, int>::get_id_static()}, TwoImplementationFunction);
   auto tup2 =
       concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, true);
   ASSERT_NE(std::get<0>(tup2)[0][0], nullptr);
-  ASSERT_NE(std::get<0>(tup2)[0][0]->get_format_id(), csr->get_format_id());
+  ASSERT_NE(std::get<0>(tup2)[0][0]->get_id(), csr->get_id());
   EXPECT_EQ(std::get<1>(tup2), 2);
   EXPECT_THROW(
       concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, false),
@@ -372,7 +332,7 @@ TEST(DegreeReorder, TwoParamsConversion) {
           &exception) {
     CompareVectorsOfTypeIndex(
         exception.used_format_,
-        {format::CSR<int, int, int>::get_format_id_static()});
+        {format::CSR<int, int, int>::get_id_static()});
     auto class_available_formats = reorder.GetAvailableFormats();
     auto returned_available_formats = exception.available_formats_;
     sort(class_available_formats.begin(), class_available_formats.end());
@@ -450,7 +410,7 @@ TEST(ReorderTypeTest, CachedConversionTwoParams) {
           &exception) {
     CompareVectorsOfTypeIndex(
         exception.used_format_,
-        {format::CSR<int, int, int>::get_format_id_static()});
+        {format::CSR<int, int, int>::get_id_static()});
     auto class_available_formats = reorder.GetAvailableFormats();
     auto returned_available_formats = exception.available_formats_;
     sort(class_available_formats.begin(), class_available_formats.end());
@@ -495,7 +455,7 @@ TEST(ReorderTypeTest, CachedConversion) {
           &exception) {
     CompareVectorsOfTypeIndex(
         exception.used_format_,
-        {format::CSR<int, int, int>::get_format_id_static()});
+        {format::CSR<int, int, int>::get_id_static()});
     auto class_available_formats = reorder.GetAvailableFormats();
     auto returned_available_formats = exception.available_formats_;
     sort(class_available_formats.begin(), class_available_formats.end());
@@ -532,14 +492,14 @@ TEST(MetisReorder, BasicTest) {
 
 template <typename a, typename b, typename c>
 class TestFormat
-    : public sparsebase::format::FormatImplementation<
+    : public sparsebase::utils::IdentifiableImplementation<
           TestFormat<a, b, c>, sparsebase::format::FormatOrderTwo<a, b, c>> {
   format::Format *Clone() const override { return nullptr; }
 };
 
 template <typename a>
 class TestFormatOrderOne
-    : public sparsebase::format::FormatImplementation<
+    : public sparsebase::utils::IdentifiableImplementation<
           TestFormatOrderOne<a>, sparsebase::format::FormatOrderOne<a>> {
   format::Format *Clone() const override { return nullptr; }
 };
@@ -646,8 +606,8 @@ TEST(ReorderBase, Permute1D) {
       inverse_perm_array, &orig_arr, {&cpu_context}, true));
   EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute1D<format::Array>(
                  inverse_perm_array, &orig_arr, {&cpu_context}, true))
-                ->get_format_id(),
-            (format::Array<float>::get_format_id_static()));
+                ->get_id(),
+            (format::Array<float>::get_id_static()));
   inv_arr = sparsebase::preprocess::ReorderBase::Permute1D<format::Array>(
       inverse_perm_array, &orig_arr, {&cpu_context}, true);
 
@@ -734,8 +694,8 @@ TEST(ReorderBase, Permute2D) {
       r_reorder_vector, &global_csr, {&cpu_context}, true, true));
   EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute2D<format::CSR>(
                  r_reorder_vector, &global_csr, {&cpu_context}, true))
-                ->get_format_id(),
-            (format::CSR<int, int, int>::get_format_id_static()));
+                ->get_id(),
+            (format::CSR<int, int, int>::get_id_static()));
   transformed_format =
       sparsebase::preprocess::ReorderBase::Permute2D<format::CSR>(
           r_reorder_vector, &global_csr, {&cpu_context}, true);
@@ -815,8 +775,8 @@ TEST(ReorderBase, Permute2DRowColWise) {
   EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute2DRowColumnWise(
                  r_reorder_vector, c_reorder_vector, &global_csr,
                  {&cpu_context}, true))
-                ->get_format_id(),
-            (format::CSR<int, int, int>::get_format_id_static()));
+                ->get_id(),
+            (format::CSR<int, int, int>::get_id_static()));
   transformed_format =
       sparsebase::preprocess::ReorderBase::Permute2DRowColumnWise(
           r_reorder_vector, c_reorder_vector, &global_csr, {&cpu_context}, true)
@@ -895,8 +855,8 @@ TEST(ReorderBase, Permute2DRowWise) {
       r_reorder_vector, &global_csr, {&cpu_context}, true));
   EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute2DRowWise(
                  r_reorder_vector, &global_csr, {&cpu_context}, true))
-                ->get_format_id(),
-            (format::CSR<int, int, int>::get_format_id_static()));
+                ->get_id(),
+            (format::CSR<int, int, int>::get_id_static()));
   transformed_format = sparsebase::preprocess::ReorderBase::Permute2DRowWise(
                            r_reorder_vector, &global_csr, {&cpu_context}, true)
                            ->Convert<format::CSR>();
@@ -970,8 +930,8 @@ TEST(ReorderBase, Permute2DCachedRowWise) {
 //  EXPECT_NO_THROW(sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector,
 //  &global_csr, {&cpu_context}));
 //  EXPECT_EQ((sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector,
-//  &global_csr, {&cpu_context}))->get_format_id(), (format::CSR<int, int,
-//  int>::get_format_id_static())); transformed_format =
+//  &global_csr, {&cpu_context}))->get_id(), (format::CSR<int, int,
+//  int>::get_id_static())); transformed_format =
 //  sparsebase::preprocess::ReorderBase::Permute2DColWise(c_reorder_vector,
 //  &global_csr, {&cpu_context})->Convert<format::CSR>(); for (int i = 0; i <
 //  n+1; i++){
@@ -1083,7 +1043,7 @@ TEST(PermuteTest, WrongInputType) {
                                                                      order);
   EXPECT_THROW((transformer.GetTransformation(&orig_arr, {&cpu_context}, true)
                     ->As<format::CSR>()),
-               utils::TypeException);
+               utils::FunctionNotFoundException);
 }
 
 TEST(PermuteTest, NoConversionParam) {
@@ -1163,17 +1123,17 @@ TEST_F(Degrees_DegreeDistributionTest, FeaturePreprocessTypeTests) {
   // Check getting feature id
   EXPECT_EQ(
       std::type_index(typeid(Degrees_DegreeDistribution<int, int, int, float>)),
-      feature.get_feature_id());
+      feature.get_id());
   // Getting a params object for an unset params
   EXPECT_THROW(feature.get_params(std::type_index(typeid(int))).get(),
                utils::FeatureParamsException);
   // Checking setting params of a sub-feature
-  feature.set_params(Degrees<int, int, int>::get_feature_id_static(), p1);
+  feature.set_params(Degrees<int, int, int>::get_id_static(), p1);
   EXPECT_EQ(
-      feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(),
+      feature.get_params(Degrees<int, int, int>::get_id_static()).get(),
       p1.get());
   EXPECT_NE(
-      feature.get_params(Degrees<int, int, int>::get_feature_id_static()).get(),
+      feature.get_params(Degrees<int, int, int>::get_id_static()).get(),
       p2.get());
   // Checking setting params of feature that isn't a sub-feature
   EXPECT_THROW(feature.set_params(typeid(int), p1),
@@ -1236,7 +1196,7 @@ TEST_F(DegreesTest, AllTests) {
     EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
   }
   for (int i = 0; i < n; i++) {
-    EXPECT_EQ(std::any_cast<int *>(feature_map[feature.get_feature_id()])[i],
+    EXPECT_EQ(std::any_cast<int *>(feature_map[feature.get_id()])[i],
               degrees[i]);
   }
   // Check Extract with conversion
@@ -1247,7 +1207,7 @@ TEST_F(DegreesTest, AllTests) {
     EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
   }
   for (int i = 0; i < n; i++) {
-    EXPECT_EQ(std::any_cast<int *>(feature_map[feature.get_feature_id()])[i],
+    EXPECT_EQ(std::any_cast<int *>(feature_map[feature.get_id()])[i],
               degrees[i]);
   }
   EXPECT_THROW(feature.Extract(&global_coo, {&cpu_context}, false),
@@ -1317,7 +1277,7 @@ TEST_F(DegreeDistributionTest, AllTests) {
   delete[] std::get<1>(distribution_array_format);
   auto cached_data = std::get<0>(distribution_array_format);
   ASSERT_EQ(cached_data.size(), 1);
-  ASSERT_EQ(cached_data[0][0]->get_format_id(),
+  ASSERT_EQ(cached_data[0][0]->get_id(),
             std::type_index(typeid(global_csr)));
   auto converted_csr =
       cached_data[0][0]->AsAbsolute<format::CSR<int, int, int>>();
@@ -1330,7 +1290,7 @@ TEST_F(DegreeDistributionTest, AllTests) {
     EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
   }
   for (int i = 0; i < n; i++) {
-    EXPECT_EQ(std::any_cast<float *>(feature_map[feature.get_feature_id()])[i],
+    EXPECT_EQ(std::any_cast<float *>(feature_map[feature.get_id()])[i],
               distribution[i]);
   }
   // Check Extract with conversion
@@ -1341,7 +1301,7 @@ TEST_F(DegreeDistributionTest, AllTests) {
     EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
   }
   for (int i = 0; i < n; i++) {
-    EXPECT_EQ(std::any_cast<float *>(feature_map[feature.get_feature_id()])[i],
+    EXPECT_EQ(std::any_cast<float *>(feature_map[feature.get_id()])[i],
               distribution[i]);
   }
 }
@@ -1349,8 +1309,8 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
   // test get_sub_ids
   EXPECT_EQ(feature.get_sub_ids().size(), 2);
   std::vector<std::type_index> ids = {
-      Degrees<int, int, int>::get_feature_id_static(),
-      DegreeDistribution<int, int, int, float>::get_feature_id_static()};
+      Degrees<int, int, int>::get_id_static(),
+      DegreeDistribution<int, int, int, float>::get_id_static()};
   std::sort(ids.begin(), ids.end());
   EXPECT_EQ(feature.get_sub_ids()[0], ids[0]);
   EXPECT_EQ(feature.get_sub_ids()[1], ids[1]);
@@ -1379,16 +1339,16 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
             degrees_and_distribution_map.end());
   ASSERT_NO_THROW(std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+          [DegreeDistribution<int, int, int, float>::get_id_static()]));
   auto distribution_array = std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+          [DegreeDistribution<int, int, int, float>::get_id_static()]);
   ASSERT_NO_THROW(std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]));
+                                           int>::get_id_static()]));
   auto degree_array = std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]);
+                                           int>::get_id_static()]);
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(distribution_array[i], distribution[i]);
     EXPECT_EQ(degree_array[i], degrees[i]);
@@ -1404,16 +1364,16 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
             degrees_and_distribution_map.end());
   ASSERT_NO_THROW(std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+          [DegreeDistribution<int, int, int, float>::get_id_static()]));
   distribution_array = std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+          [DegreeDistribution<int, int, int, float>::get_id_static()]);
   ASSERT_NO_THROW(std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]));
+                                           int>::get_id_static()]));
   degree_array = std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]);
+                                           int>::get_id_static()]);
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(distribution_array[i], distribution[i]);
     EXPECT_EQ(degree_array[i], degrees[i]);
@@ -1429,16 +1389,16 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
             degrees_and_distribution_map.end());
   ASSERT_NO_THROW(std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+          [DegreeDistribution<int, int, int, float>::get_id_static()]));
   distribution_array = std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+          [DegreeDistribution<int, int, int, float>::get_id_static()]);
   ASSERT_NO_THROW(std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]));
+                                           int>::get_id_static()]));
   degree_array = std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]);
+                                           int>::get_id_static()]);
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(distribution_array[i], distribution[i]);
     EXPECT_EQ(degree_array[i], degrees[i]);
@@ -1458,16 +1418,16 @@ TEST_F(Degrees_DegreeDistributionTest, Degree_DegreeDistributionTests) {
             degrees_and_distribution_map.end());
   ASSERT_NO_THROW(std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]));
+          [DegreeDistribution<int, int, int, float>::get_id_static()]));
   distribution_array = std::any_cast<float *>(
       degrees_and_distribution_map
-          [DegreeDistribution<int, int, int, float>::get_feature_id_static()]);
+          [DegreeDistribution<int, int, int, float>::get_id_static()]);
   ASSERT_NO_THROW(std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]));
+                                           int>::get_id_static()]));
   degree_array = std::any_cast<int *>(
       degrees_and_distribution_map[Degrees<int, int,
-                                           int>::get_feature_id_static()]);
+                                           int>::get_id_static()]);
   for (int i = 0; i < n; i++) {
     EXPECT_EQ(distribution_array[i], distribution[i]);
     EXPECT_EQ(degree_array[i], degrees[i]);
@@ -1554,41 +1514,20 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
       format::Format *f1, format::Format *f2, format::Format *f3,
       std::vector<context::Context *> contexts, bool convert_input,
       bool clear_intermediate) {
-    auto c = new utils::converter::ConverterOrderTwo<int, int, int>;
-    c->ClearConversionFunctions(
-        format::CSR<int, int, int>::get_format_id_static(),
-        format::CSC<int, int, int>::get_format_id_static(), false);
     auto p = new PreprocessParams;
-    auto res = this->CachedExecute(p, c, std::move(contexts), convert_input,
+    auto res = this->CachedExecute(p, std::move(contexts), convert_input,
                                    clear_intermediate, f1, f2, f3);
-    delete c;
-
     return res;
   }
   MultiFormatKeyPreprocess() {
-    this->RegisterFunction({format::CSR<int, int, int>::get_format_id_static(),
-                            format::CSR<int, int, int>::get_format_id_static(),
-                            format::CSR<int, int, int>::get_format_id_static()},
+    this->RegisterFunction({format::CSR<int, int, int>::get_id_static(),
+                            format::CSR<int, int, int>::get_id_static(),
+                            format::CSR<int, int, int>::get_id_static()},
                            CSR_CSR_CSR);
-    this->RegisterFunction({format::CSR<int, int, int>::get_format_id_static(),
-                            format::CSC<int, int, int>::get_format_id_static(),
-                            format::CSC<int, int, int>::get_format_id_static()},
+    this->RegisterFunction({format::CSR<int, int, int>::get_id_static(),
+                            format::CSC<int, int, int>::get_id_static(),
+                            format::CSC<int, int, int>::get_id_static()},
                            CSR_CSC_CSC);
-    // this->RegisterFunction({format::CSR<int, int,
-    // int>::get_format_id_static(),
-    //                        format::COO<int, int,
-    //                        int>::get_format_id_static(), format::CSR<int,
-    //                        int, int>::get_format_id_static()}, CSR_COO_CSR);
-    // this->RegisterFunction({format::CSR<int, int,
-    // int>::get_format_id_static(),
-    //                        format::COO<int, int,
-    //                        int>::get_format_id_static(), format::COO<int,
-    //                        int, int>::get_format_id_static()}, CSR_COO_COO);
-    // this->RegisterFunction({format::COO<int, int,
-    // int>::get_format_id_static(),
-    //                        format::COO<int, int,
-    //                        int>::get_format_id_static(), format::COO<int,
-    //                        int, int>::get_format_id_static()}, COO_COO_COO);
   }
 
  private:
@@ -1598,24 +1537,22 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
   static int CSR_CSC_CSC(std::vector<format::Format *>, PreprocessParams *) {
     return 1;
   }
-  // static int CSR_COO_CSR(std::vector<format::Format*>, PreprocessParams*){
-  //  return 1;
-  //}
-  // static int CSR_COO_COO(std::vector<format::Format*>, PreprocessParams*){
-  //  return 1;
-  //}
-  // static int COO_COO_COO(std::vector<format::Format*>, PreprocessParams*){
-  //  return 1;
-  //}
 };
 
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
+  auto c = std::make_shared<utils::converter::ConverterOrderTwo<int, int, int>>();
+  c->ClearConversionFunctions(
+      format::CSR<int, int, int>::get_id_static(),
+      format::CSC<int, int, int>::get_id_static(), false);
   context::CPUContext cpu;
-  format::CSR<TYPE> *csr = &global_csr;
-  format::COO<TYPE> *coo = &global_coo;
+  format::CSR<TYPE> *csr = global_csr.Clone()->AsAbsolute<format::CSR<TYPE>>();
+  format::COO<TYPE> *coo = global_coo.Clone()->AsAbsolute<format::COO<TYPE>>();
   auto *csc = global_coo.Convert<format::CSC>();
+  csr->set_converter(c);
+  coo->set_converter(c);
+  csc->set_converter(c);
   // No conversions needed on all three
   auto output = x.GetCached(csr, csr, csr, {&cpu}, true, false);
   auto intermediate = std::get<0>(output);
@@ -1666,10 +1603,17 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
+  auto c = std::make_shared<utils::converter::ConverterOrderTwo<int, int, int>>();
+  c->ClearConversionFunctions(
+      format::CSR<int, int, int>::get_id_static(),
+      format::CSC<int, int, int>::get_id_static(), false);
   context::CPUContext cpu;
-  format::CSR<TYPE> *csr = &global_csr;
-  format::COO<TYPE> *coo = &global_coo;
+  format::CSR<TYPE> *csr = global_csr.Clone()->AsAbsolute<format::CSR<TYPE>>();
+  format::COO<TYPE> *coo = global_coo.Clone()->AsAbsolute<format::COO<TYPE>>();
   auto *csc = global_coo.Convert<format::CSC>();
+  csr->set_converter(c);
+  coo->set_converter(c);
+  csc->set_converter(c);
   // No conversions needed on all three
   auto output = x.GetCached(csr, csr, csr, {&cpu}, true, true);
   auto intermediate = std::get<0>(output);

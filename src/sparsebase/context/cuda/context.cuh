@@ -13,7 +13,7 @@ namespace sparsebase {
 namespace context {
 namespace cuda {
 
-struct CUDAContext : ContextImplementation<CUDAContext> {
+struct CUDAContext : utils::IdentifiableImplementation<CUDAContext,ContextImplementation<CUDAContext>> {
   int device_id;
   CUDAContext(int did);
   virtual bool IsEquivalent(Context *) const;

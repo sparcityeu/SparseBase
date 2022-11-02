@@ -58,9 +58,9 @@ int main(int argc, char *argv[]) {
 
   cout << "#features extracted: " << raws.size() << endl;
   auto dgrs =
-      std::any_cast<vertex_type *>(raws[degrees::get_feature_id_static()]);
+      std::any_cast<vertex_type *>(raws[degrees::get_id_static()]);
   auto dst = std::any_cast<feature_type *>(
-      raws[degree_dist::get_feature_id_static()]);
+      raws[degree_dist::get_id_static()]);
   cout << "vertex 0 => degree: " << dgrs[2] << endl;
   cout << "dst[0] " << dst[2] << endl;
   return 0;
