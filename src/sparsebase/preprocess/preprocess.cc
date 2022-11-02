@@ -165,7 +165,7 @@ std::tuple<Function, utils::converter::ConversionSchema> FunctionMatcherMixin<
     }
     message += "} using the contexts {";
     for (auto c : contexts) {
-      message += c->get_id().name();
+      message += c->get_name();
       message += " ";
     }
     message += "}";
