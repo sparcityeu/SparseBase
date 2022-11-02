@@ -1634,6 +1634,86 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
 #endif
 
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(ReorderHeatmapParams params){
+  this->params_ =
+      std::unique_ptr<ReorderHeatmapParams>(new ReorderHeatmapParams(params));
+  this->RegisterFunction(
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static(), format::Array<IDType>::get_id_static()},
+      ReorderHeatmapCSRandArray);
+}
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, format::FormatOrderOne<IDType>* permutation, std::vector<context::Context*> contexts, bool convert_input){
+  return this->Execute(this->params_.get(), contexts, convert_input, (format::Format*)format, (format::Format*)permutation);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmapCSRandArray(std::vector<format::Format*> formats, PreprocessParams* poly_params){
+  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+  auto order = formats[1]->AsAbsolute<format::Array<IDType>>()->get_vals();
+  auto* params = static_cast<ReorderHeatmapParams*>(poly_params);
+  int b = params->block_count;
+  auto n = csr->get_dimensions()[0];
+  auto row_ptr = csr->get_row_ptr();
+  auto adj = csr->get_col();
+  long long max_bw = 0;
+  double mean_bw = 0;
+
+  long long bsize = n / b;
+
+  // matrix of size block_count x block_count with number of edges in each square
+  auto density = new long long*[b];
+  for(long long i = 0; i < b; i++) {
+    density[i] = new long long[b];
+    memset(density[i], 0, sizeof(long long) * b);
+  }
+
+  for(long long i = 0; i < n; i++) {
+    long long u = order[i];
+    long long bu = u / bsize;
+    if(bu == b) bu--;
+    for(long long ptr = row_ptr[i]; ptr < row_ptr[i+1]; ptr++) {
+      long long v = order[adj[ptr]];
+      long long bw = abs(u - v);
+      max_bw = std::max<long long>(max_bw, bw);
+      mean_bw += bw;
+
+      long long bv = v / bsize;
+      if(bv == b) bv--;
+      density[bu][bv]++;
+    }
+  }
+  mean_bw = (mean_bw + 0.0f) / row_ptr[n];
+  //utils::Logger logger;
+  //logger.Log("BW stats -- Mean bw: "+std::to_string(mean_bw) + "Max bw: " + std::to_string(max_bw), utils::LOG_LVL_INFO);
+
+  double para_mean_bw = 0;
+  mean_bw = 0;
+  long long fblocks = 0;
+  //logger.Log("Printing blocks \n----------------------------------------------" << endl;
+  for(long long i = 0; i < b; i++) {
+    for(long long j = 0; j < b; j++) {
+      //     cout << std::setprecision(2) << density[i][j] / (row_ptr[n] + .0f) << "\t";
+      if(density[i][j] > 0) {
+        fblocks++;
+      }
+      long long bw = std::abs(i - j);
+      mean_bw += bw * density[i][j];
+    }
+    //   cout << endl;
+  }
+  // cout << "---------------------------------------------------------------" << endl;
+  // cout << "Block BW stats -- No full blocks: " << fblocks << " Block BW: " << (mean_bw + 0.0f) / row_ptr[n] << endl;
+  // cout << "---------------------------------------------------------------" << endl;
+  auto heat_values = new FloatType[b*b];
+  for (int i = 0; i < b; i++){
+    for (int j = 0; j < b; j++){
+      heat_values[i*b+j] = density[i][j] / (row_ptr[n] + .0f);
+    }
+  }
+  return new format::Array<FloatType>(b*b, heat_values, format::kOwned);
+}
+
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"
 #endif

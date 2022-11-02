@@ -303,7 +303,7 @@ class FormatOrderTwo
   template <typename T>
   typename std::remove_pointer<T>::type *As() {
     static_assert(utils::always_false<T>,
-                  "When casting a FormatOrderOne, only pass the class name "
+                  "When casting a FormatOrderTwo, only pass the class name "
                   "without its types");
     return nullptr;
   }

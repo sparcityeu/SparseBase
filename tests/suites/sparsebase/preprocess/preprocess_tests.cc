@@ -28,6 +28,13 @@ int rows[nnz] = {0, 0, 1, 2};
 float distribution[n] = {2.0 / nnz, 1.0 / nnz, 1.0 / nnz};
 int degrees[n] = {2, 1, 1};
 int vals[nnz] = {1, 2, 3, 4};
+/*
+0 1 2
+3 0 0 
+4 0 0
+*/
+
+float heatmap_no_order_true[3*3] = {0, 0.25, 0.25, 0.25, 0, 0, 0.25, 0, 0};
 
 // row reordering
 // r_reorder_vector[i] = j -> new row j used to be at location i
@@ -587,6 +594,37 @@ TEST(ReorderBase, ReorderCached) {
       {}, &global_coo, {&cpu_context});
   check_reorder(order.second, n);
   compare_csr(order.first[0]->Convert<format::CSR>(), &global_csr);
+}
+
+TEST(ReorderHeatmap, Instance){
+  ReorderHeatmap<int, int, int, float> heatmapper(3); 
+  int no_reoder_perm_arr[3] = {0,1,2};
+  format::Array<int> no_reorder_perm(3, no_reoder_perm_arr, format::kNotOwned);
+  auto heatmap = heatmapper.Get(&global_csr, &no_reorder_perm , {global_csr.get_context()}, true);
+  auto heatmap_arr = heatmap->As<format::Array>()->get_vals();
+  for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
+  #ifdef USE_CUDA
+  // Try with a cuda array and COO
+  context::cuda::CUDAContext g0{0};
+  format::cuda::CUDAArray<int>* cuda_arr = no_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
+  heatmap = heatmapper.Get(&global_coo, cuda_arr , {global_csr.get_context()}, true);
+  heatmap_arr = heatmap->As<format::Array>()->get_vals();
+  for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
+  #endif
+}
+
+TEST(ReorderBase, Heatmap){
+  int no_reoder_perm_arr[3] = {0,1,2};
+  format::Array<int> no_reorder_perm(3, no_reoder_perm_arr, format::kNotOwned);
+  auto heatmap_arr = ReorderBase::Heatmap<float>(&global_csr, &no_reorder_perm, 3, {global_csr.get_context()}, true)->get_vals();
+  for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
+  #ifdef USE_CUDA
+  // Try with a cuda array and COO
+  context::cuda::CUDAContext g0{0};
+  format::cuda::CUDAArray<int>* cuda_arr = no_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
+  heatmap_arr =ReorderBase::Heatmap<float>(&global_coo, cuda_arr, 3, {global_csr.get_context()}, true)->get_vals();
+  for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
+  #endif
 }
 
 TEST(ReorderBase, Permute1D) {

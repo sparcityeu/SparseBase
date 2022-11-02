@@ -170,6 +170,7 @@ gen_inst("class GrayReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc"
 gen_inst("class GenericReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("class RabbitReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_RABBIT_ORDER")
 gen_inst("class MetisReorder<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
+gen_inst("class ReorderHeatmap<$id_type, $nnz_type, $value_type, $float_type>", "preprocess.inc")
 gen_inst("class PermuteOrderTwo<$id_type, $nnz_type, $value_type>", "preprocess.inc")
 gen_inst("class PermuteOrderOne<$id_type, $value_type>", "preprocess.inc", exceptions={"$value_type": ['void']})
 gen_inst("class TransformPreprocessType<format::FormatOrderTwo<$id_type, $nnz_type, $value_type>, format::FormatOrderTwo<$id_type, $nnz_type, $value_type>>", "preprocess.inc")
