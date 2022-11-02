@@ -152,24 +152,35 @@ std::string demangle(const std::string& name);
 
 std::string demangle(std::type_index type);
 
-template <typename IdetifiableType, typename Parent>
 class Identifiable {
   public:
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
-  virtual std::type_index get_id() { return typeid(IdetifiableType); }
+  virtual std::type_index get_id() const = 0;
 
-  virtual std::string get_name() {
-    return demangle(get_id());
-  };
+  virtual std::string get_name() const = 0;
 
-  //! A static variant of the get_format_id() function
-  static std::type_index get_id_static() { return typeid(IdetifiableType); }
-
-  static std::string get_format_name_static() {
-    return demangle(get_id_static());
-  };
 };
+template <typename IdentifiableType, typename Base>
+class IdentifiableImplementation : public Base{
+  public:
+  //! Returns the std::type_index for the concrete Format class that this
+  //! instance is a member of
+  virtual std::type_index get_id() const { return typeid(IdentifiableType); }
+
+  virtual std::string get_name() const {
+    return utils::demangle(get_id());
+  };
+
+  //! A static variant of the get_id() function
+  static std::type_index get_id_static() { return typeid(IdentifiableType); }
+
+  static std::string get_name_static() {
+    return utils::demangle(get_id_static());
+  };
+
+};
+
 
 enum LogLevel {
   LOG_LVL_INFO,

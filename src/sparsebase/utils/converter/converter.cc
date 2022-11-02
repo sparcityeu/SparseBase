@@ -265,19 +265,19 @@ template <typename ValueType>
 void ConverterOrderOne<ValueType>::ResetConverterOrderOne() {
 #ifdef USE_CUDA
   this->RegisterConversionFunction(
-      format::Array<ValueType>::get_format_id_static(),
-      format::cuda::CUDAArray<ValueType>::get_format_id_static(),
+      format::Array<ValueType>::get_id_static(),
+      format::cuda::CUDAArray<ValueType>::get_id_static(),
       converter::cuda::ArrayCUDAArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::cuda::CUDAContext::get_context_type();
       });
   this->RegisterConversionFunction(
-      format::cuda::CUDAArray<ValueType>::get_format_id_static(),
-      format::Array<ValueType>::get_format_id_static(),
+      format::cuda::CUDAArray<ValueType>::get_id_static(),
+      format::Array<ValueType>::get_id_static(),
       converter::cuda::CUDAArrayArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       });
 #endif
@@ -301,96 +301,96 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::Reset() {
 template <typename IDType, typename NNZType, typename ValueType>
 void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
   this->RegisterConversionFunction(
-      format::COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::COO<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
       CooCsrFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       });
   this->RegisterConversionFunction(
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::COO<IDType, NNZType, ValueType>::get_id_static(),
       CsrCooFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       });
   this->RegisterConversionFunction(
-      format::COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSC<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::COO<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSC<IDType, NNZType, ValueType>::get_id_static(),
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       });
   this->RegisterConversionFunction(
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSC<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSC<IDType, NNZType, ValueType>::get_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       });
 #ifdef USE_CUDA
   this->RegisterConversionFunction(
-      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_id_static(),
       converter::cuda::CUDACsrCUDACsrConditionalFunction<IDType, NNZType,
                                                          ValueType>,
       converter::cuda::CUDAPeerToPeer);
   this->RegisterConversionFunction(
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_id_static(),
       converter::cuda::CsrCUDACsrConditionalFunction<IDType, NNZType,
                                                      ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::cuda::CUDAContext::get_context_type();
       });
   this->RegisterConversionFunction(
-      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
       converter::cuda::CUDACsrCsrConditionalFunction<IDType, NNZType,
                                                      ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       });
 #endif
   this->RegisterConversionFunction(
-      format::COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::COO<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
       CooCsrMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       },
       true);
   this->RegisterConversionFunction(
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::COO<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::COO<IDType, NNZType, ValueType>::get_id_static(),
       CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       },
       true);
   this->RegisterConversionFunction(
-      format::COO<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSC<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::COO<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSC<IDType, NNZType, ValueType>::get_id_static(),
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       },
       true);
   this->RegisterConversionFunction(
-      format::CSR<IDType, NNZType, ValueType>::get_format_id_static(),
-      format::CSC<IDType, NNZType, ValueType>::get_format_id_static(),
+      format::CSR<IDType, NNZType, ValueType>::get_id_static(),
+      format::CSC<IDType, NNZType, ValueType>::get_id_static(),
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_context_type_member() ==
+        return to->get_id() ==
                context::CPUContext::get_context_type();
       },
       true);
@@ -448,7 +448,7 @@ format::Format *Converter::Convert(format::Format *source, std::type_index to_ty
 std::vector<format::Format *> Converter::ConvertCached (
     format::Format *source, std::type_index to_type,
     std::vector<context::Context *> to_contexts, bool is_move_conversion) const {
-  if (to_type == source->get_format_id() &&
+  if (to_type == source->get_id() &&
       std::find_if(to_contexts.begin(), to_contexts.end(),
                    [&source](context::Context *from) {
                      return from->IsEquivalent(source->get_context());
@@ -457,10 +457,10 @@ std::vector<format::Format *> Converter::ConvertCached (
   }
 
   ConversionChain chain =
-      GetConversionChain(source->get_format_id(), source->get_context(),
+      GetConversionChain(source->get_id(), source->get_context(),
                          to_type, to_contexts, is_move_conversion);
   if (!chain)
-    throw ConversionException(source->get_format_name(),
+    throw ConversionException(source->get_name(),
                               utils::demangle(to_type));
   auto outputs = ApplyConversionChain(chain, source, false);
   return std::vector<format::Format *>(outputs.begin() + 1, outputs.end());

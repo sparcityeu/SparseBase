@@ -9,7 +9,7 @@ using namespace sparsebase;
 using namespace sparsebase::format;
 using namespace sparsebase::object;
 
-class MyFormat : public format::FormatCRTP<MyFormat, format::FormatImplementation> {
+class MyFormat : public utils::IdentifiableImplementation<MyFormat, format::FormatImplementation> {
  public:
   MyFormat() {
     order_ = 2;
@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
   // Custom conversion using the custom format
   utils::converter::ConverterOrderTwo<int, int, int> converter;
   converter.RegisterConversionFunction(
-      COO<int, int, int>::get_format_id_static(),
-      MyFormat::get_format_id_static(), COOToMyFormat,
+      COO<int, int, int>::get_id_static(),
+      MyFormat::get_id_static(), COOToMyFormat,
       [](context::Context *, context::Context *) { return true; });
   int row[6] = {0, 0, 1, 1, 2, 2};
   int col[6] = {0, 1, 1, 2, 3, 3};

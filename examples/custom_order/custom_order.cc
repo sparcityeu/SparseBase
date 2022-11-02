@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
   // orderer;
   preprocess::GenericReorder<vertex_type, edge_type, value_type> orderer;
   orderer.RegisterFunction(
-      {format::CSR<vertex_type, edge_type, value_type>::get_format_id_static()},
+      {format::CSR<vertex_type, edge_type, value_type>::get_id_static()},
       degree_reorder_csr);
   customParam params{10};
   vertex_type *permutation =

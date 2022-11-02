@@ -80,7 +80,7 @@ void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClassesHelper(
 
   // std::cout << "result size: " << res.size() << std::endl;
   //  for(auto &el : res){
-  //    std::cout << el->get_feature_id().name() << std::endl;
+  //    std::cout << el->get_id().name() << std::endl;
   //  }
   // std::cout << std::endl;
   GetClassesHelper(source, ordered, res);
@@ -109,7 +109,7 @@ void Extractor::PrintFuncList() {
     for (auto el : cls.first) {
       std::cout << el.name() << " ";
     }
-    std::cout << "-> " << cls.second->get_feature_id().name() << std::endl;
+    std::cout << "-> " << cls.second->get_id().name() << std::endl;
   }
   std::cout << std::endl;
 }
@@ -142,7 +142,7 @@ std::unordered_map<std::type_index, std::any> Extractor::Extract(
   std::unordered_map<std::type_index, std::any> res;
   // std::cout << std::endl << "Classes used:" << std::endl;
   for (auto &el : cs) {
-    // std::cout << el->get_feature_id().name() << std::endl;
+    // std::cout << el->get_id().name() << std::endl;
     res.merge(el->Extract(format, c, convert_input));
   }
   // std::cout << std::endl;
@@ -153,14 +153,14 @@ void Extractor::Add(Feature f) {
   if (map_.find(f->get_sub_ids()) !=
       map_.end()) {  // check if the class is registered
     for (auto &cls : f->get_subs()) {
-      auto id = cls->get_feature_id();
+      auto id = cls->get_id();
       if (in_.find(id) == in_.end()) {
         // in_[id] = cls;
         in_.insert({id, cls});
       }
     }
   } else {
-    throw utils::FeatureException(f->get_feature_id().name(),
+    throw utils::FeatureException(f->get_id().name(),
                                   typeid(this).name());
   }
 }
