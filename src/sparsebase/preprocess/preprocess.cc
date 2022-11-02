@@ -1458,7 +1458,7 @@ PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
 RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
       CalculateReorderCSR);
   this->params_ = std::unique_ptr<RabbitReorderParams>(new RabbitReorderParams);
 }
@@ -1474,8 +1474,8 @@ IDType *RabbitReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   using rabbit_order::vint;
   typedef std::vector<std::vector<std::pair<vint, float>>> adjacency_list;
 
-  CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  format::CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   IDType n = csr->get_dimensions()[0];
   IDType *counts = new IDType[n]();
   auto *idx = csr->get_row_ptr();
@@ -1506,7 +1506,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition() {
 
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams);
@@ -1517,7 +1517,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(
     MetisPartitionParams params) {
 
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams(params));
@@ -1526,8 +1526,8 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
     std::vector<format::Format *> formats, PreprocessParams *params) {
-  CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  format::CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
 
   MetisPartitionParams *mparams = static_cast<MetisPartitionParams *>(params);
 
@@ -1579,7 +1579,7 @@ IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
 template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder() {
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
   this->params_ = std::unique_ptr<ParamsType>(new ParamsType);
 }
 
@@ -1587,7 +1587,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
     MetisReorderParams params) {
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
   this->params_ = std::unique_ptr<ParamsType>(new MetisReorderParams(params));
 }
 
@@ -1595,8 +1595,8 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<format::Format *> formats,
     sparsebase::preprocess::PreprocessParams *params) {
-  CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  format::CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   auto *mparams = static_cast<MetisReorderParams *>(params);
   auto n = (idx_t)csr->get_dimensions()[0];
 
@@ -1613,6 +1613,7 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   options[METIS_OPTION_COMPRESS] = (idx_t)mparams->compress;
   options[METIS_OPTION_CCORDER] = (idx_t)mparams->ccorder;
   options[METIS_OPTION_PFACTOR] = (idx_t)mparams->pfactor;
+  options[METIS_OPTION_NSEPS] = (idx_t) mparams->nseps;
   options[METIS_OPTION_DBGLVL] = (idx_t)0;
 
   if constexpr (std::is_signed_v<IDType> && std::is_signed_v<NNZType> &&
