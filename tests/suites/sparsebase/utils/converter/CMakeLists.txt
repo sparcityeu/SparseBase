@@ -1,4 +1,6 @@
-
+if(${USE_CUDA})
+set_source_files_properties(converter_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
 add_executable(sparsebase_utils_converter_tests.test converter_tests.cc)
 target_link_libraries(sparsebase_utils_converter_tests.test sparsebase)
 target_link_libraries(sparsebase_utils_converter_tests.test gtest gtest_main)

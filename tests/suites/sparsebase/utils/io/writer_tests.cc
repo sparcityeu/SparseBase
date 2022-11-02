@@ -10,7 +10,7 @@ TEST(IOBase, WriteArrayToBinary) {
                                          sparsebase::format::kNotOwned);
 
   // Write the array to a binary file using sparsebase
-  utils::io::IOBase::WriteArrayToBinary(&sbArray, "test_order_one.bin");
+  sparsebase::utils::io::IOBase::WriteArrayToBinary(&sbArray, "test_order_one.bin");
 
   // Read the array from the binary file using sparsebase
   sparsebase::utils::io::BinaryReaderOrderOne<int> readerOrderOne(
@@ -32,7 +32,7 @@ TEST(IOBase, WriteCOOToBinary) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  utils::io::IOBase::WriteCOOToBinary(&coo, "writer_test_order_two_coo.bin");
+  sparsebase::utils::io::IOBase::WriteCOOToBinary(&coo, "writer_test_order_two_coo.bin");
 
   // Read the COO from the binary file with sparsebase
   sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
@@ -61,7 +61,7 @@ TEST(IOBase, WriteBinaryToCSR) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  utils::io::IOBase::WriteCSRToBinary(&csr, "writer_test_order_two_csr.bin");
+  sparsebase::utils::io::IOBase::WriteCSRToBinary(&csr, "writer_test_order_two_csr.bin");
 
   // Read the COO from the binary file with sparsebase
   sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(

@@ -2,9 +2,6 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/cuda/preprocess.cuh"
 #include "sparsebase/preprocess/preprocess.h"
-using namespace sparsebase;
-using namespace sparsebase::format;
-using namespace sparsebase::utils;
 namespace sparsebase {
 
 namespace preprocess {

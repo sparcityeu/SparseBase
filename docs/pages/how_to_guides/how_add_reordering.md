@@ -263,11 +263,11 @@ class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
   OptimalReorder(float alpha, float beta) {
     // ...
     this->RegisterFunction(
-        {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+        {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
         OptimallyOrderCSR);
 #ifdef USE_CUDA
     this->RegisterFunction(
-        {format::CUDACSR<IDType, NNZType, ValueType>::get_format_id_static()},
+        {format::CUDACSR<IDType, NNZType, ValueType>::get_id_static()},
         OptimallyOrderCUDACSR);
 #endif
     // ...

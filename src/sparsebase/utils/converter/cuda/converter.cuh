@@ -6,7 +6,6 @@
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
-#include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CUDA_CONVERTER_H_

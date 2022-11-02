@@ -23,6 +23,7 @@ if(NOT ${_HEADER_ONLY})
     sparsebase/utils/io/reader.cc
     sparsebase/object/object.cc
     sparsebase/utils/converter/converter.cc
+    sparsebase/utils/converter/converter_store.cc
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
     sparsebase/utils/io/writer.cc
@@ -233,6 +234,7 @@ if(${_HEADER_ONLY})
   )
   set(CONVERTER_FILES ${CONVERTER_FILES}
     sparsebase/utils/converter/converter.cc
+    sparsebase/utils/converter/converter_store.cc
   )
   set(EXPERIMENT_FILES ${EXPERIMENT_FILES}
     sparsebase/experiment/experiment.cc
