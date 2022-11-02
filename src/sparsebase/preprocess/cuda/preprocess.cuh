@@ -10,7 +10,6 @@
 #define SPARSEBASE_SPARSEBASE_PREPROCESS_CUDA_PREPROCESS_H_
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
 namespace sparsebase {
 
 namespace preprocess {

@@ -3,6 +3,8 @@
 #include "gtest/gtest.h"
 #include "sparsebase/sparsebase.h"
 
+using namespace sparsebase;
+
 // The arrays defined here are for two matrices
 // One in csr format one in coo format
 // These are known to be equivalent (converted using scipy)

@@ -394,11 +394,15 @@ class ConverterOrderOne : public ConverterImpl<ConverterOrderOne<ValueType>> {
 }  // namespace utils
 
 }  // namespace sparsebase
-#ifdef _HEADER_ONLY
-#include "sparsebase/utils/converter/converter.cc"
 #ifdef USE_CUDA
+#include "cuda/converter.cuh"
+#ifdef _HEADER_ONLY
 #include "cuda/converter.cu"
 #endif
+#endif
+
+#ifdef _HEADER_ONLY
+#include "sparsebase/utils/converter/converter.cc"
 #endif
 
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
