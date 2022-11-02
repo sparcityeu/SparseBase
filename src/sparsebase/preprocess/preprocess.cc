@@ -160,12 +160,12 @@ std::tuple<Function, utils::converter::ConversionSchema> FunctionMatcherMixin<
     std::string message;
     message = "Could not find a function that matches the formats: {";
     for (auto f : packed_sfs) {
-      message += f->get_format_name();
+      message += f->get_name();
       message += " ";
     }
     message += "} using the contexts {";
     for (auto c : contexts) {
-      message += c->get_context_type_member().name();
+      message += c->get_id().name();
       message += " ";
     }
     message += "}";
@@ -197,7 +197,7 @@ DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
   // this->map[{kCSRFormat}]= calculate_order_csr;
   // this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
   this->params_ =
       std::unique_ptr<DegreeReorderParams>(new DegreeReorderParams(ascending));
@@ -301,13 +301,13 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(RCMReorderParams p) {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
@@ -421,7 +421,7 @@ PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(ParamsType params) {
 }
 template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
-  this->RegisterFunction({format::Array<ValueType>::get_format_id_static()},
+  this->RegisterFunction({format::Array<ValueType>::get_id_static()},
                          PermuteArray);
   this->params_ = std::unique_ptr<PermuteOrderOneParams<IDType>>(
       new PermuteOrderOneParams<IDType>(order));
@@ -451,7 +451,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
     IDType *row_order, IDType *col_order) {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       PermuteOrderTwoCSR);
   this->params_ = std::unique_ptr<PermuteOrderTwoParams<IDType>>(
       new PermuteOrderTwoParams(row_order, col_order));
@@ -530,8 +530,8 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::
                             std::vector<context::Context *> contexts,
                             bool convert_input) {
   //if (dynamic_cast<InputFormatType *>(format) == nullptr)
-  //  throw utils::TypeException(format->get_format_name(),
-  //                             InputFormatType::get_format_name_static());
+  //  throw utils::TypeException(format->get_name(),
+  //                             InputFormatType::get_name_static());
   return this->CachedExecute(this->params_.get(), contexts,
                              convert_input, false, format);
 }
@@ -543,8 +543,8 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::
                             std::vector<context::Context *> contexts,
                             bool convert_input) {
   //if (dynamic_cast<InputFormatType *>(format) == nullptr)
-  //  throw utils::TypeException(format->get_format_name(),
-  //                             InputFormatType::get_format_name_static());
+  //  throw utils::TypeException(format->get_name(),
+  //                             InputFormatType::get_name_static());
   return this->CachedExecute(params, contexts, convert_input,
                              false, format);
 }
@@ -555,8 +555,8 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, std::vector<context::Context *> contexts,
     bool convert_input) {
   ////if (dynamic_cast<InputFormatType *>(format) == nullptr)
-  ////  throw utils::TypeException(format->get_format_name(),
-  ////                             InputFormatType::get_format_name_static());
+  ////  throw utils::TypeException(format->get_name(),
+  ////                             InputFormatType::get_name_static());
   return this->Execute(this->params_.get(), contexts,
                        convert_input, format);
 }
@@ -567,8 +567,8 @@ TransformPreprocessType<InputFormatType, ReturnFormatType>::GetTransformation(
     format::Format *format, PreprocessParams *params,
     std::vector<context::Context *> contexts, bool convert_input) {
   ////if (dynamic_cast<InputFormatType *>(format) == nullptr)
-  ////  throw utils::TypeException(format->get_format_name(),
-  ////                             InputFormatType::get_format_name_static());
+  ////  throw utils::TypeException(format->get_name(),
+  ////                             InputFormatType::get_name_static());
   return this->Execute(params, contexts, convert_input,
                        format);
 }
@@ -587,7 +587,7 @@ FeaturePreprocessType<FeatureType>::get_params(std::type_index t) {
   if (this->pmap_.find(t) != this->pmap_.end()) {
     return this->pmap_[t];
   } else {
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
+    throw utils::FeatureParamsException(get_id().name(), t.name());
   }
 }
 template <typename FeatureType>
@@ -597,11 +597,11 @@ void FeaturePreprocessType<FeatureType>::set_params(
   if (std::find(ids.begin(), ids.end(), t) != ids.end()) {
     this->pmap_[t] = p;
   } else {
-    throw utils::FeatureParamsException(get_feature_id().name(), t.name());
+    throw utils::FeatureParamsException(get_id().name(), t.name());
   }
 }
 template <typename FeatureType>
-std::type_index FeaturePreprocessType<FeatureType>::get_feature_id() {
+std::type_index FeaturePreprocessType<FeatureType>::get_id() {
   return typeid(*this);
 }
 
@@ -616,7 +616,7 @@ JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights() {
 #ifdef USE_CUDA
   std::vector<std::type_index> formats = {
       format::cuda::CUDACSR<IDType, NNZType,
-                            ValueType>::get_format_id_static()};
+                            ValueType>::get_id_static()};
   this->RegisterFunction(formats, GetJaccardWeightCUDACSR);
 #endif
 }
@@ -656,7 +656,7 @@ DegreeDistribution<IDType, NNZType, ValueType,
   Register();
   this->params_ =
       std::shared_ptr<DegreeDistributionParams>(new DegreeDistributionParams());
-  this->pmap_.insert({get_feature_id_static(), this->params_});
+  this->pmap_.insert({get_id_static(), this->params_});
 }
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
@@ -680,14 +680,14 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::DegreeDistribution(
     const std::shared_ptr<DegreeDistributionParams> p) {
   Register();
   this->params_ = p;
-  this->pmap_[get_feature_id_static()] = p;
+  this->pmap_[get_id_static()] = p;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 void DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Register() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       GetDegreeDistributionCSR);
 }
 
@@ -697,7 +697,7 @@ std::unordered_map<std::type_index, std::any>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
-  return {{this->get_feature_id(), std::forward<FeatureType *>(GetDistribution(
+  return {{this->get_id(), std::forward<FeatureType *>(GetDistribution(
                                        format, c, convert_input))}};
 };
 
@@ -719,7 +719,7 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs() {
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 std::type_index DegreeDistribution<IDType, NNZType, ValueType,
-                                   FeatureType>::get_feature_id_static() {
+                                   FeatureType>::get_id_static() {
   return typeid(DegreeDistribution<IDType, NNZType, ValueType, FeatureType>);
 }
 
@@ -810,7 +810,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees() {
   Register();
   this->params_ = std::shared_ptr<DegreesParams>(new DegreesParams());
-  this->pmap_.insert({get_feature_id_static(), this->params_});
+  this->pmap_.insert({get_id_static(), this->params_});
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -826,7 +826,7 @@ Degrees<IDType, NNZType, ValueType>::Degrees(
     const std::shared_ptr<DegreesParams> r) {
   Register();
   this->params_ = r;
-  this->pmap_[get_feature_id_static()] = r;
+  this->pmap_[get_id_static()] = r;
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -835,7 +835,7 @@ Degrees<IDType, NNZType, ValueType>::~Degrees() = default;
 template <typename IDType, typename NNZType, typename ValueType>
 void Degrees<IDType, NNZType, ValueType>::Register() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetDegreesCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetDegreesCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -850,7 +850,7 @@ std::vector<ExtractableType *> Degrees<IDType, NNZType, ValueType>::get_subs() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::type_index Degrees<IDType, NNZType, ValueType>::get_feature_id_static() {
+std::type_index Degrees<IDType, NNZType, ValueType>::get_id_static() {
   return typeid(Degrees<IDType, NNZType, ValueType>);
 }
 
@@ -859,7 +859,7 @@ std::unordered_map<std::type_index, std::any>
 Degrees<IDType, NNZType, ValueType>::Extract(format::Format *format,
                                              std::vector<context::Context *> c,
                                              bool convert_input) {
-  return {{this->get_feature_id(),
+  return {{this->get_id(),
            std::forward<IDType *>(GetDegrees(format, c, convert_input))}};
 };
 
@@ -905,16 +905,16 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
                            FeatureType>::Degrees_DegreeDistribution() {
   this->Register();
   // this->RegisterFunction(
-  //     {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetCSR);
+  //     {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetCSR);
   this->params_ = std::shared_ptr<Params>(new Params());
-  this->pmap_.insert({get_feature_id_static(), this->params_});
+  this->pmap_.insert({get_id_static(), this->params_});
   std::shared_ptr<PreprocessParams> deg_dist_param(
       new DegreeDistributionParams);
   std::shared_ptr<PreprocessParams> degs_param(new DegreesParams);
   this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
-                                 FeatureType>::get_feature_id_static()] =
+                                 FeatureType>::get_id_static()] =
       deg_dist_param;
-  this->pmap_[Degrees<IDType, NNZType, ValueType>::get_feature_id_static()] =
+  this->pmap_[Degrees<IDType, NNZType, ValueType>::get_id_static()] =
       degs_param;
 }
 
@@ -923,7 +923,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 void Degrees_DegreeDistribution<IDType, NNZType, ValueType,
                                 FeatureType>::Register() {
   this->RegisterFunction(
-      std::vector<std::type_index>({format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}), GetCSR);
+      std::vector<std::type_index>({format::CSR<IDType, NNZType, ValueType>::get_id_static()}), GetCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -942,7 +942,7 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
     Degrees_DegreeDistribution(const std::shared_ptr<Params> r) {
   Register();
   this->params_ = r;
-  this->pmap_[get_feature_id_static()] = r;
+  this->pmap_[get_id_static()] = r;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
@@ -968,27 +968,27 @@ std::vector<ExtractableType *> Degrees_DegreeDistribution<
     IDType, NNZType, ValueType, FeatureType>::get_subs() {
   auto *f1 = new Degrees<IDType, NNZType, ValueType>();
   if (this->pmap_.find(
-          Degrees<IDType, NNZType, ValueType>::get_feature_id_static()) !=
+          Degrees<IDType, NNZType, ValueType>::get_id_static()) !=
       this->pmap_.end()) {
-    f1->set_params(Degrees<IDType, NNZType, ValueType>::get_feature_id_static(),
+    f1->set_params(Degrees<IDType, NNZType, ValueType>::get_id_static(),
                    this->pmap_[Degrees<IDType, NNZType,
-                                       ValueType>::get_feature_id_static()]);
+                                       ValueType>::get_id_static()]);
   }
 
   auto *f2 = new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>();
   if (this->pmap_.find(
           DegreeDistribution<IDType, NNZType, ValueType,
-                             FeatureType>::get_feature_id_static()) !=
+                             FeatureType>::get_id_static()) !=
       this->pmap_.end()) {
     f2->set_params(
         DegreeDistribution<IDType, NNZType, ValueType,
-                           FeatureType>::get_feature_id_static(),
+                           FeatureType>::get_id_static(),
         this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
-                                       FeatureType>::get_feature_id_static()]);
+                                       FeatureType>::get_id_static()]);
   }
 
   auto ids = this->get_sub_ids();
-  if (ids[0] == f1->get_feature_id())
+  if (ids[0] == f1->get_id())
     return {f1, f2};
   else
     return {f2, f1};
@@ -997,7 +997,7 @@ std::vector<ExtractableType *> Degrees_DegreeDistribution<
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 std::type_index Degrees_DegreeDistribution<
-    IDType, NNZType, ValueType, FeatureType>::get_feature_id_static() {
+    IDType, NNZType, ValueType, FeatureType>::get_id_static() {
   return typeid(
       Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>);
 }
@@ -1037,10 +1037,10 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
     degrees[i] = rows[i + 1] - rows[i];
     dist[i] = (rows[i + 1] - rows[i]) / (FeatureType)num_edges;
   }
-  return {{Degrees<IDType, NNZType, ValueType>::get_feature_id_static(),
+  return {{Degrees<IDType, NNZType, ValueType>::get_id_static(),
            std::forward<IDType *>(degrees)},
           {DegreeDistribution<IDType, NNZType, ValueType,
-                              FeatureType>::get_feature_id_static(),
+                              FeatureType>::get_id_static(),
            std::forward<FeatureType *>(dist)}};
 }
 
@@ -1057,7 +1057,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorder(
 
 
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       GrayReorderingCSR);
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1458,7 +1458,7 @@ PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 template <typename IDType, typename NNZType, typename ValueType>
 RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()},
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
   this->params_ = std::unique_ptr<RabbitReorderParams>(new RabbitReorderParams);
 }
@@ -1506,7 +1506,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition() {
 
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams);
@@ -1517,7 +1517,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(
     MetisPartitionParams params) {
 
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams(params));
@@ -1579,7 +1579,7 @@ IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
 template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
   this->params_ = std::unique_ptr<ParamsType>(new ParamsType);
 }
 
@@ -1587,7 +1587,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
     MetisReorderParams params) {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_format_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
   this->params_ = std::unique_ptr<ParamsType>(new MetisReorderParams(params));
 }
 

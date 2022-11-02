@@ -212,7 +212,7 @@ class Converter {
   template <typename FormatType>
   FormatType *Convert(format::Format *source, context::Context *to_context,
                       bool is_move_conversion = false) const {
-    auto *res = this->Convert(source, FormatType::get_format_id_static(),
+    auto *res = this->Convert(source, FormatType::get_id_static(),
                               to_context, is_move_conversion);
     return res->template AsAbsolute<FormatType>();
   }
@@ -234,7 +234,7 @@ class Converter {
   FormatType *Convert(format::Format *source,
                       std::vector<context::Context *> to_contexts,
                       bool is_move_conversion = false) const {
-    auto *res = this->Convert(source, FormatType::get_format_id_static(),
+    auto *res = this->Convert(source, FormatType::get_id_static(),
                               to_contexts, is_move_conversion);
     return res->template AsAbsolute<FormatType>();
   }

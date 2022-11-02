@@ -23,13 +23,13 @@ int main() {
   auto converter = new utils::converter::ConverterOrderTwo<int, int, int>();
 
   converter->RegisterConversionFunction(
-      format::COO<int, int, int>::get_format_id_static(),
-      format::CSR<int, int, int>::get_format_id_static(),
+      format::COO<int, int, int>::get_id_static(),
+      format::CSR<int, int, int>::get_id_static(),
       MyFunction<int, int, int>,
       [](context::Context *, context::Context *) -> bool { return true; });
 
   auto csr = converter->Convert(
-      coo, format::CSR<int, int, int>::get_format_id_static(), &cpu_context);
+      coo, format::CSR<int, int, int>::get_id_static(), &cpu_context);
   cout << csr << endl;
 
   delete coo;

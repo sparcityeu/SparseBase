@@ -66,7 +66,7 @@ class ExtractableType {
       format::Format *format, std::vector<context::Context *> contexts,
       bool convert_input) = 0;
   //! Returns the std::type_index of this class
-  virtual std::type_index get_feature_id() = 0;
+  virtual std::type_index get_id() = 0;
   //! Get the std::type_index of all the ExtractableType classes fused into this
   //! class
   /*!
@@ -627,7 +627,7 @@ class FeaturePreprocessType
   std::shared_ptr<PreprocessParams> get_params() override;
   std::shared_ptr<PreprocessParams> get_params(std::type_index) override;
   void set_params(std::type_index, std::shared_ptr<PreprocessParams>) override;
-  std::type_index get_feature_id() override;
+  std::type_index get_id() override;
   ~FeaturePreprocessType();
 };
 
@@ -696,7 +696,7 @@ class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
       bool convert_input);
   virtual std::vector<std::type_index> get_sub_ids();
   virtual std::vector<ExtractableType *> get_subs();
-  static std::type_index get_feature_id_static();
+  static std::type_index get_id_static();
 
   //! Degree distribution generation executor function that carries out function
   //! matching
@@ -783,7 +783,7 @@ class Degrees : public FeaturePreprocessType<IDType *> {
       bool convert_input) override;
   std::vector<std::type_index> get_sub_ids() override;
   std::vector<ExtractableType *> get_subs() override;
-  static std::type_index get_feature_id_static();
+  static std::type_index get_id_static();
 
   //! Degree generation executor function that carries out function matching
   /*!
@@ -856,7 +856,7 @@ class Degrees_DegreeDistribution
       bool convert_input) override;
   std::vector<std::type_index> get_sub_ids() override;
   std::vector<ExtractableType *> get_subs() override;
-  static std::type_index get_feature_id_static();
+  static std::type_index get_id_static();
 
   //! Degree and degree distribution generation executor function that carries
   //! out function matching
@@ -1893,7 +1893,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
   // pack the types of Formats into a vector
   std::vector<std::type_index> packed_format_types;
   for (auto f : packed_formats)
-    packed_format_types.push_back(f->get_format_id());
+    packed_format_types.push_back(f->get_id());
   // get conversion schema
   std::tuple<Function, utils::converter::ConversionSchema> ret =
       GetFunction(packed_formats, packed_format_types, map, contexts);

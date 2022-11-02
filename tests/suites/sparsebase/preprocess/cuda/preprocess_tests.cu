@@ -23,8 +23,8 @@ TEST(JaccardTest, Jaccard) {
   sparsebase::preprocess::JaccardWeights<int, int, int, float> jac;
   context::cuda::CUDAContext gpu_context(0);
   auto jac_array = jac.GetJaccardWeights(&global_csr, {&gpu_context}, true);
-  EXPECT_EQ(jac_array->get_format_id(),
-            format::cuda::CUDAArray<float>::get_format_id_static());
+  EXPECT_EQ(jac_array->get_id(),
+            format::cuda::CUDAArray<float>::get_id_static());
   utils::converter::ConverterOrderOne<float> converter;
   auto jac_cpu_array =
       converter.Convert<format::Array<float>>(jac_array, {&cpu_context});

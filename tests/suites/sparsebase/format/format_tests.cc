@@ -437,14 +437,14 @@ TEST(FormatImplementation, FormatID) {
   // Same Format type with different template parameters
   // should have a different id
   std::type_index id_csriii =
-      format::CSR<int, int, int>::get_format_id_static();
+      format::CSR<int, int, int>::get_id_static();
   std::type_index id_csriif =
-      format::CSR<int, int, float>::get_format_id_static();
+      format::CSR<int, int, float>::get_id_static();
   EXPECT_NE(id_csriii, id_csriif);
 
   // Different Format types should have different ids
   std::type_index id_cooiii =
-      format::COO<int, int, int>::get_format_id_static();
+      format::COO<int, int, int>::get_id_static();
   EXPECT_NE(id_csriii, id_cooiii);
 
   int csr_row_ptr[5]{0, 2, 3, 3, 4};
@@ -454,7 +454,7 @@ TEST(FormatImplementation, FormatID) {
 
   // If the Format type and templates are the same
   // both the static and non-static function should give the same id
-  std::type_index id_csriii_obj = csr.get_format_id();
+  std::type_index id_csriii_obj = csr.get_id();
   EXPECT_EQ(id_csriii, id_csriii_obj);
 }
 
@@ -462,14 +462,14 @@ TEST(FormatImplementation, FormatName) {
   // Same Format type with different template parameters
   // should have a different id
   std::string name_csriii =
-      format::CSR<int, int, int>::get_format_name_static();
+      format::CSR<int, int, int>::get_name_static();
   std::string name_csriif =
-      format::CSR<int, int, float>::get_format_name_static();
+      format::CSR<int, int, float>::get_name_static();
   EXPECT_NE(name_csriii, name_csriif);
 
   // Different Format types should have different ids
   std::string name_cooiii =
-      format::COO<int, int, int>::get_format_name_static();
+      format::COO<int, int, int>::get_name_static();
   EXPECT_NE(name_csriii, name_cooiii);
 
   int csr_row_ptr[5]{0, 2, 3, 3, 4};
@@ -479,10 +479,10 @@ TEST(FormatImplementation, FormatName) {
 
   // If the Format type and templates are the same
   // both the static and non-static function should give the same id
-  std::string name_csriii_obj = csr.get_format_name();
+  std::string name_csriii_obj = csr.get_name();
   EXPECT_EQ(name_csriii, name_csriii_obj);
 
-  std::string name_csriii_mangled = csr.get_format_id().name();
+  std::string name_csriii_mangled = csr.get_id().name();
   EXPECT_NE(name_csriii, name_csriii_mangled);
 }
 
@@ -497,7 +497,7 @@ sparsebase::format::Format* dummy_conversion(sparsebase::format::Format* p, spar
 TEST(FormatImplementation, SetConverter){
   auto conv = std::make_shared<sparsebase::utils::converter::ConverterOrderTwo<int, int, int>>();
   conv->ClearConversionFunctions();
-  conv->RegisterConversionFunction(spf::CSR<int, int, int>::get_format_id_static(), spf::COO<int, int, int>::get_format_id_static(), dummy_conversion, [](sparsebase::context::Context*, sparsebase::context::Context*){ return true;});
+  conv->RegisterConversionFunction(spf::CSR<int, int, int>::get_id_static(), spf::COO<int, int, int>::get_id_static(), dummy_conversion, [](sparsebase::context::Context*, sparsebase::context::Context*){ return true;});
   sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
                                              csr_vals);
                                              
@@ -532,7 +532,7 @@ TEST(Format, Is) {
 
   delete csr;
 }
-class TestFormat : format::FormatCRTP<TestFormat, format::FormatImplementation> {
+class TestFormat : utils::IdentifiableImplementation<TestFormat, format::FormatImplementation> {
  public:
   TestFormat() {
     this->context_ = std::unique_ptr<context::Context>(new context::CPUContext);

@@ -87,38 +87,38 @@ TEST_F(CUDAFormatsFixture, CUDACSR) {
   ConversionChain chain;
   format::Format* output_format;
   // Can't convert for bad context
-  chain = c2.GetConversionChain(csr->get_format_id(), csr->get_context(),
-                                CUDACSR<TYPE>::get_format_id_static(), {&cpu});
+  chain = c2.GetConversionChain(csr->get_id(), csr->get_context(),
+                                CUDACSR<TYPE>::get_id_static(), {&cpu});
   EXPECT_EQ(chain.has_value(), false);
   // Can convert
-  chain = c2.GetConversionChain(csr->get_format_id(), csr->get_context(),
-                                CUDACSR<TYPE>::get_format_id_static(), {&gpu0});
+  chain = c2.GetConversionChain(csr->get_id(), csr->get_context(),
+                                CUDACSR<TYPE>::get_id_static(), {&gpu0});
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
-  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_context_type_member()),
+  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             CUDAContext::get_context_type());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(csr, &gpu0);
-  EXPECT_EQ(output_format->get_format_id(),
-            (CUDACSR<TYPE>::get_format_id_static()));
+  EXPECT_EQ(output_format->get_id(),
+            (CUDACSR<TYPE>::get_id_static()));
   compare_cuda_cpu_csr(output_format->AsAbsolute<CUDACSR<TYPE>>(), csr);
   // Can't convert to CSR bad context
-  chain = c2.GetConversionChain(CUDACSR<TYPE>::get_format_id_static(),
+  chain = c2.GetConversionChain(CUDACSR<TYPE>::get_id_static(),
                                 output_format->get_context(),
-                                CSR<TYPE>::get_format_id_static(), {&gpu0});
+                                CSR<TYPE>::get_id_static(), {&gpu0});
   EXPECT_EQ(chain.has_value(), false);
   // Can convert to CSR
-  chain = c2.GetConversionChain(CUDACSR<TYPE>::get_format_id_static(),
+  chain = c2.GetConversionChain(CUDACSR<TYPE>::get_id_static(),
                                 output_format->get_context(),
-                                CSR<TYPE>::get_format_id_static(), {&cpu});
+                                CSR<TYPE>::get_id_static(), {&cpu});
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
-  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_context_type_member()),
+  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             CPUContext::get_context_type());
   format::Format* output_format_csr;
   output_format_csr =
       (std::get<0>(std::get<0>(*chain)[0]))(output_format, &cpu);
-  EXPECT_EQ(output_format_csr->get_format_id(),
-            (CSR<TYPE>::get_format_id_static()));
+  EXPECT_EQ(output_format_csr->get_id(),
+            (CSR<TYPE>::get_id_static()));
   compare_cuda_cpu_csr(output_format->AsAbsolute<CUDACSR<TYPE>>(),
                        output_format_csr->AsAbsolute<CSR<TYPE>>());
   delete output_format;
@@ -129,41 +129,41 @@ TEST_F(CUDAFormatsFixture, CUDAArray) {
   ConversionChain chain;
   format::Format* output_format;
   // Can't convert for bad context
-  chain = c1.GetConversionChain(array->get_format_id(), array->get_context(),
-                                CUDAArray<int>::get_format_id_static(), {&cpu});
+  chain = c1.GetConversionChain(array->get_id(), array->get_context(),
+                                CUDAArray<int>::get_id_static(), {&cpu});
   EXPECT_EQ(chain.has_value(), false);
   // Can convert
   chain =
-      c1.GetConversionChain(array->get_format_id(), array->get_context(),
-                            CUDAArray<int>::get_format_id_static(), {&gpu0});
+      c1.GetConversionChain(array->get_id(), array->get_context(),
+                            CUDAArray<int>::get_id_static(), {&gpu0});
   ASSERT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
-  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_context_type_member()),
+  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             CUDAContext::get_context_type());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(array, &gpu0);
-  EXPECT_EQ(output_format->get_format_id(),
-            (CUDAArray<int>::get_format_id_static()));
+  EXPECT_EQ(output_format->get_id(),
+            (CUDAArray<int>::get_id_static()));
   compare_arrays_cuda_cpu(
       output_format->AsAbsolute<CUDAArray<int>>()->get_vals(),
       array->get_vals(), array->get_num_nnz());
   // Can't convert to Array bad context
-  chain = c1.GetConversionChain(CUDAArray<int>::get_format_id_static(),
+  chain = c1.GetConversionChain(CUDAArray<int>::get_id_static(),
                                 output_format->get_context(),
-                                Array<int>::get_format_id_static(), {&gpu0});
+                                Array<int>::get_id_static(), {&gpu0});
   EXPECT_EQ(chain.has_value(), false);
   // Can convert to Array
-  chain = c1.GetConversionChain(CUDAArray<int>::get_format_id_static(),
+  chain = c1.GetConversionChain(CUDAArray<int>::get_id_static(),
                                 output_format->get_context(),
-                                Array<int>::get_format_id_static(), {&cpu});
+                                Array<int>::get_id_static(), {&cpu});
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
-  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_context_type_member()),
+  EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             CPUContext::get_context_type());
   format::Format* output_format_csr;
   output_format_csr =
       (std::get<0>(std::get<0>(*chain)[0]))(output_format, &cpu);
-  EXPECT_EQ(output_format_csr->get_format_id(),
-            (Array<int>::get_format_id_static()));
+  EXPECT_EQ(output_format_csr->get_id(),
+            (Array<int>::get_id_static()));
   compare_arrays_cuda_cpu(
       output_format->AsAbsolute<CUDAArray<int>>()->get_vals(),
       output_format_csr->AsAbsolute<Array<int>>()->get_vals(),
@@ -176,12 +176,12 @@ TEST_F(CUDAFormatsFixture, CUDAArrayCached) {
   ConversionChain chain;
   std::vector<format::Format*> output_formats;
   // Can't convert for bad context
-  EXPECT_THROW((c1.ConvertCached(array, CUDAArray<int>::get_format_id_static(),
+  EXPECT_THROW((c1.ConvertCached(array, CUDAArray<int>::get_id_static(),
                                  &cpu, false)),
                utils::ConversionException);
 
   output_formats = c1.ConvertCached(
-      array, CUDAArray<int>::get_format_id_static(), &gpu0, false);
+      array, CUDAArray<int>::get_id_static(), &gpu0, false);
   EXPECT_EQ(output_formats.size(), 1);
   compare_arrays_cuda_cpu(
       output_formats[0]->AsAbsolute<CUDAArray<int>>()->get_vals(),
@@ -189,7 +189,7 @@ TEST_F(CUDAFormatsFixture, CUDAArrayCached) {
   delete output_formats[0];
 
   output_formats = c1.ConvertCached(
-      array, CUDAArray<int>::get_format_id_static(), {&gpu0, &cpu}, false);
+      array, CUDAArray<int>::get_id_static(), {&gpu0, &cpu}, false);
   EXPECT_EQ(output_formats.size(), 1);
   compare_arrays_cuda_cpu(
       output_formats[0]->AsAbsolute<CUDAArray<int>>()->get_vals(),
@@ -201,7 +201,7 @@ TEST_F(CUDAFormatsFixture, CUDAArrayMultiContext) {
   format::Format* output_format;
   // Can't convert for bad context
   EXPECT_THROW(
-      (c1.Convert(array, CUDAArray<int>::get_format_id_static(), &cpu, false)),
+      (c1.Convert(array, CUDAArray<int>::get_id_static(), &cpu, false)),
       utils::ConversionException);
 
   auto cuda_array = c1.Convert<CUDAArray<int>>(array, {&gpu0, &cpu}, false);
@@ -209,7 +209,7 @@ TEST_F(CUDAFormatsFixture, CUDAArrayMultiContext) {
                           array->get_num_nnz());
   delete cuda_array;
 
-  output_format = c1.Convert(array, CUDAArray<int>::get_format_id_static(),
+  output_format = c1.Convert(array, CUDAArray<int>::get_id_static(),
                              {&gpu0, &cpu}, false);
   compare_arrays_cuda_cpu(
       output_format->AsAbsolute<CUDAArray<int>>()->get_vals(),

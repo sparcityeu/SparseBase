@@ -139,9 +139,9 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
 }
 
 bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
-  if (!(to->get_context_type_member() ==
+  if (!(to->get_id() ==
             context::cuda::CUDAContext::get_context_type() ||
-        from->get_context_type_member() ==
+        from->get_id() ==
             context::cuda::CUDAContext::get_context_type()))
     return false;
   auto from_gpu = static_cast<context::cuda::CUDAContext *>(from);
