@@ -17,7 +17,6 @@
 #include "sparsebase/utils/io/reader.h"
 #include "sparsebase/utils/io/writer.h"
 
-using namespace sparsebase;
 namespace sparsebase {
 
 namespace utils {

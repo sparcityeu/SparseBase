@@ -3,16 +3,16 @@
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/format/cuda/format.cuh"
 
-using namespace sparsebase;
-using namespace sparsebase::format;
 namespace sparsebase {
 namespace utils {
 namespace converter {
 namespace cuda {
 
 template <typename ValueType>
-Format *CUDAArrayArrayConditionalFunction(Format *source,
+format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
                                           context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(source->get_context());
@@ -25,14 +25,14 @@ Format *CUDAArrayArrayConditionalFunction(Format *source,
                cuda_array->get_num_nnz() * sizeof(ValueType),
                cudaMemcpyDeviceToHost);
   }
-  return new Array<ValueType>(cuda_array->get_num_nnz(), vals);
+  return new format::Array<ValueType>(cuda_array->get_num_nnz(), vals);
 }
 template <typename ValueType>
-Format *ArrayCUDAArrayConditionalFunction(Format *source,
+format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
                                           context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(context);
-  auto array = source->AsAbsolute<Array<ValueType>>();
+  auto array = source->AsAbsolute<format::Array<ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   ValueType *vals = nullptr;
   if (array->get_vals() != nullptr) {
@@ -45,11 +45,11 @@ Format *ArrayCUDAArrayConditionalFunction(Format *source,
                                                 *gpu_context);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CsrCUDACsrConditionalFunction(Format *source,
+format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
                                       context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(context);
-  auto csr = source->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  auto csr = source->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   NNZType *row_ptr;
   IDType *col;
@@ -75,7 +75,7 @@ Format *CsrCUDACsrConditionalFunction(Format *source,
       row_ptr, col, vals, *gpu_context);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CUDACsrCUDACsrConditionalFunction(Format *source,
+format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
                                           context::Context *context) {
   context::cuda::CUDAContext *dest_gpu_context =
       static_cast<context::cuda::CUDAContext *>(context);
@@ -110,7 +110,7 @@ Format *CUDACsrCUDACsrConditionalFunction(Format *source,
       cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-Format *CUDACsrCsrConditionalFunction(Format *source,
+format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
                                       context::Context *context) {
   context::cuda::CUDAContext *gpu_context =
       static_cast<context::cuda::CUDAContext *>(source->get_context());
@@ -135,13 +135,13 @@ Format *CUDACsrCsrConditionalFunction(Format *source,
                  cudaMemcpyDeviceToHost);
     }
   }
-  return new CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
+  return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
 }
 
 bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
-  if (!(to->get_context_type_member() ==
+  if (!(to->get_id() ==
             context::cuda::CUDAContext::get_context_type() ||
-        from->get_context_type_member() ==
+        from->get_id() ==
             context::cuda::CUDAContext::get_context_type()))
     return false;
   auto from_gpu = static_cast<context::cuda::CUDAContext *>(from);
