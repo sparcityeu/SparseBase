@@ -209,6 +209,7 @@ set(IO_FILES
 )
 set(CONVERTER_FILES 
   sparsebase/utils/converter/converter.h
+  sparsebase/utils/converter/converter_store.h
 )
 set(UTILS_FILES
   sparsebase/utils/exception.h
