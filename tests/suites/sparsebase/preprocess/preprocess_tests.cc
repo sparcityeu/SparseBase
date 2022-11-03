@@ -555,6 +555,17 @@ TEST(ReorderBase, RabbitReorder) {
 }
 #endif
 
+#ifdef USE_AMD_ORDER
+TEST(ReorderBase, AMDReorder) {
+  EXPECT_NO_THROW(EXECUTE_AND_DELETE(
+      sparsebase::preprocess::ReorderBase::Reorder<AMDReorder>(
+          {}, &global_csr, {&cpu_context}, true)));
+  auto order = sparsebase::preprocess::ReorderBase::Reorder<AMDReorder>(
+      {}, &global_csr, {&cpu_context}, true);
+  check_reorder(order, n);
+}
+#endif
+
 TEST(ReorderBase, DegreeReorder) {
   EXPECT_NO_THROW(EXECUTE_AND_DELETE(
       sparsebase::preprocess::ReorderBase::Reorder<DegreeReorder>(

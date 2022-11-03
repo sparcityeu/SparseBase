@@ -24,6 +24,8 @@ Below are the functionalities available in SparseBase. After each functionality,
 - [MetisReorder](exhale_class_classsparsebase_1_1preprocess_1_1_metis_reorder) (requires compilation with CMake option`USE_METIS=ON`)
   - CSR
 - [RabbitReorder](exhale_class_classsparsebase_1_1preprocess_1_1_rabbit_reorder) (requires compilation with CMake option`USE_RABBIT_REORDER=ON`)
+- [AMDReorder](exhale_class_classsparsebase_1_1preprocess_1_1_a_m_d_reorder) (requires compilation with CMake option`USE_AMD_REORDER=ON`)
+  - CSR
 ### Partitioning algorithms
 - [MetisPartiton](exhale_class_classsparsebase_1_1preprocess_1_1_metis_partition) (requires compilation with CMake option`USE_METIS=ON`)
   - CSR
@@ -32,6 +34,9 @@ Below are the functionalities available in SparseBase. After each functionality,
   - CSR
 - [PermuteOrderTwo](exhale_class_classsparsebase_1_1preprocess_1_1_permute_order_two)
   - CSR
+### Analytics and visualization
+- [ReorderHeatmap](exhale_class_classsparsebase_1_1preprocess_1_1_reorder_heatmap)
+  - CSR and Array
 ## Feature extraction
 - [Degrees](exhale_class_classsparsebase_1_1preprocess_1_1_degrees)
   - CSR
