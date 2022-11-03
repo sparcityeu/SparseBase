@@ -6,5 +6,6 @@
 #cmakedefine USE_PIGO
 #cmakedefine USE_METIS
 #cmakedefine USE_RABBIT_ORDER
+#cmakedefine USE_AMD_ORDER
 
 #endif

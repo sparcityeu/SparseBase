@@ -200,7 +200,7 @@ DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
   this->params_ =
-      std::unique_ptr<DegreeReorderParams>(new DegreeReorderParams(ascending));
+      std::make_unique<DegreeReorderParams>(ascending);
 }
 
 template <typename ReturnType>
@@ -415,6 +415,44 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   return Q;
 }
 
+#ifdef USE_AMD_ORDER
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <amd.h>
+#ifdef __cplusplus
+}
+#endif
+
+template <typename IDType, typename NNZType, typename ValueType>
+AMDReorder<IDType, NNZType, ValueType>::AMDReorder(AMDReorderParams p){
+  this->params_ = std::make_unique<AMDReorderParams>(p);
+  this->RegisterFunction({format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+                         AMDReorderCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType* AMDReorder<IDType, NNZType, ValueType>::AMDReorderCSR(std::vector<format::Format*> formats, PreprocessParams* p){
+  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+  auto csr_converted = csr->template Convert<format::CSR, long, long, ValueType>(false);
+  auto params = static_cast<AMDReorderParams*>(p);
+  long long n = csr->get_dimensions()[0];
+  long *xadj_long = csr_converted->get_row_ptr(), *adj_long = csr_converted->get_col();
+  long * i_order = new long[n];
+  double *Control = new double[AMD_CONTROL];
+  Control[AMD_DENSE] = params->dense;
+  Control[AMD_AGGRESSIVE] = params->aggressive ;
+  double *Info = nullptr; //new double[AMD_INFO]; // Auxiliary data
+  int status = amd_l_order(n, xadj_long, adj_long, i_order, Control, Info);
+  if (status != 0){
+    throw 1;
+  }
+  IDType* order = new IDType[n];
+  for (IDType i =0; i< n; i++) order[i_order[i]]=i;
+  return order;
+}
+#endif
+
 template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(ParamsType params) {
   PermuteOrderOne(params.order);
@@ -423,8 +461,8 @@ template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
   this->RegisterFunction({format::Array<ValueType>::get_id_static()},
                          PermuteArray);
-  this->params_ = std::unique_ptr<PermuteOrderOneParams<IDType>>(
-      new PermuteOrderOneParams<IDType>(order));
+  this->params_ = std::make_unique<PermuteOrderOneParams<IDType>>(
+      order);
 }
 template <typename IDType, typename ValueType>
 format::FormatOrderOne<ValueType> *
@@ -453,8 +491,8 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       PermuteOrderTwoCSR);
-  this->params_ = std::unique_ptr<PermuteOrderTwoParams<IDType>>(
-      new PermuteOrderTwoParams(row_order, col_order));
+  this->params_ = std::make_unique<PermuteOrderTwoParams<IDType>>(
+      row_order, col_order);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
@@ -1051,10 +1089,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorder(
   params_struct->resolution = resolution;
   params_struct->nnz_threshold = nnz_threshold;
   params_struct->sparse_density_group_size = sparse_density_group_size;
-  // this->params_ = std::unique_ptr<GrayReorderParams>(new
-  // GrayReorderParams{resolution, nnz_threshold, sparse_density_group_size});
   this->params_ = std::unique_ptr<GrayReorderParams>(params_struct);
-
 
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
@@ -1460,7 +1495,7 @@ RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
-  this->params_ = std::unique_ptr<RabbitReorderParams>(new RabbitReorderParams);
+  this->params_ = std::make_unique<RabbitReorderParams>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1509,7 +1544,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition() {
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
-      std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams);
+      std::make_unique<MetisPartitionParams>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1520,7 +1555,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
-      std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams(params));
+      std::make_unique<MetisPartitionParams>(params);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1580,7 +1615,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder() {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-  this->params_ = std::unique_ptr<ParamsType>(new ParamsType);
+  this->params_ = std::make_unique<ParamsType>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1588,7 +1623,7 @@ MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
     MetisReorderParams params) {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-  this->params_ = std::unique_ptr<ParamsType>(new MetisReorderParams(params));
+  this->params_ = std::make_unique<ParamsType>(params);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1637,7 +1672,7 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
 ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(ReorderHeatmapParams params){
   this->params_ =
-      std::unique_ptr<ReorderHeatmapParams>(new ReorderHeatmapParams(params));
+      std::make_unique<ReorderHeatmapParams>(params);
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static(), format::Array<IDType>::get_id_static()},
       ReorderHeatmapCSRandArray);
@@ -1652,7 +1687,7 @@ format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, Fl
   auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   auto order = formats[1]->AsAbsolute<format::Array<IDType>>()->get_vals();
   auto* params = static_cast<ReorderHeatmapParams*>(poly_params);
-  int b = params->block_count;
+  int b = params->num_parts;
   auto n = csr->get_dimensions()[0];
   auto row_ptr = csr->get_row_ptr();
   auto adj = csr->get_col();
@@ -1661,7 +1696,7 @@ format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, Fl
 
   long long bsize = n / b;
 
-  // matrix of size block_count x block_count with number of edges in each square
+  // matrix of size num_parts x num_parts with number of edges in each square
   auto density = new long long*[b];
   for(long long i = 0; i < b; i++) {
     density[i] = new long long[b];
