@@ -175,6 +175,11 @@ if(USE_PULP)
   add_opt_library("pulp" "OFF")
 endif()
 
+option(USE_PATOH "Enable PATOH integration" OFF)
+if(USE_PATOH)
+  add_opt_library("patoh" "OFF")
+endif()
+
 ### Create configuration file for install
 configure_file(
   "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"

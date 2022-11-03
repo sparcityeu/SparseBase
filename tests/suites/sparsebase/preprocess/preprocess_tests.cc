@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <utility>
 #include <vector>
+#include <filesystem>
 
 #include "gtest/gtest.h"
 #include "sparsebase/config.h"
@@ -13,6 +14,8 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
+#include "sparsebase/utils/io/iobase.h"
+#include "sparsebase/utils/io/reader.h"
 
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
@@ -91,6 +94,15 @@ void check_reorder(IDType *order, IDType n) {
     vertices.insert(order[i]);
   }
 }
+
+template <typename IDType>
+void check_partition(IDType* part, IDType n, IDType np){
+  for (IDType i = 0; i < n; i++) {
+    EXPECT_LT(part[i], np);
+    EXPECT_GE(part[i], 0);
+  }
+}
+
 template <typename IDType, typename NNZType, typename ValueType>
 void compare_csr(format::CSR<IDType, NNZType, ValueType> *correct,
                  format::CSR<IDType, NNZType, ValueType> *testing) {
@@ -513,10 +525,11 @@ TEST(RCMReorderTest, BasicTest) {
   check_reorder(order, n);
 }
 
+
 #ifdef USE_METIS
 #include <metis.h>
 TEST(MetisReorder, BasicTest) {
-  if(typeid(idx_t) == typeid(int)){
+  if (typeid(idx_t) == typeid(int)){
     sparsebase::preprocess::MetisReorder<int, int, int> reorder;
     auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
     check_reorder(order, n);
@@ -528,7 +541,64 @@ TEST(MetisReorder, BasicTest) {
   }
 }
 
+TEST(MetisPartition, BasicTest) {
+  if (typeid(idx_t) == typeid(int)){
+    sparsebase::preprocess::MetisPartition<int, int, int> partitioner;
+    MetisPartitionParams params;
+    params.num_partitions = 2;
+    auto part2 = partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
+    check_partition(part2, n, (int) 2);
+    params.num_partitions = 4;
+    auto part4 = partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
+    check_partition(part4, n, (int) 4);
+  } else {
+    sparsebase::preprocess::MetisPartition<int64_t, int64_t, int64_t> partitioner;
+    auto global_coo_64_bit = global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(false);
+    MetisPartitionParams params;
+    params.num_partitions = 2;
+    auto part2 = partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
+    check_partition(part2, (int64_t) n, (int64_t) 2);
+    params.num_partitions = 4;
+    auto part4 = partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
+    check_partition(part4, (int64_t) n, (int64_t) 4);
+  }
+}
+
 #endif
+
+#ifdef USE_PULP
+TEST(PulpPartition, BasicTest) {
+  sparsebase::preprocess::PulpPartition<int, long, void> partitioner;
+  // This is a temporary solution intended to be replaced by the Downloaders once finished
+  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,long,void>("../../../data/ash958.mtx");
+  PulpPartitionParams params;
+  params.num_partitions = 2;
+  auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);
+  check_partition(part2, n, 2);
+  params.num_partitions = 4;
+  auto part4 = partitioner.Partition(coo, &params, {&cpu_context}, true);
+  check_partition(part4, n, 4);
+  delete coo;
+}
+#endif
+
+#ifdef USE_PATOH
+TEST(PatohPartition, BasicTest) {
+  //std::cout << "Hello" << std::endl;
+  sparsebase::preprocess::PatohPartition<int, int, void> partitioner;
+  // This is a temporary solution intended to be replaced by the Downloaders once finished
+  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,int,void>("../../../data/ash958.mtx");
+  PatohPartitionParams params;
+  params.num_partitions = 2;
+  auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);
+  check_partition(part2, n, 2);
+  params.num_partitions = 4;
+  auto part4 = partitioner.Partition(coo, &params, {&cpu_context}, true);
+  check_partition(part4, n, 4);
+  delete coo;
+}
+#endif
+
 
 template <typename a, typename b, typename c>
 class TestFormat
