@@ -95,8 +95,8 @@ bool FunctionMatcherMixin<
 //! Return the correct function for the operation and a conversion schema to
 //! convert the input formats
 /*!
- * \param key defines the types of input objects (default is vector of format
- * types) \param map the map between keys and functions  \return the
+ * @param key defines the types of input objects (default is vector of format
+ * types) @param map the map between keys and functions  @return the
  * function to be executed and the conversion schema the conversions to carry
  * out on inputs
  */
