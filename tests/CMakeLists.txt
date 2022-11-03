@@ -4,8 +4,6 @@ add_subdirectory(lib EXCLUDE_FROM_ALL)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_source_dir})
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data DESTINATION ${CMAKE_BINARY_DIR}/tests/)
-
 add_subdirectory(suites/sparsebase/preprocess)
 add_subdirectory(suites/sparsebase/preprocess/cuda)
 add_subdirectory(suites/sparsebase/feature)
