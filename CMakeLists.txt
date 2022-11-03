@@ -67,9 +67,6 @@ else()
   # MSVC, On by default (if available)
 endif()
 # Got this from https://github.com/district10/cmake-templates/blob/master/cpp11_vs2010/CMakeLists.txt
-if (WIN32)
-  add_compile_options("/bigobj")
-endif()
 
 if(MSYS OR MINGW)
   add_compile_options("-Wa,-mbig-obj")
