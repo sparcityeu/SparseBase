@@ -53,7 +53,7 @@ class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
 	// ...
 	Feature(float alpha, float beta){
 		this->params_ = shared_ptr<FeatureParams>(new FeatureParams{alpha, beta});
-        pmap_.insert(get_feature_id_static(), this->params_);
+        pmap_.insert(get_id_static(), this->params_);
 	// ...
 };
 ```

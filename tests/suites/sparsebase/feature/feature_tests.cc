@@ -43,7 +43,7 @@ TEST(feature, ExtractorAdd) {
   vector<type_index> list = extractor.GetList();
 
   string v1 =
-      Degrees<vertex_type, edge_type, value_type>::get_feature_id_static()
+      Degrees<vertex_type, edge_type, value_type>::get_id_static()
           .name();
   string v2 = list[0].name();
   EXPECT_EQ(v1, v2);
@@ -58,7 +58,7 @@ TEST(feature, ExtractorAddSub) {
   EXPECT_EQ(list.size(), 1);
 
   string v1 =
-      Degrees<vertex_type, edge_type, value_type>::get_feature_id_static()
+      Degrees<vertex_type, edge_type, value_type>::get_id_static()
           .name();
   string v2 = list[0].name();
   EXPECT_EQ(v1, v2);
@@ -79,18 +79,18 @@ TEST(feature, ExtractorAddSub) {
 TEST(feature, FeatureExtractorRegisterMap) {
   std::vector<type_index> expected = {
       DegreeDistribution<vertex_type, edge_type, value_type,
-                         feature_type>::get_feature_id_static(),
-      Degrees<vertex_type, edge_type, feature_type>::get_feature_id_static(),
+                         feature_type>::get_id_static(),
+      Degrees<vertex_type, edge_type, feature_type>::get_id_static(),
       Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
-                                 feature_type>::get_feature_id_static()};
+                                 feature_type>::get_id_static()};
   sort(expected.begin(), expected.end());
   Extractor extractor =
       FeatureExtractor<vertex_type, edge_type, value_type, feature_type>();
   vector<preprocess::ExtractableType *> featFuncs = extractor.GetFuncList();
   vector<type_index> funcs;
   for (auto &func : featFuncs) {
-    funcs.push_back(func->get_feature_id());
-    // std::cout << func->get_feature_id().name() << endl;
+    funcs.push_back(func->get_id());
+    // std::cout << func->get_id().name() << endl;
   }
   sort(funcs.begin(), funcs.end());
   EXPECT_EQ(funcs.size(), expected.size());
@@ -109,7 +109,7 @@ TEST_F(COOMock, ExtractorExtract) {
   EXPECT_EQ(raw.size(), 1);
   auto degrees = any_cast<vertex_type *>(
       raw[Degrees<vertex_type, edge_type,
-                  value_type>::get_feature_id_static()]);
+                  value_type>::get_id_static()]);
 
   EXPECT_THROW(engine.Extract(coo, {&cpu_context}, false),
                utils::DirectExecutionNotAvailableException<
@@ -120,7 +120,7 @@ TEST_F(COOMock, ExtractorExtract) {
   EXPECT_EQ(raw2.size(), 2);
   auto degree_dist = any_cast<feature_type *>(
       raw2[DegreeDistribution<vertex_type, edge_type, value_type,
-                              feature_type>::get_feature_id_static()]);
+                              feature_type>::get_id_static()]);
   EXPECT_EQ(degree_dist[4], 0);
   EXPECT_THROW(engine.Extract(coo, {&cpu_context}, false),
                utils::DirectExecutionNotAvailableException<
@@ -162,39 +162,39 @@ TEST_F(COOMock, ExtractorExtractGiven) {
 //
 //   unordered_map<type_index, ExtractableType *> in;
 //   in.insert(make_pair(DegreeDistribution<vertex_type, edge_type, value_type,
-//   feature_type>::get_feature_id_static(), new DegreeDistribution<vertex_type,
+//   feature_type>::get_id_static(), new DegreeDistribution<vertex_type,
 //   edge_type, value_type, feature_type>()));
 //   in.insert(make_pair(Degrees<vertex_type, edge_type,
-//   feature_type>::get_feature_id_static(), new Degrees<vertex_type, edge_type,
+//   feature_type>::get_id_static(), new Degrees<vertex_type, edge_type,
 //   feature_type>()));
 //
 //   vector<ExtractableType*> rs = cmm.GetClasses(in);
 //   EXPECT_EQ(rs.size(), 1);
-//   EXPECT_EQ(rs[0]->get_feature_id(),
-//   degrees_degreedistribution->get_feature_id());
+//   EXPECT_EQ(rs[0]->get_id(),
+//   degrees_degreedistribution->get_id());
 //
 //   in.insert(make_pair(Degrees_DegreeDistribution<vertex_type, edge_type,
-//   value_type, feature_type>::get_feature_id_static(), new
+//   value_type, feature_type>::get_id_static(), new
 //   Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
 //   feature_type>())); rs = cmm.GetClasses(in); EXPECT_EQ(rs.size(), 2);
-//   EXPECT_EQ(rs[0]->get_feature_id(),
-//   degrees_degreedistribution->get_feature_id());
-//   EXPECT_EQ(rs[1]->get_feature_id(),
-//   degrees_degreedistribution->get_feature_id());
+//   EXPECT_EQ(rs[0]->get_id(),
+//   degrees_degreedistribution->get_id());
+//   EXPECT_EQ(rs[1]->get_id(),
+//   degrees_degreedistribution->get_id());
 // }
 
 TEST(feature, Feature) {
   Degrees<vertex_type, edge_type, feature_type> degrees;
   Feature f(degrees);
-  EXPECT_EQ(f->get_feature_id(), degrees.get_feature_id());
+  EXPECT_EQ(f->get_id(), degrees.get_id());
   DegreeDistribution<vertex_type, edge_type, value_type, feature_type>
       degree_dist;
   f = Feature(degree_dist);
-  EXPECT_EQ(f->get_feature_id(), degree_dist.get_feature_id());
+  EXPECT_EQ(f->get_id(), degree_dist.get_id());
   Feature ff(std::move(f));
-  EXPECT_EQ(ff->get_feature_id(), degree_dist.get_feature_id());
+  EXPECT_EQ(ff->get_id(), degree_dist.get_id());
 
   const Feature fff(degrees);
   Feature ffff(fff);
-  EXPECT_EQ(ffff->get_feature_id(), degrees.get_feature_id());
+  EXPECT_EQ(ffff->get_id(), degrees.get_id());
 }
