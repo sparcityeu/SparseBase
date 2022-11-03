@@ -10,6 +10,9 @@ env:
   BUILD_TYPE: Release
   LIB_DIR: /usr/lib/x86_64-linux-gnu
   INC_DIR: /usr/include
+  PULP_LINK: https://github.com/HPCGraphAnalysis/PuLP.git
+  RABBIT_ORDER_LINK: https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp
+  PATOH_LINK: https://faculty.cc.gatech.edu/~umit/PaToH/patoh-Linux-x86_64.tar.gz
 
 
 jobs:
@@ -137,7 +140,7 @@ jobs:
         run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3 libmetis-dev libboost-all-dev
 
       - name: Install Rabbit Order
-        run: sudo wget https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp -O ${{env.INC_DIR}}/rabbit_order.hpp
+        run: sudo wget $RABBIT_ORDER_LINK -O ${{env.INC_DIR}}/rabbit_order.hpp
 
       - name: Install Pulp
         run: |
@@ -151,13 +154,13 @@ jobs:
         run: |
           mkdir patoh
           cd patoh
-          wget https://faculty.cc.gatech.edu/~umit/PaToH/patoh-Linux-x86_64.tar.gz
+          wget $PATOH_LINK
           tar xzf patoh-Linux-x86_64.tar.gz
           sudo mv build/Linux-x86_64/libpatoh.a $LIB_DIR
           sudo mv build/Linux-x86_64/patoh.h $INC_DIR
 
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH=${{env.LIB_DIR}};${env.INC_DIR} -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_PATOH=ON -DUSE_PULP=ON
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH=${{env.LIB_DIR}};${{env.INC_DIR}} -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_PATOH=ON -DUSE_PULP=ON
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
