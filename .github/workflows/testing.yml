@@ -107,6 +107,7 @@ jobs:
         run: |
           g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
           g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
+          g++ custom_experiment/custom_experiment.cc -lsparsebase -fopenmp -O3 -std=c++17
 
 
 
@@ -144,6 +145,7 @@ jobs:
         run: |
           g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
           g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
+          g++ custom_experiment/custom_experiment.cc -lsparsebase -fopenmp -O3 -std=c++17
 
 
   test_opt_dep:
