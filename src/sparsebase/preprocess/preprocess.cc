@@ -1640,11 +1640,8 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
 template <typename IDType, typename NNZType, typename ValueType>
 PulpPartition<IDType, NNZType, ValueType>::PulpPartition() {
-  this->SetConverter(
-      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
-
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<PulpPartitionParams>(new PulpPartitionParams);
@@ -1653,11 +1650,8 @@ PulpPartition<IDType, NNZType, ValueType>::PulpPartition() {
 template <typename IDType, typename NNZType, typename ValueType>
 PulpPartition<IDType, NNZType, ValueType>::PulpPartition(
     PulpPartitionParams params) {
-  this->SetConverter(
-      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
-
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<PulpPartitionParams>(new PulpPartitionParams(params));
@@ -1666,13 +1660,13 @@ PulpPartition<IDType, NNZType, ValueType>::PulpPartition(
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
     std::vector<format::Format *> formats, PreprocessParams *params) {
-  CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  format::CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
 
   PulpPartitionParams *pparams = static_cast<PulpPartitionParams *>(params);
 
-  DimensionType n = csr->get_dimensions()[0];
-  DimensionType m = csr->get_num_nnz();
+  format::DimensionType n = csr->get_dimensions()[0];
+  format::DimensionType m = csr->get_num_nnz();
 
   pulp_part_control_t con;
   con.vert_balance = pparams->vert_balance;
@@ -1712,11 +1706,8 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
 
 template <typename IDType, typename NNZType, typename ValueType>
 PatohPartition<IDType, NNZType, ValueType>::PatohPartition() {
-  this->SetConverter(
-      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
-
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<PatohPartitionParams>(new PatohPartitionParams);
@@ -1725,11 +1716,8 @@ PatohPartition<IDType, NNZType, ValueType>::PatohPartition() {
 template <typename IDType, typename NNZType, typename ValueType>
 PatohPartition<IDType, NNZType, ValueType>::PatohPartition(
     PatohPartitionParams params) {
-  this->SetConverter(
-      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
-
   this->RegisterFunction(
-      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
       std::unique_ptr<PatohPartitionParams>(new PatohPartitionParams(params));
@@ -1744,17 +1732,14 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
     throw utils::TypeException("Patoh Partitioner requires IDType=int, NNZType=int");
   }
 
-  CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+  format::CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
 
-  std::cout << "Prep" << std::endl;
   int* ptrs = (int*) csr->get_row_ptr();
   int* js = (int*) csr->get_col();
   int m = csr->get_dimensions()[0];
   int n = csr->get_dimensions()[1];
 
-  std::cout << "NNZ:" << csr->get_num_nnz() << " ";
-  std::cout << "Dims: " << csr->get_dimensions()[0] << " " << csr->get_dimensions()[1] << std::endl;
 
   int *xpins, *pins, *cwghts, *nwghts;
   int i, p;
@@ -1778,7 +1763,6 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
     memcpy(pins + xpins[i], js + ptrs[i], sizeof(int) * (ptrs[i+1] - ptrs[i]));
   }
 
-  std::cout << "Params" << std::endl;
   PatohPartitionParams *concrete_params = static_cast<PatohPartitionParams *>(params);
   PaToH_Parameters patoh_params;
   PaToH_Initialize_Parameters(&patoh_params, concrete_params->objective, concrete_params->param_init);
@@ -1788,7 +1772,6 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
   patoh_params.final_imbal = concrete_params->final_imbalance;
   patoh_params.seed = concrete_params->seed;
 
-  std::cout << "Alloc" << std::endl;
   auto alloc_res = PaToH_Alloc(&patoh_params, m, n, 1, cwghts, nwghts, xpins, pins);
 
   if(alloc_res) {
@@ -1799,17 +1782,14 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
   int* partwghts = new int[concrete_params->num_partitions];
   int cut = -1;
 
-  std::cout << "Part" << std::endl;
   PaToH_Part(&patoh_params, m, n, 1, 0, cwghts, nwghts, xpins, pins, nullptr, partition, partwghts, &cut);
 
-  std::cout << "Free" << std::endl;
   delete[] partwghts;
   free(xpins);
   free(pins);
   free(cwghts);
   free(nwghts);
 
-  std::cout << "End" << std::endl;
   return (IDType*) partition;
 }
 #endif

@@ -183,7 +183,6 @@ gen_inst("class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>", 
 gen_inst("class MetisPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_METIS")
 gen_inst("class PulpPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_PULP")
 gen_inst("class PatohPartition<$id_type, $nnz_type, $value_type>", "preprocess.inc", ifdef="USE_PATOH")
-gen_inst("class ConverterMixin<PreprocessType>", "preprocess.inc")
 gen_inst("class FunctionMatcherMixin<format::Format*>", "preprocess.inc")
 gen_inst("class FunctionMatcherMixin<$id_type*>", "preprocess.inc")
 gen_inst("class FunctionMatcherMixin<$id_type>", "preprocess.inc")
