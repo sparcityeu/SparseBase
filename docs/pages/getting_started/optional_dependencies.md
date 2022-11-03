@@ -6,9 +6,13 @@ or another can not be directly bundled with sparsebase.
 ## Optional Dependency List
 
 - [METIS](https://github.com/KarypisLab/METIS)
-  - If your code is compiled without CMake, make sure to linking against metis.  
+  - If your code is compiled without CMake, make sure to link against metis.  
 - [Rabbit order](https://github.com/araij/rabbit_order)
   - If your code is compiled without CMake, make sure to link against [numa](https://man7.org/linux/man-pages/man3/numa.3.html).
+- [PULP](https://github.com/HPCGraphAnalysis/PuLP)
+  - If your code is compiled without CMake, make sure to link against pulp.
+- [PATOH](https://faculty.cc.gatech.edu/~umit/software.html)
+  - If your code is compiled without CMake, make sure to link against patoh.
 
 ## Compiling With An Optional Dependency
 
@@ -54,3 +58,10 @@ CMake will search in the following order:
 - System defined prefix.
 
 As a result of this, the environment and cmake variables can be used to shadow a default installation.
+
+```{warning}
+Static libraries (.a) can cause issues in the linking stage due to name collisions. 
+For example, we observed this behaviour with METIS and PATOH when they are used together.
+As a result, we suggest using shared libraries (.so) whenever possible.
+In the aforementioned example, the problem disappears when METIS is compiled with `shared=1`
+```
