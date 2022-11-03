@@ -1108,7 +1108,7 @@ class MetisReorder : public ReorderPreprocessType<IDType> {
 #ifdef USE_PULP
 
 //! Parameters for the PulpPartition class
-struct PulpPartitionParams{
+struct PulpPartitionParams : PreprocessParams {
   double vert_balance = 1.1;
   double edge_balance = 1.5;
   bool do_lp_init = false;
@@ -1117,10 +1117,9 @@ struct PulpPartitionParams{
   bool do_edge_balance = false;
   bool do_maxcut_balance = false;
   bool verbose_output = false;
-  int pulp_seed = 42;
+  int seed = 42;
   int num_partitions = 2;
 };
-
 
 //! A wrapper for the PULP graph partitioner
 /* !
@@ -1140,6 +1139,51 @@ class PulpPartition : public PartitionPreprocessType<IDType> {
   typedef PulpPartitionParams ParamsType;
   PulpPartition();
   PulpPartition(ParamsType params);
+};
+#endif
+
+#ifdef USE_PATOH
+
+namespace patoh {
+enum Objective {
+  CON = 1,
+  CUT = 2
+};
+
+enum ParameterInit {
+  DEFAULT = 0,
+  SPEED = 1,
+  QUALITY = 2
+};
+
+}
+
+//! Parameters for the PulpPartition class
+struct PatohPartitionParams : PreprocessParams {
+  patoh::Objective objective = patoh::CON;
+  patoh::ParameterInit param_init = patoh::DEFAULT;
+  int num_partitions = 2;
+};
+
+//! A wrapper for the Patoh graph partitioner
+/* !
+ * Wraps the Patoh partitioner available here:
+ * https://faculty.cc.gatech.edu/~umit/software.html.
+ * The library must be compiled with the
+ * USE_PATOH option turned on and the pre-built PATOH library should be
+ * available. See the Optional Dependencies page (under Getting Started) in our
+ * documentation for more info.
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class PatohPartition : public PartitionPreprocessType<IDType> {
+ private:
+  static IDType *PartitionCSR(std::vector<format::Format *> formats,
+                              PreprocessParams *params);
+
+ public:
+  typedef PatohPartitionParams ParamsType;
+  PatohPartition();
+  PatohPartition(ParamsType params);
 };
 #endif
 

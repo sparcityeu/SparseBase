@@ -1756,8 +1756,8 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
     pulp_graph_t graph;
     graph.n = n;
     graph.m = m;
-    graph.out_array = csr.get_col();
-    graph.out_degree_list = csr.get_row_ptr();
+    graph.out_array = csr->get_col();
+    graph.out_degree_list = csr->get_row_ptr();
     graph.vertex_weights = nullptr;
     graph.edge_weights = nullptr;
     graph.vertex_weights_sum = 0;
@@ -1769,6 +1769,97 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
 }
 #endif
 
+#ifdef USE_PATOH
+
+#include <patoh.h>
+
+template <typename IDType, typename NNZType, typename ValueType>
+PatohPartition<IDType, NNZType, ValueType>::PatohPartition() {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
+
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+
+  this->params_ =
+      std::unique_ptr<PatohPartitionParams>(new PatohPartitionParams);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+PatohPartition<IDType, NNZType, ValueType>::PatohPartition(
+    PatohPartitionParams params) {
+  this->SetConverter(
+      utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>());
+
+  this->RegisterFunction(
+      {CSR<IDType, NNZType, ValueType>::get_format_id_static()}, PartitionCSR);
+
+  this->params_ =
+      std::unique_ptr<PatohPartitionParams>(new PatohPartitionParams(params));
+}
+
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
+    std::vector<format::Format *> formats, PreprocessParams *params){
+
+  if(typeid(IDType) != typeid(int) || typeid(NNZType) != typeid(int)){
+    throw utils::TypeException("Patoh Partitioner requires IDType=int, NNZType=int");
+  }
+
+  CSR<IDType, NNZType, ValueType> *csr =
+      formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
+
+  int* ptrs = (int*) csr->get_row_ptr();
+  int* js = (int*) csr->get_col();
+  int n = csr->get_dimensions()[0];
+  int m = csr->get_num_nnz();
+
+  int *xpins, *pins, *cwghts, *nwghts;
+  int i, p;
+
+  cwghts = (int *) malloc(sizeof(int) * n);
+  memset(cwghts,0,sizeof(int) *n);
+  for(i = 0; i < m; i++) {
+    for(p = ptrs[i]; p < ptrs[i+1]; p++) {
+      cwghts[js[p]]++;
+    }
+  }
+
+  nwghts = (int *)malloc(sizeof(int) * m);
+  for(i = 0; i < m; i++) nwghts[i] = 1;
+
+  xpins = (int *) malloc(sizeof(int) * (m+1));
+  memcpy(xpins, ptrs, sizeof(int) * (m+1));
+
+  pins = (int*) malloc(sizeof(int) * xpins[m]);
+  for(i = 0; i < m; i++) {
+    memcpy(pins + xpins[i], js + ptrs[i], sizeof(int) * (ptrs[i+1] - ptrs[i]));
+  }
+
+  PatohPartitionParams *concrete_params = static_cast<PatohPartitionParams *>(params);
+  PaToH_Parameters patoh_params;
+  PaToH_Initialize_Parameters(&patoh_params, concrete_params->objective, concrete_params->param_init);
+  patoh_params._k = concrete_params->num_partitions;
+  patoh_params.MemMul_Pins += 3;
+  patoh_params.MemMul_CellNet += 3;
+
+  PaToH_Alloc(&patoh_params, m, n, 1, cwghts, nwghts, xpins, pins);
+
+  int* partition = new int[n];
+  int* partwghts = new int[1 * patoh_params._k];
+  int cut = -1;
+  PaToH_Part(&patoh_params, m, n, 1, 0, cwghts, nwghts, xpins, pins, nullptr, partition, partwghts, &cut);
+
+  delete[] partwghts;
+  free(xpins);
+  free(pins);
+  free(cwghts);
+  free(nwghts);
+
+  return (IDType*) partition;
+}
+#endif
 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"
