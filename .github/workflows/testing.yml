@@ -98,6 +98,17 @@ jobs:
         working-directory: ${{github.workspace}}/build
         run: ctest -V
 
+      - name: Install
+        working-directory: ${{github.workspace}}/build
+        run: sudo cmake --install .
+
+      - name: Test Install
+        working-directory: ${{github.workspace/examples}}
+        run: |
+          g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
+          g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
+
+
 
   test_header_only:
     runs-on: ubuntu-latest
@@ -123,6 +134,16 @@ jobs:
       - name: Run Tests (Header Only)
         working-directory: ${{github.workspace}}/build
         run: ctest -V
+
+      - name: Install (Header Only)
+        working-directory: ${{github.workspace}}/build
+        run: sudo cmake --install .
+
+      - name: Test Install (Header Only)
+        working-directory: ${{github.workspace/examples}}
+        run: |
+          g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
+          g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
 
 
   test_opt_dep:
