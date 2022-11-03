@@ -434,7 +434,12 @@ AMDReorder<IDType, NNZType, ValueType>::AMDReorder(AMDReorderParams p){
 template <typename IDType, typename NNZType, typename ValueType>
 IDType* AMDReorder<IDType, NNZType, ValueType>::AMDReorderCSR(std::vector<format::Format*> formats, PreprocessParams* p){
   auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  auto csr_converted = csr->template Convert<format::CSR, long, long, ValueType>(false);
+  format::CSR<long, long, ValueType>* csr_converted;
+  try{
+    csr_converted = csr->template Convert<format::CSR, long, long, ValueType>(false);
+  } catch (const utils::TypeException& exception){
+    throw utils::TypeException("AMD reordering requires IDType=long and NNZType=long");
+  }
   auto params = static_cast<AMDReorderParams*>(p);
   long long n = csr->get_dimensions()[0];
   long *xadj_long = csr_converted->get_row_ptr(), *adj_long = csr_converted->get_col();
