@@ -14,7 +14,7 @@ option(USE_PIGO "Use PIGO for parallel I/O" ON)
 option(BUILD_EXAMPLES "Build example codes" ON)
 set(ID_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing IDs")
 set(NNZ_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
-set(VALUE_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" "float" "double" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(VALUE_TYPES "int32_t" "uint32_t" "float" "double" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
 
