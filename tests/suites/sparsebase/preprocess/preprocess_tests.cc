@@ -17,6 +17,8 @@
 #include "sparsebase/utils/io/iobase.h"
 #include "sparsebase/utils/io/reader.h"
 
+const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
+
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
 const int n = 3;
@@ -570,7 +572,7 @@ TEST(MetisPartition, BasicTest) {
 TEST(PulpPartition, BasicTest) {
   sparsebase::preprocess::PulpPartition<int, long, void> partitioner;
   // This is a temporary solution intended to be replaced by the Downloaders once finished
-  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,long,void>("../../../data/ash958.mtx");
+  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,long,void>(FILE_NAME);
   PulpPartitionParams params;
   params.num_partitions = 2;
   auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);
@@ -587,7 +589,7 @@ TEST(PatohPartition, BasicTest) {
   //std::cout << "Hello" << std::endl;
   sparsebase::preprocess::PatohPartition<int, int, void> partitioner;
   // This is a temporary solution intended to be replaced by the Downloaders once finished
-  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,int,void>("../../../data/ash958.mtx");
+  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,int,void>(FILE_NAME);
   PatohPartitionParams params;
   params.num_partitions = 2;
   auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);

@@ -1163,6 +1163,8 @@ struct PatohPartitionParams : PreprocessParams {
   patoh::Objective objective = patoh::CON;
   patoh::ParameterInit param_init = patoh::DEFAULT;
   int num_partitions = 2;
+  int final_imbalance = -1;
+  int seed = 42;
 };
 
 //! A wrapper for the Patoh graph partitioner

@@ -1735,7 +1735,7 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
   PulpPartitionParams *pparams = static_cast<PulpPartitionParams *>(params);
 
   DimensionType n = csr->get_dimensions()[0];
-  DimensionType m = csr->get_dimensions()[1];
+  DimensionType m = csr->get_num_nnz();
 
   pulp_part_control_t con;
   con.vert_balance = pparams->vert_balance;
@@ -1810,10 +1810,14 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
   CSR<IDType, NNZType, ValueType> *csr =
       formats[0]->AsAbsolute<CSR<IDType, NNZType, ValueType>>();
 
+  std::cout << "Prep" << std::endl;
   int* ptrs = (int*) csr->get_row_ptr();
   int* js = (int*) csr->get_col();
-  int n = csr->get_dimensions()[0];
-  int m = csr->get_num_nnz();
+  int m = csr->get_dimensions()[0];
+  int n = csr->get_dimensions()[1];
+
+  std::cout << "NNZ:" << csr->get_num_nnz() << " ";
+  std::cout << "Dims: " << csr->get_dimensions()[0] << " " << csr->get_dimensions()[1] << std::endl;
 
   int *xpins, *pins, *cwghts, *nwghts;
   int i, p;
@@ -1837,26 +1841,38 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
     memcpy(pins + xpins[i], js + ptrs[i], sizeof(int) * (ptrs[i+1] - ptrs[i]));
   }
 
+  std::cout << "Params" << std::endl;
   PatohPartitionParams *concrete_params = static_cast<PatohPartitionParams *>(params);
   PaToH_Parameters patoh_params;
   PaToH_Initialize_Parameters(&patoh_params, concrete_params->objective, concrete_params->param_init);
   patoh_params._k = concrete_params->num_partitions;
   patoh_params.MemMul_Pins += 3;
   patoh_params.MemMul_CellNet += 3;
+  patoh_params.final_imbal = concrete_params->final_imbalance;
+  patoh_params.seed = concrete_params->seed;
 
-  PaToH_Alloc(&patoh_params, m, n, 1, cwghts, nwghts, xpins, pins);
+  std::cout << "Alloc" << std::endl;
+  auto alloc_res = PaToH_Alloc(&patoh_params, m, n, 1, cwghts, nwghts, xpins, pins);
 
-  int* partition = new int[n];
-  int* partwghts = new int[1 * patoh_params._k];
+  if(alloc_res) {
+    throw utils::AllocationException();
+  }
+
+  int* partition = new int[m];
+  int* partwghts = new int[concrete_params->num_partitions];
   int cut = -1;
+
+  std::cout << "Part" << std::endl;
   PaToH_Part(&patoh_params, m, n, 1, 0, cwghts, nwghts, xpins, pins, nullptr, partition, partwghts, &cut);
 
+  std::cout << "Free" << std::endl;
   delete[] partwghts;
   free(xpins);
   free(pins);
   free(cwghts);
   free(nwghts);
 
+  std::cout << "End" << std::endl;
   return (IDType*) partition;
 }
 #endif
