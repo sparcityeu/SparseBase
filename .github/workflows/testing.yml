@@ -103,7 +103,7 @@ jobs:
         run: sudo cmake --install .
 
       - name: Test Install
-        working-directory: ${{github.workspace/examples}}
+        working-directory: ${{github.workspace}}/examples
         run: |
           g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
           g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
@@ -140,7 +140,7 @@ jobs:
         run: sudo cmake --install .
 
       - name: Test Install (Header Only)
-        working-directory: ${{github.workspace/examples}}
+        working-directory: ${{github.workspace}}/examples
         run: |
           g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
           g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
