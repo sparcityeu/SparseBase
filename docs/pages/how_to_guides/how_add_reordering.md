@@ -178,11 +178,10 @@ class OptimalReorder : ReorderPreprocessType<ValueType> {
 ```
 
 ### 4. Create a constructor for your reordering class
-The constructor of a reordering class (and, in general, of any preprocessing class) does three main things:
+The constructor of a reordering class (and, in general, of any preprocessing class) does two things:
 
 1. set the hyperparameters of class instance created,
-2. set the format converter needed to convert input formats, and
-3. register implementation functions to the right format types. 
+2. register implementation functions to the right format types. 
 
 Reordering classes can have as many constructors as the developer needs. However, at least one of them is required to have the following signature:
 ```c++
@@ -208,7 +207,7 @@ Now, let's populate this constructor.
 
 #### 4.1 Set the hyperparameters of instances of the class
 
-Inside the constructor of the class, take the hyperparameters argument from the user and set the data member `params_`, which the class inherited from `ReorderPreprocessType`, to the newly added struct.
+Inside the constructor of the class, take the hyperparameters argument from the user and set the data member `params_`, which the class inherited from `ReorderPreprocessType`, to the newly added struct by copying the argument passed in the constructor.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
@@ -218,37 +217,14 @@ class OptimalReorder : ReorderPreprocessType<ValueType> {
   // ...
   OptimalReorder(OptimalReorderParams params) {
     this->params_ =
-        unique_ptr<OptimalReorderParams>(new OptimalReorderParams(params));
+        make_unique<OptimalReorderParams>(params);
   }
   // ...
 };
 } // namespace sparsebase::preprocess
 ```
 
-#### 4.2 Set the converter of the class to the correct type.
-
-While reordering, your class might need to carry out `Format` conversions. For example, if the user tries to use `OptimalReorder` to reorder a `COO`, it needs to be converted to a `CSR` before it can be reordered.
-
-Each preprocessing class must have an associated converter. The type of the converter depends on the order of the input `Format` objects. In the case of reordering, all the inputs are matrices, therefore, you need to set the converter of your class to the `ConverterOrderTwo` type.
-
-```cpp
-// File: src/sparsebase/preprocess/preprocess.h
-namespace sparsebase::preprocess {
-template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
-  // ...
-  OptimalReorder(float alpha, float beta) {
-    // ...
-    this->SetConverter(
-        utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>{});
-    // ...
-  }
-  // ...
-};
-} // namespace sparsebase::preprocess
-```
-
-#### 4.3 Register the implementations you wrote to the correct formats
+#### 4.2 Register the implementations you wrote to the correct formats
 
 Inside the constructor, register the implementation functions you made in step 3 to the `Format` type they are made for. This is how the library will be able to associate implementation functions with format types. 
 
@@ -284,7 +260,7 @@ The functions we have defined so far (except for the `CUDA` kernel and driver fu
 1. Move all the implementations from the header file (`src/sparsebase/preprocess/preprocess.h`) to the implementation file (`src/sparsebase/preprocess/preprocess.cc`).
 2. Add your class to the list of classes that will be explicitly instantiated by the python script `src/generate_explicit_instantiations.py`.
 
-The process is much simpler than it sounds. At the end of the script `src/generage_explicit_instantiations.py`, add a single function call containing the `OptimalReorder` class definition and the name of the file to which we the instantiations are to be printed. In the case of `OptimalReorder`, add the following line to the end of the file:
+Step two is much simpler than it sounds. At the end of the script `src/generage_explicit_instantiations.py`, add a single function call containing the `OptimalReorder` class definition and the name of the file to which we the instantiations are to be printed. In the case of `OptimalReorder`, add the following line to the end of the file:
 
 
 ```python

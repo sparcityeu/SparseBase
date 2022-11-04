@@ -1191,6 +1191,11 @@ extern "C" {
 #endif
 
 //! Parameters for AMDReordering
+/*!
+ * For the exact definitions, please consult the documentation given with the 
+ * code, which is available here:
+ * https://dl.acm.org/doi/abs/10.1145/1024074.1024081
+ */
 struct AMDReorderParams : PreprocessParams {
   double dense = AMD_DEFAULT_DENSE;
   double aggressive = AMD_DEFAULT_AGGRESSIVE;
@@ -1210,6 +1215,7 @@ class AMDReorder : public ReorderPreprocessType<IDType> {
 public:
   typedef AMDReorderParams ParamsType;
   AMDReorder(ParamsType);
+  AMDReorder();
 protected:
   static IDType* AMDReorderCSR(std::vector<format::Format*>, PreprocessParams*);
 };
@@ -1218,8 +1224,9 @@ protected:
 //! Parameters for Reorder Heatmap generator
 struct ReorderHeatmapParams : PreprocessParams{
   //! Number of parts to split vertices over
-  int num_parts;
+  int num_parts = 3;
   ReorderHeatmapParams(int b) : num_parts(b){}
+  ReorderHeatmapParams(){}
 };
 
 //! Calculates density of non-zeros of a 2D format on a num_parts * num_parts grid
@@ -1236,10 +1243,11 @@ struct ReorderHeatmapParams : PreprocessParams{
 template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
 class ReorderHeatmap : public FunctionMatcherMixin<format::FormatOrderOne<FloatType>*>{
 public:
+  ReorderHeatmap();
   ReorderHeatmap(ReorderHeatmapParams params);
-  format::FormatOrderOne<FloatType>* Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, format::FormatOrderOne<IDType>* permutation, std::vector<context::Context*> contexts, bool convert_input);
+  format::FormatOrderOne<FloatType>* Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, format::FormatOrderOne<IDType>* permutation_r, format::FormatOrderOne<IDType>* permutation_c, std::vector<context::Context*> contexts, bool convert_input);
 protected:
-  static format::FormatOrderOne<FloatType>* ReorderHeatmapCSRandArray(std::vector<format::Format*> formats, PreprocessParams* poly_params);
+  static format::FormatOrderOne<FloatType>* ReorderHeatmapCSRArrayArray(std::vector<format::Format*> formats, PreprocessParams* poly_params);
 };
 
 //! A class containing the interface for reordering and permuting data.
@@ -1912,10 +1920,10 @@ class ReorderBase {
   * @return a format::Array containing the densities of the cells in the num_parts * num_parts 2D grid.
   */
   template <typename FloatType,  typename AutoIDType, typename AutoNNZType, typename AutoValueType>
-  static sparsebase::format::Array<FloatType>* Heatmap(format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> * format, format::FormatOrderOne<AutoIDType>* permutation, int num_parts,
+  static sparsebase::format::Array<FloatType>* Heatmap(format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> * format, format::FormatOrderOne<AutoIDType>* permutation_r, format::FormatOrderOne<AutoIDType>* permutation_c, int num_parts,
                   std::vector<context::Context *> contexts, bool convert_input) {
     ReorderHeatmap<AutoIDType, AutoNNZType, AutoValueType, FloatType> heatmapper(num_parts); 
-    format::FormatOrderOne<FloatType>* arr = heatmapper.Get(format, permutation, contexts, convert_input);
+    format::FormatOrderOne<FloatType>* arr = heatmapper.Get(format, permutation_r, permutation_c, contexts, convert_input);
     return arr->template Convert<sparsebase::format::Array>();
   }
 };

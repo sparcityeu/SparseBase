@@ -49,6 +49,15 @@ class DemangleException : public Exception {
   }
 };
 
+class ReorderException : public Exception {
+  std::string msg_;
+
+ public:
+  ReorderException(const std::string &msg) : msg_(msg) {}
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
+
 class ReaderException : public Exception {
   std::string msg_;
 
