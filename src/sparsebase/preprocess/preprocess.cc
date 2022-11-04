@@ -200,7 +200,7 @@ DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
   this->params_ =
-      std::unique_ptr<DegreeReorderParams>(new DegreeReorderParams(ascending));
+      std::make_unique<DegreeReorderParams>(ascending);
 }
 
 template <typename ReturnType>
@@ -415,6 +415,53 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   return Q;
 }
 
+#ifdef USE_AMD_ORDER
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <amd.h>
+#ifdef __cplusplus
+}
+#endif
+
+template <typename IDType, typename NNZType, typename ValueType>
+AMDReorder<IDType, NNZType, ValueType>::AMDReorder(AMDReorderParams p): AMDReorder(){
+  this->params_ = std::make_unique<AMDReorderParams>(p);
+}
+template <typename IDType, typename NNZType, typename ValueType>
+AMDReorder<IDType, NNZType, ValueType>::AMDReorder(){
+  this->params_ = std::make_unique<AMDReorderParams>();
+  this->RegisterFunction({format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+                         AMDReorderCSR);
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+IDType* AMDReorder<IDType, NNZType, ValueType>::AMDReorderCSR(std::vector<format::Format*> formats, PreprocessParams* p){
+  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+  format::CSR<long, long, ValueType>* csr_converted;
+  try{
+    csr_converted = csr->template Convert<format::CSR, long, long, ValueType>(false);
+  } catch (const utils::TypeException& exception){
+    throw utils::TypeException("AMD reordering requires IDType=long and NNZType=long");
+  }
+  auto params = static_cast<AMDReorderParams*>(p);
+  long long n = csr->get_dimensions()[0];
+  long *xadj_long = csr_converted->get_row_ptr(), *adj_long = csr_converted->get_col();
+  long * i_order = new long[n];
+  double *Control = new double[AMD_CONTROL];
+  Control[AMD_DENSE] = params->dense;
+  Control[AMD_AGGRESSIVE] = params->aggressive ;
+  double *Info = nullptr; //new double[AMD_INFO]; // Auxiliary data
+  int status = amd_l_order(n, xadj_long, adj_long, i_order, Control, Info);
+  if (status != 0){
+    throw utils::ReorderException("AMD reordering failed");
+  }
+  IDType* order = new IDType[n];
+  for (IDType i =0; i< n; i++) order[i_order[i]]=i;
+  return order;
+}
+#endif
+
 template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(ParamsType params) {
   PermuteOrderOne(params.order);
@@ -423,8 +470,8 @@ template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(IDType *order) {
   this->RegisterFunction({format::Array<ValueType>::get_id_static()},
                          PermuteArray);
-  this->params_ = std::unique_ptr<PermuteOrderOneParams<IDType>>(
-      new PermuteOrderOneParams<IDType>(order));
+  this->params_ = std::make_unique<PermuteOrderOneParams<IDType>>(
+      order);
 }
 template <typename IDType, typename ValueType>
 format::FormatOrderOne<ValueType> *
@@ -453,8 +500,8 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       PermuteOrderTwoCSR);
-  this->params_ = std::unique_ptr<PermuteOrderTwoParams<IDType>>(
-      new PermuteOrderTwoParams(row_order, col_order));
+  this->params_ = std::make_unique<PermuteOrderTwoParams<IDType>>(
+      row_order, col_order);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
@@ -1051,10 +1098,7 @@ GrayReorder<IDType, NNZType, ValueType>::GrayReorder(
   params_struct->resolution = resolution;
   params_struct->nnz_threshold = nnz_threshold;
   params_struct->sparse_density_group_size = sparse_density_group_size;
-  // this->params_ = std::unique_ptr<GrayReorderParams>(new
-  // GrayReorderParams{resolution, nnz_threshold, sparse_density_group_size});
   this->params_ = std::unique_ptr<GrayReorderParams>(params_struct);
-
 
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
@@ -1460,7 +1504,7 @@ RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
-  this->params_ = std::unique_ptr<RabbitReorderParams>(new RabbitReorderParams);
+  this->params_ = std::make_unique<RabbitReorderParams>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1509,7 +1553,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition() {
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
-      std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams);
+      std::make_unique<MetisPartitionParams>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1520,7 +1564,7 @@ MetisPartition<IDType, NNZType, ValueType>::MetisPartition(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
   this->params_ =
-      std::unique_ptr<MetisPartitionParams>(new MetisPartitionParams(params));
+      std::make_unique<MetisPartitionParams>(params);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1580,7 +1624,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder() {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-  this->params_ = std::unique_ptr<ParamsType>(new ParamsType);
+  this->params_ = std::make_unique<ParamsType>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1588,7 +1632,7 @@ MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
     MetisReorderParams params) {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-  this->params_ = std::unique_ptr<ParamsType>(new MetisReorderParams(params));
+  this->params_ = std::make_unique<ParamsType>(params);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -1633,6 +1677,97 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 }
 
 #endif
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(){
+  this->params_ =
+      std::make_unique<ReorderHeatmapParams>();
+  this->RegisterFunction(
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static(), format::Array<IDType>::get_id_static(), format::Array<IDType>::get_id_static()},
+      ReorderHeatmapCSRArrayArray);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(ReorderHeatmapParams params) : ReorderHeatmap(){
+  this->params_ =
+      std::make_unique<ReorderHeatmapParams>(params);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, format::FormatOrderOne<IDType>* permutation_r, format::FormatOrderOne<IDType>* permutation_c, std::vector<context::Context*> contexts, bool convert_input){
+  return this->Execute(this->params_.get(), contexts, convert_input, (format::Format*)format, (format::Format*)permutation_r,(format::Format*)permutation_c);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmapCSRArrayArray(std::vector<format::Format*> formats, PreprocessParams* poly_params){
+  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+  auto order_r = formats[1]->AsAbsolute<format::Array<IDType>>()->get_vals();
+  auto order_c = formats[2]->AsAbsolute<format::Array<IDType>>()->get_vals();
+  auto* params = static_cast<ReorderHeatmapParams*>(poly_params);
+  int b = params->num_parts;
+  if (b > csr->get_dimensions()[0] || b > csr->get_dimensions()[1]) {
+    throw utils::ReorderException("Cannot generate heatmap for matrix when num_parts > number of rows or columns");
+  }
+  auto n = csr->get_dimensions()[0];
+  auto row_ptr = csr->get_row_ptr();
+  auto adj = csr->get_col();
+  IDType max_bw = 0;
+  FloatType mean_bw = 0;
+
+  IDType bsize = n / b;
+
+  // matrix of size num_parts x num_parts with number of edges in each square
+  auto density = new NNZType*[b];
+  for(NNZType i = 0; i < b; i++) {
+    density[i] = new NNZType[b];
+    memset(density[i], 0, sizeof(NNZType) * b);
+  }
+
+  for(IDType i = 0; i < n; i++) {
+    IDType u = order_r[i];
+    IDType bu = u / bsize;
+    if(bu == b) bu--;
+    for(NNZType ptr = row_ptr[i]; ptr < row_ptr[i+1]; ptr++) {
+      IDType v = order_c[adj[ptr]];
+      IDType bw = abs(std::make_signed_t<IDType>(u) - std::make_signed_t<IDType>(v));
+      max_bw = std::max<IDType>(max_bw, bw);
+      mean_bw += bw;
+
+      IDType bv = v / bsize;
+      if(bv == b) bv--;
+      density[bu][bv]++;
+    }
+  }
+  mean_bw = (mean_bw + 0.0f) / row_ptr[n];
+  //utils::Logger logger;
+  //logger.Log("BW stats -- Mean bw: "+std::to_string(mean_bw) + "Max bw: " + std::to_string(max_bw), utils::LOG_LVL_INFO);
+
+  FloatType para_mean_bw = 0;
+  mean_bw = 0;
+  int fblocks = 0;
+  //logger.Log("Printing blocks \n----------------------------------------------" << endl;
+  for(int i = 0; i < b; i++) {
+    for(int j = 0; j < b; j++) {
+      //     cout << std::setprecision(2) << density[i][j] / (row_ptr[n] + .0f) << "\t";
+      if(density[i][j] > 0) {
+        fblocks++;
+      }
+      int bw = std::abs(i - j);
+      mean_bw += bw * density[i][j];
+    }
+    //   cout << endl;
+  }
+  // cout << "---------------------------------------------------------------" << endl;
+  // cout << "Block BW stats -- No full blocks: " << fblocks << " Block BW: " << (mean_bw + 0.0f) / row_ptr[n] << endl;
+  // cout << "---------------------------------------------------------------" << endl;
+  auto heat_values = new FloatType[b*b];
+  for (int i = 0; i < b; i++){
+    for (int j = 0; j < b; j++){
+      heat_values[i*b+j] = density[i][j] / (row_ptr[n] + .0f);
+    }
+  }
+  return new format::Array<FloatType>(b*b, heat_values, format::kOwned);
+}
 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"

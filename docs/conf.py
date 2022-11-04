@@ -71,6 +71,7 @@ exhale_args = {
         PREDEFINED +=  USE_CUDA
         PREDEFINED +=  USE_RABBIT_ORDER
         PREDEFINED +=  USE_METIS
+        PREDEFINED +=  USE_AMD_ORDER
     """
 }
 
