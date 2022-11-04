@@ -112,19 +112,22 @@ inline bool isTypeConversionSafe(FromType from_val, ToType to_val) {
 
 template <typename ToType, typename FromType, typename SizeType>
 ToType* ConvertArrayType(FromType* from_ptr, SizeType size) {
-  if (from_ptr == nullptr) return nullptr;
-  auto to_ptr = new ToType[size];
-  for (SizeType i = 0; i < size; i++) {
-    to_ptr[i] = from_ptr[i];
-    if (!isTypeConversionSafe(from_ptr[i], to_ptr[i])) {
-      throw utils::TypeException(
-          "Could not convert array from type " +
-          std::string(std::type_index(typeid(FromType)).name()) + " to type " +
-          std::string(std::type_index(typeid(ToType)).name()) +
-          ". Overflow detected");
+  if constexpr (std::is_same_v<ToType, void> && std::is_same_v<FromType, void>) return nullptr;
+  else {
+    if (from_ptr == nullptr) return nullptr;
+    auto to_ptr = new ToType[size];
+    for (SizeType i = 0; i < size; i++) {
+      to_ptr[i] = from_ptr[i];
+      if (!isTypeConversionSafe(from_ptr[i], to_ptr[i])) {
+        throw utils::TypeException(
+            "Could not convert array from type " +
+            std::string(std::type_index(typeid(FromType)).name()) +
+            " to type " + std::string(std::type_index(typeid(ToType)).name()) +
+            ". Overflow detected");
+      }
     }
+    return to_ptr;
   }
-  return to_ptr;
 }
 
 template <typename T>
