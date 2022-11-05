@@ -16,12 +16,12 @@
 #include "sparsebase/io/io.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/exception.h"
 #ifdef USE_CUDA
 #include "sparsebase/context/cuda/context.cuh"
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/preprocess/cuda/preprocess.cuh"
-#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/converter/cuda/converter.cuh"
 #endif
 #endif

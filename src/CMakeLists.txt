@@ -29,8 +29,8 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/io/binary_writer_order_one.cc
           sparsebase/io/binary_writer_order_two.cc
     sparsebase/object/object.cc
-    sparsebase/utils/converter/converter.cc
-    sparsebase/utils/converter/converter_store.cc
+          sparsebase/converter/converter.cc
+          sparsebase/converter/converter_store.cc
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
           sparsebase/experiment/experiment.cc
@@ -41,7 +41,7 @@ if(NOT ${_HEADER_ONLY})
 
     set(LIB_FILES ${LIB_FILES}
       sparsebase/format/cuda/format.cu
-      sparsebase/utils/converter/cuda/converter.cu
+            sparsebase/converter/cuda/converter.cu
       sparsebase/preprocess/cuda/preprocess.cu
       sparsebase/context/cuda/context.cu)
   endif()
@@ -232,9 +232,9 @@ set(IO_FILES
         sparsebase/io/binary_writer_order_one.h
         sparsebase/io/binary_writer_order_two.h
         )
-set(CONVERTER_FILES 
-  sparsebase/utils/converter/converter.h
-  sparsebase/utils/converter/converter_store.h
+set(CONVERTER_FILES
+        sparsebase/converter/converter.h
+        sparsebase/converter/converter_store.h
 )
 set(UTILS_FILES
   sparsebase/utils/exception.h
@@ -274,8 +274,8 @@ if(${_HEADER_ONLY})
           sparsebase/io/binary_writer_order_two.cc
           )
   set(CONVERTER_FILES ${CONVERTER_FILES}
-    sparsebase/utils/converter/converter.cc
-    sparsebase/utils/converter/converter_store.cc
+          sparsebase/converter/converter.cc
+          sparsebase/converter/converter_store.cc
   )
   set(EXPERIMENT_FILES ${EXPERIMENT_FILES}
     sparsebase/experiment/experiment.cc
@@ -300,7 +300,7 @@ install(FILES ${OBJECT_FILES}
 install(FILES ${IO_FILES}
   DESTINATION include/sparsebase/io/)
 install(FILES ${CONVERTER_FILES}
-  DESTINATION include/sparsebase/utils/converter/)
+  DESTINATION include/sparsebase/converter/)
 install(FILES ${EXPERIMENT_FILES}
   DESTINATION include/sparsebase/experiment/)
 install(FILES ${UTILS_FILES}
@@ -319,7 +319,7 @@ if(${USE_CUDA})
   set(CUDA_FORMAT_FILES
     sparsebase/format/cuda/format.cuh)
   set(CUDA_CONVERTER_FILES
-    sparsebase/utils/converter/cuda/converter.cuh)
+          sparsebase/converter/cuda/converter.cuh)
   set(CUDA_PREPROCESS_FILES
     sparsebase/preprocess/cuda/preprocess.cuh)
   set(CUDA_CONTEXT_FILES
@@ -328,7 +328,7 @@ if(${USE_CUDA})
     set(CUDA_FORMAT_FILES ${CUDA_FORMAT_FILES}
       sparsebase/format/cuda/format.cu)
     set(CUDA_CONVERTER_FILES ${CUDA_CONVERTER_FILES}
-      sparsebase/utils/converter/cuda/converter.cu)
+            sparsebase/converter/cuda/converter.cu)
     set(CUDA_PREPROCESS_FILES ${CUDA_PREPROCESS_FILES}
       sparsebase/preprocess/cuda/preprocess.cu)
     set(CUDA_CONTEXT_FILES ${CUDA_CONTEXT_FILES}
@@ -337,7 +337,7 @@ if(${USE_CUDA})
   install(FILES ${CUDA_FORMAT_FILES}
     DESTINATION include/sparsebase/format/cuda/)
   install(FILES ${CUDA_CONVERTER_FILES}
-    DESTINATION include/sparsebase/utils/converter/cuda/)
+    DESTINATION include/sparsebase/converter/cuda/)
   install(FILES ${CUDA_PREPROCESS_FILES}
     DESTINATION include/sparsebase/preprocess/cuda/)
   install(FILES ${CUDA_CONTEXT_FILES}

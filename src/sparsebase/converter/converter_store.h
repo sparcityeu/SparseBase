@@ -5,7 +5,7 @@
 
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_STORE_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_STORE_H_
-namespace sparsebase::utils::converter {
+namespace sparsebase::converter {
 class ConverterStore {
 private:
     static ConverterStore* store_;

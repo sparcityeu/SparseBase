@@ -1,7 +1,7 @@
 #include <omp.h>
 #include <sparsebase/context/context.h>
 #include <sparsebase/preprocess/preprocess.h>
-#include <sparsebase/utils/converter/converter.h>
+#include <sparsebase/converter/converter.h>
 #include <sparsebase/io/io.h>
 #include <stdio.h>
 

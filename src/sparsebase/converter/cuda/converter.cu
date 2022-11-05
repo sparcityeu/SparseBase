@@ -1,13 +1,11 @@
+#include "converter.cuh"
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda/context.cuh"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
-#include "sparsebase/utils/converter/cuda/converter.cuh"
-#include "sparsebase/format/cuda/format.cuh"
 
 namespace sparsebase {
-namespace utils {
 namespace converter {
 namespace cuda {
 
@@ -155,5 +153,4 @@ bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
 #endif
 }  // namespace cuda
 }  // namespace converter
-}  // namespace utils
 }  // namespace sparsebase

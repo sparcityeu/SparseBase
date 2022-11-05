@@ -2,7 +2,7 @@
 
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 
 using namespace std;
 using namespace sparsebase;

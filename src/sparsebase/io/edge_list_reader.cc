@@ -159,7 +159,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
 *EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
-  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
+  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
   return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, &cpu_context);

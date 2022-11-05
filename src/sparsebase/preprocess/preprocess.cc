@@ -1,7 +1,7 @@
 #include "preprocess.h"
 
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
 #include "sparsebase/utils/logger.h"

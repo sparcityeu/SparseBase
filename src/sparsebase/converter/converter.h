@@ -34,7 +34,6 @@ class Format;
 namespace context {
 class Context;
 }
-namespace utils {
 
 namespace converter {
 
@@ -391,8 +390,6 @@ class ConverterOrderOne : public ConverterImpl<ConverterOrderOne<ValueType>> {
 
 }  // namespace converter
 
-}  // namespace utils
-
 }  // namespace sparsebase
 #ifdef USE_CUDA
 #include "cuda/converter.cuh"
@@ -402,7 +399,7 @@ class ConverterOrderOne : public ConverterImpl<ConverterOrderOne<ValueType>> {
 #endif
 
 #ifdef _HEADER_ONLY
-#include "sparsebase/utils/converter/converter.cc"
+#include "sparsebase/converter/converter.cc"
 #endif
 
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_

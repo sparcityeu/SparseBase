@@ -91,7 +91,7 @@ In such cases the namespaces can be aliased using the C++11 `using` keyword.
 ```cpp
 using sbfo = sparsebase::format;
 using sbio = sparsebase::io;
-using sbco = sparsebase::utils::converter;
+using sbco = sparsebase::converter;
 using sbfe = spasebase::feature;
 using sbob = sparsebase::object;
 using sbpe = sparsebase::preprocess;

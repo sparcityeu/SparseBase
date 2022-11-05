@@ -3,8 +3,8 @@
 #include "gtest/gtest.h"
 #include "sparsebase/sparsebase.h"
 using namespace sparsebase;
-using namespace utils::converter;
-using namespace utils::converter::cuda;
+using namespace converter;
+using namespace converter::cuda;
 using namespace format;
 using namespace format::cuda;
 using namespace context;

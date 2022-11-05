@@ -6,13 +6,12 @@
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CUDA_CONVERTER_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CUDA_CONVERTER_H_
 
 namespace sparsebase {
-namespace utils {
 namespace converter {
 namespace cuda {
 template <typename ValueType>
@@ -41,7 +40,6 @@ bool CUDAPeerToPeer(sparsebase::context::Context *from,
 }  // namespace cuda
 
 }  // namespace converter
-}  // namespace utils
 }  // namespace sparsebase
 
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_

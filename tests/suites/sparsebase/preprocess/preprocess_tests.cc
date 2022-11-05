@@ -12,10 +12,10 @@
 #include "sparsebase/context/context.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/exception.h"
 #ifdef USE_CUDA
-#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/converter/cuda/converter.cuh"
 #include "sparsebase/format/cuda/format.cuh"
 #endif
 #include "sparsebase/utils/io/iobase.h"
@@ -1595,7 +1595,7 @@ class MultiFormatKeyPreprocess : public utils::FunctionMatcherMixin<int> {
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
-  auto c = std::make_shared<utils::converter::ConverterOrderTwo<int, int, int>>();
+  auto c = std::make_shared<converter::ConverterOrderTwo<int, int, int>>();
   c->ClearConversionFunctions(
       format::CSR<int, int, int>::get_id_static(),
       format::CSC<int, int, int>::get_id_static(), false);
@@ -1656,7 +1656,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
 TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
 #define TYPE int, int, int
   MultiFormatKeyPreprocess x;
-  auto c = std::make_shared<utils::converter::ConverterOrderTwo<int, int, int>>();
+  auto c = std::make_shared<converter::ConverterOrderTwo<int, int, int>>();
   c->ClearConversionFunctions(
       format::CSR<int, int, int>::get_id_static(),
       format::CSC<int, int, int>::get_id_static(), false);
