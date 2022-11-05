@@ -83,7 +83,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
 *PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
-  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
   std::cout << "nnz " << coo->get_num_nnz() << " dim "
             << coo->get_dimensions()[0] << " " << coo->get_dimensions()[1]
             << std::endl;

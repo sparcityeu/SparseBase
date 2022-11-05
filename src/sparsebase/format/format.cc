@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "sparsebase/utils/converter/converter.h"
-#include "sparsebase/utils/converter/converter_store.h"
+#include "sparsebase/converter/converter.h"
+#include "sparsebase/converter/converter_store.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/utils.h"
 
@@ -16,11 +16,11 @@ namespace sparsebase::format {
 
 template <typename IDType, typename NNZType, typename ValueType>
 FormatOrderTwo<IDType, NNZType, ValueType>::FormatOrderTwo(){
-    this->set_converter(utils::converter::ConverterStore::GetStore().get_converter<utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType>>());
+    this->set_converter(converter::ConverterStore::GetStore().get_converter<converter::ConverterOrderTwo<IDType, NNZType, ValueType>>());
   }
 template <typename ValueType>
 FormatOrderOne<ValueType>::FormatOrderOne(){
-    this->set_converter(utils::converter::ConverterStore::GetStore().get_converter<utils::converter::ConverterOrderOne<ValueType>>());
+    this->set_converter(converter::ConverterStore::GetStore().get_converter<converter::ConverterOrderOne<ValueType>>());
   }
 template <typename IDType, typename NNZType, typename ValueType>
 COO<IDType, NNZType, ValueType>::COO(COO<IDType, NNZType, ValueType> &&rhs)

@@ -495,7 +495,7 @@ sparsebase::format::Format* dummy_conversion(sparsebase::format::Format* p, spar
 }
 
 TEST(FormatImplementation, SetConverter){
-  auto conv = std::make_shared<sparsebase::utils::converter::ConverterOrderTwo<int, int, int>>();
+  auto conv = std::make_shared<sparsebase::converter::ConverterOrderTwo<int, int, int>>();
   conv->ClearConversionFunctions();
   conv->RegisterConversionFunction(spf::CSR<int, int, int>::get_id_static(), spf::COO<int, int, int>::get_id_static(), dummy_conversion, [](sparsebase::context::Context*, sparsebase::context::Context*){ return true;});
   sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,

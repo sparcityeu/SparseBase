@@ -3,7 +3,7 @@
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -56,8 +56,8 @@ int main() {
       new format::CSR<int, int, int>(5, 5, row_ptr, col, vals);
 
   auto graph_converter =
-      new utils::converter::ConverterOrderTwo<int, int, int>();
-  auto array_converter = new utils::converter::ConverterOrderOne<float>();
+      new converter::ConverterOrderTwo<int, int, int>();
+  auto array_converter = new converter::ConverterOrderOne<float>();
 
   preprocess::JaccardWeights<int, int, int, float> jac;
   auto array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context}, true);

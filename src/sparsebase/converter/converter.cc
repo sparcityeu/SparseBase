@@ -1,6 +1,6 @@
-#include "sparsebase/utils/converter/converter.h"
+#include "converter.h"
 #ifdef USE_CUDA
-#include "sparsebase/utils/converter/cuda/converter.cuh"
+#include "sparsebase/converter/cuda/converter.cuh"
 #include "sparsebase/format/cuda/format.cuh"
 #endif
 
@@ -13,9 +13,10 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/utils.h"
 #include "sparsebase/utils/logger.h"
+#include "sparsebase/utils/exception.h"
 
 
-namespace sparsebase::utils::converter {
+namespace sparsebase::converter {
 
 ConversionMap *Converter::get_conversion_map(bool is_move_conversion) {
   if (is_move_conversion)
@@ -461,7 +462,7 @@ std::vector<format::Format *> Converter::ConvertCached (
       GetConversionChain(source->get_id(), source->get_context(),
                          to_type, to_contexts, is_move_conversion);
   if (!chain)
-    throw ConversionException(source->get_name(),
+    throw utils::ConversionException(source->get_name(),
                               utils::demangle(to_type));
   auto outputs = ApplyConversionChain(chain, source, false);
   return std::vector<format::Format *>(outputs.begin() + 1, outputs.end());
@@ -658,4 +659,4 @@ Converter::~Converter() {}
 #include "init/converter.inc"
 #endif
 
-}  // namespace sparsebase::utils::converter
+}  // namespace sparsebase::converter

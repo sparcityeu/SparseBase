@@ -4,6 +4,7 @@
 #include "sparsebase/config.h"
 #include "parameterizable.h"
 #include "utils.h"
+#include "converter/converter.h"
 #include <vector>
 
 namespace sparsebase::utils {
@@ -84,10 +85,10 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * \param map the map between Keys and Functions used to find the needed
    * function. \param contexts Contexts available for execution of the
    * preprocessing. \return a tuple of a) the Function to use,
-   * and b) a utils::converter::ConversionSchemaConditional indicating
+   * and b) a converter::ConversionSchemaConditional indicating
    * conversions to be done on input Format objects.
    */
-  std::tuple<Function, utils::converter::ConversionSchema> GetFunction(
+  std::tuple<Function, converter::ConversionSchema> GetFunction(
       std::vector<format::Format *> packed_formats, Key key, ConversionMap map,
       std::vector<context::Context *> contexts);
   //! Check if a given Key has a function that can be used without any
@@ -187,10 +188,10 @@ std::vector<std::type_index> packed_format_types;
 for (auto f : packed_formats)
 packed_format_types.push_back(f->get_id());
 // get conversion schema
-std::tuple<Function, utils::converter::ConversionSchema> ret =
+std::tuple<Function, converter::ConversionSchema> ret =
     GetFunction(packed_formats, packed_format_types, map, contexts);
 Function func = std::get<0>(ret);
-utils::converter::ConversionSchema cs = std::get<1>(ret);
+converter::ConversionSchema cs = std::get<1>(ret);
 // carry out conversion
 // ready_formats contains the format to use in preprocessing
 if (!convert_input) {
@@ -201,7 +202,7 @@ throw utils::DirectExecutionNotAvailableException(
 }
 }
 std::vector<std::vector<format::Format *>> all_formats =
-    sparsebase::utils::converter::Converter::ApplyConversionSchema(
+    sparsebase::converter::Converter::ApplyConversionSchema(
         cs, packed_formats, clear_intermediate);
 // The formats that will be used in the preprocessing implementation function
 // calls
@@ -332,12 +333,12 @@ bool FunctionMatcherMixin<
  */
 template <typename ReturnType, class PreprocessingImpl, typename Function,
     typename Key, typename KeyHash, typename KeyEqualTo>
-std::tuple<Function, utils::converter::ConversionSchema> FunctionMatcherMixin<
+std::tuple<Function, converter::ConversionSchema> FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::GetFunction(std::vector<format::Format *> packed_sfs, Key key,
                              ConversionMap map,
                              std::vector<context::Context *> contexts) {
-  utils::converter::ConversionSchema cs;
+  converter::ConversionSchema cs;
   Function func = nullptr;
   // When function and conversion costs are added,
   // this 'if' should be removed  -- a conversion might be
@@ -355,11 +356,11 @@ std::tuple<Function, utils::converter::ConversionSchema> FunctionMatcherMixin<
     all_keys.push_back(key_func.first);
   }
   // Find all the keys that can potentially run with this input
-  std::vector<std::tuple<unsigned int, utils::converter::ConversionSchema, Key>>
+  std::vector<std::tuple<unsigned int, converter::ConversionSchema, Key>>
       usable_keys;
   for (auto potential_key : all_keys) {
     if (potential_key.size() != key.size()) continue;
-    utils::converter::ConversionSchema temp_cs;
+    converter::ConversionSchema temp_cs;
     bool is_usable = true;
     int conversion_cost = 0;
     for (int i = 0; i < potential_key.size(); i++) {
@@ -403,7 +404,7 @@ std::tuple<Function, utils::converter::ConversionSchema> FunctionMatcherMixin<
     throw sparsebase::utils::FunctionNotFoundException(
         message);  // TODO: add a custom exception type
   }
-  std::tuple<Function, utils::converter::ConversionSchema> best_conversion;
+  std::tuple<Function, converter::ConversionSchema> best_conversion;
   float cost = std::numeric_limits<float>::max();
   for (auto potential_usable_key : usable_keys) {
     if (cost > std::get<0>(potential_usable_key)) {

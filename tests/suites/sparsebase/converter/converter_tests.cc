@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 #include "sparsebase/sparsebase.h"
 using namespace sparsebase;
-using namespace utils::converter;
+using namespace converter;
 
 // The arrays defined here are for two matrices
 // One in csr format one in coo format
@@ -66,7 +66,7 @@ void compare_cscs(CSCType1* csc1, CSCType2* csc2) {
 TEST(ConverterOrderTwo, CSRToCOO) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -109,7 +109,7 @@ TEST(ConverterOrderTwo, CSRToCSCMultipleContexts) {
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
   sparsebase::format::CSC<int, int, int> correct_csc(
       n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context1, cpu_context2;
 
@@ -164,7 +164,7 @@ TEST(ConverterOrderTwo, CSRToCSCCached) {
       n, m, csc_col_ptr, csc_row, csc_vals, sparsebase::format::kNotOwned);
   sparsebase::format::COO<int, int, int> correct_coo(
       n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context1, cpu_context2;
 
@@ -224,7 +224,7 @@ TEST(ConverterOrderTwo, CSRToCSCCached) {
 TEST(ConverterOrderTwo, CSRToCSC) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -266,7 +266,7 @@ TEST(ConverterOrderTwo, CSRToCSC) {
 TEST(ConverterOrderTwo, COOToCSR) {
   sparsebase::format::COO<int, int, int> coo(
       n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -316,7 +316,7 @@ TEST(ConverterOrderTwo, COOToCSR) {
 TEST(ConverterOrderTwo, COOToCSC) {
   sparsebase::format::COO<int, int, int> coo(
       n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -366,7 +366,7 @@ TEST(ConverterOrderTwo, COOToCSC) {
 TEST(ConverterOrderTwo, COOToCOO) {
   sparsebase::format::COO<int, int, int> coo(
       n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -390,7 +390,7 @@ TEST(ConverterOrderTwo, COOToCOO) {
 TEST(ConverterOrderTwo, CSRToCSR) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -418,7 +418,7 @@ TEST(ConverterOrderTwo, CSRToCSR) {
 TEST(Converter, ClearingAllFunctions) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -445,7 +445,7 @@ TEST(Converter, ClearingAllFunctions) {
 TEST(Converter, ClearingASingleDirection) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::utils::converter::ConverterOrderTwo<int, int, int>
+  sparsebase::converter::ConverterOrderTwo<int, int, int>
       converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
@@ -1049,7 +1049,7 @@ TEST(ApplyConversionSchema, All) {
   std::vector<               \
       std::tuple<ConversionFunction, context::Context*, utils::CostType>>
 #define TYPE int, int, int
-  utils::converter::ConversionSchema schema;
+  converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
@@ -1133,7 +1133,7 @@ TEST(ApplyConversionSchema, ClearIntermediate) {
   std::vector<               \
       std::tuple<ConversionFunction, context::Context*, utils::CostType>>
 #define TYPE int, int, int
-  utils::converter::ConversionSchema schema;
+  converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
@@ -1264,7 +1264,7 @@ class ConversionChainFixture : public ::testing::Test {
 };
 
 TEST_F(ConversionChainFixture, SingleStep) {
-  utils::converter::ConversionSchema schema;
+  converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   ConversionChain chain;
   format::Format* output_format;
@@ -1303,7 +1303,7 @@ TEST_F(ConversionChainFixture, SingleStep) {
 }
 
 TEST_F(ConversionChainFixture, MultiStep) {
-  utils::converter::ConversionSchema schema;
+  converter::ConversionSchema schema;
   std::vector<std::vector<format::Format*>> output;
   ConversionChain chain;
   format::Format* output_format;
@@ -1374,11 +1374,11 @@ TEST_F(ConversionChainFixture, CanConvert) {
   EXPECT_FALSE(c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(),
                             {&fake_c, &fake_c}));
 }
-#include "sparsebase/utils/converter/converter_store.h"
+#include "sparsebase/converter/converter_store.h"
 
 TEST(ConverterStore, All){
-  using ConvStore = sparsebase::utils::converter::ConverterStore;
-  using ConvType = sparsebase::utils::converter::ConverterOrderTwo<unsigned int, int, unsigned int>;
+  using ConvStore = sparsebase::converter::ConverterStore;
+  using ConvType = sparsebase::converter::ConverterOrderTwo<unsigned int, int, unsigned int>;
   // check the singleton-ness
   EXPECT_EQ(&ConvStore::GetStore(), &ConvStore::GetStore());
   // Check the reference counter value
@@ -1390,7 +1390,7 @@ TEST(ConverterStore, All){
   auto ptr2 = ConvStore::GetStore().get_converter<ConvType>();
   EXPECT_EQ(ptr.use_count(), 3);
   EXPECT_EQ(ptr.get(), ptr2.get());
-  std::weak_ptr<sparsebase::utils::converter::Converter> w_ptr(ptr);
+  std::weak_ptr<sparsebase::converter::Converter> w_ptr(ptr);
   ptr.reset();
   EXPECT_NE(w_ptr.lock(), nullptr);
   ptr2.reset();

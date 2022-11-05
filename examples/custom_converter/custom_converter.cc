@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -20,7 +20,7 @@ int main() {
       new format::COO<int, int, int>(6, 6, 6, row, col, vals);
   context::CPUContext cpu_context;
 
-  auto converter = new utils::converter::ConverterOrderTwo<int, int, int>();
+  auto converter = new converter::ConverterOrderTwo<int, int, int>();
 
   converter->RegisterConversionFunction(
       format::COO<int, int, int>::get_id_static(),

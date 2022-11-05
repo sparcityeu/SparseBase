@@ -21,7 +21,7 @@
 #include "sparsebase/context/context.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
 
 namespace sparsebase::preprocess {

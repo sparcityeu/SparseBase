@@ -11,7 +11,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
 *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
-  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
+  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
   return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, coo->get_context(), true);
 }
