@@ -1,10 +1,3 @@
-//
-// Created by Amro on 9/14/2022.
-//
-
-#ifndef SPARSEBASE_PROJECT_IOBASE_H
-#define SPARSEBASE_PROJECT_IOBASE_H
-
 #include <algorithm>
 #include <cstring>
 #include <fstream>
@@ -14,12 +7,22 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/io/binary_reader_order_one.h"
+#include "sparsebase/io/binary_reader_order_two.h"
+#include "sparsebase/io/binary_writer_order_one.h"
+#include "sparsebase/io/binary_writer_order_two.h"
+#include "sparsebase/io/edge_list_reader.h"
+#include "sparsebase/io/mtx_reader.h"
+#include "sparsebase/io/pigo_edge_list_reader.h"
+#include "sparsebase/io/pigo_mtx_reader.h"
 #include "sparsebase/io/reader.h"
 #include "sparsebase/io/writer.h"
 
-namespace sparsebase {
+#ifndef SPARSEBASE_PROJECT_IOBASE_H
+#define SPARSEBASE_PROJECT_IOBASE_H
 
-namespace io {
+
+namespace sparsebase::io {
 class IOBase {
  public:
   //! Read a matrix market file into a CSR format
@@ -285,6 +288,5 @@ class IOBase {
     return writer.WriteArray(array);
   }
 };
-}  // namespace io
 }  // namespace sparsebase
 #endif  // SPARSEBASE_PROJECT_IOBASE_H

@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "reader.h"
 #include "sparsebase/format/format.h"
 
 namespace sparsebase {
@@ -45,33 +44,6 @@ class WritesArray {
   virtual void WriteArray(format::Array<T> *arr) const = 0;
 };
 
-//! Writes files by encoding them in SparseBase's custom binary format (CSR and
-//! COO)
-template <typename IDType, typename NNZType, typename ValueType>
-class BinaryWriterOrderTwo : public Writer,
-                             public WritesCOO<IDType, NNZType, ValueType>,
-                             public WritesCSR<IDType, NNZType, ValueType> {
- public:
-  explicit BinaryWriterOrderTwo(std::string filename);
-  ~BinaryWriterOrderTwo() override = default;
-  void WriteCOO(format::COO<IDType, NNZType, ValueType> *coo) const override;
-  void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const override;
-
- private:
-  std::string filename_;
-};
-
-//! Writes files by encoding them in SparseBase's custom binary format (Array)
-template <typename T>
-class BinaryWriterOrderOne : public Writer, public WritesArray<T> {
- public:
-  explicit BinaryWriterOrderOne(std::string filename);
-  ~BinaryWriterOrderOne() override = default;
-  void WriteArray(format::Array<T> *arr) const override;
-
- private:
-  std::string filename_;
-};
 
 }  // namespace io
 

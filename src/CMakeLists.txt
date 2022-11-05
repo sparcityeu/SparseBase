@@ -20,14 +20,20 @@ if(NOT ${_HEADER_ONLY})
   set(LIB_FILES
     sparsebase/format/format.cc
     sparsebase/context/context.cc
-          sparsebase/io/reader.cc
+          sparsebase/io/mtx_reader.cc
+          sparsebase/io/pigo_mtx_reader.cc
+          sparsebase/io/edge_list_reader.cc
+          sparsebase/io/pigo_edge_list_reader.cc
+          sparsebase/io/binary_reader_order_one.cc
+          sparsebase/io/binary_reader_order_two.cc
+          sparsebase/io/binary_writer_order_one.cc
+          sparsebase/io/binary_writer_order_two.cc
     sparsebase/object/object.cc
     sparsebase/utils/converter/converter.cc
     sparsebase/utils/converter/converter_store.cc
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
-          sparsebase/io/writer.cc
-    sparsebase/experiment/experiment.cc
+          sparsebase/experiment/experiment.cc
     sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
   )
@@ -213,10 +219,18 @@ set(OBJECT_FILES
   sparsebase/object/object.h
 )
 set(IO_FILES
-        sparsebase/io/iobase.h
+        sparsebase/bases/iobase.h
         sparsebase/io/reader.h
+        sparsebase/io/mtx_reader.h
+        sparsebase/io/pigo_mtx_reader.h
+        sparsebase/io/edge_list_reader.h
+        sparsebase/io/pigo_edge_list_reader.h
+        sparsebase/io/binary_reader_order_one.h
+        sparsebase/io/binary_reader_order_two.h
         sparsebase/io/sparse_file_format.h
         sparsebase/io/writer.h
+        sparsebase/io/binary_writer_order_one.h
+        sparsebase/io/binary_writer_order_two.h
         )
 set(CONVERTER_FILES 
   sparsebase/utils/converter/converter.h
@@ -250,9 +264,15 @@ if(${_HEADER_ONLY})
     sparsebase/object/object.cc
   )
   set(IO_FILES ${IO_FILES}
-          sparsebase/io/reader.cc
-          sparsebase/io/writer.cc
-  )
+          sparsebase/io/mtx_reader.cc
+          sparsebase/io/pigo_mtx_reader.cc
+          sparsebase/io/edge_list_reader.cc
+          sparsebase/io/pigo_edge_list_reader.cc
+          sparsebase/io/binary_reader_order_one.cc
+          sparsebase/io/binary_reader_order_two.cc
+          sparsebase/io/binary_writer_order_one.cc
+          sparsebase/io/binary_writer_order_two.cc
+          )
   set(CONVERTER_FILES ${CONVERTER_FILES}
     sparsebase/utils/converter/converter.cc
     sparsebase/utils/converter/converter_store.cc

@@ -2,7 +2,7 @@
 
 #include "sparsebase/format/format.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/io/reader.h"
+#include "sparsebase/io/io.h"
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;

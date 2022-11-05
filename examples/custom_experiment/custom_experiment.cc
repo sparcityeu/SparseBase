@@ -2,7 +2,7 @@
 
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/io/reader.h"
+#include "sparsebase/io/io.h"
 #include "sparsebase/experiment/experiment.h"
 
 using namespace std;

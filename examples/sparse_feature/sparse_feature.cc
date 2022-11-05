@@ -3,7 +3,7 @@
 #include "sparsebase/feature/feature.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/io/reader.h"
+#include "sparsebase/io/io.h"
 
 using namespace std;
 using namespace sparsebase;

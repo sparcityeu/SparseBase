@@ -141,22 +141,28 @@ for func in order_one_functions:
 
 
 # Reader
-reset_file("reader.inc")
-gen_inst("class EdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("class MTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("class PigoEdgeListReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("class PigoMTXReader<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("class BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>", "reader.inc")
-gen_inst("class BinaryReaderOrderOne<$id_type>", "reader.inc", exceptions={"$id_type": ['void']})
-gen_inst("class BinaryReaderOrderOne<$nnz_type>", "reader.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("class BinaryReaderOrderOne<$value_type>", "reader.inc", exceptions={"$value_type": ['void']})
+reset_file("edge_list_reader.inc")
+gen_inst("class EdgeListReader<$id_type, $nnz_type, $value_type>", "edge_list_reader.inc")
+reset_file("mtx_reader.inc")
+gen_inst("class MTXReader<$id_type, $nnz_type, $value_type>", "mtx_reader.inc")
+reset_file("pigo_edge_list_reader.inc")
+gen_inst("class PigoEdgeListReader<$id_type, $nnz_type, $value_type>", "pigo_edge_list_reader.inc")
+reset_file("pigo_mtx_reader.inc")
+gen_inst("class PigoMTXReader<$id_type, $nnz_type, $value_type>", "pigo_mtx_reader.inc")
+reset_file("binary_reader_order_two.inc")
+gen_inst("class BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>", "binary_reader_order_two.inc")
+reset_file("binary_reader_order_one.inc")
+gen_inst("class BinaryReaderOrderOne<$id_type>", "binary_reader_order_one.inc", exceptions={"$id_type": ['void']})
+gen_inst("class BinaryReaderOrderOne<$nnz_type>", "binary_reader_order_one.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class BinaryReaderOrderOne<$value_type>", "binary_reader_order_one.inc", exceptions={"$value_type": ['void']})
 
 # Writer
-reset_file("writer.inc")
-gen_inst("class BinaryWriterOrderOne<$id_type>", "writer.inc", exceptions={"$id_type": ['void']})
-gen_inst("class BinaryWriterOrderOne<$nnz_type>", "writer.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("class BinaryWriterOrderOne<$value_type>", "writer.inc", exceptions={"$value_type": ['void']})
-gen_inst("class BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "writer.inc")
+reset_file("binary_writer_order_one.inc")
+gen_inst("class BinaryWriterOrderOne<$id_type>", "binary_writer_order_one.inc", exceptions={"$id_type": ['void']})
+gen_inst("class BinaryWriterOrderOne<$nnz_type>", "binary_writer_order_one.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class BinaryWriterOrderOne<$value_type>", "binary_writer_order_one.inc", exceptions={"$value_type": ['void']})
+reset_file("binary_writer_order_two.inc")
+gen_inst("class BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "binary_writer_order_two.inc")
 
 # Feature
 reset_file("feature.inc")
