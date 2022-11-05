@@ -76,7 +76,7 @@ If desired users can include individual namespaces using their respective header
 This can be useful to reduce compile times if the header only build is being used.
 
 ```cpp
-#include "sparsebase/io/reader.h"
+#include "sparsebase/io/io.h"
 #include "sparsebase/preprocess/preprocess.h"
 ```
 

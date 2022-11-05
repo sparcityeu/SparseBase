@@ -4,7 +4,7 @@
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/exception.h"
-#include "sparsebase/io/reader.h"
+#include "sparsebase/io/io.h"
 
 using namespace std;
 using namespace sparsebase;

@@ -14,7 +14,7 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/io/reader.h"
+#include "sparsebase/io/io.h"
 
 namespace sparsebase {
 

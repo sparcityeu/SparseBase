@@ -8,17 +8,16 @@
  ********************************************************/
 #ifndef SPARSEBASE_SPARSEBASE_H_
 #define SPARSEBASE_SPARSEBASE_H_
+#include "sparsebase/bases/iobase.h"
 #include "sparsebase/config.h"
 #include "sparsebase/context/context.h"
+#include "sparsebase/experiment/experiment.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/io/io.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
-#include "sparsebase/io/iobase.h"
-#include "sparsebase/io/reader.h"
-#include "sparsebase/io/writer.h"
-#include "sparsebase/experiment/experiment.h"
 #ifdef USE_CUDA
 #include "sparsebase/context/cuda/context.cuh"
 #include "sparsebase/format/cuda/format.cuh"
