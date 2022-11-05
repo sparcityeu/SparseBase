@@ -76,7 +76,7 @@ If desired users can include individual namespaces using their respective header
 This can be useful to reduce compile times if the header only build is being used.
 
 ```cpp
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 #include "sparsebase/preprocess/preprocess.h"
 ```
 
@@ -90,7 +90,7 @@ In such cases the namespaces can be aliased using the C++11 `using` keyword.
 
 ```cpp
 using sbfo = sparsebase::format;
-using sbio = sparsebase::utils::io;
+using sbio = sparsebase::io;
 using sbco = sparsebase::utils::converter;
 using sbfe = spasebase::feature;
 using sbob = sparsebase::object;
@@ -222,8 +222,8 @@ Currently, we support two sparse data file formats:
 Reading such files can easily be done using the `IOBase` class.
 
 ```cpp
-auto coo = sparsebase::utils::io::IOBase::ReadMTXtoCOO<int,int,float>();
-auto csr = sparsebase::utils::io::IOBase::ReadEdgeListtoCSR<int,int,float>();
+auto coo = sparsebase::io::IOBase::ReadMTXtoCOO<int,int,float>();
+auto csr = sparsebase::io::IOBase::ReadEdgeListtoCSR<int,int,float>();
 ```
 
 ```{note}
@@ -236,11 +236,11 @@ However they may not support all the options of our default readers.
 Users can also use the underlying reader classes directly if need be. 
 ```cpp
 // Reading a mtx file into a COO format
-auto reader = new sparsebase::utils::io::MTXReader<int, int, float>(file_name);
+auto reader = new sparsebase::io::MTXReader<int, int, float>(file_name);
 auto coo = reader->ReadCOO();
 
 // Reading an edge list file into a CSR format
-auto reader2 = new sparsebase::utils::io::EdgeListReader<int, int, float>(file_name);
+auto reader2 = new sparsebase::io::EdgeListReader<int, int, float>(file_name);
 auto csr = reader2->ReadCSR();
 ```
 
@@ -274,7 +274,7 @@ above if this is not desired.
 Graphs can be created using any Format as the connectivity information of the graph.
 
 ```cpp
-auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
+auto reader = new sparsebase::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
 auto data = reader->ReadCOO();
 auto g = sparsebase::object::Graph<vertex_type, edge_type, value_type>(data);
 ```

@@ -14,12 +14,11 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/reader.h"
-#include "sparsebase/utils/io/writer.h"
+#include "sparsebase/io/reader.h"
+#include "sparsebase/io/writer.h"
 
 namespace sparsebase {
 
-namespace utils {
 namespace io {
 class IOBase {
  public:
@@ -287,6 +286,5 @@ class IOBase {
   }
 };
 }  // namespace io
-}  // namespace utils
 }  // namespace sparsebase
 #endif  // SPARSEBASE_PROJECT_IOBASE_H

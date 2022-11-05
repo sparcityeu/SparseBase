@@ -34,12 +34,12 @@ class OptimalReorder : ReorderPreprocessType<IDType> {};
 
 ### 2. Create a struct containing the hyperparameters you need, and initialize them in the constructor
 
-In the same file you defined `OptimalReorder` inside, create a new struct inheriting from `PreprocessParams`. Its members will be whichever hyperparameters your reordering will require. We will call this struct `OptimalReorderParams`. We add `alpha` and `beta` to it. You may also add custom constructors for your parameter struct.
+In the same file you defined `OptimalReorder` inside, create a new struct inheriting from `Parameters`. Its members will be whichever hyperparameters your reordering will require. We will call this struct `OptimalReorderParams`. We add `alpha` and `beta` to it. You may also add custom constructors for your parameter struct.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
-struct OptimalReorderParams : PreprocessParams {
+struct OptimalReorderParams : Parameters {
     float alpha;
     float beta;
     OptimalReorderParams(float a, float b): alpha(a), beta(b){}
@@ -65,18 +65,18 @@ class OptimalReorder : ReorderPreprocessType<ValueType> {
 Add to the class the implementation functions that will carry out the reordering. Each function will be specific for an input `Format` format type. These functions should match the following signature:
 
 ```cpp
-static IDType* FunctionName(std::vector<format::Format*>, PreprocessParams*) 
+static IDType* FunctionName(std::vector<format::Format*>, Parameters*) 
 ```
 The functions must also be *static*. This is required to enable the mechanism of choosing the correct implementation function for the input `Format`'s format type.  
 
 The parameters that your function will take are:
 
 1. A vector of pointers at `Format` objects.
-2. A pointer at a `PreprocessParams` struct. This pointer is polymorphic, and when this function is called, it will be pointing at an instance of the parameters struct created for your ordering. In our case, that would be an `OptimalReorderParams` object. 
+2. A pointer at a `Parameters` struct. This pointer is polymorphic, and when this function is called, it will be pointing at an instance of the parameters struct created for your ordering. In our case, that would be an `OptimalReorderParams` object. 
 
 Generally, all implementation functions will start with the same three steps:
 1. Cast the input `Format` objects to the correct concrete type.
-2. Cast the input `PreprocessParams` to the params struct created for this class.
+2. Cast the input `Parameters` to the params struct created for this class.
 3. Fetch the `Context` of the input `Format` object (this step is not needed for reordering on the CPU, but is necessary when using other architectures, e.g. `CUDA`).
 
 For our example, `OptimalReorder` will have two implementation functions, `OptimallyOrderCSR()` and `OptimallyOrderCUDACSR()`. The former will reorder `CSR` objects on the CPU, and the latter will reorder `CUDACSR` objects, i.e., `CSR` objects stored on a `CUDA` GPU. 
@@ -91,7 +91,7 @@ class OptimalReorder : ReorderPreprocessType<ValueType> {
   //.......
   static IDType *OptimallyOrderCSR(
       std::vector<format::Format*> input_sf,
-      PreprocessParams *poly_params) {
+      Parameters *poly_params) {
     auto csr = input_sf[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
     OptimalReorderParams *params =
         static_cast<OptimalReorderParams *>(poly_params);
@@ -158,7 +158,7 @@ class OptimalReorder : ReorderPreprocessType<ValueType> {
 #ifdef USE_CUDA
   static IDType *OptimallyOrderCUDACSR(
       std::vector<format::Format*> input_sf,
-      PreprocessParams *poly_params) {
+      Parameters *poly_params) {
     auto cuda_csr =
         input_sf[0]->AsAbsolute<format::CUDACSR<IDType, NNZType, ValueType>>();
     OptimalReorderParams *params =

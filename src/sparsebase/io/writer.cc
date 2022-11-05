@@ -7,8 +7,6 @@
 
 namespace sparsebase {
 
-namespace utils {
-
 namespace io {
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -49,7 +47,7 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCSR(
     if constexpr (!std::is_same_v<ValueType, void>)
       sbff.AddArray("vals", csr->get_vals(), m);
     else
-      throw WriterException("Cannot write vals array of type void");
+      throw utils::WriterException("Cannot write vals array of type void");
 
   sbff.WriteObject(filename_);
 }
@@ -66,7 +64,7 @@ void BinaryWriterOrderOne<T>::WriteArray(format::Array<T> *arr) const {
     sbff.AddArray("array", arr->get_vals(), arr->get_dimensions()[0]);
     sbff.WriteObject(filename_);
   } else {
-    throw WriterException("Cannot write an Array with void ValueType");
+    throw utils::WriterException("Cannot write an Array with void ValueType");
   }
 }
 
@@ -75,7 +73,5 @@ void BinaryWriterOrderOne<T>::WriteArray(format::Array<T> *arr) const {
 #endif
 
 }  // namespace io
-
-}  // namespace utils
 
 }  // namespace sparsebase

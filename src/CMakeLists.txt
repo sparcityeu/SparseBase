@@ -20,15 +20,16 @@ if(NOT ${_HEADER_ONLY})
   set(LIB_FILES
     sparsebase/format/format.cc
     sparsebase/context/context.cc
-    sparsebase/utils/io/reader.cc
+          sparsebase/io/reader.cc
     sparsebase/object/object.cc
     sparsebase/utils/converter/converter.cc
     sparsebase/utils/converter/converter_store.cc
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
-    sparsebase/utils/io/writer.cc
+          sparsebase/io/writer.cc
     sparsebase/experiment/experiment.cc
     sparsebase/utils/utils.cc
+          sparsebase/utils/logger.cc
   )
   if (${USE_CUDA})
 
@@ -212,11 +213,11 @@ set(OBJECT_FILES
   sparsebase/object/object.h
 )
 set(IO_FILES
-  sparsebase/utils/io/iobase.h
-  sparsebase/utils/io/reader.h
-  sparsebase/utils/io/sparse_file_format.h
-  sparsebase/utils/io/writer.h
-)
+        sparsebase/io/iobase.h
+        sparsebase/io/reader.h
+        sparsebase/io/sparse_file_format.h
+        sparsebase/io/writer.h
+        )
 set(CONVERTER_FILES 
   sparsebase/utils/converter/converter.h
   sparsebase/utils/converter/converter_store.h
@@ -224,6 +225,10 @@ set(CONVERTER_FILES
 set(UTILS_FILES
   sparsebase/utils/exception.h
   sparsebase/utils/utils.h
+        sparsebase/utils/logger.h
+        sparsebase/utils/parameterizable.h
+        sparsebase/utils/function_matcher_mixin.h
+        sparsebase/utils/class_matcher_mixin.h
 )
 set(EXPERIMENT_FILES 
   sparsebase/experiment/experiment.h
@@ -245,8 +250,8 @@ if(${_HEADER_ONLY})
     sparsebase/object/object.cc
   )
   set(IO_FILES ${IO_FILES}
-    sparsebase/utils/io/reader.cc
-    sparsebase/utils/io/writer.cc
+          sparsebase/io/reader.cc
+          sparsebase/io/writer.cc
   )
   set(CONVERTER_FILES ${CONVERTER_FILES}
     sparsebase/utils/converter/converter.cc
@@ -257,6 +262,7 @@ if(${_HEADER_ONLY})
   )
   set(UTILS_FILES ${UTILS_FILES}
      sparsebase/utils/utils.cc
+          sparsebase/utils/logger.cc
           )
 endif()
 install(FILES ${SINGLE_HEADER_FILE}
@@ -272,7 +278,7 @@ install(FILES ${PREPROCESS_FILES}
 install(FILES ${OBJECT_FILES}
   DESTINATION include/sparsebase/object/)
 install(FILES ${IO_FILES}
-  DESTINATION include/sparsebase/utils/io/)
+  DESTINATION include/sparsebase/io/)
 install(FILES ${CONVERTER_FILES}
   DESTINATION include/sparsebase/utils/converter/)
 install(FILES ${EXPERIMENT_FILES}

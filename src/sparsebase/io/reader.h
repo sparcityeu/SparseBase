@@ -21,8 +21,6 @@
 
 namespace sparsebase {
 
-namespace utils {
-
 namespace io {
 
 //! Base class for all readers, has no special functionality on its own
@@ -223,10 +221,8 @@ class BinaryReaderOrderOne : public Reader, public ReadsArray<T> {
 
 }  // namespace io
 
-}  // namespace utils
-
 }  // namespace sparsebase
 #ifdef _HEADER_ONLY
-#include "sparsebase/utils/io/reader.cc"
+#include "sparsebase/io/reader.cc"
 #endif
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_

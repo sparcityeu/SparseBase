@@ -15,9 +15,9 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
-#include "sparsebase/utils/io/iobase.h"
-#include "sparsebase/utils/io/reader.h"
-#include "sparsebase/utils/io/writer.h"
+#include "sparsebase/io/iobase.h"
+#include "sparsebase/io/reader.h"
+#include "sparsebase/io/writer.h"
 #include "sparsebase/experiment/experiment.h"
 #ifdef USE_CUDA
 #include "sparsebase/context/cuda/context.cuh"

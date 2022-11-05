@@ -3,7 +3,7 @@
 #include "sparsebase/feature/feature.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   }
 
   string file_name = argv[1];
-  sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type> reader(
+  sparsebase::io::MTXReader<vertex_type, edge_type, value_type> reader(
       file_name);
   COO<vertex_type, edge_type, value_type> *coo = reader.ReadCOO();
   context::CPUContext cpu_context;

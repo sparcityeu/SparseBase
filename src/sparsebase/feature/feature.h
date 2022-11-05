@@ -17,66 +17,21 @@
 
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/utils/class_matcher_mixin.h"
+#include "sparsebase/utils/utils.h"
 
 namespace sparsebase::feature {
 
-template <typename Interface>
-struct Implementation {
- public:
-  Implementation() = default;
-  template <typename ConcreteType>
-  explicit Implementation(ConcreteType &&object)
-      : storage{std::forward<ConcreteType>(object)},
-        getter{[](std::any &storage) -> Interface & {
-          return std::any_cast<ConcreteType &>(storage);
-        }} {}
-  Implementation(const Implementation &object)
-      : storage{object.storage}, getter{object.getter} {}
-  Implementation(Implementation &&object) noexcept
-      : storage{std::move(object.storage)}, getter{std::move(object.getter)} {}
-  Implementation &operator=(Implementation other) {
-    storage = other.storage;
-    getter = other.getter;
-    return *this;
-  }
 
-  Interface *operator->() { return &getter(storage); }
+using Feature = utils::Implementation<preprocess::ExtractableType>;
 
- private:
-  std::any storage;
-  Interface &(*getter)(std::any &);
-};
-
-using Feature = Implementation<preprocess::ExtractableType>;
-
-template <class ClassType, typename Key = std::vector<std::type_index>,
-          typename KeyHash = preprocess::TypeIndexVectorHash,
-          typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
-class ClassMatcherMixin {
-#ifdef DEBUG
- public:
-#else
- protected:
-#endif
-
-  std::unordered_map<Key, ClassType, KeyHash, KeyEqualTo> map_;
-  void RegisterClass(std::vector<std::type_index> instants, ClassType);
-  std::tuple<ClassType, std::vector<std::type_index>> MatchClass(
-      std::unordered_map<std::type_index, ClassType> &source,
-      std::vector<std::type_index> &ordered, unsigned int K);
-  void GetClassesHelper(std::unordered_map<std::type_index, ClassType> &source,
-                        std::vector<std::type_index> &ordered,
-                        std::vector<ClassType> &res);
-  std::vector<ClassType> GetClasses(
-      std::unordered_map<std::type_index, ClassType> &source);
-};
 
 //! Extractor provides an interface for users to generate multiple features
 //! optimally with a single call.
 /*!
  *  Detailed
  */
-class Extractor : public ClassMatcherMixin<preprocess::ExtractableType *> {
+class Extractor : public utils::ClassMatcherMixin<preprocess::ExtractableType *> {
  public:
   ~Extractor();
   //! Computes the features that are passed.

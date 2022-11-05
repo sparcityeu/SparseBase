@@ -4,7 +4,7 @@
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/exception.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
   {
     string file_name = argv[1];
-    utils::io::MTXReader<unsigned int, unsigned int, unsigned int> reader(
+    io::MTXReader<unsigned int, unsigned int, unsigned int> reader(
         file_name);
     format::COO<unsigned int, unsigned int, unsigned int> *coo =
         reader.ReadCOO();

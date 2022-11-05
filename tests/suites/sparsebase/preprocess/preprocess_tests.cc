@@ -186,7 +186,7 @@ TEST(ArrayPermute, Inverse) {
   }
 }
 TEST(TypeIndexHash, Basic) {
-  TypeIndexVectorHash hasher;
+  utils::TypeIndexVectorHash hasher;
   // Empty vector
   std::vector<std::type_index> vec;
   EXPECT_EQ(hasher(vec), 0);
@@ -201,132 +201,6 @@ TEST(TypeIndexHash, Basic) {
   EXPECT_EQ(hash, hasher(vec));
 }
 
-class FunctionMatcherMixinTest : public ::testing::Test {
- protected:
-  GenericPreprocessType<int> concrete_preprocess;
-
-  static int OneImplementationFunction(std::vector<format::Format *> inputs,
-                                       PreprocessParams *) {
-    return 1;
-  }
-  static int TwoImplementationFunction(std::vector<format::Format *> inputs,
-                                       PreprocessParams *) {
-    return 2;
-  }
-  static int ThreeImplementationFunction(std::vector<format::Format *> inputs,
-                                         PreprocessParams *) {
-    return 3;
-  }
-  static int FourImplementationFunction(std::vector<format::Format *> inputs,
-                                        PreprocessParams *) {
-    return 4;
-  }
-  struct GenericParams : PreprocessParams {
-    GenericParams(int p) : param(p) {}
-    int param;
-  };
-};
-
-TEST_F(FunctionMatcherMixinTest, BlackBox) {
-  format::CSR<int, int, int> *csr = &global_csr;
-  // Check calling with an empty map
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-      utils::FunctionNotFoundException);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-      utils::FunctionNotFoundException);
-
-  // Check calling with no conversion needed
-  concrete_preprocess.RegisterFunction({csr->get_id()},
-                                       OneImplementationFunction);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            1);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-            1);
-
-  // Check unregistering
-  EXPECT_EQ(
-      concrete_preprocess.UnregisterFunction(
-          {sparsebase::format::CSR<int, int, int>::get_id_static()}),
-      true);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-      utils::FunctionNotFoundException);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-      utils::FunctionNotFoundException);
-
-  // Check unregistering an already unregistered key
-  EXPECT_EQ(
-      concrete_preprocess.UnregisterFunction(
-          {sparsebase::format::CSR<int, int, int>::get_id_static()}),
-      false);
-
-
-  // Check calling with no conversion needed even though one is possible
-  concrete_preprocess.RegisterFunction({csr->get_id()},
-                                       OneImplementationFunction);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            1);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-            1);
-
-  // Checking override
-  // Override an existing function in the map
-  concrete_preprocess.RegisterFunction({csr->get_id()},
-                                       ThreeImplementationFunction);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            3);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-            3);
-
-  // Try to override but fail
-  EXPECT_EQ(concrete_preprocess.RegisterFunctionNoOverride(
-                {csr->get_id()}, FourImplementationFunction),
-            false);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            3);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-            3);
-
-  // Try to override and succeed
-  concrete_preprocess.UnregisterFunction(
-      {sparsebase::format::CSR<int, int, int>::get_id_static()});
-  EXPECT_EQ(concrete_preprocess.RegisterFunctionNoOverride(
-                {csr->get_id()}, FourImplementationFunction),
-            true);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, true),
-            4);
-  EXPECT_EQ(concrete_preprocess.GetOutput(csr, nullptr, {&cpu_context}, false),
-            4);
-
-  // Checking cached getters
-  // No conversion needed to be done
-  auto tup =
-      concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, true);
-  EXPECT_EQ(std::get<0>(tup)[0].size(), 0);
-  EXPECT_EQ(std::get<1>(tup), 4);
-  tup =
-      concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, false);
-  EXPECT_EQ(std::get<0>(tup)[0].size(), 0);
-  EXPECT_EQ(std::get<1>(tup), 4);
-
-  // One conversion is done
-  concrete_preprocess.UnregisterFunction(
-      {sparsebase::format::CSR<int, int, int>::get_id_static()});
-  concrete_preprocess.RegisterFunction(
-      {sparsebase::format::COO<int, int, int>::get_id_static()}, TwoImplementationFunction);
-  auto tup2 =
-      concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, true);
-  ASSERT_NE(std::get<0>(tup2)[0][0], nullptr);
-  ASSERT_NE(std::get<0>(tup2)[0][0]->get_id(), csr->get_id());
-  EXPECT_EQ(std::get<1>(tup2), 2);
-  EXPECT_THROW(
-      concrete_preprocess.GetOutputCached(csr, nullptr, {&cpu_context}, false),
-      utils::DirectExecutionNotAvailableException<
-          std::vector<std::type_index>>);
-}
 
 TEST(DegreeReorder, AscendingOrder) {
   sparsebase::preprocess::DegreeReorder<int, int, int> reorder(true);
@@ -1292,8 +1166,8 @@ class Degrees_DegreeDistributionTest : public ::testing::Test {
  protected:
   Degrees_DegreeDistribution<int, int, int, float> feature;
 
-  struct Params1 : sparsebase::preprocess::PreprocessParams {};
-  struct Params2 : sparsebase::preprocess::PreprocessParams {};
+  struct Params1 : sparsebase::utils::Parameters {};
+  struct Params2 : sparsebase::utils::Parameters {};
 };
 
 TEST_F(Degrees_DegreeDistributionTest, FeaturePreprocessTypeTests) {
@@ -1322,8 +1196,8 @@ class DegreesTest : public ::testing::Test {
  protected:
   Degrees<int, int, int> feature;
 
-  struct Params1 : sparsebase::preprocess::PreprocessParams {};
-  struct Params2 : sparsebase::preprocess::PreprocessParams {};
+  struct Params1 : sparsebase::utils::Parameters {};
+  struct Params2 : sparsebase::utils::Parameters {};
 };
 
 TEST_F(DegreesTest, AllTests) {
@@ -1397,8 +1271,8 @@ class DegreeDistributionTest : public ::testing::Test {
  protected:
   DegreeDistribution<int, int, int, float> feature;
 
-  struct Params1 : sparsebase::preprocess::PreprocessParams {};
-  struct Params2 : sparsebase::preprocess::PreprocessParams {};
+  struct Params1 : sparsebase::utils::Parameters {};
+  struct Params2 : sparsebase::utils::Parameters {};
 };
 
 TEST_F(DegreeDistributionTest, AllTests) {
@@ -1687,13 +1561,13 @@ TEST(GraphFeatureBase, DegreeDistributionCached) {
     EXPECT_EQ(degreeDistribution_array[i], distribution[i]);
   }
 }
-class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
+class MultiFormatKeyPreprocess : public utils::FunctionMatcherMixin<int> {
  public:
   std::tuple<std::vector<std::vector<format::Format *>>, int> GetCached(
       format::Format *f1, format::Format *f2, format::Format *f3,
       std::vector<context::Context *> contexts, bool convert_input,
       bool clear_intermediate) {
-    auto p = new PreprocessParams;
+    auto p = new utils::Parameters;
     auto res = this->CachedExecute(p, std::move(contexts), convert_input,
                                    clear_intermediate, f1, f2, f3);
     return res;
@@ -1710,10 +1584,10 @@ class MultiFormatKeyPreprocess : public FunctionMatcherMixin<int> {
   }
 
  private:
-  static int CSR_CSR_CSR(std::vector<format::Format *>, PreprocessParams *) {
+  static int CSR_CSR_CSR(std::vector<format::Format *>, utils::Parameters *) {
     return 1;
   }
-  static int CSR_CSC_CSC(std::vector<format::Format *>, PreprocessParams *) {
+  static int CSR_CSC_CSC(std::vector<format::Format *>, utils::Parameters *) {
     return 1;
   }
 };

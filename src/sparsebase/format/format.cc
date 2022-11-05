@@ -1,4 +1,5 @@
 #include "sparsebase/format/format.h"
+#include "sparsebase/utils/logger.h"
 
 #include <algorithm>
 #include <fstream>

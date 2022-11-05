@@ -1,7 +1,7 @@
 #include "sparsebase/feature/feature.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 #include <iostream>
 
 using namespace std;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
   // The name of the matrix-market file
   string file_name = argv[1];
   // Initialize a reader object with the matrix-market file inputted
-  sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type> reader(
+  sparsebase::io::MTXReader<vertex_type, edge_type, value_type> reader(
       file_name);
   // Read the matrix in to a COO representation
   COO<vertex_type, edge_type, value_type> *coo = reader.ReadCOO();

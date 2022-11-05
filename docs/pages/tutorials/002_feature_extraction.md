@@ -25,7 +25,7 @@ Begin your main program by reading the matrix-market file into a `COO` object us
 // The name of the matrix-market file
 string file_name = argv[1];
 // Initialize a reader object with the matrix-market file inputted
-sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type> reader(
+sparsebase::io::MTXReader<vertex_type, edge_type, value_type> reader(
     file_name);
 // Read the matrix in to a COO representation
 COO<vertex_type, edge_type, value_type> *coo = reader.ReadCOO();

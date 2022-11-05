@@ -31,8 +31,8 @@ class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
 
 ### 2. Create a struct containing the parameters you need, and initialize them in the constructor
 
-Inside the class, create a new struct inheriting from `PreprocessParams`. Its members will be whichever parameters that your feature will require. We will call this struct `FeatureParams`. We add `alpha` and `beta` to it.
-Furthermore, create an instance of the struct you just defined and also create a `std::unordered_map<std::type_index, PreprocessParams>` that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the `feature` namespace.
+Inside the class, create a new struct inheriting from `Parameters`. Its members will be whichever parameters that your feature will require. We will call this struct `FeatureParams`. We add `alpha` and `beta` to it.
+Furthermore, create an instance of the struct you just defined and also create a `std::unordered_map<std::type_index, Parameters>` that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the `feature` namespace.
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
@@ -81,14 +81,14 @@ The Extract function is used by the `feature::Extractor` to call the implementat
 Add implementation functions that will carry out the computations for the feature to the file `sparsebase/src/sparse_preprocess.cc`. Each function will be specific for an input `Format`. These functions should match the function signature provided in `FunctionMatcherMixin`:
 
 ```cpp
-using PreprocessFunction = ReturnType (*)(std::vector<format::Format *>, PreprocessParams *);
+using PreprocessFunction = ReturnType (*)(std::vector<format::Format *>, Parameters *);
 ```
 Not that the functions must also be *static*. This is required to enable the mechanism of choosing the correct implementation function for the input `Format`.
 
 The parameters that your function will take are:
 
 1. A vector of pointers at `Format` objects.
-2. A pointer at a `PreprocessParams` struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your feature.
+2. A pointer at a `Parameters` struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your feature.
 
 For our example, we add two functions, `FeatureCSR()` and `FeatureCOO()`:
 
@@ -96,14 +96,14 @@ For our example, we add two functions, `FeatureCSR()` and `FeatureCOO()`:
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
 	//.......
-	static FeatureType* FeatureCSR(std::vector<SparseFormat<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
+	static FeatureType* FeatureCSR(std::vector<SparseFormat<IDType, NNZType, ValueType>*> input_sf, Parameters* params){
 		auto csr = static_cast<sparsebase::CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
 		FeatureParams* params = static_cast<OptimalReorderParams*>(params);
 		// ... carry out feature extraction
 		return feature;
 	}
 
-	static FeatureType* FeatureCOO(std::vector<SparseFormat<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
+	static FeatureType* FeatureCOO(std::vector<SparseFormat<IDType, NNZType, ValueType>*> input_sf, Parameters* params){
 		auto coo = static_cast<sparsebase::COO<IDType, NNZType, ValueType>(input_sf[0]);
 		FeatureParams* params = static_cast<FeatureParams*>(params);
 		// ... carry out feature extraction

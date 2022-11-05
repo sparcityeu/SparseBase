@@ -22,8 +22,6 @@
 
 namespace sparsebase {
 
-namespace utils {
-
 namespace io {
 
 #ifdef USE_PIGO
@@ -326,8 +324,6 @@ struct SbffObject {
 };
 
 }  // namespace io
-
-}  // namespace utils
 
 }  // namespace sparsebase
 

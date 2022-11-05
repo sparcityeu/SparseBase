@@ -15,6 +15,7 @@
 #include <string>
 #include <typeindex>
 #include <typeinfo>
+#include <any>
 
 #include "exception.h"
 
@@ -27,47 +28,62 @@ typedef float CostType;
 template <typename... T>
 constexpr bool always_false = false;
 
+//! Functor used for hashing vectors of type_index values.
+struct TypeIndexVectorHash {
+  std::size_t operator()(const std::vector<std::type_index> &vf) const;
+};
+
 using std::numeric_limits;
 
 // Cross float-integral type conversion is not currently available
 template <typename T, typename U>
 bool CanTypeFitValue(const U value) {
-  if constexpr (std::is_integral_v<T> != std::is_integral_v<U>) return false;
+  bool decision;
+  if constexpr (std::is_integral_v<T> != std::is_integral_v<U>) decision = false;
   if constexpr (std::is_integral_v<T> && std::is_integral_v<U>) {
     const intmax_t botT = []() {
+      intmax_t ret;
       if constexpr (std::is_floating_point_v<T>)
-        return intmax_t(-(numeric_limits<T>::max()));
+        ret = intmax_t(-(numeric_limits<T>::max()));
       else
-        return intmax_t(numeric_limits<T>::min());
+        ret = intmax_t(numeric_limits<T>::min());
+      return ret;
     }();
     const intmax_t botU = []() {
+      intmax_t ret;
       if constexpr (std::is_floating_point_v<U>)
-        return intmax_t(-(numeric_limits<U>::max()));
+        ret= intmax_t(-(numeric_limits<U>::max()));
       else
-        return intmax_t(numeric_limits<U>::min());
+        ret= intmax_t(numeric_limits<U>::min());
+      return ret;
     }();
     const uintmax_t topT = uintmax_t(numeric_limits<T>::max());
     const uintmax_t topU = uintmax_t(numeric_limits<U>::max());
-    return !((botT > botU && value < (U)(botT)) ||
+    decision = !((botT > botU && value < (U)(botT)) ||
              (topT < topU && value > (U)(topT)));
   } else if constexpr (!std::is_integral_v<T> && !std::is_integral_v<U>) {
     const double botT = []() {
+      T ret;
       if constexpr (std::is_floating_point_v<T>)
-        return T(-(numeric_limits<T>::max()));
+        ret= T(-(numeric_limits<T>::max()));
       else
-        return T(numeric_limits<T>::min());
+        ret= T(numeric_limits<T>::min());
+      return ret;
     }();
     const double botU = []() {
+      U ret;
       if constexpr (std::is_floating_point_v<U>)
-        return U(-(numeric_limits<U>::max()));
+        ret= U(-(numeric_limits<U>::max()));
       else
-        return U(numeric_limits<U>::min());
+        ret= U(numeric_limits<U>::min());
+      return ret;
     }();
     const double topT = numeric_limits<T>::max();
     const double topU = numeric_limits<U>::max();
-    return !((botT > botU && value < (U)(botT)) ||
+    decision = !((botT > botU && value < (U)(botT)) ||
              (topT < topU && value > (U)(topT)));
   }
+  return decision;
   //} else if constexpr (std::is_integral_v<T> && !std::is_integral_v<U> ){
   //  const double topT = double(numeric_limits<T>::max());
   //  const uintmax_t topU = uintmax_t(numeric_limits<U>::max());
@@ -112,8 +128,7 @@ inline bool isTypeConversionSafe(FromType from_val, ToType to_val) {
 
 template <typename ToType, typename FromType, typename SizeType>
 ToType* ConvertArrayType(FromType* from_ptr, SizeType size) {
-  if constexpr (std::is_same_v<ToType, void> && std::is_same_v<FromType, void>) return nullptr;
-  else {
+  if constexpr (!(std::is_same_v<ToType, void> && std::is_same_v<FromType, void>)){
     if (from_ptr == nullptr) return nullptr;
     auto to_ptr = new ToType[size];
     for (SizeType i = 0; i < size; i++) {
@@ -128,6 +143,7 @@ ToType* ConvertArrayType(FromType* from_ptr, SizeType size) {
     }
     return to_ptr;
   }
+  return nullptr;
 }
 
 template <typename T>
@@ -185,39 +201,32 @@ class IdentifiableImplementation : public Base{
 };
 
 
-enum LogLevel {
-  LOG_LVL_INFO,
-  LOG_LVL_WARNING,
-  LOG_LVL_NONE,
-};
 
-class Logger {
- private:
-  std::string root_;
-  static LogLevel level_;
-  static bool use_stdout_;
-  static bool use_stderr_;
-  static std::string filename_;
-  std::ofstream file_;
-
+template <typename Interface>
+struct Implementation {
  public:
-  Logger();
-
-  Logger(std::type_index root_type);
-
-  ~Logger();
-
-  static void set_level(LogLevel level) { Logger::level_ = level; }
-
-  static void set_stdout(bool use) { Logger::use_stdout_ = use; }
-
-  static void set_stderr(bool use) { Logger::use_stderr_ = use; }
-
-  static void set_file(const std::string& filename) {
-    Logger::filename_ = filename;
+  Implementation() = default;
+  template <typename ConcreteType>
+  explicit Implementation(ConcreteType &&object)
+      : storage{std::forward<ConcreteType>(object)},
+        getter{[](std::any &storage) -> Interface & {
+          return std::any_cast<ConcreteType &>(storage);
+        }} {}
+  Implementation(const Implementation &object)
+      : storage{object.storage}, getter{object.getter} {}
+  Implementation(Implementation &&object) noexcept
+      : storage{std::move(object.storage)}, getter{std::move(object.getter)} {}
+  Implementation &operator=(Implementation other) {
+    storage = other.storage;
+    getter = other.getter;
+    return *this;
   }
 
-  void Log(const std::string& message, LogLevel msg_level = LOG_LVL_INFO);
+  Interface *operator->() { return &getter(storage); }
+
+ private:
+  std::any storage;
+  Interface &(*getter)(std::any &);
 };
 
 }  // namespace sparsebase::utils

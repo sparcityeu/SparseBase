@@ -4,7 +4,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -13,12 +13,12 @@ using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = unsigned int;
 
-struct customParam : preprocess::PreprocessParams {
+struct customParam : utils::Parameters {
   customParam(int h) : hyperparameter(h) {}
   int hyperparameter;
 };
 vertex_type *degree_reorder_csr(std::vector<format::Format *> formats,
-                                preprocess::PreprocessParams *params) {
+                                utils::Parameters *params) {
   format::CSR<vertex_type, edge_type, value_type> *csr =
       formats[0]->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
   customParam *cast_params = static_cast<customParam *>(params);
