@@ -2,7 +2,7 @@
 #include <sparsebase/context/context.h>
 #include <sparsebase/preprocess/preprocess.h>
 #include <sparsebase/utils/converter/converter.h>
-#include <sparsebase/utils/io/reader.h>
+#include <sparsebase/io/reader.h>
 #include <stdio.h>
 
 #include <fstream>
@@ -35,7 +35,7 @@ int main() {
   // Hamrjki thinkVle1/Hamrle1.mtx
   context::CPUContext cpu_context;
 
-  utils::io::MTXReader<ull, ull, val> A_reader(A_filename, true);
+  io::MTXReader<ull, ull, val> A_reader(A_filename, true);
   COO<ull, ull, val> *A = A_reader.ReadCOO();
 
   ull *perm = ReorderBase::Reorder<RCMReorder>({}, A, {&cpu_context}, true);
@@ -45,7 +45,7 @@ int main() {
 
   auto *A_csc = A_reordered->Convert<CSC>();
 
-  // utils::io::MTXReader<ull, ull, val> b_reader(B_filename);
+  // io::MTXReader<ull, ull, val> b_reader(B_filename);
   // format::Array<val> * b = b_reader.ReadArray();
 
   Array<val> *b = new Array<val>(3, nullptr);

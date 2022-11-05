@@ -12,6 +12,7 @@
 
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/utils.h"
+#include "sparsebase/utils/logger.h"
 
 
 namespace sparsebase::utils::converter {

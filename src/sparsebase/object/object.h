@@ -14,7 +14,7 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 
 namespace sparsebase {
 
@@ -53,9 +53,9 @@ class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
   Graph<VertexID, NumEdges, Weight> &operator=(
       const Graph<VertexID, NumEdges, Weight> &);
   void ReadConnectivityToCSR(
-      const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &);
+      const io::ReadsCSR<VertexID, NumEdges, Weight> &);
   void ReadConnectivityToCOO(
-      const utils::io::ReadsCOO<VertexID, NumEdges, Weight> &);
+      const io::ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
   void ReadConnectivityFromEdgelistToCSR(std::string filename);
   void InitializeInfoFromConnection();

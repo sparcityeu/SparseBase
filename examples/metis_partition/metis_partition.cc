@@ -21,9 +21,9 @@ int main(int argc, char** argv) {
 
   cout << "Reading inputs..." << endl;
   format::COO<TYPES>* coo =
-      utils::io::EdgeListReader<TYPES>(file_name).ReadCOO();
+      io::EdgeListReader<TYPES>(file_name).ReadCOO();
   format::CSR<TYPES>* csr =
-      utils::io::EdgeListReader<TYPES>(file_name).ReadCSR();
+      io::EdgeListReader<TYPES>(file_name).ReadCSR();
 
   cout << "Setting partition params..." << endl;
   preprocess::MetisPartition<TYPES> metis;

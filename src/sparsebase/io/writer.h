@@ -11,12 +11,10 @@
 
 #include <string>
 
+#include "reader.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/reader.h"
 
 namespace sparsebase {
-
-namespace utils {
 
 namespace io {
 
@@ -77,12 +75,10 @@ class BinaryWriterOrderOne : public Writer, public WritesArray<T> {
 
 }  // namespace io
 
-}  // namespace utils
-
 }  // namespace sparsebase
 
 #ifdef _HEADER_ONLY
-#include "sparsebase/utils/io/writer.cc"
+#include "sparsebase/io/writer.cc"
 #endif
 
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_

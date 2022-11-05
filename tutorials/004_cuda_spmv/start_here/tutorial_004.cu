@@ -1,5 +1,5 @@
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/iobase.h"
+#include "sparsebase/io/iobase.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/context/context.h"
 #include <string>
@@ -13,7 +13,7 @@ typedef unsigned int nnz_type;
 typedef float value_type;
 
 using namespace sparsebase;
-using namespace utils::io;
+using namespace io;
 using namespace preprocess;
 using namespace format;
 

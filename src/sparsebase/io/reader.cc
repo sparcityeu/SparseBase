@@ -1,4 +1,4 @@
-#include "sparsebase/utils/io/reader.h"
+#include "reader.h"
 
 #include <algorithm>
 #include <cstring>
@@ -8,17 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "sparse_file_format.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/utils/converter/converter.h"
 #include "sparsebase/utils/exception.h"
-#include "sparsebase/utils/io/sparse_file_format.h"
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
 
 namespace sparsebase {
-
-namespace utils {
 
 namespace io {
 
@@ -41,7 +39,7 @@ format::COO<IDType, NNZType, ValueType>
   if (infile.is_open()) {
     if constexpr (std::is_same_v<ValueType, void>) {
       if (weighted_) {
-        throw ReaderException("Cannot read weights into ValueType void");
+        throw utils::ReaderException("Cannot read weights into ValueType void");
       }
       IDType u, v;
       IDType m = 0;
@@ -170,7 +168,7 @@ format::COO<IDType, NNZType, ValueType>
     }
 
   } else {
-    throw ReaderException("file does not exist!");
+    throw utils::ReaderException("file does not exist!");
   }
 }
 
@@ -178,7 +176,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
     *EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
-  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
+  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
   return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, &cpu_context);
@@ -199,7 +197,7 @@ MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
     // parse first line
     options_ = ParseHeader(header_line);
   } else {
-    throw ReaderException("Wrong matrix market file name\n");
+    throw utils::ReaderException("Wrong matrix market file name\n");
   }
 }
 
@@ -212,7 +210,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   std::string prefix, object, format, field, symmetry;
   line_ss >> prefix >> object >> format >> field >> symmetry;
   if (prefix != MMX_PREFIX)
-    throw ReaderException("Wrong prefix in a matrix market file");
+    throw utils::ReaderException("Wrong prefix in a matrix market file");
   // parsing Object option
   if (object == "matrix") {
     options.object =
@@ -220,10 +218,10 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (object == "vector") {
     options.object =
         MTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
-    throw ReaderException(
+    throw utils::ReaderException(
         "Matrix market reader does not currently support reading vectors.");
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Illegal value for the 'object' option in matrix market header");
   }
   // parsing format option
@@ -234,7 +232,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
     options.format =
         MTXReader<IDType, NNZType, ValueType>::MTXFormatOptions::coordinate;
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Illegal value for the 'format' option in matrix market header");
   }
   // parsing field option
@@ -242,35 +240,35 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::real;
     if constexpr (std::is_same<void, ValueType>::value)
-      throw ReaderException(
+      throw utils::ReaderException(
           "You are reading the values of the matrix market file into a void "
           "array");
   } else if (field == "double") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::double_field;
     if constexpr (std::is_same<void, ValueType>::value)
-      throw ReaderException(
+      throw utils::ReaderException(
           "You are reading the values of the matrix market file into a void "
           "array");
   } else if (field == "complex") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
     if constexpr (std::is_same<void, ValueType>::value)
-      throw ReaderException(
+      throw utils::ReaderException(
           "You are reading the values of the matrix market file into a void "
           "array");
   } else if (field == "integer") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
     if constexpr (std::is_same<void, ValueType>::value)
-      throw ReaderException(
+      throw utils::ReaderException(
           "You are reading the values of the matrix market file into a void "
           "array");
   } else if (field == "pattern") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::pattern;
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Illegal value for the 'field' option in matrix market header");
   }
   // parsing symmetry
@@ -286,10 +284,10 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
   } else if (symmetry == "hermitian") {
     options.symmetry =
         MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::hermitian;
-    throw ReaderException(
+    throw utils::ReaderException(
         "Matrix market reader does not currently support hermitian symmetry.");
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Illegal value for the 'symmetry' option in matrix market header");
   }
   return options;
@@ -381,7 +379,7 @@ format::COO<IDType, NNZType, ValueType>
           return this->ReadCoordinateIntoCOO<
               true, (int)MTXSymmetryOptions::skew_symmetric, false>();
       else
-        throw ReaderException(
+        throw utils::ReaderException(
             "Can't read matrix market symmetry options besides general, "
             "symmetric, and skew_symmetric");
     } else {
@@ -407,12 +405,12 @@ format::COO<IDType, NNZType, ValueType>
           return this->ReadCoordinateIntoCOO<
               false, (int)MTXSymmetryOptions::skew_symmetric, false>();
       else
-        throw ReaderException(
+        throw utils::ReaderException(
             "Can't read matrix market symmetry options besides general, "
             "symmetric, and skew_symmetric");
     }
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Can't read matrix market formats besides array and coordinate");
   }
 }
@@ -421,7 +419,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType>
     *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
   if constexpr (std::is_same_v<ValueType, void>)
-    throw ReaderException(
+    throw utils::ReaderException(
         "Cannot read a matrix market file into an Array with void ValueType");
   else {
     std::ifstream fin(filename_);
@@ -436,7 +434,7 @@ format::Array<ValueType>
 
     fin >> M >> N >> L;
     if (M != 1 && N != 1) {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Trying to read a 2D matrix with multiple rows "
           "and multiple columns into dense array");
     }
@@ -502,7 +500,7 @@ format::COO<IDType, NNZType, ValueType>
           return coo;
         } else {
           // TODO: Add an exception class for this
-          throw ReaderException(
+          throw utils::ReaderException(
               "Weight type for weighted graphs can not be void");
         }
       } else {
@@ -533,7 +531,7 @@ format::COO<IDType, NNZType, ValueType>
         if constexpr (!std::is_same_v<void, ValueType>) {
           vals = new ValueType[L * 2];
         } else {
-          throw ReaderException(
+          throw utils::ReaderException(
               "Weight type for weighted graphs can not be void");
         }
       }
@@ -585,12 +583,12 @@ format::COO<IDType, NNZType, ValueType>
           format::kOwned);
       return coo;
     } else {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Reader only supports general, symmetric, and skew-symmetric "
           "symmetry options");
     }
   } else {
-    throw ReaderException("file does not exists!!");
+    throw utils::ReaderException("file does not exists!!");
   }
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -609,7 +607,7 @@ format::Array<ValueType>
     fin >> M >> N;
 
     if (M != 1 && N != 1) {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Trying to read a 2D matrix with multiple rows "
           "and multiple columns into dense array");
     }
@@ -632,7 +630,7 @@ format::Array<ValueType>
     return array;
 
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Cannot read a matrix market file into an Array whose ValueType is "
         "void");
   }
@@ -643,13 +641,13 @@ format::Array<ValueType> *MTXReader<IDType, NNZType, ValueType>::ReadArray()
     const {
   // check object
   if constexpr (std::is_same_v<ValueType, void>) {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Cannot read a matrix market file into an Array whose ValueType is "
         "void");
   } else {
     bool weighted = options_.field != MTXFieldOptions::pattern;
     if (!weighted) {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Cannot read a matrix market file into an Array if it is in pattern "
           "format");
     }
@@ -662,7 +660,7 @@ format::Array<ValueType> *MTXReader<IDType, NNZType, ValueType>::ReadArray()
         return ReadArrayIntoArray();
       }
     } else {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Wrong format value while reading matrix market file\n");
     }
   }
@@ -672,7 +670,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
     *MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
-  converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
+  utils::converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
   return converterObj.template Convert<format::CSR<IDType, NNZType, ValueType>>(
       coo, &cpu_context);
@@ -710,7 +708,7 @@ format::COO<IDType, NNZType, ValueType>
           pigo_coo.nrows() - 1, pigo_coo.ncols() - 1, pigo_coo.m(),
           pigo_coo.x(), pigo_coo.y(), pigo_coo.w(), format::kOwned);
     } else {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Cannot read a matrix market with weights into Format with void "
           "ValueType");
     }
@@ -788,7 +786,7 @@ format::COO<IDType, NNZType, ValueType>
           coo.nrows(), coo.ncols(), coo.m(), coo.x(), coo.y(), coo.w(),
           format::kOwned);
     } else {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Cannot read a weighted edge list into format with void ValueType");
     }
   } else {
@@ -850,7 +848,7 @@ format::CSR<IDType, NNZType, ValueType>
   if constexpr (!std::is_same_v<ValueType, void>) {
     sbff.template GetArray("vals", vals);
   } else {
-    throw ReaderException(
+    throw utils::ReaderException(
         "Cannot read a weighted COO into a format with void ValueType");
   }
 
@@ -880,7 +878,7 @@ format::COO<IDType, NNZType, ValueType>
     if constexpr (!std::is_same_v<ValueType, void>) {
       sbff.template GetArray("vals", vals);
     } else {
-      throw ReaderException(
+      throw utils::ReaderException(
           "Cannot read a weighted COO into a format with void ValueType");
     }
   }
@@ -912,7 +910,7 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
   if constexpr (!std::is_same_v<T, void>) {
     sbff.template GetArray("array", arr);
   } else {
-    throw ReaderException("Cannot read an into an Array with void ValueType");
+    throw utils::ReaderException("Cannot read an into an Array with void ValueType");
   }
   return new format::Array<T>(size, arr, format::kOwned);
 }
@@ -922,7 +920,5 @@ format::Array<T> *BinaryReaderOrderOne<T>::ReadArray() const {
 #endif
 
 }  // namespace io
-
-}  // namespace utils
 
 }  // namespace sparsebase

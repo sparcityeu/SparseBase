@@ -10,10 +10,10 @@ TEST(IOBase, WriteArrayToBinary) {
                                          sparsebase::format::kNotOwned);
 
   // Write the array to a binary file using sparsebase
-  sparsebase::utils::io::IOBase::WriteArrayToBinary(&sbArray, "test_order_one.bin");
+  sparsebase::io::IOBase::WriteArrayToBinary(&sbArray, "test_order_one.bin");
 
   // Read the array from the binary file using sparsebase
-  sparsebase::utils::io::BinaryReaderOrderOne<int> readerOrderOne(
+  sparsebase::io::BinaryReaderOrderOne<int> readerOrderOne(
       "test_order_one.bin");
   auto array2 = readerOrderOne.ReadArray();
 
@@ -32,10 +32,10 @@ TEST(IOBase, WriteCOOToBinary) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  sparsebase::utils::io::IOBase::WriteCOOToBinary(&coo, "writer_test_order_two_coo.bin");
+  sparsebase::io::IOBase::WriteCOOToBinary(&coo, "writer_test_order_two_coo.bin");
 
   // Read the COO from the binary file with sparsebase
-  sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
+  sparsebase::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
       "writer_test_order_two_coo.bin");
   auto coo2 = readerOrderTwo.ReadCOO();
 
@@ -61,10 +61,10 @@ TEST(IOBase, WriteBinaryToCSR) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  sparsebase::utils::io::IOBase::WriteCSRToBinary(&csr, "writer_test_order_two_csr.bin");
+  sparsebase::io::IOBase::WriteCSRToBinary(&csr, "writer_test_order_two_csr.bin");
 
   // Read the COO from the binary file with sparsebase
-  sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
+  sparsebase::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
       "writer_test_order_two_csr.bin");
   auto csr2 = readerOrderTwo.ReadCSR();
 
@@ -89,12 +89,12 @@ TEST(BinaryOrderOneWriter, Basics) {
                                          sparsebase::format::kNotOwned);
 
   // Write the array to a binary file using sparsebase
-  sparsebase::utils::io::BinaryWriterOrderOne<int> writerOrderOne(
+  sparsebase::io::BinaryWriterOrderOne<int> writerOrderOne(
       "test_order_one.bin");
   writerOrderOne.WriteArray(&sbArray);
 
   // Read the array from the binary file using sparsebase
-  sparsebase::utils::io::BinaryReaderOrderOne<int> readerOrderOne(
+  sparsebase::io::BinaryReaderOrderOne<int> readerOrderOne(
       "test_order_one.bin");
   auto array2 = readerOrderOne.ReadArray();
 
@@ -113,12 +113,12 @@ TEST(BinaryOrderTwoWriter, COO) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  sparsebase::utils::io::BinaryWriterOrderTwo<int, int, float> writerOrderTwo(
+  sparsebase::io::BinaryWriterOrderTwo<int, int, float> writerOrderTwo(
       "writer_test_order_two_coo.bin");
   writerOrderTwo.WriteCOO(&coo);
 
   // Read the COO from the binary file with sparsebase
-  sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
+  sparsebase::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
       "writer_test_order_two_coo.bin");
   auto coo2 = readerOrderTwo.ReadCOO();
 
@@ -144,12 +144,12 @@ TEST(BinaryOrderTwoWriter, CSR) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a binary file with sparsebase
-  sparsebase::utils::io::BinaryWriterOrderTwo<int, int, float> writerOrderTwo(
+  sparsebase::io::BinaryWriterOrderTwo<int, int, float> writerOrderTwo(
       "writer_test_order_two_csr.bin");
   writerOrderTwo.WriteCSR(&csr);
 
   // Read the COO from the binary file with sparsebase
-  sparsebase::utils::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
+  sparsebase::io::BinaryReaderOrderTwo<int, int, float> readerOrderTwo(
       "writer_test_order_two_csr.bin");
   auto csr2 = readerOrderTwo.ReadCSR();
 

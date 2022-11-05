@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/reader.h"
 
 namespace sparsebase::object {
 
@@ -81,7 +81,7 @@ Graph<VertexID, NumEdges, Weight>::Graph(format::Format *connectivity) {
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
-    const utils::io::ReadsCOO<VertexID, NumEdges, Weight> &reader) {
+    const io::ReadsCOO<VertexID, NumEdges, Weight> &reader) {
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -91,7 +91,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
-    const utils::io::ReadsCSR<VertexID, NumEdges, Weight> &reader) {
+    const io::ReadsCSR<VertexID, NumEdges, Weight> &reader) {
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
@@ -102,7 +102,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
     std::string filename) {
-  utils::io::EdgeListReader<VertexID, NumEdges, Weight> reader(
+  io::EdgeListReader<VertexID, NumEdges, Weight> reader(
       filename, false, false, false, true, true);
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
@@ -114,7 +114,7 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromMTXToCOO(
     std::string filename) {
-  utils::io::MTXReader<VertexID, NumEdges, Weight> reader(filename);
+  io::MTXReader<VertexID, NumEdges, Weight> reader(filename);
   this->set_connectivity(reader.ReadCOO(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();
