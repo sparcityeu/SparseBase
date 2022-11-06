@@ -24,6 +24,6 @@ class BinaryReaderOrderTwo : public Reader,
 };
 }
 #ifdef _HEADER_ONLY
-#inclued "binary_reader_order_one.cc"
+#include "binary_reader_order_one.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_BINARY_READER_ORDER_TWO_H

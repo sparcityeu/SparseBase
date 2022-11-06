@@ -2,8 +2,11 @@
 // Created by Amro on 3/31/2022.
 //
 
-#include "context.h"
+#include "sparsebase/context/context.h"
+#include "sparsebase/context/cpu_context.h"
+
 namespace sparsebase::context {
+
 bool CPUContext::IsEquivalent(Context *rhs) const {
   if (dynamic_cast<CPUContext *>(rhs) != nullptr) {
     return true;
@@ -11,5 +14,4 @@ bool CPUContext::IsEquivalent(Context *rhs) const {
     return false;
   }
 }
-Context::~Context() {}
 }  // namespace sparsebase::context

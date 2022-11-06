@@ -1,12 +1,10 @@
 //
 // Created by Amro on 3/31/2022.
 //
+#include "cuda_context_cuda.cuh"
 #include "sparsebase/context/context.h"
-#include "sparsebase/context/cuda/context.cuh"
 #include "sparsebase/utils/exception.h"
-namespace sparsebase {
-namespace context {
-namespace cuda {
+namespace sparsebase::context {
 
 CUDAContext::CUDAContext(int did) : device_id(did) {
   int device_count;
@@ -22,6 +20,4 @@ bool CUDAContext::IsEquivalent(Context *rhs) const {
   }
   return false;
 }
-}  // namespace cuda
-}  // namespace context
 }  // namespace sparsebase

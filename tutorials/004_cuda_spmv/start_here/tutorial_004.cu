@@ -60,7 +60,7 @@ int main(int argc, char * argv[]){
             << vec->get_dimensions()[0] << " elements " <<  std::endl;
 
   // Context representing the GPU with ID 0 in the system
-  context::cuda::CUDAContext gpu0{0};
+  context::CUDAContext gpu0{0};
 
   // The conversion target is passed as a template parameter,
   // and the context to convert it to is the parameter.

@@ -83,7 +83,7 @@ The last parameter in the `Array` constructor, `kOwned` tells the object that it
 Moving data between GPU the CPU is easy with SparseBase. Simply convert the formats you have into their `CUDA` counterparts.
 ```c++
   // Context representing the GPU with ID 0 in the system
-  context::cuda::CUDAContext gpu0{0};
+  context::CUDAContext gpu0{0};
 
   // The conversion target is passed as a template parameter,
   // and the context to convert it to is the parameter.

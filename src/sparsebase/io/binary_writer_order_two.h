@@ -26,6 +26,6 @@ class BinaryWriterOrderTwo : public Writer,
 
 }
 #ifdef _HEADER_ONLY
-#inclued "binary_writer_order_two.cc"
+#include "binary_writer_order_two.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_BINARY_WRITER_ORDER_TWO_H

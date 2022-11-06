@@ -117,7 +117,7 @@ class Format : public utils::Identifiable {
   virtual context::Context *get_context() const = 0;
 
   //! Returns the type_index for the context for the format instance
-  virtual std::type_index get_context_type() const = 0;
+  virtual std::type_index get_id() const = 0;
 
   //! Returns a pointer at the converter of this format instance
   virtual std::shared_ptr<converter::Converter const> get_converter() const = 0;
@@ -187,7 +187,7 @@ class FormatImplementation : public Format {
   virtual DimensionType get_order() const { return this->order_; }
   virtual context::Context *get_context() const { return this->context_.get().get(); }
 
-  virtual std::type_index get_context_type() const {
+  virtual std::type_index get_id() const {
     return this->context_.get()->get_id();
   }
   virtual std::shared_ptr<converter::Converter const> get_converter()

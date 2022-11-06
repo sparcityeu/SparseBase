@@ -19,7 +19,7 @@ if(NOT ${_HEADER_ONLY})
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
     sparsebase/format/format.cc
-    sparsebase/context/context.cc
+          sparsebase/context/cpu_context.cc
           sparsebase/io/mtx_reader.cc
           sparsebase/io/pigo_mtx_reader.cc
           sparsebase/io/edge_list_reader.cc
@@ -33,7 +33,7 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/converter/converter_store.cc
     sparsebase/preprocess/preprocess.cc
     sparsebase/feature/feature.cc
-          sparsebase/experiment/experiment.cc
+          sparsebase/experiment/concrete_experiment.cc
     sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
   )
@@ -43,7 +43,7 @@ if(NOT ${_HEADER_ONLY})
       sparsebase/format/cuda/format.cu
             sparsebase/converter/cuda/converter.cu
       sparsebase/preprocess/cuda/preprocess.cu
-      sparsebase/context/cuda/context.cu)
+            sparsebase/context/cuda_context_cuda.cu)
   endif()
   add_library(sparsebase ${LIB_FILES})
   # defining the include paths of the library
@@ -205,6 +205,7 @@ set(SINGLE_HEADER_FILE
 )
 set(CONTEXT_FILES 
   sparsebase/context/context.h
+        sparsebase/context/cpu_context.h
 )
 set(FORMAT_FILES 
   sparsebase/format/format.h
@@ -244,12 +245,15 @@ set(UTILS_FILES
         sparsebase/utils/function_matcher_mixin.h
         sparsebase/utils/class_matcher_mixin.h
 )
-set(EXPERIMENT_FILES 
-  sparsebase/experiment/experiment.h
+set(EXPERIMENT_FILES
+        sparsebase/experiment/experiment.h
+        sparsebase/experiment/concrete_experiment.h
+        sparsebase/experiment/experiment_type.h
+        sparsebase/experiment/experiment_helper.h
 )
 if(${_HEADER_ONLY})
   set(CONTEXT_FILES ${CONTEXT_FILES}
-    sparsebase/context/context.cc
+          sparsebase/context/cpu_context.cc
   )
   set(FORMAT_FILES ${FORMAT_FILES}
     sparsebase/format/format.cc
@@ -278,7 +282,7 @@ if(${_HEADER_ONLY})
           sparsebase/converter/converter_store.cc
   )
   set(EXPERIMENT_FILES ${EXPERIMENT_FILES}
-    sparsebase/experiment/experiment.cc
+          sparsebase/experiment/concrete_experiment.cc
   )
   set(UTILS_FILES ${UTILS_FILES}
      sparsebase/utils/utils.cc
@@ -323,7 +327,7 @@ if(${USE_CUDA})
   set(CUDA_PREPROCESS_FILES
     sparsebase/preprocess/cuda/preprocess.cuh)
   set(CUDA_CONTEXT_FILES
-    sparsebase/context/cuda/context.cuh)
+          sparsebase/context/cuda_context_cuda.cuh)
   if(${_HEADER_ONLY})
     set(CUDA_FORMAT_FILES ${CUDA_FORMAT_FILES}
       sparsebase/format/cuda/format.cu)
@@ -332,7 +336,7 @@ if(${USE_CUDA})
     set(CUDA_PREPROCESS_FILES ${CUDA_PREPROCESS_FILES}
       sparsebase/preprocess/cuda/preprocess.cu)
     set(CUDA_CONTEXT_FILES ${CUDA_CONTEXT_FILES}
-      sparsebase/context/cuda/context.cu)
+            sparsebase/context/cuda_context_cuda.cu)
   endif()
   install(FILES ${CUDA_FORMAT_FILES}
     DESTINATION include/sparsebase/format/cuda/)
@@ -341,7 +345,7 @@ if(${USE_CUDA})
   install(FILES ${CUDA_PREPROCESS_FILES}
     DESTINATION include/sparsebase/preprocess/cuda/)
   install(FILES ${CUDA_CONTEXT_FILES}
-    DESTINATION include/sparsebase/context/cuda/)
+    DESTINATION include/sparsebase/context/)
 endif()
 
 # Creating an alias for the library when used through "find_package()"

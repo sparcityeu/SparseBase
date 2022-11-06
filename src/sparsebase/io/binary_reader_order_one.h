@@ -21,6 +21,6 @@ class BinaryReaderOrderOne : public Reader, public ReadsArray<T> {
 };
 }
 #ifdef _HEADER_ONLY
-#inclued "binary_reader_order_two.cc"
+#include "binary_reader_order_two.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_BINARY_READER_ORDER_ONE_H

@@ -23,6 +23,6 @@ class BinaryWriterOrderOne : public Writer, public WritesArray<T> {
 
 }
 #ifdef _HEADER_ONLY
-#inclued "binary_writer_order_one.cc"
+#include "binary_writer_order_one.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_BINARY_WRITER_ORDER_ONE_H

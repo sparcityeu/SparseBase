@@ -1,13 +1,13 @@
-#include <iostream>
-
 #include <omp.h>
 #include <unistd.h>
+
+#include <iostream>
 #include <random>
 
-#include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/io/io.h"
 #include "sparsebase/experiment/experiment.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/io/io.h"
+#include "sparsebase/preprocess/preprocess.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -76,7 +76,6 @@ std::any spmv_par(unordered_map<string, Format*> & data, std::any & fparams, std
 #ifdef USE_CUDA
 
 using namespace format::cuda;
-using namespace context::cuda;
 
 #define THREADS_PER_BLOCK 1024
 #define NUM_BLOCKS 512

@@ -1213,8 +1213,8 @@ TEST(ApplyConversionSchema, ClearIntermediate) {
 #define TYPE int, int, int
 class ConversionChainFixture : public ::testing::Test {
  protected:
-  struct FakeContext : utils::IdentifiableImplementation<FakeContext, context::ContextImplementation<FakeContext>> {
-    virtual bool IsEquivalent(Context* i) const {
+  struct FakeContext : utils::IdentifiableImplementation<FakeContext, context::Context> {
+    virtual bool IsEquivalent(context::Context* i) const {
       return i->get_id() == this->get_id();
     };
   };
@@ -1241,13 +1241,13 @@ class ConversionChainFixture : public ::testing::Test {
         csr->get_id(), coo->get_id(), returnCoo,
         [](context::Context*, context::Context* to) -> bool {
           return to->get_id() ==
-                 context::CPUContext::get_context_type();
+                 context::CPUContext::get_id_static();
         });
     c.RegisterConversionFunction(
         coo->get_id(), csr->get_id(), returnCsr,
         [](context::Context* from, context::Context* to) -> bool {
           return to->get_id() ==
-                 FakeContext::get_context_type();
+                 FakeContext::get_id_static();
         });
   }
   void TearDown() override {
@@ -1283,7 +1283,7 @@ TEST_F(ConversionChainFixture, SingleStep) {
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            context::CPUContext::get_context_type());
+            context::CPUContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(nullptr, nullptr);
   EXPECT_EQ(output_format->get_id(),
             (format::COO<TYPE>::get_id_static()));
@@ -1294,7 +1294,7 @@ TEST_F(ConversionChainFixture, SingleStep) {
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            FakeContext::get_context_type());
+            FakeContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(nullptr, nullptr);
   EXPECT_EQ(output_format->get_id(),
             (format::CSR<TYPE>::get_id_static()));
@@ -1310,7 +1310,7 @@ TEST_F(ConversionChainFixture, MultiStep) {
   c.RegisterConversionFunction(
       coo->get_id(), csc->get_id(), returnCsc,
       [](context::Context* from, context::Context* to) -> bool {
-        return to->get_id() == FakeContext::get_context_type();
+        return to->get_id() == FakeContext::get_id_static();
       });
   // single format
   // No conversion -- only one needed context
@@ -1327,13 +1327,13 @@ TEST_F(ConversionChainFixture, MultiStep) {
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 2);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            context::CPUContext::get_context_type());
+            context::CPUContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(nullptr, nullptr);
   EXPECT_EQ(output_format->get_id(),
             (format::COO<TYPE>::get_id_static()));
   delete output_format;
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[1])->get_id()),
-            FakeContext::get_context_type());
+            FakeContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[1]))(nullptr, nullptr);
   EXPECT_EQ(output_format->get_id(),
             (format::CSC<TYPE>::get_id_static()));
@@ -1363,7 +1363,7 @@ TEST_F(ConversionChainFixture, CanConvert) {
   c.RegisterConversionFunction(
       coo->get_id(), csc->get_id(), returnCsc,
       [](context::Context* from, context::Context* to) -> bool {
-        return to->get_id() == FakeContext::get_context_type();
+        return to->get_id() == FakeContext::get_id_static();
       });
   // can
   EXPECT_TRUE(c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(),

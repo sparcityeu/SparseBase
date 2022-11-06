@@ -1,6 +1,6 @@
 #include "converter.cuh"
 #include "sparsebase/context/context.h"
-#include "sparsebase/context/cuda/context.cuh"
+#include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/format/cuda/format.cuh"
 #include "sparsebase/format/format.h"
@@ -12,8 +12,8 @@ namespace cuda {
 template <typename ValueType>
 format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
                                           context::Context *context) {
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(source->get_context());
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(source->get_context());
   auto cuda_array = source->AsAbsolute<format::cuda::CUDAArray<ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   ValueType *vals = nullptr;
@@ -28,8 +28,8 @@ format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
 template <typename ValueType>
 format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
                                           context::Context *context) {
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(context);
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(context);
   auto array = source->AsAbsolute<format::Array<ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   ValueType *vals = nullptr;
@@ -45,8 +45,8 @@ format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
                                       context::Context *context) {
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(context);
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(context);
   auto csr = source->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   NNZType *row_ptr;
@@ -75,12 +75,12 @@ format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
                                           context::Context *context) {
-  context::cuda::CUDAContext *dest_gpu_context =
-      static_cast<context::cuda::CUDAContext *>(context);
+  context::CUDAContext *dest_gpu_context =
+      static_cast<context::CUDAContext *>(context);
   auto cuda_csr =
       source->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
-  context::cuda::CUDAContext *source_gpu_context =
-      static_cast<context::cuda::CUDAContext *>(cuda_csr->get_context());
+  context::CUDAContext *source_gpu_context =
+      static_cast<context::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(dest_gpu_context->device_id);
   cudaDeviceEnablePeerAccess(source_gpu_context->device_id, 0);
   NNZType *row_ptr;
@@ -110,8 +110,8 @@ format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
                                       context::Context *context) {
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(source->get_context());
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(source->get_context());
   auto cuda_csr =
       source->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
   cudaSetDevice(gpu_context->device_id);
@@ -138,12 +138,12 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
 
 bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
   if (!(to->get_id() ==
-            context::cuda::CUDAContext::get_context_type() ||
+            context::CUDAContext::get_id_static() ||
         from->get_id() ==
-            context::cuda::CUDAContext::get_context_type()))
+            context::CUDAContext::get_id_static()))
     return false;
-  auto from_gpu = static_cast<context::cuda::CUDAContext *>(from);
-  auto to_gpu = static_cast<context::cuda::CUDAContext *>(to);
+  auto from_gpu = static_cast<context::CUDAContext *>(from);
+  auto to_gpu = static_cast<context::CUDAContext *>(to);
   int can_access;
   cudaDeviceCanAccessPeer(&can_access, from_gpu->device_id, to_gpu->device_id);
   return can_access;
