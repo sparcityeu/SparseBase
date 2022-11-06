@@ -13,7 +13,7 @@ env:
   PULP_LINK: https://github.com/HPCGraphAnalysis/PuLP.git
   RABBIT_ORDER_LINK: https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp
   PATOH_LINK: https://faculty.cc.gatech.edu/~umit/PaToH/patoh-Linux-x86_64.tar.gz
-
+  AMD_LINK: https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F1024074.1024081&file=837.zip
 
 jobs:
 
@@ -182,8 +182,17 @@ jobs:
           sudo mv build/Linux-x86_64/libpatoh.a $LIB_DIR
           sudo mv build/Linux-x86_64/patoh.h $INC_DIR
 
+      - name: Install AMD Order
+        run: |
+          wget '${{env.AMD_LINK}}' -O AMD.zip 
+          unzip AMD.zip 
+          cd 837
+          make lib
+          sudo mv Lib/libamd.a $LIB_DIR
+          sudo mv Include/amd.h $INC_DIR
+
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="${{env.LIB_DIR}};${{env.INC_DIR}}" -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_PATOH=ON -DUSE_PULP=ON
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="${{env.LIB_DIR}};${{env.INC_DIR}}" -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_PATOH=ON -DUSE_PULP=ON -DUSE_AMD_ORDER=ON
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2

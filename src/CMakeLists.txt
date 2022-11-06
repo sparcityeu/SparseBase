@@ -148,6 +148,11 @@ if(USE_METIS)
   add_opt_library("metis" "OFF")
 endif()
 
+option(USE_AMD_ORDER "Enable AMD reorder integration" OFF)
+if(USE_AMD_ORDER)
+  add_opt_library("amd" "OFF")
+endif()
+
 option(USE_RABBIT_ORDER "Enable Rabbit order integration" OFF)
 if(USE_RABBIT_ORDER)
   find_package(Boost)

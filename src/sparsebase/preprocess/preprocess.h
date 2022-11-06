@@ -1265,6 +1265,75 @@ class GraphFeatureBase {
   }
 };
 
+#ifdef USE_AMD_ORDER
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <amd.h>
+#ifdef __cplusplus
+}
+#endif
+
+//! Parameters for AMDReordering
+/*!
+ * For the exact definitions, please consult the documentation given with the 
+ * code, which is available here:
+ * https://dl.acm.org/doi/abs/10.1145/1024074.1024081
+ */
+struct AMDReorderParams : PreprocessParams {
+  double dense = AMD_DEFAULT_DENSE;
+  double aggressive = AMD_DEFAULT_AGGRESSIVE;
+};
+
+//! A wrapper for the AMD reordering algorithm
+/*!
+ * Wraps the AMD reordering algorithm library available here as supplemental material:
+ * https://dl.acm.org/doi/abs/10.1145/1024074.1024081
+ * The library must be compiled with the
+ * USE_AMD_ORDER option turned on and the pre-built AMD library should be
+ * available. See the Optional Dependencies page (under Getting Started) in our
+ * documentation for more info.
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class AMDReorder : public ReorderPreprocessType<IDType> {
+public:
+  typedef AMDReorderParams ParamsType;
+  AMDReorder(ParamsType);
+  AMDReorder();
+protected:
+  static IDType* AMDReorderCSR(std::vector<format::Format*>, PreprocessParams*);
+};
+#endif
+
+//! Parameters for Reorder Heatmap generator
+struct ReorderHeatmapParams : PreprocessParams{
+  //! Number of parts to split vertices over
+  int num_parts = 3;
+  ReorderHeatmapParams(int b) : num_parts(b){}
+  ReorderHeatmapParams(){}
+};
+
+//! Calculates density of non-zeros of a 2D format on a num_parts * num_parts grid
+/*!
+ * Splits the input 2D matrix into a grid of size num_parts * num_parts containing an
+ * equal number of rows and columns, and calculates the density of non-zeros in each
+ * cell in the grid relative to the total number of non-zeros in the matrix, given that the 
+ * matrix was reordered according to a permutation matrix. 
+ * Returns the densities as a dense array (FormatOrderOne) of size num_parts * num_parts where
+ * the density at cell [i][j] in the 2D grid is located at index [i*num_parts+j] in the 
+ * grid. The density values sum up to 1.
+ * @tparam FloatType type used to represent the densities of non-zeros.
+ */
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+class ReorderHeatmap : public FunctionMatcherMixin<format::FormatOrderOne<FloatType>*>{
+public:
+  ReorderHeatmap();
+  ReorderHeatmap(ReorderHeatmapParams params);
+  format::FormatOrderOne<FloatType>* Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, format::FormatOrderOne<IDType>* permutation_r, format::FormatOrderOne<IDType>* permutation_c, std::vector<context::Context*> contexts, bool convert_input);
+protected:
+  static format::FormatOrderOne<FloatType>* ReorderHeatmapCSRArrayArray(std::vector<format::Format*> formats, PreprocessParams* poly_params);
+};
+
 //! A class containing the interface for reordering and permuting data.
 /*!
  * The class contains all the functionalities needed for reordering. That
@@ -1396,17 +1465,19 @@ class ReorderBase {
     PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
                                                                  ordering);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return out_format;
+      output = out_format;
     else {
       if (convert_output)
-        return out_format->template Convert<ReturnFormatType>();
+        output = out_format->template Convert<ReturnFormatType>();
       else
-        return out_format->template As<ReturnFormatType>();
+        output = out_format->template As<ReturnFormatType>();
     }
+    return output;
   }
 
   //! Permute a two-dimensional format row- and column-wise using a single
@@ -1455,21 +1526,21 @@ class ReorderBase {
               format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>(
               intermediate_format);
         });
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> * output_format;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return std::make_pair(converted_formats, std::get<1>(output));
+      output_format = std::get<1>(output);
     else {
       if (convert_output)
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template Convert<ReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template Convert<ReturnFormatType>();
       else
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template As<ReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template As<ReturnFormatType>();
     }
+    return std::make_pair(converted_formats, output_format);
   }
 
   //! Permute a two-dimensional format row- and column-wise using a permutation
@@ -1519,21 +1590,21 @@ class ReorderBase {
               format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>(
               intermediate_format);
         });
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> * output_format;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return std::make_pair(converted_formats, std::get<1>(output));
+      output_format = std::get<1>(output);
     else {
       if (convert_output)
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template Convert<ReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template Convert<ReturnFormatType>();
       else
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template As<ReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template As<ReturnFormatType>();
     }
+    return std::make_pair(converted_formats, output_format);
   }
 
   //! Permute a two-dimensional format row- and column-wise using a permutation
@@ -1568,17 +1639,19 @@ class ReorderBase {
     PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(row_ordering,
                                                                  col_ordering);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return out_format;
+      output = out_format;
     else {
       if (convert_output)
-        return out_format->template Convert<ReturnFormatType>();
+        output = out_format->template Convert<ReturnFormatType>();
       else
-        return out_format->template As<ReturnFormatType>();
+        output = out_format->template As<ReturnFormatType>();
     }
+    return output;
   }
 
   //! Permute a two-dimensional format row-wise using a permutation array.
@@ -1612,17 +1685,19 @@ class ReorderBase {
     PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
                                                                  nullptr);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return out_format;
+      output = out_format;
     else {
       if (convert_output)
-        return out_format->template Convert<ReturnFormatType>();
+        output = out_format->template Convert<ReturnFormatType>();
       else
-        return out_format->template As<ReturnFormatType>();
+        output = out_format->template As<ReturnFormatType>();
     }
+    return output;
   }
 
   //! Permute a two-dimensional format row-wise using a permutation array with
@@ -1671,21 +1746,21 @@ class ReorderBase {
               format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>(
               intermediate_format);
         });
-    if constexpr (std::is_same_v<RelativeReturnFormatType<
-                                     AutoIDType, AutoNNZType, AutoValueType>,
-                                 format::FormatOrderTwo<AutoIDType, AutoNNZType,
-                                                        AutoValueType>>)
-      return std::make_pair(converted_formats, std::get<1>(output));
+    RelativeReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> * output_format;
+    if constexpr (std::is_same_v<
+                      RelativeReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
+                      format::FormatOrderTwo<AutoIDType, AutoNNZType,
+                                             AutoValueType>>)
+      output_format = std::get<1>(output);
     else {
       if (convert_output)
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template Convert<RelativeReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template Convert<RelativeReturnFormatType>();
       else
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template As<RelativeReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template As<RelativeReturnFormatType>();
     }
+    return std::make_pair(converted_formats, output_format);
   }
 
   //! Permute a two-dimensional format column-wise using a permutation array.
@@ -1719,17 +1794,19 @@ class ReorderBase {
     PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(nullptr,
                                                                  ordering);
     auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return out_format;
+      output = out_format;
     else {
       if (convert_output)
-        return out_format->template Convert<ReturnFormatType>();
+        output = out_format->template Convert<ReturnFormatType>();
       else
-        return out_format->template As<ReturnFormatType>();
+        output = out_format->template As<ReturnFormatType>();
     }
+    return output;
   }
 
   //! Permute a two-dimensional format column-wise using a permutation array
@@ -1777,21 +1854,21 @@ class ReorderBase {
               format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>(
               intermediate_format);
         });
+    ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> * output_format;
     if constexpr (std::is_same_v<
                       ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
                       format::FormatOrderTwo<AutoIDType, AutoNNZType,
                                              AutoValueType>>)
-      return std::make_pair(converted_formats, std::get<1>(output));
+      output_format = std::get<1>(output);
     else {
       if (convert_output)
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template Convert<ReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template Convert<ReturnFormatType>();
       else
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template As<ReturnFormatType>());
+        output_format =
+            std::get<1>(output)->template As<ReturnFormatType>();
     }
+    return std::make_pair(converted_formats, output_format);
   }
 
   //! Permute a one-dimensional format using a permutation array.
@@ -1822,15 +1899,17 @@ class ReorderBase {
       bool convert_output = false) {
     PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
     auto out_format = perm.GetTransformation(format, context, convert_inputs);
+    ReturnFormatType<AutoValueType> * output;
     if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>,
                                  format::FormatOrderOne<AutoValueType>>)
-      return out_format;
+      output = out_format;
     else {
       if (convert_output)
-        return out_format->template Convert<ReturnFormatType>();
+        output = out_format->template Convert<ReturnFormatType>();
       else
-        return out_format->template As<ReturnFormatType>();
+        output = out_format->template As<ReturnFormatType>();
     }
+    return output;
   }
 
   //! Permute a one-dimensional format using a permutation array with cached
@@ -1873,19 +1952,18 @@ class ReorderBase {
           return static_cast<format::FormatOrderOne<AutoValueType> *>(
               intermediate_format);
         });
+    ReturnFormatType<AutoValueType> * output_format;
     if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>,
                                  format::FormatOrderOne<AutoValueType>>)
-      return std::make_pair(converted_formats, std::get<1>(output));
+      output_format = std::get<1>(output);
     else {
       if (convert_output)
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template Convert<ReturnFormatType>());
+        output_format = std::get<1>(output)->template Convert<ReturnFormatType>();
       else
-        return std::make_pair(
-            converted_formats,
-            std::get<1>(output)->template As<ReturnFormatType>());
+        output_format = std::get<1>(output)->template As<ReturnFormatType>();
+            
     }
+    return std::make_pair(converted_formats, output_format);
   }
 
   //! Takes a permutation array and its length and inverses it.
@@ -1907,6 +1985,30 @@ class ReorderBase {
       inv_perm[perm[i]] = i;
     }
     return inv_perm;
+  }
+  //! Calculates density of non-zeros of a 2D format on a num_parts * num_parts grid
+  /*!
+ * Splits the input 2D matrix into a grid of size num_parts * num_parts containing an
+ * equal number of rows and columns, and calculates the density of non-zeros in each
+ * cell in the grid relative to the total number of non-zeros in the matrix, given that the 
+ * matrix was reordered according to a permutation matrix. 
+ * Returns the densities as a dense array (FormatOrderOne) of size num_parts * num_parts where
+ * the density at cell [i][j] in the 2D grid is located at index [i*num_parts+j] in the 
+ * grid. The density values sum up to 1.
+  * @tparam FloatType type used to represent the densities of non-zeros.
+  * @param format the 2D matrix to calculate densities for.
+  * @param permutation the permutation array containing the reordering of rows and columns.
+  * @param num_parts number of parts to split rows/columns over
+  * @param contexts vector of contexts that can be used for permutation. 
+  * @param convert_input whether or not to convert the input format if that is needed.
+  * @return a format::Array containing the densities of the cells in the num_parts * num_parts 2D grid.
+  */
+  template <typename FloatType,  typename AutoIDType, typename AutoNNZType, typename AutoValueType>
+  static sparsebase::format::Array<FloatType>* Heatmap(format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> * format, format::FormatOrderOne<AutoIDType>* permutation_r, format::FormatOrderOne<AutoIDType>* permutation_c, int num_parts,
+                  std::vector<context::Context *> contexts, bool convert_input) {
+    ReorderHeatmap<AutoIDType, AutoNNZType, AutoValueType, FloatType> heatmapper(num_parts); 
+    format::FormatOrderOne<FloatType>* arr = heatmapper.Get(format, permutation_r, permutation_c, contexts, convert_input);
+    return arr->template Convert<sparsebase::format::Array>();
   }
 };
 
@@ -2057,6 +2159,8 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
   }
   return v;
 }
+
+
 
 }  // namespace sparsebase::preprocess
 #ifdef _HEADER_ONLY
