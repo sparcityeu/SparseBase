@@ -188,6 +188,16 @@ class CUDADeviceException : public Exception {
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
+class AllocationException : public Exception {
+  std::string msg_;
+
+ public:
+  AllocationException() {
+    msg_ = "Memory Allocation Operation Failed";
+  }
+  virtual const char *what() const throw() { return msg_.c_str(); }
+};
+
 }  // namespace utils
 
 }  // namespace sparsebase

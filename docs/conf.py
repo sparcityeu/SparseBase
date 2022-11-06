@@ -72,6 +72,8 @@ exhale_args = {
         PREDEFINED +=  USE_RABBIT_ORDER
         PREDEFINED +=  USE_METIS
         PREDEFINED +=  USE_AMD_ORDER
+        PREDEFINED +=  USE_PATOH
+        PREDEFINED +=  USE_PULP
     """
 }
 
