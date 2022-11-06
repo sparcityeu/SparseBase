@@ -87,7 +87,7 @@ class Format : public utils::Identifiable {
  public:
   //! Returns a type identifier for the concrete format class
   /*!
-   * \return A type_index object from the standard C++ library that represents
+   * @return A type_index object from the standard C++ library that represents
    * the type of the underlying concrete object. For example, a CSR and a COO
    * object will have different identifiers. But also, objects of the same class
    * with varying template types (like CSR<int,int,int> and CSR<int,int,float)
@@ -127,8 +127,8 @@ class Format : public utils::Identifiable {
 
   //! Templated function that can be used to cast to a concrete format class
   /*!
-   * \tparam T a concrete format class (for example: CSR<int,int,int>)
-   * \return A concrete format pointer to this object (for example:
+   * @tparam T a concrete format class (for example: CSR<int,int,int>)
+   * @return A concrete format pointer to this object (for example:
    * CSR<int,int,int>*)
    */
   template <typename T>
@@ -152,8 +152,8 @@ class Format : public utils::Identifiable {
   //! Templated function that can be used to check the concrete type of this
   //! object
   /*!
-   * \tparam T a concrete format class (for example: CSR<int,int,int>)
-   * \return true if the type of this object is T
+   * @tparam T a concrete format class (for example: CSR<int,int,int>)
+   * @return true if the type of this object is T
    */
   template <typename T>
   bool Is() {
@@ -175,7 +175,7 @@ class Format : public utils::Identifiable {
  * unless they are defining their own format in which case this class should be
  * derived from by passing the newly defined format as a template parameter.
  *
- * \tparam FormatType used for CRTP, should be a concrete format class
+ * @tparam FormatType used for CRTP, should be a concrete format class
  * (for example: CSR<int,int,int>)
  */
 class FormatImplementation : public Format {
@@ -217,9 +217,9 @@ class FormatOrderOne
 
   //! Converts `this` to a FormatOrderOne object of type ToType<ValueType>
   /*!
-   * \param to_context context used to carry out the conversion.
-   * \param is_move_conversion whether to carry out a move conversion.
-   * \return If `this` is of type `ToType<ValueType>` then it returns the same
+   * @param to_context context used to carry out the conversion.
+   * @param is_move_conversion whether to carry out a move conversion.
+   * @return If `this` is of type `ToType<ValueType>` then it returns the same
    * object but as a different type. If not, it will convert `this` to a new
    * FormatOrderOne object and return a pointer to the new object.
    */
@@ -270,9 +270,9 @@ class FormatOrderTwo
   //! Converts `this` to a FormatOrderTwo object of type ToType<IDType, NNZType,
   //! ValueType>
   /*!
-   * \param to_context context used to carry out the conversion.
-   * \param is_move_conversion whether to carry out a move conversion.
-   * \return If `this` is of type `ToType<ValueType>` then it returns the same
+   * @param to_context context used to carry out the conversion.
+   * @param is_move_conversion whether to carry out a move conversion.
+   * @return If `this` is of type `ToType<ValueType>` then it returns the same
    * object but as a different type. If not, it will convert `this` to a new
    * FormatOrderOne object and return a pointer to the new object.
    */
@@ -328,9 +328,9 @@ class FormatOrderTwo
  * The i-th element is at the coordinate row[i], col[i] in the matrix.
  * The value for the i-th element is vals[i].
  *
- * \tparam IDType type used for the dimensions
- * \tparam NNZType type used for non-zeros and the number of non-zeros
- * \tparam ValueType type used for the stored values
+ * @tparam IDType type used for the dimensions
+ * @tparam NNZType type used for non-zeros and the number of non-zeros
+ * @tparam ValueType type used for the stored values
  *
  * N. Sato and W. F. Tinney, "Techniques for Exploiting the Sparsity or the
  * Network Admittance Matrix," in IEEE Transactions on Power Apparatus and
@@ -407,9 +407,9 @@ class Array
  * in the col array.
  * The col, vals arrays are identical to the COO format.
  *
- * \tparam IDType type used for the dimensions
- * \tparam NNZType type used for non-zeros and the number of non-zeros
- * \tparam ValueType type used for the stored values
+ * @tparam IDType type used for the dimensions
+ * @tparam NNZType type used for non-zeros and the number of non-zeros
+ * @tparam ValueType type used for the stored values
  *
  * Buluç, Aydın; Fineman, Jeremy T.; Frigo, Matteo; Gilbert, John R.; Leiserson,
  * Charles E. (2009). Parallel sparse matrix-vector and matrix-transpose-vector
@@ -458,9 +458,9 @@ class CSR
  * starts in the row array. The row, vals arrays are identical to the COO
  * format.
  *
- * \tparam IDType type used for the dimensions
- * \tparam NNZType type used for non-zeros and the number of non-zeros
- * \tparam ValueType type used for the stored values
+ * @tparam IDType type used for the dimensions
+ * @tparam NNZType type used for non-zeros and the number of non-zeros
+ * @tparam ValueType type used for the stored values
  *
  * Buluç, Aydın; Fineman, Jeremy T.; Frigo, Matteo; Gilbert, John R.; Leiserson,
  * Charles E. (2009). Parallel sparse matrix-vector and matrix-transpose-vector
