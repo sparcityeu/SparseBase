@@ -1598,9 +1598,7 @@ IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
   idx_t nw = (idx_t)1;
   idx_t objval;
 
-  if constexpr (std::is_signed_v<IDType> && std::is_signed_v<NNZType> &&
-                sizeof(IDType) == sizeof(idx_t) &&
-                sizeof(NNZType) == sizeof(idx_t)) {
+  if constexpr (std::is_same_v<IDType, idx_t> && std::is_same_v<NNZType, idx_t>) {
     if (mparams->ptype == metis::METIS_PTYPE_RB) {
       METIS_PartGraphRecursive(&n, &nw, (idx_t *)csr->get_row_ptr(),
                                (idx_t *)csr->get_col(), nullptr, nullptr,
@@ -1660,9 +1658,7 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   options[METIS_OPTION_NSEPS] = (idx_t) mparams->nseps;
   options[METIS_OPTION_DBGLVL] = (idx_t)0;
 
-  if constexpr (std::is_signed_v<IDType> && std::is_signed_v<NNZType> &&
-                sizeof(IDType) == sizeof(idx_t) &&
-                sizeof(NNZType) == sizeof(idx_t)) {
+  if constexpr (std::is_same_v<IDType, idx_t> && std::is_same_v<NNZType, idx_t>) {
     auto *perm = new idx_t[n];
     auto *inv_perm = new idx_t[n];
     METIS_NodeND(&n, csr->get_row_ptr(), csr->get_col(), nullptr, options, perm,
@@ -1725,9 +1721,7 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
   int np = pparams->num_partitions;
   IDType* partition = new IDType[n];
 
-  if constexpr (std::is_signed_v<IDType> && std::is_signed_v<NNZType> &&
-                sizeof(IDType) == sizeof(int) &&
-                sizeof(NNZType) == sizeof(long)) {
+  if constexpr (std::is_same_v<IDType, int> && std::is_same_v<NNZType, long>) {
     pulp_graph_t graph;
     graph.n = n;
     graph.m = m;
@@ -1772,7 +1766,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
     std::vector<format::Format *> formats, PreprocessParams *params){
 
-  if(typeid(IDType) != typeid(int) || typeid(NNZType) != typeid(int)){
+  if constexpr (!(std::is_same_v<IDType, int> && std::is_same_v<NNZType, int>)) {
     throw utils::TypeException("Patoh Partitioner requires IDType=int, NNZType=int");
   }
 
