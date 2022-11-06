@@ -16,8 +16,8 @@ template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 format::cuda::CUDAArray<FeatureType> *RunJaccardKernel(
     format::cuda::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(cuda_csr->get_context());
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(gpu_context->device_id);
 
   FeatureType *jaccard_weights;

@@ -6,20 +6,17 @@
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
+#include "sparsebase/context/context.h"
 #ifndef SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 #define SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_
 
-namespace sparsebase {
-namespace context {
-namespace cuda {
+namespace sparsebase::context {
 
-struct CUDAContext : utils::IdentifiableImplementation<CUDAContext,ContextImplementation<CUDAContext>> {
+struct CUDAContext : utils::IdentifiableImplementation<CUDAContext, Context> {
   int device_id;
   CUDAContext(int did);
   virtual bool IsEquivalent(Context *) const;
 };
-}  // namespace cuda
-}  // namespace context
 }  // namespace sparsebase
 #ifdef _HEADER_ONLY
 #include "sparsebase/context/cuda/context.cu"

@@ -272,7 +272,7 @@ void ConverterOrderOne<ValueType>::ResetConverterOrderOne() {
       converter::cuda::ArrayCUDAArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::cuda::CUDAContext::get_context_type();
+               context::CUDAContext::get_id_static();
       });
   this->RegisterConversionFunction(
       format::cuda::CUDAArray<ValueType>::get_id_static(),
@@ -280,7 +280,7 @@ void ConverterOrderOne<ValueType>::ResetConverterOrderOne() {
       converter::cuda::CUDAArrayArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       });
 #endif
 }
@@ -308,7 +308,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CooCsrFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       });
   this->RegisterConversionFunction(
       format::CSR<IDType, NNZType, ValueType>::get_id_static(),
@@ -316,7 +316,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CsrCooFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       });
   this->RegisterConversionFunction(
       format::COO<IDType, NNZType, ValueType>::get_id_static(),
@@ -324,7 +324,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       });
   this->RegisterConversionFunction(
       format::CSR<IDType, NNZType, ValueType>::get_id_static(),
@@ -332,7 +332,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       });
 #ifdef USE_CUDA
   this->RegisterConversionFunction(
@@ -348,7 +348,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
                                                      ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::cuda::CUDAContext::get_context_type();
+               context::CUDAContext::get_id_static();
       });
   this->RegisterConversionFunction(
       format::cuda::CUDACSR<IDType, NNZType, ValueType>::get_id_static(),
@@ -357,7 +357,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
                                                      ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       });
 #endif
   this->RegisterConversionFunction(
@@ -366,7 +366,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CooCsrMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       },
       true);
   this->RegisterConversionFunction(
@@ -375,7 +375,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CsrCooMoveConditionalFunction<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       },
       true);
   this->RegisterConversionFunction(
@@ -384,7 +384,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CooCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       },
       true);
   this->RegisterConversionFunction(
@@ -393,7 +393,7 @@ void ConverterOrderTwo<IDType, NNZType, ValueType>::ResetConverterOrderTwo() {
       CsrCscFunctionConditional<IDType, NNZType, ValueType>,
       [](context::Context *, context::Context *to) -> bool {
         return to->get_id() ==
-               context::CPUContext::get_context_type();
+               context::CPUContext::get_id_static();
       },
       true);
 }

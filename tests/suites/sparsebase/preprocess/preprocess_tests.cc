@@ -568,7 +568,7 @@ TEST(ReorderHeatmap, Instance){
   for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
   #ifdef USE_CUDA
   // Try with a cuda array and COO
-  context::cuda::CUDAContext g0{0};
+  context::CUDAContext g0{0};
   format::cuda::CUDAArray<int>* cuda_arr = no_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   heatmap = heatmapper.Get(&global_coo, cuda_arr, cuda_arr, {global_csr.get_context()}, true);
   heatmap_arr = heatmap->As<format::Array>()->get_vals();
@@ -586,7 +586,7 @@ TEST(ReorderHeatmap, InstanceTwoReorders){
   for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_rc_order_true[i]);
   #ifdef USE_CUDA
   // Try with a cuda array and COO
-  context::cuda::CUDAContext g0{0};
+  context::CUDAContext g0{0};
   format::cuda::CUDAArray<int>* cuda_arr_r = r_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   format::cuda::CUDAArray<int>* cuda_arr_c = c_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   heatmap = heatmapper.Get(&global_coo, cuda_arr_r, cuda_arr_c, {global_csr.get_context()}, true);
@@ -604,7 +604,7 @@ TEST(ReorderHeatmap, InstanceDefaultConstructor){
   for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
   #ifdef USE_CUDA
   // Try with a cuda array and COO
-  context::cuda::CUDAContext g0{0};
+  context::CUDAContext g0{0};
   format::cuda::CUDAArray<int>* cuda_arr = no_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   heatmap = heatmapper.Get(&global_coo, cuda_arr, cuda_arr, {global_csr.get_context()}, true);
   heatmap_arr = heatmap->As<format::Array>()->get_vals();
@@ -619,7 +619,7 @@ TEST(ReorderBase, Heatmap){
   for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
   #ifdef USE_CUDA
   // Try with a cuda array and COO
-  context::cuda::CUDAContext g0{0};
+  context::CUDAContext g0{0};
   format::cuda::CUDAArray<int>* cuda_arr = no_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   heatmap_arr =ReorderBase::Heatmap<float>(&global_coo, cuda_arr, cuda_arr, 3, {global_csr.get_context()}, true)->get_vals();
   for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_no_order_true[i]);
@@ -634,7 +634,7 @@ TEST(ReorderBase, HeatmapTwoReorders){
   for (int i =0; i< 9 ; i++) EXPECT_EQ(heatmap_arr[i], heatmap_rc_order_true[i]);
   #ifdef USE_CUDA
   // Try with a cuda array and COO
-  context::cuda::CUDAContext g0{0};
+  context::CUDAContext g0{0};
   format::cuda::CUDAArray<int>* cuda_arr_r = r_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   format::cuda::CUDAArray<int>* cuda_arr_c = c_reorder_perm.Convert<format::cuda::CUDAArray>(&g0);
   heatmap_arr = ReorderBase::Heatmap<float>(&global_coo, cuda_arr_r, cuda_arr_c, 3, {global_csr.get_context()}, true)->get_vals();
@@ -699,7 +699,7 @@ TEST(ReorderBase, Permute1DCached) {
   EXPECT_EQ(output_no_convert_input.first.size(), 0);
   // converting input to possible format
 #ifdef USE_CUDA
-  context::cuda::CUDAContext g0{0};
+  context::CUDAContext g0{0};
   auto cuda_arr = orig_arr.Convert<format::cuda::CUDAArray>(&g0);
   auto output_convert_input =
       sparsebase::preprocess::ReorderBase::Permute1DCached(

@@ -24,7 +24,7 @@ __global__ void print_array_cuda(int *vals, int n) {
 
 int main() {
   int vals[6] = {10, 20, 30, 40, 50, 60};
-  context::cuda::CUDAContext gpu_context{0};
+  context::CUDAContext gpu_context{0};
   context::CPUContext cpu_context;
 
   format::Array<int> *array = new format::Array<int>(6, vals);

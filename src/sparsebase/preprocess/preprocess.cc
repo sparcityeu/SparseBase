@@ -1481,7 +1481,7 @@ MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<format::Format *> formats,
-    sparsebase::preprocess::utils::Parameters *params) {
+    sparsebase::utils::Parameters *params) {
   format::CSR<IDType, NNZType, ValueType> *csr =
       formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   auto *mparams = static_cast<MetisReorderParams *>(params);

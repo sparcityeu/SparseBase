@@ -7,7 +7,7 @@
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
 #include "sparsebase/context/context.h"
-#include "sparsebase/context/cuda/context.cuh"
+#include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/format/format.h"
 #ifndef SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 #define SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
@@ -28,7 +28,7 @@ class CUDACSR
                                   FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
-          ValueType *vals, context::cuda::CUDAContext context,
+          ValueType *vals, context::CUDAContext context,
           Ownership own = kNotOwned);
   CUDACSR(const CUDACSR<IDType, NNZType, ValueType> &);
   CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&);
@@ -44,18 +44,18 @@ class CUDACSR
   IDType *release_col();
   ValueType *release_vals();
 
-  void set_row_ptr(NNZType *, context::cuda::CUDAContext context,
+  void set_row_ptr(NNZType *, context::CUDAContext context,
                    Ownership own = kNotOwned);
-  void set_col(IDType *, context::cuda::CUDAContext context,
+  void set_col(IDType *, context::CUDAContext context,
                Ownership own = kNotOwned);
-  void set_vals(ValueType *, context::cuda::CUDAContext context,
+  void set_vals(ValueType *, context::CUDAContext context,
                 Ownership own = kNotOwned);
 
   virtual bool ColIsOwned();
   virtual bool RowPtrIsOwned();
   virtual bool ValsIsOwned();
 
-  context::cuda::CUDAContext *get_cuda_context() const;
+  context::CUDAContext *get_cuda_context() const;
 
  protected:
   std::unique_ptr<NNZType, std::function<void(NNZType *)>> row_ptr_;
@@ -68,7 +68,7 @@ class CUDAArray : public utils::IdentifiableImplementation<CUDAArray<ValueType>,
                                               FormatOrderOne<ValueType>> {
  public:
   CUDAArray(DimensionType nnz, ValueType *row_ptr,
-            context::cuda::CUDAContext context, Ownership own = kNotOwned);
+            context::CUDAContext context, Ownership own = kNotOwned);
   CUDAArray(const CUDAArray<ValueType> &);
   CUDAArray(CUDAArray<ValueType> &&);
   CUDAArray<ValueType> &operator=(const CUDAArray<ValueType> &);

@@ -50,6 +50,6 @@ class EdgeListReader : public Reader,
 
 }
 #ifdef _HEADER_ONLY
-#inclued "edge_list_reader.cc"
+#include "edge_list_reader.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_EDGE_LIST__READER_H

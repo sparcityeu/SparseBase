@@ -25,7 +25,7 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(
   rhs.vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
       nullptr, BlankDeleter<ValueType>());
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
-      new sparsebase::context::cuda::CUDAContext(
+      new sparsebase::context::CUDAContext(
           rhs.get_cuda_context()->device_id));
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -37,8 +37,8 @@ CUDACSR<IDType, NNZType, ValueType>
   this->dimension_ = rhs.dimension_;
   IDType *col;
   NNZType *row_ptr;
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(this->get_cuda_context());
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(this->get_cuda_context());
   cudaSetDevice(gpu_context->device_id);
   cudaMalloc(&col, rhs.get_num_nnz() * sizeof(IDType));
   cudaMemcpy(col, rhs.get_col(), rhs.get_num_nnz() * sizeof(IDType),
@@ -76,8 +76,8 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(
   this->dimension_ = rhs.dimension_;
   IDType *col;
   NNZType *row_ptr;
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(this->get_context());
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(this->get_context());
   cudaSetDevice(gpu_context->device_id);
   cudaMalloc(&col, rhs.get_num_nnz() * sizeof(IDType));
   cudaMemcpy(col, rhs.get_col(), rhs.get_num_nnz() * sizeof(IDType),
@@ -107,7 +107,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType nnz,
                                              NNZType *row_ptr, IDType *col,
                                              ValueType *vals,
-                                             context::cuda::CUDAContext context,
+                                             context::CUDAContext context,
                                              Ownership own)
     : row_ptr_(row_ptr, BlankDeleter<NNZType>()),
       col_(col, BlankDeleter<IDType>()),
@@ -124,13 +124,13 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType nnz,
         vals, CUDADeleter<ValueType>());
   }
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
-      new sparsebase::context::cuda::CUDAContext(context));
+      new sparsebase::context::CUDAContext(context));
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-context::cuda::CUDAContext *
+context::CUDAContext *
 CUDACSR<IDType, NNZType, ValueType>::get_cuda_context() const {
-  return static_cast<context::cuda::CUDAContext *>(this->get_context());
+  return static_cast<context::CUDAContext *>(this->get_context());
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Format *CUDACSR<IDType, NNZType, ValueType>::Clone() const {
@@ -172,7 +172,7 @@ ValueType *CUDACSR<IDType, NNZType, ValueType>::release_vals() {
 
 template <typename IDType, typename NNZType, typename ValueType>
 void CUDACSR<IDType, NNZType, ValueType>::set_col(
-    IDType *col, context::cuda::CUDAContext context, Ownership own) {
+    IDType *col, context::CUDAContext context, Ownership own) {
   if (own == kOwned) {
     this->col_ = std::unique_ptr<IDType, std::function<void(IDType *)>>(
         col, CUDADeleter<IDType>());
@@ -184,7 +184,7 @@ void CUDACSR<IDType, NNZType, ValueType>::set_col(
 
 template <typename IDType, typename NNZType, typename ValueType>
 void CUDACSR<IDType, NNZType, ValueType>::set_row_ptr(
-    NNZType *row_ptr, context::cuda::CUDAContext context, Ownership own) {
+    NNZType *row_ptr, context::CUDAContext context, Ownership own) {
   if (own == kOwned) {
     this->row_ptr_ = std::unique_ptr<NNZType, std::function<void(NNZType *)>>(
         row_ptr, CUDADeleter<NNZType>());
@@ -196,7 +196,7 @@ void CUDACSR<IDType, NNZType, ValueType>::set_row_ptr(
 
 template <typename IDType, typename NNZType, typename ValueType>
 void CUDACSR<IDType, NNZType, ValueType>::set_vals(
-    ValueType *vals, context::cuda::CUDAContext context, Ownership own) {
+    ValueType *vals, context::CUDAContext context, Ownership own) {
   if (own == kOwned) {
     this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
         vals, CUDADeleter<ValueType>());
@@ -248,8 +248,8 @@ CUDAArray<ValueType> &CUDAArray<ValueType>::operator=(
   this->order_ = 1;
   this->dimension_ = rhs.dimension_;
   ValueType *vals = nullptr;
-  context::cuda::CUDAContext *gpu_context =
-      static_cast<context::cuda::CUDAContext *>(this->get_context());
+  context::CUDAContext *gpu_context =
+      static_cast<context::CUDAContext *>(this->get_context());
   if (rhs.get_vals() != nullptr) {
     cudaSetDevice(gpu_context->device_id);
     cudaMalloc(&vals, rhs.get_num_nnz() * sizeof(ValueType));
@@ -282,7 +282,7 @@ CUDAArray<ValueType>::CUDAArray(const CUDAArray<ValueType> &rhs)
 }
 template <typename ValueType>
 CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType *vals,
-                                context::cuda::CUDAContext context,
+                                context::CUDAContext context,
                                 Ownership own)
     : vals_(vals, BlankDeleter<ValueType>()) {
   static_assert(!std::is_same_v<ValueType, void>,
@@ -295,7 +295,7 @@ CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType *vals,
         vals, CUDADeleter<ValueType>());
   }
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
-      new sparsebase::context::cuda::CUDAContext(context));
+      new sparsebase::context::CUDAContext(context));
 }
 
 template <typename ValueType>

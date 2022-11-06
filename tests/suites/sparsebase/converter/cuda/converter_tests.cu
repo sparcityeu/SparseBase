@@ -8,7 +8,6 @@ using namespace converter::cuda;
 using namespace format;
 using namespace format::cuda;
 using namespace context;
-using namespace context::cuda;
 
 // The arrays defined here are for two matrices
 // One in csr format one in coo format
@@ -96,7 +95,7 @@ TEST_F(CUDAFormatsFixture, CUDACSR) {
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            CUDAContext::get_context_type());
+            CUDAContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(csr, &gpu0);
   EXPECT_EQ(output_format->get_id(),
             (CUDACSR<TYPE>::get_id_static()));
@@ -113,7 +112,7 @@ TEST_F(CUDAFormatsFixture, CUDACSR) {
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            CPUContext::get_context_type());
+            CPUContext::get_id_static());
   format::Format* output_format_csr;
   output_format_csr =
       (std::get<0>(std::get<0>(*chain)[0]))(output_format, &cpu);
@@ -139,7 +138,7 @@ TEST_F(CUDAFormatsFixture, CUDAArray) {
   ASSERT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            CUDAContext::get_context_type());
+            CUDAContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(array, &gpu0);
   EXPECT_EQ(output_format->get_id(),
             (CUDAArray<int>::get_id_static()));
@@ -158,7 +157,7 @@ TEST_F(CUDAFormatsFixture, CUDAArray) {
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
-            CPUContext::get_context_type());
+            CPUContext::get_id_static());
   format::Format* output_format_csr;
   output_format_csr =
       (std::get<0>(std::get<0>(*chain)[0]))(output_format, &cpu);
