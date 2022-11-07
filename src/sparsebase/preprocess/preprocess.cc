@@ -1,6 +1,9 @@
 #include "preprocess.h"
 
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
@@ -507,7 +510,7 @@ template <typename IDType, typename NNZType, typename ValueType,
 JaccardWeights<IDType, NNZType, ValueType, FeatureType>::JaccardWeights() {
 #ifdef USE_CUDA
   std::vector<std::type_index> formats = {
-      format::cuda::CUDACSR<IDType, NNZType,
+      format::CUDACSR<IDType, NNZType,
                             ValueType>::get_id_static()};
   this->RegisterFunction(formats, GetJaccardWeightCUDACSR);
 #endif
@@ -535,7 +538,7 @@ format::Format *preprocess::JaccardWeights<
                                           utils::Parameters *params) {
   auto cuda_csr =
       formats[0]
-          ->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+          ->AsAbsolute<format::CUDACSR<IDType, NNZType, ValueType>>();
   return preprocess::cuda::RunJaccardKernel<IDType, NNZType, ValueType,
                                             FeatureType>(cuda_csr);
 }

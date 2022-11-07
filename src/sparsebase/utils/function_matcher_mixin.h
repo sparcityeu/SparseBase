@@ -4,7 +4,7 @@
 #include "sparsebase/config.h"
 #include "parameterizable.h"
 #include "utils.h"
-#include "converter/converter.h"
+#include "sparsebase/converter/converter.h"
 #include <vector>
 
 namespace sparsebase::utils {

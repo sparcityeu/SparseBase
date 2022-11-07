@@ -365,36 +365,13 @@ class ConverterImpl : public Converter {
   virtual std::type_index get_converter_type() const { return typeid(ConverterType); }
 };
 
-//! An instance of this class can be used to convert between order two formats
-//! (CSR and COO)
-template <typename IDType, typename NNZType, typename ValueType>
-class ConverterOrderTwo
-    : public ConverterImpl<ConverterOrderTwo<IDType, NNZType, ValueType>> {
- public:
-  ConverterOrderTwo();
-  virtual Converter *Clone() const;
-  void ResetConverterOrderTwo();
-  virtual void Reset();
-};
-
-//! An instance of this class can be used to convert between order one formats
-//! (Array)
-template <typename ValueType>
-class ConverterOrderOne : public ConverterImpl<ConverterOrderOne<ValueType>> {
- public:
-  ConverterOrderOne();
-  virtual Converter *Clone() const;
-  void ResetConverterOrderOne();
-  virtual void Reset();
-};
-
 }  // namespace converter
 
 }  // namespace sparsebase
 #ifdef USE_CUDA
-#include "cuda/converter.cuh"
+#include "converter_cuda.cuh"
 #ifdef _HEADER_ONLY
-#include "cuda/converter.cu"
+#include "converter_cuda.cu"
 #endif
 #endif
 

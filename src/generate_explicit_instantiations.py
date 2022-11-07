@@ -84,23 +84,29 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder, exceptions=No
 
 
 # Format
-reset_file("format.inc")
-gen_inst("class CSR<$id_type, $nnz_type, $value_type>", "format.inc")
-gen_inst("class CSC<$id_type, $nnz_type, $value_type>", "format.inc")
-gen_inst("class COO<$id_type, $nnz_type, $value_type>", "format.inc")
-gen_inst("class Array<$value_type>", "format.inc", exceptions={"$value_type": ['void']})
-gen_inst("class Array<$nnz_type>", "format.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("class Array<$id_type>", "format.inc", exceptions={"$id_type": ['void']})
+reset_file("format_order_two.inc")
+gen_inst("class FormatOrderTwo<$id_type, $nnz_type, $value_type>", "format_order_two.inc")
+gen_inst("class CSR<$id_type, $nnz_type, $value_type>", "format_order_two.inc")
+gen_inst("class CSC<$id_type, $nnz_type, $value_type>", "format_order_two.inc")
+gen_inst("class COO<$id_type, $nnz_type, $value_type>", "format_order_two.inc")
+reset_file("format_order_one.inc")
+gen_inst("class FormatOrderOne<$value_type>", "format_order_one.inc", exceptions={"$value_type": ['void']})
+gen_inst("class FormatOrderOne<$nnz_type>", "format_order_one.inc", exceptions={"$value_type": ['void']})
+gen_inst("class FormatOrderOne<$id_type>", "format_order_one.inc", exceptions={"$value_type": ['void']})
+gen_inst("class Array<$value_type>", "format_order_one.inc", exceptions={"$value_type": ['void']})
+gen_inst("class Array<$nnz_type>", "format_order_one.inc", exceptions={"$nnz_type": ['void']})
+gen_inst("class Array<$id_type>", "format_order_one.inc", exceptions={"$id_type": ['void']})
 
 # Format (CUDA)
-reset_file("format.inc", cuda_output_folder)
-gen_inst("class CUDACSR<$id_type, $nnz_type, $value_type>", "format.inc",
+reset_file("cuda_csr_cuda.inc", cuda_output_folder)
+gen_inst("class CUDACSR<$id_type, $nnz_type, $value_type>", "cuda_csr_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder)
-gen_inst("class CUDAArray<$value_type>", "format.inc",
+reset_file("cuda_array_cuda.inc", cuda_output_folder)
+gen_inst("class CUDAArray<$value_type>", "cuda_array_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
-gen_inst("class CUDAArray<$id_type>", "format.inc",
+gen_inst("class CUDAArray<$id_type>", "cuda_array_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
-gen_inst("class CUDAArray<$nnz_type>", "format.inc",
+gen_inst("class CUDAArray<$nnz_type>", "cuda_array_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
 
 
@@ -110,14 +116,16 @@ gen_inst("class AbstractObject<$id_type, $nnz_type, $value_type>", "object.inc")
 gen_inst("class Graph<$id_type, $nnz_type, $value_type>", "object.inc")
 
 # Converter
-reset_file("converter.inc")
-gen_inst("class ConverterOrderOne<$value_type>", "converter.inc", exceptions={"$value_type": ['void']})
-gen_inst("class ConverterOrderOne<$id_type>", "converter.inc", exceptions={"$id_type": ['void']})
-gen_inst("class ConverterOrderOne<$nnz_type>", "converter.inc", exceptions={"$nnz_type": ['void']})
-gen_inst("class ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter.inc")
+reset_file("converter_order_one.inc")
+gen_inst("class ConverterOrderOne<$value_type>", "converter_order_one.inc", exceptions={"$value_type": ['void']})
+gen_inst("class ConverterOrderOne<$id_type>", "converter_order_one.inc", exceptions={"$id_type": ['void']})
+gen_inst("class ConverterOrderOne<$nnz_type>", "converter_order_one.inc", exceptions={"$nnz_type": ['void']})
+reset_file("converter_order_two.inc")
+gen_inst("class ConverterOrderTwo<$id_type, $nnz_type, $value_type>", "converter_order_two.inc")
 
 # Converter (CUDA)
-reset_file("converter.inc", folder=cuda_output_folder)
+reset_file("converter_order_two_cuda.inc", folder=cuda_output_folder)
+reset_file("converter_order_one_cuda.inc", folder=cuda_output_folder)
 return_type = "format::Format * "
 params = "(format::Format *source, context::Context*context)"
 order_two_functions = ['CsrCUDACsrConditionalFunction',
@@ -127,15 +135,15 @@ order_one_functions = ['CUDAArrayArrayConditionalFunction',
                        'ArrayCUDAArrayConditionalFunction']
 
 for func in order_two_functions:
-    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter.inc",
+    gen_inst(return_type + func + "<$id_type, $nnz_type, $value_type>" + params, "converter_order_two_cuda.inc",
              ifdef="USE_CUDA", folder=cuda_output_folder)
 
 for func in order_one_functions:
-    gen_inst(return_type + func + "<$id_type>" + params, "converter.inc",
+    gen_inst(return_type + func + "<$id_type>" + params, "converter_order_one_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$id_type": ['void']})
-    gen_inst(return_type + func + "<$nnz_type>" + params, "converter.inc",
+    gen_inst(return_type + func + "<$nnz_type>" + params, "converter_order_one_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$nnz_type": ['void']})
-    gen_inst(return_type + func + "<$value_type>" + params, "converter.inc",
+    gen_inst(return_type + func + "<$value_type>" + params, "converter_order_one_cuda.inc",
          ifdef="USE_CUDA", folder=cuda_output_folder, exceptions={"$value_type": ['void']})
 
 
@@ -197,8 +205,8 @@ gen_inst("class PartitionPreprocessType<$id_type>", "preprocess.inc")
 
 # Preprocess (CUDA)
 reset_file("preprocess.inc", cuda_output_folder)
-gen_inst("format::cuda::CUDAArray<$float_type>* "
-         + "RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
+gen_inst("format::CUDAArray<$float_type>* "
+         + "RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::CUDACSR<$id_type, $nnz_type, $value_type>*)",
          "preprocess.inc",
          ifdef="USE_CUDA",
          folder=cuda_output_folder)

@@ -2,6 +2,8 @@
 #include <set>
 
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/io/io.h"

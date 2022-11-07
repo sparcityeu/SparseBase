@@ -19,6 +19,6 @@ struct CUDAContext : utils::IdentifiableImplementation<CUDAContext, Context> {
 };
 }  // namespace sparsebase
 #ifdef _HEADER_ONLY
-#include "sparsebase/context/cuda/context.cu"
+#include "sparsebase/context/cuda_context_cuda.cu"
 #endif
 #endif  // SPARSEBASE_SPARSEBASE_CONTEXT_CUDA_CONTEXT_H_

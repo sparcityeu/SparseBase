@@ -4,7 +4,7 @@
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/converter/converter.h"
-#include "sparsebase/format/cuda/format.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/preprocess/preprocess.h"
 using namespace sparsebase;
 const int n = 3;
@@ -24,7 +24,7 @@ TEST(JaccardTest, Jaccard) {
   context::CUDAContext gpu_context(0);
   auto jac_array = jac.GetJaccardWeights(&global_csr, {&gpu_context}, true);
   EXPECT_EQ(jac_array->get_id(),
-            format::cuda::CUDAArray<float>::get_id_static());
+            format::CUDAArray<float>::get_id_static());
   converter::ConverterOrderOne<float> converter;
   auto jac_cpu_array =
       converter.Convert<format::Array<float>>(jac_array, {&cpu_context});

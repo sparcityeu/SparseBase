@@ -12,6 +12,9 @@
 #include <string>
 
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+
 
 namespace sparsebase {
 
@@ -48,9 +51,5 @@ class WritesArray {
 }  // namespace io
 
 }  // namespace sparsebase
-
-#ifdef _HEADER_ONLY
-#include "sparsebase/io/writer.cc"
-#endif
 
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_IO_WRITER_H_

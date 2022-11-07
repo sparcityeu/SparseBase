@@ -6,6 +6,8 @@
 
 #include "sparsebase/experiment/experiment.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/io/io.h"
 #include "sparsebase/preprocess/preprocess.h"
 
@@ -74,8 +76,6 @@ std::any spmv_par(unordered_map<string, Format*> & data, std::any & fparams, std
 }
 
 #ifdef USE_CUDA
-
-using namespace format::cuda;
 
 #define THREADS_PER_BLOCK 1024
 #define NUM_BLOCKS 512

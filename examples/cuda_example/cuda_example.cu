@@ -1,9 +1,11 @@
 #include <iostream>
 
-#include "sparsebase/format/cuda/format.cuh"
-#include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/converter/converter.h"
+#include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
+#include "sparsebase/preprocess/preprocess.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -69,13 +71,13 @@ int main() {
   }
   if (array->get_id() ==
       context::CUDAContext::get_id_static()) {
-    auto gpu_array = array_converter->Convert<format::cuda::CUDAArray<float>>(
+    auto gpu_array = array_converter->Convert<format::CUDAArray<float>>(
         array, &gpu_context);
     print_array_cuda<<<1, 1>>>(gpu_array->get_vals(), gpu_array->get_num_nnz());
   }
 
   auto cuda_csr =
-      graph_converter->Convert<format::cuda::CUDACSR<int, int, int>>(
+      graph_converter->Convert<format::CUDACSR<int, int, int>>(
           csr, &gpu_context);
 
   print_csr_cuda<<<1, 1>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(),

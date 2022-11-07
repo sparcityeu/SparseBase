@@ -1,47 +1,12 @@
-#include "converter.cuh"
-#include "sparsebase/context/context.h"
-#include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/converter/converter.h"
-#include "sparsebase/format/cuda/format.cuh"
+#include "sparsebase/converter/converter_order_two.h"
+#include "sparsebase/converter/converter_order_two_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 
-namespace sparsebase {
-namespace converter {
-namespace cuda {
-
-template <typename ValueType>
-format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
-                                          context::Context *context) {
-  context::CUDAContext *gpu_context =
-      static_cast<context::CUDAContext *>(source->get_context());
-  auto cuda_array = source->AsAbsolute<format::cuda::CUDAArray<ValueType>>();
-  cudaSetDevice(gpu_context->device_id);
-  ValueType *vals = nullptr;
-  if (cuda_array->get_vals() != nullptr) {
-    vals = new ValueType[cuda_array->get_num_nnz()];
-    cudaMemcpy(vals, cuda_array->get_vals(),
-               cuda_array->get_num_nnz() * sizeof(ValueType),
-               cudaMemcpyDeviceToHost);
-  }
-  return new format::Array<ValueType>(cuda_array->get_num_nnz(), vals);
-}
-template <typename ValueType>
-format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
-                                          context::Context *context) {
-  context::CUDAContext *gpu_context =
-      static_cast<context::CUDAContext *>(context);
-  auto array = source->AsAbsolute<format::Array<ValueType>>();
-  cudaSetDevice(gpu_context->device_id);
-  ValueType *vals = nullptr;
-  if (array->get_vals() != nullptr) {
-    cudaMalloc(&vals, array->get_num_nnz() * sizeof(ValueType));
-    cudaMemcpy(vals, array->get_vals(),
-               array->get_num_nnz() * sizeof(ValueType),
-               cudaMemcpyHostToDevice);
-  }
-  return new format::cuda::CUDAArray<ValueType>(array->get_num_nnz(), vals,
-                                                *gpu_context);
-}
+namespace sparsebase::converter {
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
                                       context::Context *context) {
@@ -68,7 +33,7 @@ format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
                  cudaMemcpyHostToDevice);
     }
   }
-  return new format::cuda::CUDACSR<IDType, NNZType, ValueType>(
+  return new format::CUDACSR<IDType, NNZType, ValueType>(
       csr->get_dimensions()[0], csr->get_dimensions()[0], csr->get_num_nnz(),
       row_ptr, col, vals, *gpu_context);
 }
@@ -78,7 +43,7 @@ format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
   context::CUDAContext *dest_gpu_context =
       static_cast<context::CUDAContext *>(context);
   auto cuda_csr =
-      source->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+      source->AsAbsolute<format::CUDACSR<IDType, NNZType, ValueType>>();
   context::CUDAContext *source_gpu_context =
       static_cast<context::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(dest_gpu_context->device_id);
@@ -103,7 +68,7 @@ format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
                  cudaMemcpyDeviceToDevice);
     }
   }
-  return new format::cuda::CUDACSR<IDType, NNZType, ValueType>(
+  return new format::CUDACSR<IDType, NNZType, ValueType>(
       cuda_csr->get_dimensions()[0], cuda_csr->get_dimensions()[0],
       cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context);
 }
@@ -113,7 +78,7 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
   context::CUDAContext *gpu_context =
       static_cast<context::CUDAContext *>(source->get_context());
   auto cuda_csr =
-      source->AsAbsolute<format::cuda::CUDACSR<IDType, NNZType, ValueType>>();
+      source->AsAbsolute<format::CUDACSR<IDType, NNZType, ValueType>>();
   cudaSetDevice(gpu_context->device_id);
   int n = cuda_csr->get_dimensions()[0];
   int nnz = cuda_csr->get_num_nnz();
@@ -135,22 +100,7 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
   }
   return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
 }
-
-bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
-  if (!(to->get_id() ==
-            context::CUDAContext::get_id_static() ||
-        from->get_id() ==
-            context::CUDAContext::get_id_static()))
-    return false;
-  auto from_gpu = static_cast<context::CUDAContext *>(from);
-  auto to_gpu = static_cast<context::CUDAContext *>(to);
-  int can_access;
-  cudaDeviceCanAccessPeer(&can_access, from_gpu->device_id, to_gpu->device_id);
-  return can_access;
-}
 #if !defined(_HEADER_ONLY)
-#include "init/cuda/converter.inc"
+#include "init/cuda/converter_order_two_cuda.inc"
 #endif
-}  // namespace cuda
-}  // namespace converter
-}  // namespace sparsebase
+}

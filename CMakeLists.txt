@@ -41,6 +41,7 @@ endif()
 if (WIN32 OR APPLE)
   message(STATUS "PIGO is not supported on Windows and MacOS at the moment.")
   set(USE_PIGO OFF)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj")
 endif()
 
 
