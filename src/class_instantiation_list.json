@@ -1,0 +1,485 @@
+{
+  "classes": [
+    {
+      "template": "class CSR<$id_type, $nnz_type, $value_type>",
+      "filename": "format.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class CSC<$id_type, $nnz_type, $value_type>",
+      "filename": "format.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class COO<$id_type, $nnz_type, $value_type>",
+      "filename": "format.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Array<$value_type>",
+      "filename": "format.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class Array<$nnz_type>",
+      "filename": "format.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$nnz_type": ["void"]}
+    },
+    {
+      "template": "class Array<$id_type>",
+      "filename": "format.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$id_type": ["void"]}
+    },
+    {
+      "template": "class CUDACSR<$id_type, $nnz_type, $value_type>",
+      "filename": "format.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class CUDAArray<$value_type>",
+      "filename": "format.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class CUDAArray<$id_type>",
+      "filename": "format.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class CUDAArray<$nnz_type>",
+      "filename": "format.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class AbstractObject<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Graph<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class ConverterOrderOne<$value_type>",
+      "filename": "converter.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class ConverterOrderOne<$id_type>",
+      "filename": "converter.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$id_type": ["void"]}
+    },
+    {
+      "template": "class ConverterOrderOne<$nnz_type>",
+      "filename": "converter.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$nnz_type": ["void"]}
+    },
+    {
+      "template": "class ConverterOrderTwo<$id_type, $nnz_type, $value_type>",
+      "filename": "converter.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "format::Format * CsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "format::Format * CUDACsrCsrConditionalFunction<$id_type, $nnz_type, $value_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "format::Format * CUDACsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "format::Format * CUDAArrayArrayConditionalFunction<$id_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$id_type": ["void"]}
+    },
+    {
+      "template": "format::Format * CUDAArrayArrayConditionalFunction<$nnz_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$nnz_type": ["void"]}
+    },
+    {
+      "template": "format::Format * CUDAArrayArrayConditionalFunction<$value_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "format::Format * ArrayCUDAArrayConditionalFunction<$id_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$id_type": ["void"]}
+    },
+    {
+      "template": "format::Format * ArrayCUDAArrayConditionalFunction<$nnz_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$nnz_type": ["void"]}
+    },
+    {
+      "template": "format::Format * ArrayCUDAArrayConditionalFunction<$value_type>(format::Format *source, context::Context*context)",
+      "filename": "converter.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class EdgeListReader<$id_type, $nnz_type, $value_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MTXReader<$id_type, $nnz_type, $value_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PigoEdgeListReader<$id_type, $nnz_type, $value_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PigoMTXReader<$id_type, $nnz_type, $value_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class BinaryReaderOrderOne<$id_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$id_type": ["void"]}
+    },
+    {
+      "template": "class BinaryReaderOrderOne<$nnz_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$nnz_type": ["void"]}
+    },
+    {
+      "template": "class BinaryReaderOrderOne<$value_type>",
+      "filename": "reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class BinaryWriterOrderOne<$id_type>",
+      "filename": "writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$id_type": ["void"]}
+    },
+    {
+      "template": "class BinaryWriterOrderOne<$nnz_type>",
+      "filename": "writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$nnz_type": ["void"]}
+    },
+    {
+      "template": "class BinaryWriterOrderOne<$value_type>",
+      "filename": "writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>",
+      "filename": "writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "feature.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Degrees<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class RCMReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class DegreeReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class GrayReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class GenericReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class RabbitReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_RABBIT_ORDER",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_METIS",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class AMDReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_AMD_ORDER",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class ReorderHeatmap<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PermuteOrderTwo<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PermuteOrderOne<$id_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class TransformPreprocessType<format::FormatOrderTwo<$id_type, $nnz_type, $value_type>, format::FormatOrderTwo<$id_type, $nnz_type, $value_type>>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class TransformPreprocessType<format::FormatOrderOne<$value_type>, format::FormatOrderOne<$value_type>>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class TransformPreprocessType<format::FormatOrderOne<$id_type>, format::FormatOrderOne<$id_type>>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class TransformPreprocessType<format::FormatOrderOne<$nnz_type>, format::FormatOrderOne<$nnz_type>>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisPartition<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_METIS",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PulpPartition<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_PULP",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohPartition<$id_type, $nnz_type, $value_type>",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_PATOH",
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FunctionMatcherMixin<format::Format*>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FunctionMatcherMixin<$id_type*>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FunctionMatcherMixin<$id_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FunctionMatcherMixin<$id_type*, ExtractableType>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FunctionMatcherMixin<$id_type, ExtractableType>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class GenericPreprocessType<$id_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class ReorderPreprocessType<$id_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PartitionPreprocessType<$id_type>",
+      "filename": "preprocess.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "format::cuda::CUDAArray<$float_type>* RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
+      "filename": "preprocess.inc",
+      "ifdef": "USE_CUDA",
+      "folder": null,
+      "exceptions": null
+    }
+    
+    
+    
+    
+    
+  ]
+}
