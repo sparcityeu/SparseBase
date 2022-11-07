@@ -1,5 +1,8 @@
 #include "sparsebase/experiment/experiment_type.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+
 #include <unordered_map>
 #include <string>
 #include <vector>

@@ -64,8 +64,8 @@ int main(int argc, char * argv[]){
 
   // The conversion target is passed as a template parameter,
   // and the context to convert it to is the parameter.
-  cuda::CUDACSR<id_type, nnz_type, value_type>* cuda_csr = csr->Convert<cuda::CUDACSR>(&gpu0);
-  cuda::CUDAArray<value_type>* cuda_array = vec->Convert<cuda::CUDAArray>(&gpu0);
+  CUDACSR<id_type, nnz_type, value_type>* cuda_csr = csr->Convert<CUDACSR>(&gpu0);
+  CUDAArray<value_type>* cuda_array = vec->Convert<cuda::CUDAArray>(&gpu0);
 
   value_type * result_ptr;
   // Allocate the memory using the native CUDA call
@@ -101,7 +101,7 @@ int main(int argc, char * argv[]){
   // pointer at the superclass for two-dimensional formats, FormatOrderTwo.
   FormatOrderTwo<id_type, nnz_type, value_type>* gray_reordered_csr = ReorderBase::Permute2D(gray_reorder, csr, {&cpu}, true);
   // We move the reordered CSR to the GPU.
-  cuda::CUDACSR<id_type, nnz_type, value_type>* cuda_gray_reordered_csr = gray_reordered_csr ->Convert<cuda::CUDACSR>(&gpu0);
+  CDACSR<id_type, nnz_type, value_type>* cuda_gray_reordered_csr = gray_reordered_csr ->Convert<CDACSR>(&gpu0);
   // Rather than get the generic pointer to `FormatOrderOne`, we can cast the output
   // to the correct type in the same call to `Permute1D`
   Array<value_type>* gray_reordered_vec = ReorderBase::Permute1D<Array>(gray_reorder, vec, {&cpu}, true);
@@ -131,7 +131,7 @@ int main(int argc, char * argv[]){
   // We can apply the permutation to the CUDACSR directly, as well, but the returned
   // object will be a CSR since permutation will run on a CSR rathar than a CUDACSR
   auto rcm_reordered_csr = ReorderBase::Permute2D<CSR>(rcm_reorder, cuda_csr, contexts, true);
-  auto cuda_rcm_reordered_csr = rcm_reordered_csr->Convert<cuda::CUDACSR>(&gpu0);
+  auto cuda_rcm_reordered_csr = rcm_reordered_csr->Convert<CDACSR>(&gpu0);
 
   auto rcm_reordered_vec = ReorderBase::Permute1D<Array>(rcm_reorder, cuda_array, contexts, true);
   auto cuda_rcm_reordered_vec = rcm_reordered_vec->Convert<cuda::CUDAArray>(&gpu0);

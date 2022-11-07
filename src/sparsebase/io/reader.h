@@ -17,7 +17,8 @@
 #include <vector>
 
 #include "sparsebase/config.h"
-#include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 
 namespace sparsebase {
 
@@ -56,7 +57,4 @@ class ReadsArray {
 }  // namespace io
 
 }  // namespace sparsebase
-#ifdef _HEADER_ONLY
-#include "sparsebase/io/reader.cc"
-#endif
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_IO_READER_H_

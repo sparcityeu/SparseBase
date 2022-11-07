@@ -1,8 +1,10 @@
 #include <iostream>
 
-#include "sparsebase/format/cuda/format.cuh"
-#include "sparsebase/format/format.h"
 #include "sparsebase/converter/converter.h"
+#include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -29,7 +31,7 @@ int main() {
 
   format::Array<int> *array = new format::Array<int>(6, vals);
 
-  auto cuda_array = array->Convert<format::cuda::CUDAArray>(&gpu_context);
+  auto cuda_array = array->Convert<format::CUDAArray>(&gpu_context);
 
   print_array_cuda<<<1, 1>>>(cuda_array->get_vals(),
                              cuda_array->get_dimensions()[0]);

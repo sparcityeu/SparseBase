@@ -1,5 +1,7 @@
-#include "sparsebase/format/cuda/format.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/preprocess/cuda/preprocess.cuh"
 #include "sparsebase/preprocess/preprocess.h"
 namespace sparsebase {
@@ -14,8 +16,8 @@ __global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj,
                                                       IDType SM_FAC);
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-format::cuda::CUDAArray<FeatureType> *RunJaccardKernel(
-    format::cuda::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
+format::CUDAArray<FeatureType> *RunJaccardKernel(
+    format::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
   context::CUDAContext *gpu_context =
       static_cast<context::CUDAContext *>(cuda_csr->get_context());
   cudaSetDevice(gpu_context->device_id);
@@ -48,7 +50,7 @@ format::cuda::CUDAArray<FeatureType> *RunJaccardKernel(
                            (NNZType)cuda_csr->get_dimensions()[0],
                            jaccard_weights, 0);
   cudaDeviceSynchronize();
-  auto array = new format::cuda::CUDAArray<FeatureType>(
+  auto array = new format::CUDAArray<FeatureType>(
       cuda_csr->get_num_nnz(), jaccard_weights, *gpu_context);
   return array;
 }

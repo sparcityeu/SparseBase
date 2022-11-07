@@ -1,5 +1,6 @@
 #include "sparsebase/config.h"
 #include "pigo_edge_list_reader.h"
+#include "sparsebase/io/edge_list_reader.h"
 #include <string>
 #include <fstream>
 #ifdef USE_PIGO

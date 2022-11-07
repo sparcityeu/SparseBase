@@ -20,29 +20,14 @@
 #include "sparsebase/config.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+
 #include "sparsebase/object/object.h"
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
 
 namespace sparsebase::preprocess {
-
-//! Functor used for hashing vectors of type_index values.
-struct TypeIndexVectorHash {
-  std::size_t operator()(const std::vector<std::type_index> &vf) const;
-};
-
-//! An abstraction for parameter objects used for preprocessing
-struct PreprocessParams {};
-
-//! A generic type for all preprocessing types
-class PreprocessType {
-  //! The parameter class used to pass parameters to this preprocessing
-  typedef PreprocessParams ParamsType;
-
- protected:
-  //! Polymorphic pointer at a PreprocessParams object
-  std::unique_ptr<PreprocessParams> params_;
-};
 
 //! Abstract class that can be utilized with fusued feature extraction
 /*!
@@ -57,9 +42,9 @@ class ExtractableType {
   //! Extract features from the passed Format through passed Contexts
   /*!
    *
-   * @param format object from which features are extracted.
-   * @param contexts vector of contexts that can be used for extracting
-   * features. @return An uordered map containing the extracted features as
+   * \param format object from which features are extracted.
+   * \param contexts vector of contexts that can be used for extracting
+   * features. \return An uordered map containing the extracted features as
    * key-value pairs with the key being the std::type_index of the feature and
    * the value an std::any to that feature.
    */
@@ -72,13 +57,13 @@ class ExtractableType {
   //! class
   /*!
    *
-   * @return a vector containing the std::type_index values of all the
+   * \return a vector containing the std::type_index values of all the
    * ExtractableType classes fusued into this class
    */
   virtual std::vector<std::type_index> get_sub_ids() = 0;
   //! Get instances of the ExtractableType classes that make up this class
   /*!
-   * @return A vector of pointers to ExtractableType objects, each of which
+   * \return A vector of pointers to ExtractableType objects, each of which
    * corresponds to one of the features that this class is extracting, and the
    * classes will have their respective parameters passed over to them.
    */
@@ -86,7 +71,7 @@ class ExtractableType {
   //! Get a std::shared_ptr at the Parameters of this object
   /*!
    *
-   * @return An std::shared_ptr at the same Parameters instance of this
+   * \return An std::shared_ptr at the same Parameters instance of this
    * object (not a copy)
    */
   virtual std::shared_ptr<utils::Parameters> get_params() = 0;
@@ -94,9 +79,9 @@ class ExtractableType {
   //! classes fused into this class
   /*!
    * Returns a std::shared_ptr at a Parameters object belonging to one of
-   * the ExtractableType classes fused into this class @param feature_extractor
+   * the ExtractableType classes fused into this class \param feature_extractor
    * std::type_index identifying the ExtractableType within this class whose
-   * parameters are requested @return an std::shared_ptr at the Parameters
+   * parameters are requested \return an std::shared_ptr at the Parameters
    * corresponding feature_extractor
    */
   virtual std::shared_ptr<utils::Parameters> get_params(
@@ -104,9 +89,9 @@ class ExtractableType {
   //! Set the parameters of one of ExtractableType classes fusued into this
   //! classes.
   /*!
-   * @param feature_extractor std::type_index identifying the ExtractableType
-   * class fusued into this class whose parameters are to be set. @param params
-   * an std::shared_ptr at the PreprocessParams belonging to the class
+   * \param feature_extractor std::type_index identifying the ExtractableType
+   * class fusued into this class whose parameters are to be set. \param params
+   * an std::shared_ptr at the Parameters belonging to the class
    * feature_extractor
    */
   virtual void set_params(std::type_index feature_extractor,
@@ -722,7 +707,7 @@ class Degrees_DegreeDistribution
   /*!
    *
    * @param format a single format pointer to any format
-   * @param params a PreprocessParams pointer, though it
+   * @param params a utils::Parameters pointer, though it
    * is not used in the function
    * features. @return a map with two (type_index, any) pairs. One is a degrees
    * array of type IDType*, and one is a degree distribution array of type
@@ -913,7 +898,7 @@ class MetisReorder : public ReorderPreprocessType<IDType> {
 #ifdef USE_PULP
 
 //! Parameters for the PulpPartition class
-struct PulpPartitionParams : PreprocessParams {
+struct PulpPartitionParams : utils::Parameters {
   double vert_balance = 1.1;
   double edge_balance = 1.5;
   bool do_lp_init = false;
@@ -938,7 +923,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class PulpPartition : public PartitionPreprocessType<IDType> {
  private:
   static IDType *PartitionCSR(std::vector<format::Format *> formats,
-                              PreprocessParams *params);
+                              utils::Parameters *params);
 
  public:
   typedef PulpPartitionParams ParamsType;
@@ -964,7 +949,7 @@ enum ParameterInit {
 }
 
 //! Parameters for the PulpPartition class
-struct PatohPartitionParams : PreprocessParams {
+struct PatohPartitionParams : utils::Parameters {
   patoh::Objective objective = patoh::CON;
   patoh::ParameterInit param_init = patoh::DEFAULT;
   int num_partitions = 2;
@@ -985,7 +970,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 class PatohPartition : public PartitionPreprocessType<IDType> {
  private:
   static IDType *PartitionCSR(std::vector<format::Format *> formats,
-                              PreprocessParams *params);
+                              utils::Parameters *params);
 
  public:
   typedef PatohPartitionParams ParamsType;

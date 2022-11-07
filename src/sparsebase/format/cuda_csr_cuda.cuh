@@ -9,18 +9,15 @@
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/utils/utils_cuda.cuh"
+
 #ifndef SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 #define SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
 
-namespace sparsebase {
+namespace sparsebase::format {
 
-namespace format {
-namespace cuda {
-
-template <typename T>
-struct CUDADeleter {
-  void operator()(T *obj) { cudaFree(obj); }
-};
 
 template <typename IDType, typename NNZType, typename ValueType>
 class CUDACSR
@@ -63,31 +60,9 @@ class CUDACSR
   std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
-template <typename ValueType>
-class CUDAArray : public utils::IdentifiableImplementation<CUDAArray<ValueType>,
-                                              FormatOrderOne<ValueType>> {
- public:
-  CUDAArray(DimensionType nnz, ValueType *row_ptr,
-            context::CUDAContext context, Ownership own = kNotOwned);
-  CUDAArray(const CUDAArray<ValueType> &);
-  CUDAArray(CUDAArray<ValueType> &&);
-  CUDAArray<ValueType> &operator=(const CUDAArray<ValueType> &);
-  Format *Clone() const override;
-  virtual ~CUDAArray();
-  ValueType *get_vals() const;
-
-  ValueType *release_vals();
-
-  void set_vals(ValueType *, Ownership own = kNotOwned);
-
-  virtual bool ValsIsOwned();
-
- protected:
-  std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
-};
-
-};  // namespace cuda
-}  // namespace format
 
 }  // namespace sparsebase
+#ifdef _HEADER_ONLY
+#include "cuda_csr_cuda.cu"
+#endif
 #endif  // SPARSEBASE_SPARSEBASE_FORMAT_CUDA_FORMAT_H_
