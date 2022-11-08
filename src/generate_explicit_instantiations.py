@@ -85,7 +85,7 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder, exceptions=No
 
 
 #reading class registration file
-with open('/mnt/d/Repos/sparsebase/src/class_instantiation_list.json', 'r') as read_file:
+with open( os.path.join( os.path.dirname(output_folder),"src\class_instantiation_list.json"), 'r') as read_file:
     data = json.load(read_file)
     
 current_filename = ""
