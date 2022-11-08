@@ -25,7 +25,7 @@ format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
                cuda_array->get_num_nnz() * sizeof(ValueType),
                cudaMemcpyDeviceToHost);
   }
-  return new format::Array<ValueType>(cuda_array->get_num_nnz(), vals);
+  return new format::Array<ValueType>(cuda_array->get_num_nnz(), vals, format::kOwned);
 }
 template <typename ValueType>
 format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
@@ -42,7 +42,7 @@ format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
                cudaMemcpyHostToDevice);
   }
   return new format::cuda::CUDAArray<ValueType>(array->get_num_nnz(), vals,
-                                                *gpu_context);
+                                                *gpu_context, format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
@@ -72,7 +72,7 @@ format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
   }
   return new format::cuda::CUDACSR<IDType, NNZType, ValueType>(
       csr->get_dimensions()[0], csr->get_dimensions()[0], csr->get_num_nnz(),
-      row_ptr, col, vals, *gpu_context);
+      row_ptr, col, vals, *gpu_context, format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
@@ -107,7 +107,7 @@ format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
   }
   return new format::cuda::CUDACSR<IDType, NNZType, ValueType>(
       cuda_csr->get_dimensions()[0], cuda_csr->get_dimensions()[0],
-      cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context);
+      cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context, format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
@@ -135,7 +135,7 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
                  cudaMemcpyDeviceToHost);
     }
   }
-  return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
+  return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals, format::kOwned);
 }
 
 bool CUDAPeerToPeer(context::Context *from, context::Context *to) {

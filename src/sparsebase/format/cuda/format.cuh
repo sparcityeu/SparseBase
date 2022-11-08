@@ -29,7 +29,7 @@ class CUDACSR
  public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
           ValueType *vals, context::cuda::CUDAContext context,
-          Ownership own = kNotOwned);
+          Ownership own = kOwned);
   CUDACSR(const CUDACSR<IDType, NNZType, ValueType> &);
   CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&);
   CUDACSR<IDType, NNZType, ValueType> &operator=(
@@ -68,7 +68,7 @@ class CUDAArray : public utils::IdentifiableImplementation<CUDAArray<ValueType>,
                                               FormatOrderOne<ValueType>> {
  public:
   CUDAArray(DimensionType nnz, ValueType *row_ptr,
-            context::cuda::CUDAContext context, Ownership own = kNotOwned);
+            context::cuda::CUDAContext context, Ownership own = kOwned);
   CUDAArray(const CUDAArray<ValueType> &);
   CUDAArray(CUDAArray<ValueType> &&);
   CUDAArray<ValueType> &operator=(const CUDAArray<ValueType> &);
