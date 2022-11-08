@@ -1306,6 +1306,35 @@ protected:
 #endif
 
 //! Parameters for Reorder Heatmap generator
+struct HeatmapParams : PreprocessParams {
+  //! Number of parts to split vertices over
+  int num_parts = 3;
+  HeatmapParams(int b) : num_parts(b){}
+  HeatmapParams(){}
+};
+
+//! Calculates density of non-zeros of a 2D format on a num_parts * num_parts grid
+/*!
+ * Splits the input 2D matrix into a grid of size num_parts * num_parts containing an
+ * equal number of rows and columns, and calculates the density of non-zeros in each
+ * cell in the grid relative to the total number of non-zeros in the matrix, given that the
+ * matrix was reordered according to a permutation matrix.
+ * Returns the densities as a dense array (FormatOrderOne) of size num_parts * num_parts where
+ * the density at cell [i][j] in the 2D grid is located at index [i*num_parts+j] in the
+ * grid. The density values sum up to 1.
+ * @tparam FloatType type used to represent the densities of non-zeros.
+ */
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+class Heatmap : public FunctionMatcherMixin<format::FormatOrderOne<FloatType>*>{
+ public:
+  Heatmap();
+  Heatmap(HeatmapParams params);
+  format::FormatOrderOne<FloatType>* Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*> contexts, bool convert_input);
+ protected:
+  static format::FormatOrderOne<FloatType>* HeatmapCSRArrayArray(std::vector<format::Format*> formats, PreprocessParams  * poly_params);
+};
+
+//! Parameters for Reorder Heatmap generator
 struct ReorderHeatmapParams : PreprocessParams{
   //! Number of parts to split vertices over
   int num_parts = 3;

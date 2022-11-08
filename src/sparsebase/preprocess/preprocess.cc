@@ -1833,6 +1833,96 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
 #endif
 
 template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+Heatmap<IDType, NNZType, ValueType, FloatType>::Heatmap(){
+  this->params_ =
+      std::make_unique<HeatmapParams>();
+  this->RegisterFunction(
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+      HeatmapCSRArrayArray);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+Heatmap<IDType, NNZType, ValueType, FloatType>::Heatmap(HeatmapParams params) : Heatmap(){
+  this->params_ =
+      std::make_unique<HeatmapParams>(params);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+format::FormatOrderOne<FloatType>* Heatmap<IDType, NNZType, ValueType, FloatType>::Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, std::vector<context::Context*> contexts, bool convert_input){
+  return this->Execute(this->params_.get(), contexts, convert_input, (format::Format*)format);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
+format::FormatOrderOne<FloatType>* Heatmap<IDType, NNZType, ValueType, FloatType>::HeatmapCSRArrayArray(std::vector<format::Format*> formats,
+                                                                                                        PreprocessParams   * poly_params){
+  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+  auto* params = static_cast<HeatmapParams*>(poly_params);
+  int b = params->num_parts;
+  if (b > csr->get_dimensions()[0] || b > csr->get_dimensions()[1]) {
+    throw utils::ReorderException("bad");
+  }
+  auto n = csr->get_dimensions()[0];
+  auto row_ptr = csr->get_row_ptr();
+  auto adj = csr->get_col();
+  IDType max_bw = 0;
+  FloatType mean_bw = 0;
+
+  IDType bsize = n / b;
+
+  // matrix of size num_parts x num_parts with number of edges in each square
+  auto density = new NNZType*[b];
+  for(NNZType i = 0; i < b; i++) {
+    density[i] = new NNZType[b];
+    memset(density[i], 0, sizeof(NNZType) * b);
+  }
+
+  for(IDType i = 0; i < n; i++) {
+    IDType u = i;
+    IDType bu = u / bsize;
+    if(bu == b) bu--;
+    for(NNZType ptr = row_ptr[i]; ptr < row_ptr[i+1]; ptr++) {
+      IDType v = adj[ptr];
+      IDType bw = abs(std::make_signed_t<IDType>(u) - std::make_signed_t<IDType>(v));
+      max_bw = std::max<IDType>(max_bw, bw);
+      mean_bw += bw;
+
+      IDType bv = v / bsize;
+      if(bv == b) bv--;
+      density[bu][bv]++;
+    }
+  }
+  mean_bw = (mean_bw + 0.0f) / row_ptr[n];
+  //utils::Logger logger;
+  //logger.Log("BW stats -- Mean bw: "+std::to_string(mean_bw) + "Max bw: " + std::to_string(max_bw), utils::LOG_LVL_INFO);
+
+  FloatType para_mean_bw = 0;
+  mean_bw = 0;
+  int fblocks = 0;
+  //logger.Log("Printing blocks \n----------------------------------------------" << endl;
+  for(int i = 0; i < b; i++) {
+    for(int j = 0; j < b; j++) {
+      //     cout << std::setprecision(2) << density[i][j] / (row_ptr[n] + .0f) << "\t";
+      if(density[i][j] > 0) {
+        fblocks++;
+      }
+      int bw = std::abs(i - j);
+      mean_bw += bw * density[i][j];
+    }
+    //   cout << endl;
+  }
+  // cout << "---------------------------------------------------------------" << endl;
+  // cout << "Block BW stats -- No full blocks: " << fblocks << " Block BW: " << (mean_bw + 0.0f) / row_ptr[n] << endl;
+  // cout << "---------------------------------------------------------------" << endl;
+  auto heat_values = new FloatType[b*b];
+  for (int i = 0; i < b; i++){
+    for (int j = 0; j < b; j++){
+      heat_values[i*b+j] = density[i][j] / (row_ptr[n] + .0f);
+    }
+  }
+  return new format::Array<FloatType>(b*b, heat_values, format::kOwned);
+}
+
+template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
 ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(){
   this->params_ =
       std::make_unique<ReorderHeatmapParams>();

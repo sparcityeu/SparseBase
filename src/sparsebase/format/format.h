@@ -192,7 +192,6 @@ class FormatImplementation : public Format {
   }
   virtual std::shared_ptr<utils::converter::Converter const> get_converter()
       const {
-        std::cout << "getting converter " << this->converter_.get() << std::endl;
         return this->converter_;
         //return std::dynamic_pointer_cast<utils::converter::Converter>(this->converter_).get();
       };
