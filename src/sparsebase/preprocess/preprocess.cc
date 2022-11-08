@@ -1879,7 +1879,7 @@ format::FormatOrderOne<FloatType>* Heatmap<IDType, NNZType, ValueType, FloatType
   for(IDType i = 0; i < n; i++) {
     IDType u = i;
     IDType bu = u / bsize;
-    if(bu == b) bu--;
+    if(bu >= b) bu = b-1;
     for(NNZType ptr = row_ptr[i]; ptr < row_ptr[i+1]; ptr++) {
       IDType v = adj[ptr];
       IDType bw = abs(std::make_signed_t<IDType>(u) - std::make_signed_t<IDType>(v));
@@ -1887,7 +1887,7 @@ format::FormatOrderOne<FloatType>* Heatmap<IDType, NNZType, ValueType, FloatType
       mean_bw += bw;
 
       IDType bv = v / bsize;
-      if(bv == b) bv--;
+      if(bv >= b) bv = b-1;
       density[bu][bv]++;
     }
   }

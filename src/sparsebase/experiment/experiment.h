@@ -191,7 +191,7 @@ std::unordered_map<std::string, format::Format*> LoadFormat(std::vector<std::str
   format::FormatOrderTwo<IDType, NNZType, ValueType> * coo = reader.ReadCOO();
   FormatType<IDType, NNZType, ValueType> * format = coo->template Convert<FormatType>();
   std::unordered_map<std::string, format::Format*> r;
-  r.emplace("format", format);
+  r["format"] = format;
   return r;
 }
 
@@ -202,7 +202,7 @@ std::unordered_map<std::string, format::Format*> LoadCSR(std::vector<std::string
   auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
   format::CSR<IDType, NNZType, ValueType> * csr = reader.ReadCSR();
   std::unordered_map<std::string, format::Format*> r;
-  r.emplace("format", csr);
+  r["format"] = csr;
   return r;
 }
 
@@ -213,7 +213,7 @@ std::unordered_map<std::string, format::Format*> LoadCOO(std::vector<std::string
   auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
   format::COO<IDType, NNZType, ValueType> * csr = reader.ReadCOO();
   std::unordered_map<std::string, format::Format*> r;
-  r.emplace("format", csr);
+  r["format"] = csr;
   return r;
 }
 
@@ -225,7 +225,7 @@ std::unordered_map<std::string, format::Format*> LoadCSC(std::vector<std::string
   format::COO<IDType, NNZType, ValueType> * coo = reader.ReadCOO();
   format::CSC<IDType, NNZType, ValueType> * csc = coo->template Convert<format::CSC>();
   std::unordered_map<std::string, format::Format*> r;
-  r.emplace("format", csc);
+  r["format"] = csc;
   return r;
 }
 
@@ -238,7 +238,7 @@ void ReorderCSR(std::unordered_map<std::string, format::Format*> & data, std::an
   auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
   auto * A_reordered = preprocess::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
-  data.emplace("processed_format", A_csc);
+  data["processed_format"] = A_csc;
 }
 
 //! Example preprocessing function.
@@ -256,7 +256,7 @@ void Reorder(std::unordered_map<std::string, format::Format*> & data, std::any f
   auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
   auto * A_reordered = preprocess::ReorderBase::Permute2D<FormatType>(perm, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
-  data.emplace("processed_format", A_csc);
+  data["processed_format"] = A_csc;
 }
 
 
