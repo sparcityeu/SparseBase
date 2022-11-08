@@ -149,7 +149,9 @@ The first parameter is the class declaration. The four variables beginning with 
 
 The second parameter is the name of the file to which these instantiations will be printed, and it matches the name of the header file in which the class is defined.
 
-Now, you can easily extract your feature as following:
+### Result
+
+Now, you can easily extract your feature as the following:
 
 ```cpp
 #include "sparsebase/sparse_preprocess.h"
