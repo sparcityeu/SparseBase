@@ -15,6 +15,8 @@ parser.add_argument('--float-types', nargs='+', type=str, help= "C++ data types 
 parser.add_argument('--output-folder', type=str, help= "Path to output folder to store resultant files")
 parser.add_argument('--dry-run', action='store_true', help= "Will not write the files to disk, and will write them to stdout instead")
 
+parser.add_argument('--class-list', type=str, help= "Path to class instantiation json list")
+
 parser.add_argument('--pigo', type=str, help= "Use pigo (OFF/ON).")
 parser.add_argument('--cuda', type=str, help= "Use CUDA (OFF/ON).")
 args = parser.parse_args()
@@ -27,6 +29,7 @@ float_types = ' '.join(args.float_types).split(',')
 type_to_idx_map = {"$id_type": 0, "$nnz_type": 1, "$value_type": 2, "$float_type": 3}
 
 output_folder = args.output_folder
+class_list = args.class_list
 cuda_output_folder = os.path.join(output_folder, 'cuda')
 dry_run = args.dry_run
 
@@ -85,7 +88,7 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder, exceptions=No
 
 
 #reading class registration file
-with open( os.path.join( os.path.dirname(output_folder),"src\class_instantiation_list.json"), 'r') as read_file:
+with open(class_list, 'r') as read_file:
     data = json.load(read_file)
     
 current_filename = ""
