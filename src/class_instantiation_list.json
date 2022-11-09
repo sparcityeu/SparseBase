@@ -46,28 +46,28 @@
       "template": "class CUDACSR<$id_type, $nnz_type, $value_type>",
       "filename": "format.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": null
     },
     {
       "template": "class CUDAArray<$value_type>",
       "filename": "format.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$value_type": ["void"]}
     },
     {
       "template": "class CUDAArray<$id_type>",
       "filename": "format.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$value_type": ["void"]}
     },
     {
       "template": "class CUDAArray<$nnz_type>",
       "filename": "format.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$value_type": ["void"]}
     },
     {
@@ -116,63 +116,63 @@
       "template": "format::Format * CsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": null
     },
     {
       "template": "format::Format * CUDACsrCsrConditionalFunction<$id_type, $nnz_type, $value_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": null
     },
     {
       "template": "format::Format * CUDACsrCUDACsrConditionalFunction<$id_type, $nnz_type, $value_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": null
     },
     {
       "template": "format::Format * CUDAArrayArrayConditionalFunction<$id_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$id_type": ["void"]}
     },
     {
       "template": "format::Format * CUDAArrayArrayConditionalFunction<$nnz_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$nnz_type": ["void"]}
     },
     {
       "template": "format::Format * CUDAArrayArrayConditionalFunction<$value_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$value_type": ["void"]}
     },
     {
       "template": "format::Format * ArrayCUDAArrayConditionalFunction<$id_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$id_type": ["void"]}
     },
     {
       "template": "format::Format * ArrayCUDAArrayConditionalFunction<$nnz_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$nnz_type": ["void"]}
     },
     {
       "template": "format::Format * ArrayCUDAArrayConditionalFunction<$value_type>(format::Format *source, context::Context*context)",
       "filename": "converter.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": {"$value_type": ["void"]}
     },
     {
@@ -473,7 +473,7 @@
       "template": "format::cuda::CUDAArray<$float_type>* RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::cuda::CUDACSR<$id_type, $nnz_type, $value_type>*)",
       "filename": "preprocess.inc",
       "ifdef": "USE_CUDA",
-      "folder": null,
+      "folder": "cuda",
       "exceptions": null
     }
     
