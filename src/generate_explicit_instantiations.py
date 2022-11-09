@@ -91,26 +91,24 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder, exceptions=No
 with open(class_list, 'r') as read_file:
     data = json.load(read_file)
     
-current_filename = ""
+opened_files = {}
 class_instantiation_list = data.get("classes")
 for each_class in class_instantiation_list:
-    #print(each_class)
-    #setting current filename
-    if current_filename != each_class.get("filename"):
-        current_filename = each_class.get("filename")
-        reset_file(current_filename)
     
-    #choosing folder
-    current_folder = each_class.get("folder")
-    if each_class.get("ifdef") == "USE_CUDA":
-        current_folder = cuda_output_folder
-    elif each_class.get("folder") == None:
-        current_folder = output_folder  
+    file_name = each_class.get("filename")
+    if not file_name in opened_files:
+        opened_files[file_name] = True
+        reset_file(file_name)
+    
+    if each_class.get("folder"):
+        store_at = os.path.join(output_folder, each_class.get("folder"))
+    else:
+        store_at = output_folder
         
     gen_inst(
         template=each_class.get("template"),
-        filename=current_filename,
+        filename=file_name,
         ifdef=each_class.get("ifdef"),
-        folder=current_folder,
+        folder=store_at,
         exceptions=each_class.get("exceptions")
         )
