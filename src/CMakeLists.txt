@@ -15,7 +15,9 @@ if(NOT ${_HEADER_ONLY})
     --float-types ${FLOAT_TYPES_JOINED}
     --pigo ${USE_PIGO}
     --cuda ${USE_CUDA}
-    --output-folder ${PROJECT_BINARY_DIR}/init)
+    --output-folder ${PROJECT_BINARY_DIR}/init
+    --class-list ${CMAKE_SOURCE_DIR}/src/class_instantiation_list.json)
+    
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
     sparsebase/format/format.cc
