@@ -82,10 +82,10 @@ class Extractor : public ClassMatcherMixin<preprocess::ExtractableType *> {
   //! Computes the features that are passed.
   /*!
     Detailed Description.
-    \param features vector of features to extract.
-    \param format a format to be used as the data source.
-    \param con vector of contexts to be used to determine the where the
-    computation will take place. \return void
+    @param features vector of features to extract.
+    @param format a format to be used as the data source.
+    @param con vector of contexts to be used to determine the where the
+    computation will take place. @return void
   */
   static std::unordered_map<std::type_index, std::any> Extract(
       std::vector<Feature> &features, format::Format *format,
@@ -95,36 +95,36 @@ class Extractor : public ClassMatcherMixin<preprocess::ExtractableType *> {
       //! Computes the features that are added to in_ private data member.
       /*!
         Detailed Description.
-        \param format a format to be used as the data source.
-        \param con vector of contexts to be used to determine the where the
-        computation will take place. \return void
+        @param format a format to be used as the data source.
+        @param con vector of contexts to be used to determine the where the
+        computation will take place. @return void
       */
       Extract(format::Format *format,
               const std::vector<context::Context *> &con, bool convert_input);
   //! Adds a feature to private in_ data member.
   /*!
     Detailed Description.
-    \param f a Feature argument.
-    \return void
+    @param f a Feature argument.
+    @return void
   */
   void Add(Feature f);
   //! Subtracts a feature from private in_ data member.
   /*!
     Detailed Description.
-    \param f a Feature argument.
-    \return void
+    @param f a Feature argument.
+    @return void
   */
   void Subtract(Feature f);
   //! Returns the in_ private data member as a vector.
   /*!
     Detailed Description.
-    \return vector of type std::type_index
+    @return vector of type std::type_index
   */
   std::vector<std::type_index> GetList();
   //! Prints all the registered functions to the ClassMatcher map.
   /*!
     Detailed Description.
-    \return void
+    @return void
   */
   void PrintFuncList();
   std::vector<preprocess::ExtractableType *> GetFuncList();

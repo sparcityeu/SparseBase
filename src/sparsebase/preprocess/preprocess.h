@@ -56,9 +56,9 @@ class ExtractableType {
   //! Extract features from the passed Format through passed Contexts
   /*!
    *
-   * \param format object from which features are extracted.
-   * \param contexts vector of contexts that can be used for extracting
-   * features. \return An uordered map containing the extracted features as
+   * @param format object from which features are extracted.
+   * @param contexts vector of contexts that can be used for extracting
+   * features. @return An uordered map containing the extracted features as
    * key-value pairs with the key being the std::type_index of the feature and
    * the value an std::any to that feature.
    */
@@ -71,13 +71,13 @@ class ExtractableType {
   //! class
   /*!
    *
-   * \return a vector containing the std::type_index values of all the
+   * @return a vector containing the std::type_index values of all the
    * ExtractableType classes fusued into this class
    */
   virtual std::vector<std::type_index> get_sub_ids() = 0;
   //! Get instances of the ExtractableType classes that make up this class
   /*!
-   * \return A vector of pointers to ExtractableType objects, each of which
+   * @return A vector of pointers to ExtractableType objects, each of which
    * corresponds to one of the features that this class is extracting, and the
    * classes will have their respective parameters passed over to them.
    */
@@ -85,7 +85,7 @@ class ExtractableType {
   //! Get a std::shared_ptr at the PreprocessParams of this object
   /*!
    *
-   * \return An std::shared_ptr at the same PreprocessParams instance of this
+   * @return An std::shared_ptr at the same PreprocessParams instance of this
    * object (not a copy)
    */
   virtual std::shared_ptr<PreprocessParams> get_params() = 0;
@@ -93,9 +93,9 @@ class ExtractableType {
   //! classes fused into this class
   /*!
    * Returns a std::shared_ptr at a PreprocessParams object belonging to one of
-   * the ExtractableType classes fused into this class \param feature_extractor
+   * the ExtractableType classes fused into this class @param feature_extractor
    * std::type_index identifying the ExtractableType within this class whose
-   * parameters are requested \return an std::shared_ptr at the PreprocessParams
+   * parameters are requested @return an std::shared_ptr at the PreprocessParams
    * corresponding feature_extractor
    */
   virtual std::shared_ptr<PreprocessParams> get_params(
@@ -103,8 +103,8 @@ class ExtractableType {
   //! Set the parameters of one of ExtractableType classes fusued into this
   //! classes.
   /*!
-   * \param feature_extractor std::type_index identifying the ExtractableType
-   * class fusued into this class whose parameters are to be set. \param params
+   * @param feature_extractor std::type_index identifying the ExtractableType
+   * class fusued into this class whose parameters are to be set. @param params
    * an std::shared_ptr at the PreprocessParams belonging to the class
    * feature_extractor
    */
@@ -122,9 +122,9 @@ class ExtractableType {
 
 //! Template for implementation functions of all preprocesses
 /*!
-  \tparam ReturnType the return type of preprocessing functions
-  \param formats a vector of pointers at format::Format objects
-  \param params a polymorphic pointer at a PreprocessParams object
+  @tparam ReturnType the return type of preprocessing functions
+  @param formats a vector of pointers at format::Format objects
+  @param params a polymorphic pointer at a PreprocessParams object
 */
 template <typename ReturnType>
 using PreprocessFunction = ReturnType (*)(std::vector<format::Format *> formats,
@@ -134,13 +134,13 @@ using PreprocessFunction = ReturnType (*)(std::vector<format::Format *> formats,
 /*!
   This mixin attaches the functionality of matching keys (which, by default, are
   vectors of type indices) to function pointer objects (by default, their
-  signature is PreprocessFunction). \tparam ReturnType the return type that will
-  be returned by the preprocessing function implementations \tparam Function the
+  signature is PreprocessFunction). @tparam ReturnType the return type that will
+  be returned by the preprocessing function implementations @tparam Function the
   function signatures that keys will map to. Default is
-  sparsebase::preprocess::PreprocessFunction \tparam Key the type of the keys
+  sparsebase::preprocess::PreprocessFunction @tparam Key the type of the keys
   used to access function in the inner maps. Default is
-  std::vector<std::type_index>> \tparam KeyHash the hash function used to has
-  keys. \tparam KeyEqualTo the function used to evaluate equality of keys
+  std::vector<std::type_index>> @tparam KeyHash the hash function used to has
+  keys. @tparam KeyEqualTo the function used to evaluate equality of keys
 */
 template <typename ReturnType,
           class PreprocessingImpl = PreprocessType,
@@ -163,23 +163,23 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   }
   //! Register a key to a function as long as that key isn't already registered
   /*!
-    \param key_of_function key used in the map
-    \param func_ptr function pointer being registered
-    \return True if the function was registered successfully and false otherwise
+    @param key_of_function key used in the map
+    @param func_ptr function pointer being registered
+    @return True if the function was registered successfully and false otherwise
   */
   bool RegisterFunctionNoOverride(const Key &key_of_function,
                                   const Function &func_ptr);
   //! Register a key to a function and overrides previous registered function
   //! (if any)
   /*!
-    \param key_of_function key used in the map
-    \param func_ptr function pointer being registered
+    @param key_of_function key used in the map
+    @param func_ptr function pointer being registered
   */
   void RegisterFunction(const Key &key_of_function, const Function &func_ptr);
   //! Unregister a key from the map if the key was registered to a function
   /*!
-    \param key_of_function key to unregister
-    \return true if the key was unregistered successfully, and false if it
+    @param key_of_function key to unregister
+    @return true if the key was unregistered successfully, and false if it
     wasn't already registerd to something.
   */
   bool UnregisterFunction(const Key &key_of_function);
@@ -191,11 +191,11 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   //! Determines the exact Function and format conversions needed to carry out
   //! preprocessing
   /*!
-   * \param packed_formats a vector of the input Format* needed for conversion.
-   * \param key the Key representing the input formats.
-   * \param map the map between Keys and Functions used to find the needed
-   * function. \param contexts Contexts available for execution of the
-   * preprocessing. \return a tuple of a) the Function to use,
+   * @param packed_formats a vector of the input Format* needed for conversion.
+   * @param key the Key representing the input formats.
+   * @param map the map between Keys and Functions used to find the needed
+   * function. @param contexts Contexts available for execution of the
+   * preprocessing. @return a tuple of a) the Function to use,
    * and b) a utils::converter::ConversionSchemaConditional indicating
    * conversions to be done on input Format objects.
    */
@@ -207,11 +207,11 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   /*!
    * Given a conversion map, available execution contexts, input formats, and a
    * key, determines whether the key has a corresponding function and that the
-   * available contexts allow that function to be executed. \param map the map
-   * between Keys and Functions used to find the needed function \param key the
-   * Key representing the input formats. \param packed_formats a vector of the
-   * input Format* needed for conversion. \param contexts Contexts available for
-   * execution of the preprocessing \return true if the key has a matching
+   * available contexts allow that function to be executed. @param map the map
+   * between Keys and Functions used to find the needed function @param key the
+   * Key representing the input formats. @param packed_formats a vector of the
+   * input Format* needed for conversion. @param contexts Contexts available for
+   * execution of the preprocessing @return true if the key has a matching
    * function that can be used with the inputs without any conversions.
    */
   bool CheckIfKeyMatches(ConversionMap map, Key key,
@@ -230,17 +230,17 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * the inputs, executes the preprocessing, and returns the results. Note: this
    * function will delete any intermediery Format objects that were created due
    * to a conversion.
-   * \param PreprocessParams a polymorphic pointer at the
+   * @param PreprocessParams a polymorphic pointer at the
    * object containing hyperparameters needed for preprocessing.
-   * \param contexts Contexts available for execution of the
+   * @param contexts Contexts available for execution of the
    * preprocessing.
-   * \param convert_input whether or not to convert the input formats if that is
+   * @param convert_input whether or not to convert the input formats if that is
    * needed.
-   * \param sf a single input Format* (this is templated to allow
+   * @param sf a single input Format* (this is templated to allow
    * variadic definition).
-   * \param sfs a variadic Format* (this is templated to
+   * @param sfs a variadic Format* (this is templated to
    * allow variadic definition).
-   * \return the output of the preprocessing (of
+   * @return the output of the preprocessing (of
    * type ReturnType).
    */
   template <typename F, typename... SF>
@@ -256,17 +256,17 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * - pointers at any Format objects that were created due to a conversion.
    * Note: this function will delete any intermediery Format objects that were
    * created due to a conversion.
-   * \param PreprocessParams a polymorphic pointer
+   * @param PreprocessParams a polymorphic pointer
    * at the object containing hyperparameters needed for preprocessing.
-   * \param contexts Contexts available for execution of the
+   * @param contexts Contexts available for execution of the
    * preprocessing.
-   * \param convert_input whether or not to convert the input formats if that is
+   * @param convert_input whether or not to convert the input formats if that is
    * needed
-   * \param sf a single input Format* (this is templated to allow
+   * @param sf a single input Format* (this is templated to allow
    * variadic definition).
-   * \param sfs a variadic Format* (this is templated to
+   * @param sfs a variadic Format* (this is templated to
    * allow variadic definition).
-   * \return a tuple containing a) the output of the
+   * @return a tuple containing a) the output of the
    * preprocessing (of type ReturnType), and b) a vector of Format*, where each
    * pointer in the output points at the format that the corresponds Format
    * object from the the input was converted to. If an input Format wasn't
@@ -616,7 +616,7 @@ class PermuteOrderOne
 /*!
  * An ExtractableType class that has a function matching
  * capability. In other words, an Extractable to which implementation functions
- * can be added and used. \tparam FeatureType the return type of feature
+ * can be added and used. @tparam FeatureType the return type of feature
  * extraction
  */
 template <typename FeatureType>
@@ -702,11 +702,11 @@ class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
   //! matching
   /*!
    *
-   * \param format a single format pointer to any format
-   * \param contexts vector of contexts that can be used for extracting
+   * @param format a single format pointer to any format
+   * @param contexts vector of contexts that can be used for extracting
    * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * features. \return an array of size format.get_dimensions()[0] where element
+   * features. @return an array of size format.get_dimensions()[0] where element
    * i is the degree distribution of the ith vertex in `formats`
    */
   FeatureType *GetDistribution(format::Format *format,
@@ -716,11 +716,11 @@ class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
   //! matching on a Graph
   /*!
    *
-   * \param object a single format pointer to any format
-   * \param contexts vector of contexts that can be used for extracting
+   * @param object a single format pointer to any format
+   * @param contexts vector of contexts that can be used for extracting
    * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * features. \return an array of size format.get_dimensions()[0] where element
+   * features. @return an array of size format.get_dimensions()[0] where element
    * i is the degree distribution of the ith vertex in `formats`
    */
   FeatureType *GetDistribution(
@@ -731,12 +731,12 @@ class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
   /*!
    * Generates the degree distribution of the passed format. If the input format
    * was converted to other format types, the converting results are also
-   * returned with the output \param format a single format pointer to any
-   * format \param contexts vector of contexts that can be used for extracting
+   * returned with the output @param format a single format pointer to any
+   * format @param contexts vector of contexts that can be used for extracting
    * features.
-   * \param convert_input whether or not to convert the input format if that is
+   * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * \return A tuple with the first element being a vector of Format*
+   * @return A tuple with the first element being a vector of Format*
    * where each pointer in the output points at the format that the corresponds
    * Format object from the the input was converted to. If an input Format
    * wasn't converted, the output pointer will point at nullptr. The second
@@ -753,8 +753,8 @@ class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
       //! Degree distribution generation implementation function for CSRs
       /*!
        *
-       * \param format a single format pointer to any format
-       * \return an array of size formats[0].get_dimensions()[0] where element i
+       * @param format a single format pointer to any format
+       * @return an array of size formats[0].get_dimensions()[0] where element i
        * is the degree distribution of the ith vertex in `formats[0]`
        */
       GetDegreeDistributionCSR(std::vector<format::Format *> formats,
@@ -788,12 +788,12 @@ class Degrees : public FeaturePreprocessType<IDType *> {
   //! Degree generation executor function that carries out function matching
   /*!
    *
-   * \param format a single format pointer to any format
-   * \param contexts vector of contexts that can be used for extracting
+   * @param format a single format pointer to any format
+   * @param contexts vector of contexts that can be used for extracting
    * features.
-   * \param convert_input whether or not to convert the input format if that is
+   * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * \return an array of size format.get_dimensions()[0] where element
+   * @return an array of size format.get_dimensions()[0] where element
    * i is the degree of the ith vertex in `format`
    */
   IDType *GetDegrees(format::Format *format,
@@ -805,11 +805,11 @@ class Degrees : public FeaturePreprocessType<IDType *> {
       //! with cached output
       /*!
        *
-       * \param format a single format pointer to any format
-       * \param contexts vector of contexts that can be used for extracting
+       * @param format a single format pointer to any format
+       * @param contexts vector of contexts that can be used for extracting
        * features.
-       * \param convert_input whether or not to convert the input format if that
-       * is needed. \return an array of size format.get_dimensions()[0] where
+       * @param convert_input whether or not to convert the input format if that
+       * is needed. @return an array of size format.get_dimensions()[0] where
        * element i is the degree of the ith vertex in `format`
        */
       GetDegreesCached(format::Format *format,
@@ -818,9 +818,9 @@ class Degrees : public FeaturePreprocessType<IDType *> {
   //! Degree generation implementation function for CSRs
   /*!
    *
-   * \param formats A vector containing a single format pointer that should
-   * point at a CSR object \param params a PreprocessParams pointer, though it
-   * is not used in the function \return an array of size
+   * @param formats A vector containing a single format pointer that should
+   * point at a CSR object @param params a PreprocessParams pointer, though it
+   * is not used in the function @return an array of size
    * formats[0].get_dimensions()[0] where element i is the degree of the ith
    * vertex in `formats[0]`
    */
@@ -862,12 +862,12 @@ class Degrees_DegreeDistribution
   //! out function matching
   /*!
    *
-   * \param format a single format pointer to any format
-   * \param contexts vector of contexts that can be used for extracting
+   * @param format a single format pointer to any format
+   * @param contexts vector of contexts that can be used for extracting
    * features.
-   * \param convert_input whether or not to convert the input format if that is
+   * @param convert_input whether or not to convert the input format if that is
    * needed.
-   * \return a map with two (type_index, any) pairs. One is a degrees
+   * @return a map with two (type_index, any) pairs. One is a degrees
    * array of type IDType*, and one is a degree distribution array of type
    * FeatureType*. Both arrays have the respective metric of the ith vertex in
    * the ith array element.
@@ -879,10 +879,10 @@ class Degrees_DegreeDistribution
   //! Degree and degree distribution implementation function for CSRs
   /*!
    *
-   * \param format a single format pointer to any format
-   * \param params a PreprocessParams pointer, though it
+   * @param format a single format pointer to any format
+   * @param params a PreprocessParams pointer, though it
    * is not used in the function
-   * features. \return a map with two (type_index, any) pairs. One is a degrees
+   * features. @return a map with two (type_index, any) pairs. One is a degrees
    * array of type IDType*, and one is a degree distribution array of type
    * FeatureType*. Both arrays have the respective metric of the ith vertex in
    * the ith array element.
@@ -1066,6 +1066,90 @@ class MetisReorder : public ReorderPreprocessType<IDType> {
                                PreprocessParams *);
 };
 
+#endif
+
+#ifdef USE_PULP
+
+//! Parameters for the PulpPartition class
+struct PulpPartitionParams : PreprocessParams {
+  double vert_balance = 1.1;
+  double edge_balance = 1.5;
+  bool do_lp_init = false;
+  bool do_bfs_init = true;
+  bool do_repart = false;
+  bool do_edge_balance = false;
+  bool do_maxcut_balance = false;
+  bool verbose_output = false;
+  int seed = 42;
+  int num_partitions = 2;
+};
+
+//! A wrapper for the PULP graph partitioner
+/* !
+ * Wraps the PULP partitioner available here:
+ * https://github.com/HPCGraphAnalysis/PuLP. The library must be compiled with the
+ * USE_PULP option turned on and the pre-built PULP library should be
+ * available. See the Optional Dependencies page (under Getting Started) in our
+ * documentation for more info.
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class PulpPartition : public PartitionPreprocessType<IDType> {
+ private:
+  static IDType *PartitionCSR(std::vector<format::Format *> formats,
+                              PreprocessParams *params);
+
+ public:
+  typedef PulpPartitionParams ParamsType;
+  PulpPartition();
+  PulpPartition(ParamsType params);
+};
+#endif
+
+#ifdef USE_PATOH
+
+namespace patoh {
+enum Objective {
+  CON = 1,
+  CUT = 2
+};
+
+enum ParameterInit {
+  DEFAULT = 0,
+  SPEED = 1,
+  QUALITY = 2
+};
+
+}
+
+//! Parameters for the PulpPartition class
+struct PatohPartitionParams : PreprocessParams {
+  patoh::Objective objective = patoh::CON;
+  patoh::ParameterInit param_init = patoh::DEFAULT;
+  int num_partitions = 2;
+  int final_imbalance = -1;
+  int seed = 42;
+};
+
+//! A wrapper for the Patoh graph partitioner
+/* !
+ * Wraps the Patoh partitioner available here:
+ * https://faculty.cc.gatech.edu/~umit/software.html.
+ * The library must be compiled with the
+ * USE_PATOH option turned on and the pre-built PATOH library should be
+ * available. See the Optional Dependencies page (under Getting Started) in our
+ * documentation for more info.
+ */
+template <typename IDType, typename NNZType, typename ValueType>
+class PatohPartition : public PartitionPreprocessType<IDType> {
+ private:
+  static IDType *PartitionCSR(std::vector<format::Format *> formats,
+                              PreprocessParams *params);
+
+ public:
+  typedef PatohPartitionParams ParamsType;
+  PatohPartition();
+  PatohPartition(ParamsType params);
+};
 #endif
 
 class GraphFeatureBase {
@@ -1354,15 +1438,15 @@ class ReorderBase {
   //! permutation array for both axes.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param order Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_input whether or
-   * not to convert the input format if that is needed. \param convert_output if
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param order Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_input whether or
+   * not to convert the input format if that is needed. @param convert_output if
    * true, the returned object will be converted to `ReturnFormatType`.
    * Otherwise, the returned object will be cast to `ReturnFormatType`, and if
    * the cast fails, an exception of type `sparsebase::utils::TypeException`.
-   * \return The permuted format. By default, the function returns a pointer at
+   * @return The permuted format. By default, the function returns a pointer at
    * a generic FormatOrderTwo object. However, if the user passes a concrete
    * FormatOrderTwo class as the templated parameter `ReturnFormatType`, e.g.
    * format::CSR, then if `convert_output` is true, the returned format will be
@@ -1400,14 +1484,14 @@ class ReorderBase {
   //! permutation array for both axes with cached output.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param ordering Permutation
-   * array to use when permuting rows and columns. \param format object to be
-   * permuted. \param contexts vector of contexts that can be used for
-   * permutation. \param convert_output if true, the returned object will be
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param ordering Permutation
+   * array to use when permuting rows and columns. @param format object to be
+   * permuted. @param contexts vector of contexts that can be used for
+   * permutation. @param convert_output if true, the returned object will be
    * converted to `ReturnFormatType`. Otherwise, the returned object will be
    * cast to `ReturnFormatType`, and if the cast fails, an exception of type
-   * `sparsebase::utils::TypeException`. \return An std::pair with the second
+   * `sparsebase::utils::TypeException`. @return An std::pair with the second
    * element being the permuted format, and the first being a vector of all the
    * formats generated by converting the input (if such conversions were needed
    * to execute the permutation). By default, the permuted object is returned as
@@ -1463,15 +1547,15 @@ class ReorderBase {
   //! array for each axis with cached output.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param row_ordering
-   * Permutation array to use when permuting rows. \param col_ordering
-   * Permutation array to use when permuting col. \param format object to be
-   * permuted. \param contexts vector of contexts that can be used for
-   * permutation. \param convert_output if true, the returned object will be
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param row_ordering
+   * Permutation array to use when permuting rows. @param col_ordering
+   * Permutation array to use when permuting col. @param format object to be
+   * permuted. @param contexts vector of contexts that can be used for
+   * permutation. @param convert_output if true, the returned object will be
    * converted to `ReturnFormatType`. Otherwise, the returned object will be
    * cast to `ReturnFormatType`, and if the cast fails, an exception of type
-   * `sparsebase::utils::TypeException`. \return An std::pair with the second
+   * `sparsebase::utils::TypeException`. @return An std::pair with the second
    * element being the permuted format, and the first being a vector of all the
    * formats generated by converting the input (if such conversions were needed
    * to execute the permutation). By default, the permuted object is returned as
@@ -1527,15 +1611,15 @@ class ReorderBase {
   //! array for each axis.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param order Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_input whether or
-   * not to convert the input format if that is needed. \param convert_output if
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param order Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_input whether or
+   * not to convert the input format if that is needed. @param convert_output if
    * true, the returned object will be converted to `ReturnFormatType`.
    * Otherwise, the returned object will be cast to `ReturnFormatType`, and if
    * the cast fails, an exception of type `sparsebase::utils::TypeException`.
-   * \return The permuted format. By default, the function returns a pointer at
+   * @return The permuted format. By default, the function returns a pointer at
    * a generic FormatOrderTwo object. However, if the user passes a concrete
    * FormatOrderTwo class as the templated parameter `ReturnFormatType`, e.g.
    * format::CSR, then if `convert_output` is true, the returned format will be
@@ -1573,15 +1657,15 @@ class ReorderBase {
   //! Permute a two-dimensional format row-wise using a permutation array.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param order Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_input whether or
-   * not to convert the input format if that is needed. \param convert_output if
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param order Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_input whether or
+   * not to convert the input format if that is needed. @param convert_output if
    * true, the returned object will be converted to `ReturnFormatType`.
    * Otherwise, the returned object will be cast to `ReturnFormatType`, and if
    * the cast fails, an exception of type `sparsebase::utils::TypeException`.
-   * \return The permuted format. By default, the function returns a pointer at
+   * @return The permuted format. By default, the function returns a pointer at
    * a generic FormatOrderTwo object. However, if the user passes a concrete
    * FormatOrderTwo class as the templated parameter `ReturnFormatType`, e.g.
    * format::CSR, then if `convert_output` is true, the returned format will be
@@ -1620,13 +1704,13 @@ class ReorderBase {
   //! cached output.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param ordering Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_output if true,
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param ordering Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_output if true,
    * the returned object will be converted to `ReturnFormatType`. Otherwise, the
    * returned object will be cast to `ReturnFormatType`, and if the cast fails,
-   * an exception of type `sparsebase::utils::TypeException`. \return An
+   * an exception of type `sparsebase::utils::TypeException`. @return An
    * std::pair with the second element being the permuted format, and the first
    * being a vector of all the formats generated by converting the input (if
    * such conversions were needed to execute the permutation). By default, the
@@ -1682,15 +1766,15 @@ class ReorderBase {
   //! Permute a two-dimensional format column-wise using a permutation array.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param order Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_input whether or
-   * not to convert the input format if that is needed. \param convert_output if
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param order Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_input whether or
+   * not to convert the input format if that is needed. @param convert_output if
    * true, the returned object will be converted to `ReturnFormatType`.
    * Otherwise, the returned object will be cast to `ReturnFormatType`, and if
    * the cast fails, an exception of type `sparsebase::utils::TypeException`.
-   * \return The permuted format. By default, the function returns a pointer at
+   * @return The permuted format. By default, the function returns a pointer at
    * a generic FormatOrderTwo object. However, if the user passes a concrete
    * FormatOrderTwo class as the templated parameter `ReturnFormatType`, e.g.
    * format::CSR, then if `convert_output` is true, the returned format will be
@@ -1729,13 +1813,13 @@ class ReorderBase {
   //! with cached output.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
-   * return pointer type. Default is FormatOrderTwo. \param ordering Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_output if true,
+   * @tparam ReturnFormatType a child class of type FormatOrderTwo. Defines the
+   * return pointer type. Default is FormatOrderTwo. @param ordering Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_output if true,
    * the returned object will be converted to `ReturnFormatType`. Otherwise, the
    * returned object will be cast to `ReturnFormatType`, and if the cast fails,
-   * an exception of type `sparsebase::utils::TypeException`. \return An
+   * an exception of type `sparsebase::utils::TypeException`. @return An
    * std::pair with the second element being the permuted format, and the first
    * being a vector of all the formats generated by converting the input (if
    * such conversions were needed to execute the permutation). By default, the
@@ -1790,15 +1874,15 @@ class ReorderBase {
   //! Permute a one-dimensional format using a permutation array.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderOne. Defines the
-   * return pointer type. Default is FormatOrderOne. \param order Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_input whether or
-   * not to convert the input format if that is needed. \param convert_output if
+   * @tparam ReturnFormatType a child class of type FormatOrderOne. Defines the
+   * return pointer type. Default is FormatOrderOne. @param order Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_input whether or
+   * not to convert the input format if that is needed. @param convert_output if
    * true, the returned object will be converted to `ReturnFormatType`.
    * Otherwise, the returned object will be cast to `ReturnFormatType`, and if
    * the cast fails, an exception of type `sparsebase::utils::TypeException`.
-   * \return The permuted format. By default, the function returns a pointer at
+   * @return The permuted format. By default, the function returns a pointer at
    * a generic FormatOrderOne object. However, if the user passes a concrete
    * FormatOrderOne class as the templated parameter `ReturnFormatType`, e.g.
    * format::Array, then if `convert_output` is true, the returned format will
@@ -1832,13 +1916,13 @@ class ReorderBase {
   //! output.
   /*!
    *
-   * \tparam ReturnFormatType a child class of type FormatOrderOne. Defines the
-   * return pointer type. Default is FormatOrderOne. \param order Permutation
-   * array. \param format object to be permuted. \param contexts vector of
-   * contexts that can be used for permutation. \param convert_output if true,
+   * @tparam ReturnFormatType a child class of type FormatOrderOne. Defines the
+   * return pointer type. Default is FormatOrderOne. @param order Permutation
+   * array. @param format object to be permuted. @param contexts vector of
+   * contexts that can be used for permutation. @param convert_output if true,
    * the returned object will be converted to `ReturnFormatType`. Otherwise, the
    * returned object will be cast to `ReturnFormatType`, and if the cast fails,
-   * an exception of type `sparsebase::utils::TypeException`. \return An
+   * an exception of type `sparsebase::utils::TypeException`. @return An
    * std::pair with the second element being the permuted format, and the first
    * being a vector of all the formats generated by converting the input (if
    * such conversions were needed to execute the permutation). By default, the

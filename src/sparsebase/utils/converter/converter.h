@@ -93,12 +93,12 @@ class Converter {
   //! Returns a conversion path from from_type to to_type using contexts in
   //! to_contexts.
   /*!
-   * \param from_type type of source format
-   * \param from_context context of source format
-   * \param to_type format type to convert to
-   * \param to_contexts contexts available for conversion
-   * \param map the map containing conversion functions available
-   * \return a vector of tuples corresponding to conversion steps. Each is a
+   * @param from_type type of source format
+   * @param from_context context of source format
+   * @param to_type format type to convert to
+   * @param to_contexts contexts available for conversion
+   * @param map the map containing conversion functions available
+   * @return a vector of tuples corresponding to conversion steps. Each is a
    * tuple of function and context pair. If an empty vector is returned, a
    * conversion is not possible.
    */
@@ -149,14 +149,14 @@ class Converter {
   /*!
    * Converts the source to to_type and returns all the formats created
    * during the conversion process.
-   * \param source a pointer to the source Format instance
-   * \param to_type a type_index for the type to convert to (for example:
+   * @param source a pointer to the source Format instance
+   * @param to_type a type_index for the type to convert to (for example:
    *  std::typeid(COO<...>) can be used)
-   * \param to_context context used for the conversion (see the context
+   * @param to_context context used for the conversion (see the context
    * namespace for more information)
-   * \param is_move_conversion if true the underlying arrays will be moved
+   * @param is_move_conversion if true the underlying arrays will be moved
    * instead of being copied
-   * \return a vector of formats, with the last (back) format being the
+   * @return a vector of formats, with the last (back) format being the
    * target format, and the ones before it being intermediate ones.
    */
   std::vector<format::Format *> ConvertCached(format::Format *source,
@@ -184,12 +184,12 @@ class Converter {
   //! Converts the source to to_type and returns all the formats created
   //! during the conversion process.
   /*!
-   * \param source a pointer to the source Format instance
-   * \param to_type a type_index for the type to convert to (for example:
+   * @param source a pointer to the source Format instance
+   * @param to_type a type_index for the type to convert to (for example:
    *  std::typeid(COO<...>) can be used)
-   * \param to_contexts contexts that may be used for the conversion (see the
-   * context namespace for more information) \param is_move_conversion if true
-   * the underlying arrays will be moved instead of being copied \return a
+   * @param to_contexts contexts that may be used for the conversion (see the
+   * context namespace for more information) @param is_move_conversion if true
+   * the underlying arrays will be moved instead of being copied @return a
    * vector of formats, with the last (back) format being the target format, and
    * the ones before it being intermediate ones.
    */
@@ -284,7 +284,7 @@ class Converter {
    * @param from_type source format type_index
    * @param from_context source context
    * @param to_type destination format type_index
-   * \param to_contexts contexts available for conversion
+   * @param to_contexts contexts available for conversion
    * @param is_move_conversion whether it is a move conversion
    * @return a boolean indicating whether a conversion is possible
    */
@@ -335,9 +335,9 @@ class Converter {
   //! Takes a conversion chain and a format and applies that chain on the format
   //! to produce some output format.
   /*!
-   * \param chain a conversion chain containing conversion functions and
-   * contexts to use for each function. \param clear_intermediate delete
-   * intermediate formats between the starting and destination one. \return a
+   * @param chain a conversion chain containing conversion functions and
+   * contexts to use for each function. @param clear_intermediate delete
+   * intermediate formats between the starting and destination one. @return a
    * vector of format with the first being the original format, the last being
    * the target format, and the rest being intermediate formats. If a conversion
    * is empty or false, only returns the original format.

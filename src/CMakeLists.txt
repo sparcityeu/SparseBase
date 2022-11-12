@@ -15,7 +15,9 @@ if(NOT ${_HEADER_ONLY})
     --float-types ${FLOAT_TYPES_JOINED}
     --pigo ${USE_PIGO}
     --cuda ${USE_CUDA}
-    --output-folder ${PROJECT_BINARY_DIR}/init)
+    --output-folder ${PROJECT_BINARY_DIR}/init
+    --class-list ${CMAKE_SOURCE_DIR}/src/class_instantiation_list.json)
+    
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
     sparsebase/format/format.cc
@@ -174,6 +176,16 @@ if(USE_RABBIT_ORDER)
   target_link_libraries(sparsebase INTERFACE numa)
   endif()
   add_opt_library("rabbit_order" "ON")
+endif()
+
+option(USE_PULP "Enable PULP integration" OFF)
+if(USE_PULP)
+  add_opt_library("pulp" "OFF")
+endif()
+
+option(USE_PATOH "Enable PATOH integration" OFF)
+if(USE_PATOH)
+  add_opt_library("patoh" "OFF")
 endif()
 
 ### Create configuration file for install
