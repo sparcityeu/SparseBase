@@ -12,9 +12,9 @@ option(_HEADER_ONLY "Use the library as a header only library?" OFF)
 option(USE_CUDA "Enable CUDA" OFF)
 option(USE_PIGO "Use PIGO for parallel I/O" ON)
 option(BUILD_EXAMPLES "Build example codes" ON)
-set(ID_TYPES "unsigned int" "int" "long" CACHE STRING "C++ data types used for variables storing IDs")
-set(NNZ_TYPES "unsigned int" "int" "long" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
-set(VALUE_TYPES "unsigned int" "int" "float" "double" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(ID_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing IDs")
+set(NNZ_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
+set(VALUE_TYPES "int32_t" "uint32_t" "float" "double" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
 
 
@@ -67,9 +67,11 @@ else()
   # MSVC, On by default (if available)
 endif()
 # Got this from https://github.com/district10/cmake-templates/blob/master/cpp11_vs2010/CMakeLists.txt
-if (MSVC)
-  add_compile_options("/bigobj")
+
+if(MSYS OR MINGW)
+  add_compile_options("-Wa,-mbig-obj")
 endif()
+
 add_subdirectory(src)
 if (${BUILD_EXAMPLES})
   add_subdirectory(examples)

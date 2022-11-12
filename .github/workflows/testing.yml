@@ -10,9 +10,9 @@ env:
   BUILD_TYPE: Release
   LIB_DIR: /usr/lib/x86_64-linux-gnu
   INC_DIR: /usr/include
-  METIS_LIB_DIR: /usr/lib/x86_64-linux-gnu
-  METIS_INC_DIR: /usr/include
-  RABBIT_ORDER_INC_DIR: /usr/include
+  PULP_LINK: https://github.com/HPCGraphAnalysis/PuLP.git
+  RABBIT_ORDER_LINK: https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp
+  PATOH_LINK: https://faculty.cc.gatech.edu/~umit/PaToH/patoh-Linux-x86_64.tar.gz
   AMD_LINK: https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F1024074.1024081&file=837.zip
 
 jobs:
@@ -33,11 +33,11 @@ jobs:
         with:
           msystem: MINGW64
           update: false
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja mingw-w64-x86_64-lld
 
       - name: Configure CMake
         working-directory: ${{github.workspace}}
-        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DRUN_TESTS=ON
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_FLAGS="-fuse-ld=lld" -DRUN_TESTS=ON
 
       - name: Build
         working-directory: ${{github.workspace}}
@@ -162,8 +162,25 @@ jobs:
       - name: Install Dependencies
         run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3 libmetis-dev libboost-all-dev
 
-      - name: Install Non-System Dependencies
-        run: sudo wget https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp -O /usr/include/rabbit_order.hpp
+      - name: Install Rabbit Order
+        run: sudo wget $RABBIT_ORDER_LINK -O ${{env.INC_DIR}}/rabbit_order.hpp
+
+      - name: Install Pulp
+        run: |
+          git clone --depth 1 $PULP_LINK pulp
+          cd pulp
+          ./install
+          sudo mv ./lib/* $LIB_DIR
+          sudo mv ./include/* $INC_DIR
+
+      - name: Install Patoh
+        run: |
+          mkdir patoh
+          cd patoh
+          wget $PATOH_LINK
+          tar xzf patoh-Linux-x86_64.tar.gz
+          sudo mv build/Linux-x86_64/libpatoh.a $LIB_DIR
+          sudo mv build/Linux-x86_64/patoh.h $INC_DIR
 
       - name: Install AMD Order
         run: |
@@ -175,7 +192,7 @@ jobs:
           sudo mv Include/amd.h $INC_DIR
 
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_AMD_ORDER=ON -DAMD_INC_DIR=$INC_DIR -DAMD_LIB_DIR=$LIB_DIR
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="${{env.LIB_DIR}};${{env.INC_DIR}}" -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_PATOH=ON -DUSE_PULP=ON -DUSE_AMD_ORDER=ON
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2

@@ -29,6 +29,10 @@ Below are the functionalities available in SparseBase. After each functionality,
 ### Partitioning algorithms
 - [MetisPartiton](exhale_class_classsparsebase_1_1preprocess_1_1_metis_partition) (requires compilation with CMake option`USE_METIS=ON`)
   - CSR
+- [PulpPartition](exhale_class_classsparsebase_1_1preprocess_1_1_pulp_partition) (requires compilation with CMake option`USE_PULP=ON`)
+  - CSR
+- [PatohPartition](exhale_class_classsparsebase_1_1preprocess_1_1_patoh_partition) (requires compilation with CMake option`USE_PATOH=ON`)
+  - CSR
 ### Permutation
 - [PermuteOrderOne](exhale_class_classsparsebase_1_1preprocess_1_1_permute_order_one)
   - CSR
