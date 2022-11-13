@@ -134,20 +134,25 @@ class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
 
 ### 6. Add explicit template instantiations
 
-The functions we have defined so far have been defined in header files. This means that they will be compiled as they become needed by the user's code, and not at library build-time. However, the library supports a compiled version in which classes are pre-compiled using certain data types that the user selects. To add your class to the list of pre-compilable classes, you must do the following:
+The functions we have defined so far have been created in header files. This means that they will be compiled as they become needed by the user's code, and not at library build-time. However, sparsebase supports a compiled version in which classes are pre-compiled using certain data types that the user selects. To add your class to the list of pre-compilable classes, you must do the following:
 
 1. Move all the implementations from the header file (`src/sparsebase/preprocess/preprocess.h`) to the implementation file (`src/sparsebase/preprocess/preprocess.cc`).
 2. Add your class to the list of classes that will be explicitly instantiated by the python script `src/generate_explicit_instantiations.py`.
 
-Step two is much simpler than it sounds. At the end of the script `src/generage_explicit_instantiations.py`, add a single function call containing the `Feature` class definition and the name of the file to which the instantiations are to be printed. In the case of `Feature`, add the following line to the end of the file:
+Step two is much simpler than it sounds. To the file `src/class_instantiation_list.json`, add a single entry containing the `Feature` class definition and the name of the file to which the instantiations are to be printed. In the case of `Feature`, add the following entry to the aformentioned file:
 
-
-```python
-gen_inst("class Feature<$id_type, $nnz_type, $value_type, $feature_type>", "feature.inc")
+```json
+{
+  "template": "class Feature<$id_type, $nnz_type, $value_type, $feature_type>",
+  "filename": "feature.inc",
+  "ifdef": null,
+  "folder": null,
+  "exceptions": null
+}
 ```
-The first parameter is the class declaration. The four variables beginning with `$` in the declaration above are placeholders that will be filled with the `IDType`, `NNZType`, `ValueType`, and `FeatureType` data types the user selects when compiling the library. If a user compiles the library with three `IDType` data types, two `NNZType` data types, two `ValueType` data types, and a single `FeatureType` then the class will be compiled with 3 * 2 * 2 * 1 = 12 different type combinations.
+The `template` field is the class declaration. The four variables beginning with `$` in the declaration above are placeholders that will be filled with the `IDType`, `NNZType`, `ValueType`, and `FeatureType` data types the user selects when compiling the library. If a user compiles the library with three `IDType` data types, two `NNZType` data types, two `ValueType` data types, and a single `FeatureType` then the class will be compiled with 3 * 2 * 2 * 1 = 12 different type combinations.
 
-The second parameter is the name of the file to which these instantiations will be printed, and it matches the name of the header file in which the class is defined.
+The `filename` field is the name of the file to which these instantiations will be printed, and it matches the name of the header file in which the class is defined.
 
 ### Result
 
