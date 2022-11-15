@@ -31,7 +31,7 @@ class Feature : FeaturePreprocessType<FeatureType> {
 
 ### 2. Create a struct containing the parameters you need, and initialize them in the constructor
 
-Inside the class, create a new struct inheriting from `PreprocessParams`. Its members will be whichever parameters that your feature will require. We will call this struct `FeatureParams`. We add `alpha` and `beta` to it.
+Inside the class, create a new struct inheriting from `PreprocessParams`. Its members will be whichever parameters that your feature will require. We will call this struct `FeatureParams`. We add `alpha` and `beta` to it. If your feature do not require additional parameters you can skip this step.
 Furthermore, create an instance of the struct you just defined and also create a `std::unordered_map<std::type_index, PreprocessParams>` that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the `feature` namespace.
 
 ```cpp
@@ -47,14 +47,15 @@ class Feature : FeaturePreprocessType<FeatureType> {
 ```
 
 Inside the constructor, you will take the parameters from the user, add them to an instance of the struct you just created, and set the data member `params_`, which your class inherited from `ExtractableType`, to the newly added struct. 
+If your feature do not require additional parameters you can always use `PreprocessParams` to initialize `params_`.
 Furthermore, fill the unordered_map `pmap_` which is also inherited from `ExtractableType`. 
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
+class Feature : FeaturePreprocessType<FeatureType> {
 	// ...
 	Feature(float alpha, float beta){
-		this->params_ = std::make_shared<FeatureParams>(new FeatureParams{alpha, beta});
+		this->params_ = std::make_shared<FeatureParams>(alpha, beta);
         pmap_.insert(get_id_static(), this->params_);
 	// ...
 };
@@ -66,7 +67,7 @@ Some of the `virtual` functions are implemented in `FeaturePreprocessType`, howe
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
+class Feature : FeaturePreprocessType<FeatureType> {
 	// ...
     virtual std::unordered_map<std::type_index, std::any> Extract(format::Format * format);
     virtual std::vector<std::type_index> get_sub_ids();
@@ -96,7 +97,7 @@ For our example, we add two functions, `FeatureCSR()` and `FeatureCOO()`:
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
+class Feature : FeaturePreprocessType<FeatureType> {
 	//.......
 	static FeatureType* FeatureCSR(std::vector<Format<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
 		auto csr = static_cast<sparsebase::CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
@@ -121,7 +122,7 @@ Inside the constructor, register the functions you made to the correct `Format`.
 
 ```cpp
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
-class Feature : FeaturePreprocessType<IDType, NNZType, ValueType, FeatureType> {
+class Feature : FeaturePreprocessType<FeatureType> {
 	// ...
 	Feature(float alpha, float beta){
 		// ...
