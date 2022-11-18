@@ -144,7 +144,7 @@ Step two is much simpler than it sounds. To the file `src/class_instantiation_li
 
 ```json
 {
-  "template": "class Feature<$id_type, $nnz_type, $value_type, $feature_type>",
+  "template": "class Feature<$id_type, $nnz_type, $value_type, $float_type>",
   "filename": "feature.inc",
   "ifdef": null,
   "folder": null,
