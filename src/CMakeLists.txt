@@ -19,7 +19,11 @@ if(NOT ${_HEADER_ONLY})
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
           sparsebase/format/format_order_one.cc
+          sparsebase/format/array.cc
           sparsebase/format/format_order_two.cc
+          sparsebase/format/csr.cc
+          sparsebase/format/csc.cc
+          sparsebase/format/coo.cc
           sparsebase/context/cpu_context.cc
           sparsebase/io/mtx_reader.cc
           sparsebase/io/pigo_mtx_reader.cc
@@ -218,7 +222,11 @@ set(FORMAT_FILES
   sparsebase/format/format.h
         sparsebase/format/format_implementation.h
         sparsebase/format/format_order_one.h
+        sparsebase/format/array.h
         sparsebase/format/format_order_two.h
+        sparsebase/format/csr.h
+        sparsebase/format/csc.h
+        sparsebase/format/coo.h
 )
 set(FEATURE_FILES 
   sparsebase/feature/feature.h
@@ -271,7 +279,11 @@ if(${_HEADER_ONLY})
   )
   set(FORMAT_FILES ${FORMAT_FILES}
           sparsebase/format/format_order_one.cc
+          sparsebase/format/array.cc
           sparsebase/format/format_order_two.cc
+          sparsebase/format/csr.cc
+          sparsebase/format/csc.cc
+          sparsebase/format/coo.cc
   )
   set(FEATURE_FILES ${FEATURE_FILES}
     sparsebase/feature/feature.cc

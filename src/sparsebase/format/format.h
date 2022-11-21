@@ -167,22 +167,4 @@ class Format : public utils::Identifiable {
 }  // namespace format
 
 }  // namespace sparsebase
-
-#include "sparsebase/converter/converter.h"
-#include "sparsebase/converter/converter_order_one.h"
-#include "sparsebase/converter/converter_order_two.h"
-
-namespace sparsebase::format {
-
-
-
-}  // namespace sparsebase
-//#include "sparsebase/converter/converter.h"
-
-//namespace sparsebase::format {
-//template <typename FormatType, typename Base>
-//void FormatImplementation<FormatType, Base>::set_converter(converter::Converter* ptr) {
-//  this->converter_ = std::shared_ptr<converter::Converter>(ptr->Clone());
-//}
-//}
 #endif

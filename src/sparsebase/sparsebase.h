@@ -19,7 +19,6 @@
 #include "sparsebase/format/format_implementation.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/io/io.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/exception.h"

@@ -1,14 +1,9 @@
-#include <omp.h>
 #include <sparsebase/context/context.h>
 #include <sparsebase/preprocess/preprocess.h>
-#include <sparsebase/converter/converter.h>
-#include <sparsebase/io/io.h>
-#include <stdio.h>
+#include <sparsebase/format/csc.h>
+#include <sparsebase/io/mtx_reader.h>
 
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <tuple>
 
 #define CHECK
 

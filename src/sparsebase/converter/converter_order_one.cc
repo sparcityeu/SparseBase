@@ -2,7 +2,7 @@
 #include "sparsebase/converter/converter_order_one.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/array.h"
 
 #ifdef USE_CUDA
 #include "sparsebase/converter/converter_cuda.cuh"

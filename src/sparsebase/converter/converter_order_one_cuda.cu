@@ -2,9 +2,8 @@
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/format/cuda_array_cuda.cuh"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
 
 
 namespace sparsebase::converter {
