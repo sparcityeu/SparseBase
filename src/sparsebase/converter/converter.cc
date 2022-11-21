@@ -6,8 +6,6 @@
 
 #include <algorithm>
 #include <deque>
-#include <iostream>
-#include <set>
 #include <unordered_set>
 
 #include "sparsebase/format/format.h"

@@ -13,6 +13,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/csr.h"
 
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/function_matcher_mixin.h"

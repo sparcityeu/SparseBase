@@ -13,6 +13,9 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/csc.h"
+#include "sparsebase/format/coo.h"
 
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/converter/converter.h"
@@ -24,7 +27,6 @@
 #include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/cuda_array_cuda.cuh"
 #endif
-#include "sparsebase/io/io.h"
 
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
 

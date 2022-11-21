@@ -4,6 +4,7 @@
 #include "sparsebase/context/context.h"
 #include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/converter/converter.h"
+#include "sparsebase/converter/converter_order_one.h"
 #include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/preprocess/preprocess.h"
 using namespace sparsebase;
