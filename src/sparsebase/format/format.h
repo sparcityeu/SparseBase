@@ -156,10 +156,11 @@ class Format : public utils::Identifiable {
    * @return true if the type of this object is T
    */
   template <typename T>
-  bool Is() {
-    using TBase = typename std::remove_pointer<T>::type;
-    return this->get_id() == std::type_index(typeid(TBase));
-  }
+  bool IsAbsolute() {
+    using Tbase = typename std::remove_pointer<T>::type;
+    return this->get_id() == std::type_index(typeid(Tbase));
+
+}
 };
 
 //! A class derived from the base Format class, mostly used for development
@@ -260,6 +261,12 @@ class FormatOrderOne
     throw utils::TypeException(this->get_name(),
                                typeid(TBase).name());
   }
+
+  template <template <typename> typename T>
+  bool Is() {
+    using TBase = typename std::remove_pointer<T<ValueType>>::type;
+    return this->get_id() == std::type_index(typeid(TBase));
+  }
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class FormatOrderTwo
@@ -320,6 +327,13 @@ class FormatOrderTwo
     throw utils::TypeException(this->get_name(),
                                typeid(TBase).name());
   }
+
+  template <template <typename, typename, typename> typename T>
+  bool Is() {
+    using TBase = typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type;
+    return this->get_id() == std::type_index(typeid(TBase));
+	}
+  
 };
 
 //! Coordinate List Sparse Data Format
