@@ -1,5 +1,6 @@
-#include "sparsebase/reorder/reorder.h"
 #include "sparsebase/reorder/reorder_heatmap.h"
+
+#include "sparsebase/reorder/reorderer.h"
 #include "sparsebase/utils/logger.h"
 
 namespace sparsebase::reorder {

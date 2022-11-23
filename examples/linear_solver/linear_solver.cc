@@ -1,11 +1,12 @@
-#include <sparsebase/context/context.h>
-#include <sparsebase/preprocess/preprocess.h>
-#include <sparsebase/reorder/reorder.h>
 #include <sparsebase/bases/reorder_base.h>
+#include <sparsebase/context/context.h>
 #include <sparsebase/format/csc.h>
 #include <sparsebase/io/mtx_reader.h>
+#include <sparsebase/preprocess/preprocess.h>
 
 #include <string>
+
+#include "sparsebase/reorder/reorderer.h"
 
 #define CHECK
 

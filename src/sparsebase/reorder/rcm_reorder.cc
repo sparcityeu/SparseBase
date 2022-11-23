@@ -1,70 +1,8 @@
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/array.h"
-#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/reorder/rcm_reorder.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/csc.h"
-#include "sparsebase/format/coo.h"
-
-#include "sparsebase/converter/converter.h"
-#include "sparsebase/utils/extractable.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/utils/function_matcher_mixin.h"
-#include "sparsebase/utils/logger.h"
-#include "sparsebase/reorder/reorder.h"
-#include <algorithm>
-#include <map>
-#include <memory>
 #include <queue>
-#include <set>
-#include <tuple>
-#include <utility>
-#include <vector>
-#ifdef USE_METIS
-namespace sparsebase::metis {
-#include <metis.h>
-}
-#endif
+
 namespace sparsebase::reorder {
-
-template <typename IDType>
-Reorderer<IDType>::~Reorderer() = default;
-;
-
-template <typename IDType>
-IDType *Reorderer<IDType>::GetReorder(
-    format::Format *format, std::vector<context::Context *> contexts,
-    bool convert_input) {
-  return this->Execute(this->params_.get(), contexts,
-                       convert_input, format);
-}
-
-template <typename IDType>
-IDType *Reorderer<IDType>::GetReorder(
-    format::Format *format, utils::Parameters *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
-  return this->Execute(params, contexts, convert_input,
-                       format);
-}
-
-template <typename IDType>
-std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
-Reorderer<IDType>::GetReorderCached(
-    format::Format *format, std::vector<context::Context *> contexts,
-    bool convert_input) {
-  return this->CachedExecute(this->params_.get(), contexts,
-                             convert_input, false, format);
-}
-
-template <typename IDType>
-std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
-Reorderer<IDType>::GetReorderCached(
-    format::Format *format, utils::Parameters *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, contexts, convert_input,
-                             false, format);
-}
-
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
   this->RegisterFunction(
@@ -120,7 +58,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
   format::CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+                                   formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   NNZType *xadj = csr->get_row_ptr();
   IDType *adj = csr->get_col();
   IDType n = csr->get_dimensions()[0];
@@ -184,6 +122,6 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
 
 #if !defined(_HEADER_ONLY)
-#include "init/reorder.inc"
+#include "init/rcm_reorder.inc"
 #endif
 }

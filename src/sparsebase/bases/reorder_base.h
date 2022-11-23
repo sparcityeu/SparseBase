@@ -1,15 +1,17 @@
 #include "sparsebase/context/context.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/reorder/reorder.h"
+#include "sparsebase/permute/permute_order_one.h"
+#include "sparsebase/permute/permute_order_two.h"
+#include "sparsebase/reorder/rcm_reorder.h"
+#include "sparsebase/reorder/degree_reorder.h"
+#include "sparsebase/reorder/amd_reorder.h"
 #include "sparsebase/reorder/generic_reorder.h"
 #include "sparsebase/reorder/gray_reorder.h"
 #include "sparsebase/reorder/metis_reorder.h"
-#include "sparsebase/reorder/amd_reorder.h"
 #include "sparsebase/reorder/rabbit_reorder.h"
 #include "sparsebase/reorder/reorder_heatmap.h"
-#include "sparsebase/permute/permute_order_one.h"
-#include "sparsebase/permute/permute_order_two.h"
+#include "sparsebase/reorder/reorderer.h"
 
 #ifndef SPARSEBASE_PROJECT_REORDER_BASE_H
 #define SPARSEBASE_PROJECT_REORDER_BASE_H

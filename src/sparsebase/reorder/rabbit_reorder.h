@@ -1,9 +1,10 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/reorder/reorder.h"
-#include "sparsebase/format/csr.h"
 #include <utility>
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/reorder/reorderer.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_RABBIT_ORDER_H
 #define SPARSEBASE_PROJECT_RABBIT_ORDER_H
 

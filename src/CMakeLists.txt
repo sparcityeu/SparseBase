@@ -8,14 +8,16 @@ if(NOT ${_HEADER_ONLY})
   list(JOIN VALUE_TYPES "," VALUE_TYPES_JOINED)
   list(JOIN FLOAT_TYPES "," FLOAT_TYPES_JOINED)
   execute_process(COMMAND ${Python_EXECUTABLE}
-          ${CMAKE_SOURCE_DIR}/src/generate_explicit_instantiations.py
-          --id-types ${ID_TYPES_JOINED}
-          --nnz-types ${NNZ_TYPES_JOINED}
-          --value-types ${VALUE_TYPES_JOINED}
-          --float-types ${FLOAT_TYPES_JOINED}
-          --pigo ${USE_PIGO}
-          --cuda ${USE_CUDA}
-          --output-folder ${PROJECT_BINARY_DIR}/init)
+    ${CMAKE_SOURCE_DIR}/src/generate_explicit_instantiations.py
+    --id-types ${ID_TYPES_JOINED} 
+    --nnz-types ${NNZ_TYPES_JOINED} 
+    --value-types ${VALUE_TYPES_JOINED} 
+    --float-types ${FLOAT_TYPES_JOINED}
+    --pigo ${USE_PIGO}
+    --cuda ${USE_CUDA}
+    --output-folder ${PROJECT_BINARY_DIR}/init
+    --class-list ${CMAKE_SOURCE_DIR}/src/class_instantiation_list.json)
+
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
           sparsebase/format/format_order_one.cc
@@ -39,7 +41,8 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/converter/converter_order_one.cc
           sparsebase/converter/converter_store.cc
           sparsebase/preprocess/preprocess.cc
-          sparsebase/reorder/reorder.cc
+          sparsebase/reorder/reorderer.cc
+          sparsebase/reorder/rcm_reorder.cc
           sparsebase/reorder/degree_reorder.cc
           sparsebase/reorder/gray_reorder.cc
           sparsebase/reorder/generic_reorder.cc
@@ -252,7 +255,8 @@ set(PREPROCESS_FILES
         sparsebase/preprocess/preprocess.h
         )
 set(REORDERING_FILES
-        sparsebase/reorder/reorder.h
+        sparsebase/reorder/reorderer.h
+        sparsebase/reorder/rcm_reorder.h
         sparsebase/reorder/degree_reorder.h
         sparsebase/reorder/gray_reorder.h
         sparsebase/reorder/generic_reorder.h
@@ -332,7 +336,8 @@ if(${_HEADER_ONLY})
           sparsebase/preprocess/preprocess.cc
           )
   set(REORDERING_FILES ${REORDERING_FILES}
-          sparsebase/reorder/reorder.cc
+          sparsebase/reorder/reorderer.cc
+          sparsebase/reorder/rcm_reorder.cc
           sparsebase/reorder/degree_reorder.cc
           sparsebase/reorder/gray_reorder.cc
           sparsebase/reorder/generic_reorder.cc

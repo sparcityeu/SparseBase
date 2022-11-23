@@ -1,10 +1,11 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/reorder/reorder.h"
-#include "sparsebase/format/csr.h"
-#include "sparsebase/format/array.h"
 #include <utility>
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/array.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/reorder/reorderer.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_REORDER_HEATMAP_H
 #define SPARSEBASE_PROJECT_REORDER_HEATMAP_H
 
