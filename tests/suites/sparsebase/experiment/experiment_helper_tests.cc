@@ -1,7 +1,8 @@
-#include "sparsebase/sparsebase.h"
-#include "sparsebase/reorder/reorder.h"
-#include "gtest/gtest.h"
 #include <iostream>
+
+#include "gtest/gtest.h"
+#include "sparsebase/reorder/reorderer.h"
+#include "sparsebase/sparsebase.h"
 
 using namespace std;
 using namespace sparsebase;

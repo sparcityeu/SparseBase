@@ -5,15 +5,14 @@
 #include <random>
 
 #include "sparsebase/experiment/experiment.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/format/csr.h"
+#include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/mtx_reader.h"
-#include "sparsebase/io/edge_list_reader.h"
-#include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/reorder/reorder.h"
+#include "sparsebase/reorder/reorderer.h"
 
 using namespace std;
 using namespace sparsebase;

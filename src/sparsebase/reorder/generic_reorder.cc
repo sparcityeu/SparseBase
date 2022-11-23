@@ -1,5 +1,6 @@
 #include "sparsebase/reorder/generic_reorder.h"
-#include "sparsebase/reorder/reorder.h"
+
+#include "sparsebase/reorder/reorderer.h"
 
 namespace sparsebase::reorder {
 template <typename IDType, typename NNZType, typename ValueType>
