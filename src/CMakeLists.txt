@@ -8,14 +8,14 @@ if(NOT ${_HEADER_ONLY})
   list(JOIN VALUE_TYPES "," VALUE_TYPES_JOINED)
   list(JOIN FLOAT_TYPES "," FLOAT_TYPES_JOINED)
   execute_process(COMMAND ${Python_EXECUTABLE}
-    ${CMAKE_SOURCE_DIR}/src/generate_explicit_instantiations.py
-    --id-types ${ID_TYPES_JOINED} 
-    --nnz-types ${NNZ_TYPES_JOINED} 
-    --value-types ${VALUE_TYPES_JOINED} 
-    --float-types ${FLOAT_TYPES_JOINED}
-    --pigo ${USE_PIGO}
-    --cuda ${USE_CUDA}
-    --output-folder ${PROJECT_BINARY_DIR}/init)
+          ${CMAKE_SOURCE_DIR}/src/generate_explicit_instantiations.py
+          --id-types ${ID_TYPES_JOINED}
+          --nnz-types ${NNZ_TYPES_JOINED}
+          --value-types ${VALUE_TYPES_JOINED}
+          --float-types ${FLOAT_TYPES_JOINED}
+          --pigo ${USE_PIGO}
+          --cuda ${USE_CUDA}
+          --output-folder ${PROJECT_BINARY_DIR}/init)
   message(STATUS "Generated explicit instantiations")
   set(LIB_FILES
           sparsebase/format/format_order_one.cc
@@ -38,7 +38,7 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/converter/converter_order_two.cc
           sparsebase/converter/converter_order_one.cc
           sparsebase/converter/converter_store.cc
-    sparsebase/preprocess/preprocess.cc
+          sparsebase/preprocess/preprocess.cc
           sparsebase/reorder/reorder.cc
           sparsebase/reorder/degree_reorder.cc
           sparsebase/reorder/gray_reorder.cc
@@ -50,11 +50,15 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/permute/permuter.cc
           sparsebase/permute/permute_order_one.cc
           sparsebase/permute/permute_order_two.cc
-    sparsebase/feature/feature.cc
+          sparsebase/partition/partitioner.cc
+          sparsebase/partition/metis_partition.cc
+          sparsebase/partition/patoh_partition.cc
+          sparsebase/partition/pulp_partition.cc
+          sparsebase/feature/feature.cc
           sparsebase/experiment/concrete_experiment.cc
-    sparsebase/utils/utils.cc
+          sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
-  )
+          )
   if (${USE_CUDA})
 
     set(LIB_FILES ${LIB_FILES}
@@ -70,12 +74,12 @@ if(NOT ${_HEADER_ONLY})
   add_library(sparsebase ${LIB_FILES})
   # defining the include paths of the library
   target_include_directories(sparsebase PUBLIC
-    # Location of the headers at build time
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
-    # Location of the headers at install time
-    $<INSTALL_INTERFACE:include>)
+          # Location of the headers at build time
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+          # Location of the headers at install time
+          $<INSTALL_INTERFACE:include>)
   target_compile_features(sparsebase PUBLIC cxx_std_17)
   target_link_libraries(sparsebase PUBLIC OpenMP::OpenMP_CXX)
 else()
@@ -84,11 +88,11 @@ else()
   target_link_libraries(sparsebase INTERFACE OpenMP::OpenMP_CXX )
   # defining the include paths of the library
   target_include_directories(sparsebase INTERFACE
-    # Location of the headers at build time
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    # Location of the headers at install time
-    $<INSTALL_INTERFACE:include>)
+          # Location of the headers at build time
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+          # Location of the headers at install time
+          $<INSTALL_INTERFACE:include>)
 endif()
 
 # Function for adding optional libraries to sparsebase
@@ -115,10 +119,10 @@ macro(add_opt_library name LOCAL_HEADER_ONLY)
             NAMES ${OPT_NAME_LOWER} lib${OPT_NAME_LOWER}
             PATH_SUFFIXES lib lib32 lib64 lib{OPT_NAME_LOWER}
             PATHS
-              ${${OPT_NAME_UPPER}_LIB_DIR}
-              $ENV{${OPT_NAME_UPPER}_LIB_DIR}
-              ${CMAKE_PREFIX_PATH}
-              ${CMAKE_SYSTEM_PREFIX_PATH}
+            ${${OPT_NAME_UPPER}_LIB_DIR}
+            $ENV{${OPT_NAME_UPPER}_LIB_DIR}
+            ${CMAKE_PREFIX_PATH}
+            ${CMAKE_SYSTEM_PREFIX_PATH}
             NO_DEFAULT_PATH
 
     )
@@ -135,10 +139,10 @@ macro(add_opt_library name LOCAL_HEADER_ONLY)
           NAMES ${OPT_NAME_LOWER}.h ${OPT_NAME_LOWER}.hpp ${OPT_NAME_LOWER}.hxx
           PATH_SUFFIXES include
           PATHS
-            ${${OPT_NAME_UPPER}_INC_DIR}
-            $ENV{${OPT_NAME_UPPER}_INC_DIR}
-            ${CMAKE_PREFIX_PATH}
-            ${CMAKE_SYSTEM_PREFIX_PATH}
+          ${${OPT_NAME_UPPER}_INC_DIR}
+          $ENV{${OPT_NAME_UPPER}_INC_DIR}
+          ${CMAKE_PREFIX_PATH}
+          ${CMAKE_SYSTEM_PREFIX_PATH}
           NO_DEFAULT_PATH
   )
 
@@ -189,18 +193,18 @@ if(USE_RABBIT_ORDER)
     message(FATAL_ERROR "Boost is required to use Rabbit order")
   endif()
   if (NOT ${_HEADER_ONLY})
-  target_include_directories(sparsebase PRIVATE ${Boost_INCLUDE_DIRS} )
+    target_include_directories(sparsebase PRIVATE ${Boost_INCLUDE_DIRS} )
   else()
-  target_include_directories(sparsebase INTERFACE ${Boost_INCLUDE_DIRS} )
+    target_include_directories(sparsebase INTERFACE ${Boost_INCLUDE_DIRS} )
   endif()
   find_library(NUMA_LIBRARIES NAMES numa)
   if (NOT NUMA_LIBRARIES)
     message(FATAL_ERROR "Numa is required to use Rabbit order")
   endif()
   if (NOT ${_HEADER_ONLY})
-  target_link_libraries(sparsebase PUBLIC numa)
+    target_link_libraries(sparsebase PUBLIC numa)
   else()
-  target_link_libraries(sparsebase INTERFACE numa)
+    target_link_libraries(sparsebase INTERFACE numa)
   endif()
   add_opt_library("rabbit_order" "ON")
 endif()
@@ -217,20 +221,20 @@ endif()
 
 ### Create configuration file for install
 configure_file(
-  "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
-  "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
+        "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
+        "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
 )
 
 ### Installation plan
-set(SINGLE_HEADER_FILE 
-  sparsebase/sparsebase.h
-)
-set(CONTEXT_FILES 
-  sparsebase/context/context.h
+set(SINGLE_HEADER_FILE
+        sparsebase/sparsebase.h
+        )
+set(CONTEXT_FILES
+        sparsebase/context/context.h
         sparsebase/context/cpu_context.h
-)
-set(FORMAT_FILES 
-  sparsebase/format/format.h
+        )
+set(FORMAT_FILES
+        sparsebase/format/format.h
         sparsebase/format/format_implementation.h
         sparsebase/format/format_order_one.h
         sparsebase/format/array.h
@@ -238,13 +242,13 @@ set(FORMAT_FILES
         sparsebase/format/csr.h
         sparsebase/format/csc.h
         sparsebase/format/coo.h
-)
-set(FEATURE_FILES 
-  sparsebase/feature/feature.h
-)
-set(PREPROCESS_FILES 
-  sparsebase/preprocess/preprocess.h
-)
+        )
+set(FEATURE_FILES
+        sparsebase/feature/feature.h
+        )
+set(PREPROCESS_FILES
+        sparsebase/preprocess/preprocess.h
+        )
 set(REORDERING_FILES
         sparsebase/reorder/reorder.h
         sparsebase/reorder/degree_reorder.h
@@ -260,9 +264,15 @@ set(PERMUTER_FILES
         sparsebase/permute/permute_order_one.h
         sparsebase/permute/permute_order_two.h
         )
+set(PARTITIONER_FILES
+        sparsebase/partition/partitioner.h
+        sparsebase/partition/metis_partition.h
+        sparsebase/partition/patoh_partition.h
+        sparsebase/partition/pulp_partition.h
+        )
 set(OBJECT_FILES
-  sparsebase/object/object.h
-)
+        sparsebase/object/object.h
+        )
 set(IO_FILES
         sparsebase/bases/iobase.h
         sparsebase/bases/reorder_base.h
@@ -285,25 +295,25 @@ set(CONVERTER_FILES
         sparsebase/converter/converter_order_two_cuda.cuh
         sparsebase/converter/converter_order_one_cuda.cuh
         sparsebase/converter/converter_store.h
-)
+        )
 set(UTILS_FILES
-  sparsebase/utils/exception.h
-  sparsebase/utils/utils.h
+        sparsebase/utils/exception.h
+        sparsebase/utils/utils.h
         sparsebase/utils/logger.h
         sparsebase/utils/parameterizable.h
         sparsebase/utils/function_matcher_mixin.h
         sparsebase/utils/class_matcher_mixin.h
-)
+        )
 set(EXPERIMENT_FILES
         sparsebase/experiment/experiment.h
         sparsebase/experiment/concrete_experiment.h
         sparsebase/experiment/experiment_type.h
         sparsebase/experiment/experiment_helper.h
-)
+        )
 if(${_HEADER_ONLY})
   set(CONTEXT_FILES ${CONTEXT_FILES}
           sparsebase/context/cpu_context.cc
-  )
+          )
   set(FORMAT_FILES ${FORMAT_FILES}
           sparsebase/format/format_order_one.cc
           sparsebase/format/array.cc
@@ -311,13 +321,13 @@ if(${_HEADER_ONLY})
           sparsebase/format/csr.cc
           sparsebase/format/csc.cc
           sparsebase/format/coo.cc
-  )
+          )
   set(FEATURE_FILES ${FEATURE_FILES}
-    sparsebase/feature/feature.cc
-  )
-  set(PREPROCESS_FILES ${PREPROCESS_FILES} 
-    sparsebase/preprocess/preprocess.cc
-  )
+          sparsebase/feature/feature.cc
+          )
+  set(PREPROCESS_FILES ${PREPROCESS_FILES}
+          sparsebase/preprocess/preprocess.cc
+          )
   set(REORDERING_FILES ${REORDERING_FILES}
           sparsebase/reorder/reorder.cc
           sparsebase/reorder/degree_reorder.cc
@@ -333,10 +343,16 @@ if(${_HEADER_ONLY})
           sparsebase/permute/permute_order_one.cc
           sparsebase/permute/permute_order_two.cc
           )
+  set(PARTITIONER_FILES ${PARTITIONER_FILES}
+          sparsebase/partition/partitioner.cc
+          sparsebase/partition/metis_partition.cc
+          sparsebase/partition/patoh_partition.cc
+          sparsebase/partition/pulp_partition.cc
+          )
 
   set(OBJECT_FILES ${OBJECT_FILES}
-    sparsebase/object/object.cc
-  )
+          sparsebase/object/object.cc
+          )
   set(IO_FILES ${IO_FILES}
           sparsebase/io/mtx_reader.cc
           sparsebase/io/pigo_mtx_reader.cc
@@ -354,50 +370,50 @@ if(${_HEADER_ONLY})
           sparsebase/converter/converter_order_two_cuda.cu
           sparsebase/converter/converter_order_one_cuda.cu
           sparsebase/converter/converter_store.cc
-  )
+          )
   set(EXPERIMENT_FILES ${EXPERIMENT_FILES}
           sparsebase/experiment/concrete_experiment.cc
-  )
+          )
   set(UTILS_FILES ${UTILS_FILES}
-     sparsebase/utils/utils.cc
+          sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
           )
 endif()
 install(FILES ${SINGLE_HEADER_FILE}
-  DESTINATION include)
+        DESTINATION include)
 install(FILES ${CONTEXT_FILES}
-  DESTINATION include/sparsebase/context/)
+        DESTINATION include/sparsebase/context/)
 install(FILES ${FORMAT_FILES}
-  DESTINATION include/sparsebase/format/)
+        DESTINATION include/sparsebase/format/)
 install(FILES ${FEATURE_FILES}
-  DESTINATION include/sparsebase/feature/)
+        DESTINATION include/sparsebase/feature/)
 install(FILES ${PREPROCESS_FILES}
-  DESTINATION include/sparsebase/preprocess/)
+        DESTINATION include/sparsebase/preprocess/)
 install(FILES  ${REORDERING_FILES}
-        DESTINATION include/sparsebase/reorder/
-        )
+        DESTINATION include/sparsebase/reorder/)
 install(FILES  ${PERMUTER_FILES}
-        DESTINATION include/sparsebase/permute/
-        )
+        DESTINATION include/sparsebase/permute/)
+install(FILES  ${PARTITIONER_FILES}
+        DESTINATION include/sparsebase/partition/)
 install(FILES ${OBJECT_FILES}
-  DESTINATION include/sparsebase/object/)
+        DESTINATION include/sparsebase/object/)
 install(FILES ${IO_FILES}
-  DESTINATION include/sparsebase/io/)
+        DESTINATION include/sparsebase/io/)
 install(FILES ${CONVERTER_FILES}
-  DESTINATION include/sparsebase/converter/)
+        DESTINATION include/sparsebase/converter/)
 install(FILES ${EXPERIMENT_FILES}
-  DESTINATION include/sparsebase/experiment/)
+        DESTINATION include/sparsebase/experiment/)
 install(FILES ${UTILS_FILES}
         DESTINATION include/sparsebase/utils/)
 
 if(USE_PIGO)
   install(FILES sparsebase/external/pigo/pigo.hpp
-    DESTINATION include/sparsebase/external/pigo)
+          DESTINATION include/sparsebase/external/pigo)
 endif()
 
-install(FILES 
-  sparsebase/external/json/json.hpp
-  DESTINATION include/sparsebase/external/json/)
+install(FILES
+        sparsebase/external/json/json.hpp
+        DESTINATION include/sparsebase/external/json/)
 
 if(${USE_CUDA})
   set(CUDA_FORMAT_FILES
@@ -408,7 +424,7 @@ if(${USE_CUDA})
   set(CUDA_CONVERTER_FILES
           sparsebase/converter/converter_cuda.cuh)
   set(CUDA_PREPROCESS_FILES
-    sparsebase/preprocess/cuda/preprocess.cuh)
+          sparsebase/preprocess/cuda/preprocess.cuh)
   set(CUDA_CONTEXT_FILES
           sparsebase/context/cuda_context_cuda.cuh)
   if(${_HEADER_ONLY})
@@ -421,20 +437,20 @@ if(${USE_CUDA})
             sparsebase/converter/converter_order_one_cuda.cu
             )
     set(CUDA_PREPROCESS_FILES ${CUDA_PREPROCESS_FILES}
-      sparsebase/preprocess/cuda/preprocess.cu)
+            sparsebase/preprocess/cuda/preprocess.cu)
     set(CUDA_CONTEXT_FILES ${CUDA_CONTEXT_FILES}
             sparsebase/context/cuda_context_cuda.cu)
   endif()
   install(FILES ${CUDA_FORMAT_FILES}
-    DESTINATION include/sparsebase/format/)
+          DESTINATION include/sparsebase/format/)
   install(FILES ${CUDA_UTILS_FILES}
           DESTINATION include/sparsebase/utils/)
   install(FILES ${CUDA_CONVERTER_FILES}
-    DESTINATION include/sparsebase/converter/)
+          DESTINATION include/sparsebase/converter/)
   install(FILES ${CUDA_PREPROCESS_FILES}
-    DESTINATION include/sparsebase/preprocess/cuda/)
+          DESTINATION include/sparsebase/preprocess/cuda/)
   install(FILES ${CUDA_CONTEXT_FILES}
-    DESTINATION include/sparsebase/context/)
+          DESTINATION include/sparsebase/context/)
 endif()
 
 # Creating an alias for the library when used through "find_package()"
