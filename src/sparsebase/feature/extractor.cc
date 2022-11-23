@@ -1,5 +1,4 @@
-#include "feature.h"
-
+#include "sparsebase/feature/extractor.h"
 #include <vector>
 
 #include "sparsebase/preprocess/preprocess.h"
@@ -93,26 +92,5 @@ Extractor::~Extractor() {
     delete el.second;
   }
 }
-
-template <typename IDType, typename NNZType, typename ValueType,
-          typename FeatureType>
-FeatureExtractor<IDType, NNZType, ValueType, FeatureType>::FeatureExtractor() {
-  auto degree_distribution =
-      new preprocess::DegreeDistribution<IDType, NNZType, ValueType,
-                                         FeatureType>();
-  this->RegisterClass(degree_distribution->get_sub_ids(), degree_distribution);
-  auto degrees = new preprocess::Degrees<IDType, NNZType, ValueType>();
-  this->RegisterClass(degrees->get_sub_ids(), degrees);
-
-  auto degrees_degreedistribution =
-      new preprocess::Degrees_DegreeDistribution<IDType, NNZType, ValueType,
-                                                 FeatureType>();
-  this->RegisterClass(degrees_degreedistribution->get_sub_ids(),
-                      degrees_degreedistribution);
-}
-
-#if !defined(_HEADER_ONLY)
-#include "init/feature.inc"
-#endif
 
 }  // namespace sparsebase::feature
