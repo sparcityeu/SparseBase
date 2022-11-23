@@ -54,7 +54,8 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/partition/metis_partition.cc
           sparsebase/partition/patoh_partition.cc
           sparsebase/partition/pulp_partition.cc
-          sparsebase/feature/feature.cc
+          sparsebase/feature/extractor.cc
+          sparsebase/feature/feature_extractor.cc
           sparsebase/experiment/concrete_experiment.cc
           sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
@@ -244,7 +245,8 @@ set(FORMAT_FILES
         sparsebase/format/coo.h
         )
 set(FEATURE_FILES
-        sparsebase/feature/feature.h
+        sparsebase/feature/extractor.h
+        sparsebase/feature/feature_extractor.h
         )
 set(PREPROCESS_FILES
         sparsebase/preprocess/preprocess.h
@@ -323,7 +325,8 @@ if(${_HEADER_ONLY})
           sparsebase/format/coo.cc
           )
   set(FEATURE_FILES ${FEATURE_FILES}
-          sparsebase/feature/feature.cc
+          sparsebase/feature/extractor.cc
+          sparsebase/feature/feature_extractor.cc
           )
   set(PREPROCESS_FILES ${PREPROCESS_FILES}
           sparsebase/preprocess/preprocess.cc

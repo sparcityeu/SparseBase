@@ -177,8 +177,8 @@ reset_file("binary_writer_order_two.inc")
 gen_inst("class BinaryWriterOrderTwo<$id_type, $nnz_type, $value_type>", "binary_writer_order_two.inc")
 
 # Feature
-reset_file("feature.inc")
-gen_inst("class FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>", "feature.inc")
+reset_file("feature_extractor.inc")
+gen_inst("class FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>", "feature_extractor.inc")
 
 # Preprocess
 reset_file("permuter.inc")
