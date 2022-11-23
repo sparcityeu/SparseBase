@@ -47,6 +47,9 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/reorder/rabbit_reorder.cc
           sparsebase/reorder/metis_reorder.cc
           sparsebase/reorder/reorder_heatmap.cc
+          sparsebase/permute/permuter.cc
+          sparsebase/permute/permute_order_one.cc
+          sparsebase/permute/permute_order_two.cc
     sparsebase/feature/feature.cc
           sparsebase/experiment/concrete_experiment.cc
     sparsebase/utils/utils.cc
@@ -252,6 +255,11 @@ set(REORDERING_FILES
         sparsebase/reorder/metis_reorder.h
         sparsebase/reorder/reorder_heatmap.h
         )
+set(PERMUTER_FILES
+        sparsebase/permute/permuter.h
+        sparsebase/permute/permute_order_one.h
+        sparsebase/permute/permute_order_two.h
+        )
 set(OBJECT_FILES
   sparsebase/object/object.h
 )
@@ -320,6 +328,12 @@ if(${_HEADER_ONLY})
           sparsebase/reorder/metis_reorder.cc
           sparsebase/reorder/reorder_heatmap.cc
           )
+  set(PERMUTER_FILES ${PERMUTER_FILES}
+          sparsebase/permute/permuter.cc
+          sparsebase/permute/permute_order_one.cc
+          sparsebase/permute/permute_order_two.cc
+          )
+
   set(OBJECT_FILES ${OBJECT_FILES}
     sparsebase/object/object.cc
   )
@@ -361,6 +375,9 @@ install(FILES ${PREPROCESS_FILES}
   DESTINATION include/sparsebase/preprocess/)
 install(FILES  ${REORDERING_FILES}
         DESTINATION include/sparsebase/reorder/
+        )
+install(FILES  ${PERMUTER_FILES}
+        DESTINATION include/sparsebase/permute/
         )
 install(FILES ${OBJECT_FILES}
   DESTINATION include/sparsebase/object/)

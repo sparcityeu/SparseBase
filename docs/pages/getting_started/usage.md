@@ -326,5 +326,5 @@ auto new_format = ReorderBase.Permute2D(order, format, {&cpu_context}, true);
 
 // Manual Method
 preprocess::PermuteOrderTwo<int, int, float> permute(order, order);
-auto new_format = permute.GetTransformation(format, {&cpu_context});
+auto new_format = permute.GetPermutation(format, {&cpu_context});
 ```

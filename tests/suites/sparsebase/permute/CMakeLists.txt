@@ -1,0 +1,26 @@
+if(${USE_CUDA})
+    set_source_files_properties(permuter_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_permute_permuter_tests.test permuter_tests.cc)
+target_link_libraries(sparsebase_permute_permuter_tests.test sparsebase)
+target_link_libraries(sparsebase_permute_permuter_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_permute_permuter_tests COMMAND sparsebase_permute_permuter_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(permute_order_one_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_permute_permute_order_one_tests.test permute_order_one_tests.cc)
+target_link_libraries(sparsebase_permute_permute_order_one_tests.test sparsebase)
+target_link_libraries(sparsebase_permute_permute_order_one_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_permute_permute_order_one_tests COMMAND sparsebase_permute_permute_order_one_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(permute_order_two_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_permute_permute_order_two_tests.test permute_order_two_tests.cc)
+target_link_libraries(sparsebase_permute_permute_order_two_tests.test sparsebase)
+target_link_libraries(sparsebase_permute_permute_order_two_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_permute_permute_order_two_tests COMMAND sparsebase_permute_permute_order_two_tests.test)

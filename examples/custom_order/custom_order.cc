@@ -9,6 +9,7 @@
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/reorder/reorder.h"
 #include "sparsebase/bases/reorder_base.h"
+#include "sparsebase/permute/permuter.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -135,10 +136,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(
+  permute::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(
       permutation, permutation);
   format::Format *perm_csr =
-      transformer.GetTransformation(con, {&cpu_context}, true);
+      transformer.GetPermutation(con, {&cpu_context}, true);
   auto *n_row_ptr =
       perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()
           ->get_row_ptr();
@@ -157,10 +158,10 @@ int main(int argc, char *argv[]) {
   if (transform_is_correct) {
     cout << "Transformation is correct." << endl;
   }
-  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(
+  permute::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(
       inv_permutation, inv_permutation);
   auto perm_then_inv_perm_csr =
-      inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)
+      inv_trans.GetPermutation(perm_csr, {&cpu_context}, true)
           ->As<format::CSR>();
   auto orig_csr =
       con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
