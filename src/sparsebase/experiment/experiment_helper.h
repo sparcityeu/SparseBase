@@ -1,14 +1,15 @@
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "sparsebase/bases/reorder_base.h"
 #include "sparsebase/experiment/experiment_type.h"
+#include "sparsebase/format/coo.h"
+#include "sparsebase/format/csc.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/format/csr.h"
-#include "sparsebase/format/csc.h"
-#include "sparsebase/format/coo.h"
-
-#include <unordered_map>
-#include <string>
-#include <vector>
 
 #ifndef SPARSEBASE_PROJECT_EXPERIMENT_HELPER_H
 #define SPARSEBASE_PROJECT_EXPERIMENT_HELPER_H
@@ -67,8 +68,8 @@ template< template<typename, typename, typename> typename ReorderType, typename 
 void ReorderCSR(std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any params) {
   ContextType context;
   auto p = std::any_cast<typename ReorderType<IDType, NNZType, ValueType>::ParamsType>(params);
-  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
-  auto * A_reordered = preprocess::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
+  auto *perm = bases::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
+  auto * A_reordered = bases::ReorderBase::Permute2D<format::CSR>(perm, data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
   data.emplace("processed_format", A_csc);
 }
@@ -85,8 +86,8 @@ template< template<typename, typename, typename> typename ReorderType, template<
 void Reorder(std::unordered_map<std::string, format::Format*> & data, std::any fparams, std::any params) {
   ContextType context;
   auto p = std::any_cast<typename ReorderType<IDType, NNZType, ValueType>::ParamsType>(params);
-  auto *perm = preprocess::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
-  auto * A_reordered = preprocess::ReorderBase::Permute2D<FormatType>(perm, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
+  auto *perm = bases::ReorderBase::Reorder<ReorderType>(p, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
+  auto * A_reordered = bases::ReorderBase::Permute2D<FormatType>(perm, data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(), {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
   data.emplace("processed_format", A_csc);
 }

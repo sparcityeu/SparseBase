@@ -7,6 +7,8 @@
 #include "sparsebase/format/csr.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/reorder/degree_reorder.h"
+#include "sparsebase/bases/reorder_base.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -39,7 +41,7 @@ int main(int argc, char *argv[]) {
   cout << "Sorting the vertices according to degree (degree ordering)..."
        << endl;
 
-  preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
+  reorder::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
   format::Format *con = g.get_connectivity();
   vertex_type *permutation = orderer.GetReorder(con, {&cpu_context}, false);
   vertex_type n = con->get_dimensions()[0];
@@ -59,7 +61,7 @@ int main(int argc, char *argv[]) {
 
   cout << "Checking the correctness of the ordering..." << endl;
   // We can easily get the inverse of our permutation (to reverse the ordering)
-  auto inv_permutation = preprocess::ReorderBase::InversePermutation(
+  auto inv_permutation = bases::ReorderBase::InversePermutation(
       permutation, con->get_dimensions()[0]);
   bool order_is_correct = true;
   set<vertex_type> check;

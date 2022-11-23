@@ -21,14 +21,14 @@ In this guide, we will create a new reordering `OptimalReorder`. This reordering
 
 ### 1. Create a new class for the ordering
 
-In the header file `src/sparsebase/preprocess/preprocess.h`, add the definition of your class. You should add your class under the namespace `sparsebase::preprocess`. It must be templated on three types `IDType`, `NNZType`, and `ValueType` which define the data types of the `Format` objects it will reorder. Also, it must inherit from the class `ReorderPreprocessType<IDType>` which defines the common API of all reordering classes.
+In the header file `src/sparsebase/preprocess/preprocess.h`, add the definition of your class. You should add your class under the namespace `sparsebase::preprocess`. It must be templated on three types `IDType`, `NNZType`, and `ValueType` which define the data types of the `Format` objects it will reorder. Also, it must inherit from the class `Reorderer<IDType>` which defines the common API of all reordering classes.
 
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType> {};
+class OptimalReorder : Reorderer<IDType> {};
 } // namespace sparsebase::preprocess
 ```
 
@@ -54,7 +54,7 @@ Additionally, create a `typedef` for your struct as `ParamsType` inside the reor
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<ValueType> {
+class OptimalReorder : Reorderer<ValueType> {
     typedef OptimalReorderParams ParamsType;
 };
 } // namespace sparsebase::preprocess
@@ -87,7 +87,7 @@ You must add the function according to the aforementioned signature and follow t
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<ValueType> {
+class OptimalReorder : Reorderer<ValueType> {
   //.......
   static IDType *OptimallyOrderCSR(
       std::vector<format::Format*> input_sf,
@@ -153,7 +153,7 @@ Finally, add the function `OptimallyReorderCUDACSR()` as an implementation insid
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<ValueType> {
+class OptimalReorder : Reorderer<ValueType> {
 // We do not want the function to be compiled if CUDA isn't enabled
 #ifdef USE_CUDA
   static IDType *OptimallyOrderCUDACSR(
@@ -195,7 +195,7 @@ So, for our `OptimalReordering` class, you will create the following constructor
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType> {
+class OptimalReorder : Reorderer<IDType> {
     OptimalReorder(OptimalReorderParams params){
         
     }
@@ -207,13 +207,13 @@ Now, let's populate this constructor.
 
 #### 4.1 Set the hyperparameters of instances of the class
 
-Inside the constructor of the class, take the hyperparameters argument from the user and set the data member `params_`, which the class inherited from `ReorderPreprocessType`, to the newly added struct by copying the argument passed in the constructor.
+Inside the constructor of the class, take the hyperparameters argument from the user and set the data member `params_`, which the class inherited from `Reorderer`, to the newly added struct by copying the argument passed in the constructor.
 
 ```cpp
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<ValueType> {
+class OptimalReorder : Reorderer<ValueType> {
   // ...
   OptimalReorder(OptimalReorderParams params) {
     this->params_ =
@@ -234,7 +234,7 @@ Note that registering the `CUDACSR` implementation function is surrounded by an 
 // File: src/sparsebase/preprocess/preprocess.h
 namespace sparsebase::preprocess {
 template <typename IDType, typename NNZType, typename ValueType>
-class OptimalReorder : ReorderPreprocessType<IDType, NNZType, ValueType> {
+class OptimalReorder : Reorderer<IDType, NNZType, ValueType> {
   // ...
   OptimalReorder(float alpha, float beta) {
     // ...

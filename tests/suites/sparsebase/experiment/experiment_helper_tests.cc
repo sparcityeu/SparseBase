@@ -1,4 +1,5 @@
 #include "sparsebase/sparsebase.h"
+#include "sparsebase/reorder/reorder.h"
 #include "gtest/gtest.h"
 #include <iostream>
 
@@ -9,6 +10,7 @@ using namespace experiment;
 using namespace utils;
 using namespace io;
 using namespace preprocess;
+using namespace reorder;
 using namespace context;
 
 using vertex_type = unsigned int;
