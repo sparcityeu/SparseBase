@@ -8,7 +8,8 @@
 #include "sparsebase/reorder/amd_reorder.h"
 #include "sparsebase/reorder/rabbit_reorder.h"
 #include "sparsebase/reorder/reorder_heatmap.h"
-#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/permute/permute_order_one.h"
+#include "sparsebase/permute/permute_order_two.h"
 
 #ifndef SPARSEBASE_PROJECT_REORDER_BASE_H
 #define SPARSEBASE_PROJECT_REORDER_BASE_H
@@ -142,9 +143,9 @@ class ReorderBase {
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_input,
       bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
                                                                  ordering);
-    auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    auto out_format = perm.GetPermutation(format, contexts, convert_input);
     ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                   ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
@@ -192,9 +193,9 @@ class ReorderBase {
       AutoIDType *ordering,
   format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
                                                                  ordering);
-    auto output = perm.GetTransformationCached(format, contexts, true);
+    auto output = perm.GetPermutationCached(format, contexts, true);
     std::vector<
     format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
                                                     converted_formats;
@@ -256,9 +257,9 @@ class ReorderBase {
       AutoIDType *row_ordering, AutoIDType *col_ordering,
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
   std::vector<context::Context *> contexts, bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(row_ordering,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(row_ordering,
                                                                  col_ordering);
-    auto output = perm.GetTransformationCached(format, contexts, true);
+    auto output = perm.GetPermutationCached(format, contexts, true);
     std::vector<
     format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
                                                     converted_formats;
@@ -316,9 +317,9 @@ class ReorderBase {
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_input,
       bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(row_ordering,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(row_ordering,
                                                                  col_ordering);
-    auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    auto out_format = perm.GetPermutation(format, contexts, convert_input);
     ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                   ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
@@ -362,9 +363,9 @@ class ReorderBase {
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_input,
       bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
                                                                  nullptr);
-    auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    auto out_format = perm.GetPermutation(format, contexts, convert_input);
     ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                   ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
@@ -412,9 +413,9 @@ class ReorderBase {
       AutoIDType *ordering,
   format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(ordering,
                                                                  nullptr);
-    auto output = perm.GetTransformationCached(format, contexts, true);
+    auto output = perm.GetPermutationCached(format, contexts, true);
     std::vector<
     format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
                                                     converted_formats;
@@ -471,9 +472,9 @@ class ReorderBase {
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_input,
       bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(nullptr,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(nullptr,
                                                                  ordering);
-    auto out_format = perm.GetTransformation(format, contexts, convert_input);
+    auto out_format = perm.GetPermutation(format, contexts, convert_input);
     ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType> *output;
     if constexpr (std::is_same_v<
                   ReturnFormatType<AutoIDType, AutoNNZType, AutoValueType>,
@@ -520,9 +521,9 @@ class ReorderBase {
       AutoIDType *ordering,
   format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_output = false) {
-    preprocess::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(nullptr,
+    permute::PermuteOrderTwo<AutoIDType, AutoNNZType, AutoValueType> perm(nullptr,
                                                                  ordering);
-    auto output = perm.GetTransformationCached(format, contexts, true);
+    auto output = perm.GetPermutationCached(format, contexts, true);
     std::vector<
     format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
                                                     converted_formats;
@@ -577,8 +578,8 @@ class ReorderBase {
       AutoIDType *ordering, format::FormatOrderOne<AutoValueType> *format,
       std::vector<context::Context *> context, bool convert_inputs,
       bool convert_output = false) {
-    preprocess::PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
-    auto out_format = perm.GetTransformation(format, context, convert_inputs);
+    permute::PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
+    auto out_format = perm.GetPermutation(format, context, convert_inputs);
     ReturnFormatType<AutoValueType> * output;
     if constexpr (std::is_same_v<ReturnFormatType<AutoValueType>,
                   format::FormatOrderOne<AutoValueType>>)
@@ -622,8 +623,8 @@ class ReorderBase {
   format::FormatOrderOne<AutoValueType> *format,
       std::vector<context::Context *> context,
   bool convert_output = false) {
-    preprocess::PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
-    auto output = perm.GetTransformationCached(format, context, true);
+    permute::PermuteOrderOne<AutoIDType, AutoValueType> perm(ordering);
+    auto output = perm.GetPermutationCached(format, context, true);
     std::vector<format::FormatOrderOne<AutoValueType> *> converted_formats;
     std::transform(
         std::get<0>(output)[0].begin(), std::get<0>(output)[0].end(),
