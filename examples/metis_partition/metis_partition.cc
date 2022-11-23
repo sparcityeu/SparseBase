@@ -1,4 +1,5 @@
 #include <sparsebase/sparsebase.h>
+#include "sparsebase/partition/metis_partition.h"
 
 #include <iostream>
 
@@ -26,8 +27,8 @@ int main(int argc, char** argv) {
       io::EdgeListReader<TYPES>(file_name).ReadCSR();
 
   cout << "Setting partition params..." << endl;
-  preprocess::MetisPartition<TYPES> metis;
-  preprocess::MetisPartitionParams params;
+  partition::MetisPartition<TYPES> metis;
+  partition::MetisPartitionParams params;
   params.seed = 12;
   params.ufactor = 50;
   params.rtype = metis::METIS_RTYPE_GREEDY;

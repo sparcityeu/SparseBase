@@ -23,6 +23,7 @@
 #include "sparsebase/reorder/degree_reorder.h"
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/exception.h"
+#include "sparsebase/partition/partitioner.h"
 #ifdef USE_CUDA
 #include "sparsebase/converter/converter_cuda.cuh"
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
@@ -37,6 +38,7 @@ const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
 using namespace sparsebase;
 using namespace sparsebase::preprocess;
 using namespace sparsebase::reorder;
+using namespace sparsebase::partition;
 using namespace sparsebase::bases;
 #include "../functionality_common.inc"
 TEST(TypeIndexHash, Basic) {
@@ -54,66 +56,6 @@ TEST(TypeIndexHash, Basic) {
   }
   EXPECT_EQ(hash, hasher(vec));
 }
-
-
-#ifdef USE_METIS
-TEST(MetisPartition, BasicTest) {
-  if (typeid(metis::idx_t) == typeid(int)){
-    MetisPartition<int, int, int> partitioner;
-    MetisPartitionParams params;
-    params.num_partitions = 2;
-    auto part2 = partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
-    check_partition(part2, n, (int) 2);
-    params.num_partitions = 4;
-    auto part4 = partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
-    check_partition(part4, n, (int) 4);
-  } else {
-    MetisPartition<int64_t, int64_t, int64_t> partitioner;
-    auto global_coo_64_bit = global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(false);
-    MetisPartitionParams params;
-    params.num_partitions = 2;
-    auto part2 = partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
-    check_partition(part2, (int64_t) n, (int64_t) 2);
-    params.num_partitions = 4;
-    auto part4 = partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
-    check_partition(part4, (int64_t) n, (int64_t) 4);
-  }
-}
-
-#endif
-
-#ifdef USE_PULP
-TEST(PulpPartition, BasicTest) {
-  PulpPartition<int, long, void> partitioner;
-  // This is a temporary solution intended to be replaced by the Downloaders once finished
-  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,long,void>(FILE_NAME);
-  PulpPartitionParams params;
-  params.num_partitions = 2;
-  auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);
-  check_partition(part2, n, 2);
-  params.num_partitions = 4;
-  auto part4 = partitioner.Partition(coo, &params, {&cpu_context}, true);
-  check_partition(part4, n, 4);
-  delete coo;
-}
-#endif
-
-#ifdef USE_PATOH
-TEST(PatohPartition, BasicTest) {
-  //std::cout << "Hello" << std::endl;
-  PatohPartition<int, int, void> partitioner;
-  // This is a temporary solution intended to be replaced by the Downloaders once finished
-  auto coo = sparsebase::utils::io::IOBase::ReadMTXToCOO<int,int,void>(FILE_NAME);
-  PatohPartitionParams params;
-  params.num_partitions = 2;
-  auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);
-  check_partition(part2, n, 2);
-  params.num_partitions = 4;
-  auto part4 = partitioner.Partition(coo, &params, {&cpu_context}, true);
-  check_partition(part4, n, 4);
-  delete coo;
-}
-#endif
 
 
 
