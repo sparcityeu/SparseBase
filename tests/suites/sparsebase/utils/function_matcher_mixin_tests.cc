@@ -22,6 +22,37 @@ using namespace sparsebase;
 using namespace sparsebase::utils;
 using namespace sparsebase::context;
 using namespace sparsebase::preprocess;
+
+template <typename ReturnType>
+class GenericPreprocessType : public utils::FunctionMatcherMixin<ReturnType> {
+ protected:
+ public:
+  int GetOutput(format::Format *csr, utils::Parameters *params,
+                std::vector<context::Context *>, bool convert_input);
+  std::tuple<std::vector<std::vector<format::Format *>>, int> GetOutputCached(
+      format::Format *csr, utils::Parameters *params,
+      std::vector<context::Context *> contexts, bool convert_input);
+  virtual ~GenericPreprocessType();
+};
+template <typename ReturnType>
+GenericPreprocessType<ReturnType>::~GenericPreprocessType() = default;
+
+template <typename ReturnType>
+int GenericPreprocessType<ReturnType>::GetOutput(
+    format::Format *format, utils::Parameters *params,
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->Execute(params, contexts, convert_input,
+                       format);
+}
+
+template <typename ReturnType>
+std::tuple<std::vector<std::vector<format::Format *>>, int>
+GenericPreprocessType<ReturnType>::GetOutputCached(
+    format::Format *format, utils::Parameters *params,
+    std::vector<context::Context *> contexts, bool convert_input) {
+  return this->CachedExecute(params, contexts, convert_input,
+                             false, format);
+}
 class FunctionMatcherMixinTest : public ::testing::Test {
  protected:
   GenericPreprocessType<int> concrete_preprocess;

@@ -21,12 +21,13 @@
 
 #include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/class_matcher_mixin.h"
+#include "sparsebase/utils/extractable.h"
 #include "sparsebase/utils/utils.h"
 
 namespace sparsebase::feature {
 
 
-using Feature = utils::Implementation<preprocess::ExtractableType>;
+using Feature = utils::Implementation<utils::Extractable>;
 
 
 //! Extractor provides an interface for users to generate multiple features
@@ -34,7 +35,7 @@ using Feature = utils::Implementation<preprocess::ExtractableType>;
 /*!
  *  Detailed
  */
-class Extractor : public utils::ClassMatcherMixin<preprocess::ExtractableType *> {
+class Extractor : public utils::ClassMatcherMixin<utils::Extractable *> {
  public:
   ~Extractor();
   //! Computes the features that are passed.
@@ -85,7 +86,7 @@ class Extractor : public utils::ClassMatcherMixin<preprocess::ExtractableType *>
     @return void
   */
   void PrintFuncList();
-  std::vector<preprocess::ExtractableType *> GetFuncList();
+  std::vector<utils::Extractable *> GetFuncList();
 
  protected:
   Extractor() noexcept = default;
@@ -96,7 +97,7 @@ class Extractor : public utils::ClassMatcherMixin<preprocess::ExtractableType *>
   /*!
    *  Detailed
    */
-  std::unordered_map<std::type_index, preprocess::ExtractableType *> in_;
+  std::unordered_map<std::type_index, utils::Extractable *> in_;
 };
 
 template <typename IDType, typename NNZType, typename ValueType,

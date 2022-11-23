@@ -39,6 +39,14 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/converter/converter_order_one.cc
           sparsebase/converter/converter_store.cc
     sparsebase/preprocess/preprocess.cc
+          sparsebase/reorder/reorder.cc
+          sparsebase/reorder/degree_reorder.cc
+          sparsebase/reorder/gray_reorder.cc
+          sparsebase/reorder/generic_reorder.cc
+          sparsebase/reorder/amd_reorder.cc
+          sparsebase/reorder/rabbit_reorder.cc
+          sparsebase/reorder/metis_reorder.cc
+          sparsebase/reorder/reorder_heatmap.cc
     sparsebase/feature/feature.cc
           sparsebase/experiment/concrete_experiment.cc
     sparsebase/utils/utils.cc
@@ -234,11 +242,22 @@ set(FEATURE_FILES
 set(PREPROCESS_FILES 
   sparsebase/preprocess/preprocess.h
 )
-set(OBJECT_FILES 
+set(REORDERING_FILES
+        sparsebase/reorder/reorder.h
+        sparsebase/reorder/degree_reorder.h
+        sparsebase/reorder/gray_reorder.h
+        sparsebase/reorder/generic_reorder.h
+        sparsebase/reorder/amd_reorder.h
+        sparsebase/reorder/rabbit_reorder.h
+        sparsebase/reorder/metis_reorder.h
+        sparsebase/reorder/reorder_heatmap.h
+        )
+set(OBJECT_FILES
   sparsebase/object/object.h
 )
 set(IO_FILES
         sparsebase/bases/iobase.h
+        sparsebase/bases/reorder_base.h
         sparsebase/io/reader.h
         sparsebase/io/mtx_reader.h
         sparsebase/io/pigo_mtx_reader.h
@@ -291,6 +310,16 @@ if(${_HEADER_ONLY})
   set(PREPROCESS_FILES ${PREPROCESS_FILES} 
     sparsebase/preprocess/preprocess.cc
   )
+  set(REORDERING_FILES ${REORDERING_FILES}
+          sparsebase/reorder/reorder.cc
+          sparsebase/reorder/degree_reorder.cc
+          sparsebase/reorder/gray_reorder.cc
+          sparsebase/reorder/generic_reorder.cc
+          sparsebase/reorder/amd_reorder.cc
+          sparsebase/reorder/rabbit_reorder.cc
+          sparsebase/reorder/metis_reorder.cc
+          sparsebase/reorder/reorder_heatmap.cc
+          )
   set(OBJECT_FILES ${OBJECT_FILES}
     sparsebase/object/object.cc
   )
@@ -330,6 +359,9 @@ install(FILES ${FEATURE_FILES}
   DESTINATION include/sparsebase/feature/)
 install(FILES ${PREPROCESS_FILES}
   DESTINATION include/sparsebase/preprocess/)
+install(FILES  ${REORDERING_FILES}
+        DESTINATION include/sparsebase/reorder/
+        )
 install(FILES ${OBJECT_FILES}
   DESTINATION include/sparsebase/object/)
 install(FILES ${IO_FILES}

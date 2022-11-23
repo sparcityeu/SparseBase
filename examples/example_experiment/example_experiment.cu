@@ -13,6 +13,7 @@
 #include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/reorder/reorder.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -198,8 +199,8 @@ int main(int argc, char **argv){
 
   // reorder matrices
   exp.AddPreprocess("original", experiment::Pass, {}); // add dummy preprocessing to run kernels without reordering
-  RCMReorder<row_type, nnz_type, value_type>::ParamsType params = {};
-  exp.AddPreprocess("RCM", experiment::Reorder<RCMReorder, CSR, CPUContext, row_type, nnz_type, value_type>, params);
+  reorder::RCMReorder<row_type, nnz_type, value_type>::ParamsType params = {};
+  exp.AddPreprocess("RCM", experiment::Reorder<reorder::RCMReorder, CSR, CPUContext, row_type, nnz_type, value_type>, params);
 
   // add kernels that will carry out the sparse matrix vector multiplication
   // init random vals large enough for all the files

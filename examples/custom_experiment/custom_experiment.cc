@@ -6,7 +6,8 @@
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/io/mtx_reader.h"
-#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/reorder/reorder.h"
+#include "sparsebase/bases/reorder_base.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -22,8 +23,8 @@ using value_type = unsigned int;
 // create custom preprocess function
 void preprocess_f(unordered_map<string, Format*> & data, std::any & fparams, std::any & params) {
   context::CPUContext cpu_context;
-  auto perm = ReorderBase::Reorder<RCMReorder>({}, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
-  auto A_reordered = ReorderBase::Permute2D<CSR>(perm, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
+  auto perm = bases::ReorderBase::Reorder<reorder::RCMReorder>({}, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
+  auto A_reordered = bases::ReorderBase::Permute2D<CSR>(perm, data["graph"]->AsAbsolute<CSR<vertex_type, edge_type, value_type>>(), {&cpu_context}, true);
   data.emplace("ordered", A_reordered);
 };
 

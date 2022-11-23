@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/utils/extractable.h"
 #include "sparsebase/utils/exception.h"
 
 namespace sparsebase::feature {
@@ -19,8 +20,8 @@ void Extractor::PrintFuncList() {
   std::cout << std::endl;
 }
 
-std::vector<preprocess::ExtractableType *> Extractor::GetFuncList() {
-  std::vector<preprocess::ExtractableType *> res;
+std::vector<utils::Extractable *> Extractor::GetFuncList() {
+  std::vector<utils::Extractable *> res;
   for (auto &cls : map_) {
     res.push_back(cls.second);
   }
@@ -43,7 +44,7 @@ std::unordered_map<std::type_index, std::any> Extractor::Extract(
     bool convert_input) {
   if (in_.empty()) return {};
   // match and get classes for format extraction
-  std::vector<preprocess::ExtractableType *> cs = this->GetClasses(in_);
+  std::vector<utils::Extractable *> cs = this->GetClasses(in_);
   std::unordered_map<std::type_index, std::any> res;
   // std::cout << std::endl << "Classes used:" << std::endl;
   for (auto &el : cs) {

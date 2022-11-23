@@ -9,6 +9,7 @@
 #include "sparsebase/format/coo.h"
 
 #include "sparsebase/converter/converter.h"
+#include "sparsebase/utils/extractable.h"
 #include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
 #include "sparsebase/utils/logger.h"
@@ -27,293 +28,15 @@
 #include <utility>
 #include <vector>
 
-#ifdef USE_RABBIT_ORDER
-#include "rabbit_order.hpp"
+#ifdef USE_METIS
+namespace sparsebase::metis {
+#include <metis.h>
+}
 #endif
-
 namespace sparsebase {
 
 namespace preprocess {
 
-template <typename IDType>
-ReorderPreprocessType<IDType>::~ReorderPreprocessType() = default;
-;
-template <typename IDType, typename NNZType, typename ValueType>
-GenericReorder<IDType, NNZType, ValueType>::GenericReorder() {
-}
-template <typename IDType, typename NNZType, typename ValueType>
-DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(
-    DegreeReorderParams params)
-    : DegreeReorder(params.ascending) {}
-template <typename IDType, typename NNZType, typename ValueType>
-DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
-  // this->map[{kCSRFormat}]= calculate_order_csr;
-  // this->RegisterFunction({kCSRFormat}, CalculateReorderCSR);
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
-      CalculateReorderCSR);
-  this->params_ =
-      std::make_unique<DegreeReorderParams>(ascending);
-}
-
-template <typename ReturnType>
-GenericPreprocessType<ReturnType>::~GenericPreprocessType() = default;
-;
-
-template <typename ReturnType>
-int GenericPreprocessType<ReturnType>::GetOutput(
-    format::Format *format, utils::Parameters *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
-  return this->Execute(params, contexts, convert_input,
-                       format);
-}
-
-template <typename ReturnType>
-std::tuple<std::vector<std::vector<format::Format *>>, int>
-GenericPreprocessType<ReturnType>::GetOutputCached(
-    format::Format *format, utils::Parameters *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, contexts, convert_input,
-                             false, format);
-}
-template <typename IDType>
-IDType *ReorderPreprocessType<IDType>::GetReorder(
-    format::Format *format, std::vector<context::Context *> contexts,
-    bool convert_input) {
-  return this->Execute(this->params_.get(), contexts,
-                       convert_input, format);
-}
-
-template <typename IDType>
-IDType *ReorderPreprocessType<IDType>::GetReorder(
-    format::Format *format, utils::Parameters *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
-  return this->Execute(params, contexts, convert_input,
-                       format);
-}
-
-template <typename IDType>
-std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
-ReorderPreprocessType<IDType>::GetReorderCached(
-    format::Format *format, std::vector<context::Context *> contexts,
-    bool convert_input) {
-  return this->CachedExecute(this->params_.get(), contexts,
-                             convert_input, false, format);
-}
-
-template <typename IDType>
-std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
-ReorderPreprocessType<IDType>::GetReorderCached(
-    format::Format *format, utils::Parameters *params,
-    std::vector<context::Context *> contexts, bool convert_input) {
-  return this->CachedExecute(params, contexts, convert_input,
-                             false, format);
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
-    std::vector<format::Format *> formats, utils::Parameters *params) {
-  format::CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
-  bool ascending = cast_params->ascending;
-  IDType n = csr->get_dimensions()[0];
-  IDType *counts = new IDType[n]();
-  auto row_ptr = csr->get_row_ptr();
-  auto col = csr->get_col();
-  for (IDType u = 0; u < n; u++) {
-    counts[row_ptr[u + 1] - row_ptr[u] + 1]++;
-  }
-  for (IDType u = 1; u < n; u++) {
-    counts[u] += counts[u - 1];
-  }
-  IDType *sorted = new IDType[n];
-  memset(sorted, -1, sizeof(IDType) * n);
-  IDType *mr = new IDType[n]();
-  for (IDType u = 0; u < n; u++) {
-    IDType ec = counts[row_ptr[u + 1] - row_ptr[u]];
-    sorted[ec + mr[ec]] = u;
-    mr[ec]++;
-  }
-  if (!ascending) {
-    for (IDType i = 0; i < n / 2; i++) {
-      IDType swp = sorted[i];
-      sorted[i] = sorted[n - i - 1];
-      sorted[n - i - 1] = swp;
-    }
-  }
-  auto *inverse_permutation = new IDType[n];
-  for (IDType i = 0; i < n; i++) {
-    inverse_permutation[sorted[i]] = i;
-  }
-  delete[] mr;
-  delete[] counts;
-  delete[] sorted;
-  return inverse_permutation;
-}
-template <typename IDType, typename NNZType, typename ValueType>
-RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-RCMReorder<IDType, NNZType, ValueType>::RCMReorder(RCMReorderParams p) {
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-}
-template <typename IDType, typename NNZType, typename ValueType>
-IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
-                                                          IDType *adj, IDType n,
-                                                          IDType start,
-                                                          SignedID *distance,
-                                                          IDType *Q) {
-  IDType r = start;
-  SignedID rlevel = -1;
-  SignedID qlevel = 0;
-
-  while (rlevel != qlevel) {
-    // cout << "Finding peripheral: current dist = " << qlevel << std::endl;;
-    rlevel = qlevel;
-
-    for (IDType i = 0; i < n; i++) distance[i] = -1;
-    IDType qrp = 0, qwp = 0;
-    distance[r] = 0;
-    Q[qwp++] = r;
-
-    while (qrp < qwp) {
-      IDType u = Q[qrp++];
-      for (NNZType ptr = xadj[u]; ptr < xadj[u + 1]; ptr++) {
-        IDType v = adj[ptr];
-        if (distance[v] == (IDType)-1) {
-          distance[v] = distance[u] + 1;
-          Q[qwp++] = v;
-        }
-      }
-    }
-
-    qlevel = 0;
-    for (IDType i = 0; i < qrp; i++) {
-      if (qlevel < distance[Q[i]]) {
-        qlevel = distance[Q[i]];
-        r = Q[i];
-      }
-    }
-  }
-  return r;
-}
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
-    std::vector<format::Format *> formats, utils::Parameters *params) {
-  format::CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  NNZType *xadj = csr->get_row_ptr();
-  IDType *adj = csr->get_col();
-  IDType n = csr->get_dimensions()[0];
-  IDType *Q = new IDType[n];
-
-  IDType *Qp = new IDType[n];
-  SignedID *distance = new SignedID[n];
-  IDType *V = new IDType[n];
-  for (IDType i = 0; i < n; i++) V[i] = 0;
-  std::priority_queue<std::pair<IDType, IDType>> PQ;
-  int qrp = 0, qwp = 0;
-  IDType reverse = n - 1;
-
-  for (IDType i = 0; i < n; i++) {
-    if (V[i] == 0) {
-      if (xadj[i] == xadj[i + 1]) {
-        Q[reverse--] = i;
-        V[i] = 1;
-        continue;
-      }
-
-      // cout << i << std::endl;
-      IDType perv = peripheral(xadj, adj, n, i, distance, Qp);
-      V[perv] = 1;
-      Q[qwp++] = perv;
-
-      while (qrp < qwp) {
-        IDType u = Q[qrp++];
-        for (IDType ptr = xadj[u]; ptr < xadj[u + 1]; ptr++) {
-          IDType v = adj[ptr];
-          if (V[v] == 0) {
-            PQ.push(std::make_pair(xadj[v + 1] - xadj[v], v));
-            V[v] = 1;
-          }
-        }
-
-        while (!PQ.empty()) {
-          Q[qwp++] = PQ.top().second;
-          ;
-          PQ.pop();
-        }
-      }
-    }
-  }
-
-  // Reverse
-  for (IDType i = 0; i < n / 2; i++) {
-    Qp[i] = Q[n - i - 1];
-    Qp[n - i - 1] = Q[i];
-  }
-  // Place it in the form that the transform function takes
-  for (IDType i = 0; i < n; i++) {
-    Q[Qp[i]] = i;
-  }
-
-  delete[] Qp;
-  delete[] distance;
-  delete[] V;
-  return Q;
-}
-
-#ifdef USE_AMD_ORDER
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <amd.h>
-#ifdef __cplusplus
-}
-#endif
-
-template <typename IDType, typename NNZType, typename ValueType>
-AMDReorder<IDType, NNZType, ValueType>::AMDReorder(AMDReorderParams p): AMDReorder(){
-  this->params_ = std::make_unique<AMDReorderParams>(p);
-}
-template <typename IDType, typename NNZType, typename ValueType>
-AMDReorder<IDType, NNZType, ValueType>::AMDReorder(){
-  this->params_ = std::make_unique<AMDReorderParams>();
-  this->RegisterFunction({format::CSR<IDType, NNZType, ValueType>::get_id_static()},
-                         AMDReorderCSR);
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-IDType* AMDReorder<IDType, NNZType, ValueType>::AMDReorderCSR(std::vector<format::Format*> formats, utils::Parameters* p){
-  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  format::CSR<long, long, ValueType>* csr_converted;
-  try{
-    csr_converted = csr->template Convert<format::CSR, long, long, ValueType>(false);
-  } catch (const utils::TypeException& exception){
-    throw utils::TypeException("AMD reordering requires IDType=long and NNZType=long");
-  }
-  auto params = static_cast<AMDReorderParams*>(p);
-  long long n = csr->get_dimensions()[0];
-  long *xadj_long = csr_converted->get_row_ptr(), *adj_long = csr_converted->get_col();
-  long * i_order = new long[n];
-  double *Control = new double[AMD_CONTROL];
-  Control[AMD_DENSE] = params->dense;
-  Control[AMD_AGGRESSIVE] = params->aggressive ;
-  double *Info = nullptr; //new double[AMD_INFO]; // Auxiliary data
-  int status = amd_l_order(n, xadj_long, adj_long, i_order, Control, Info);
-  if (status != 0){
-    throw utils::ReorderException("AMD reordering failed");
-  }
-  IDType* order = new IDType[n];
-  for (IDType i =0; i< n; i++) order[i_order[i]]=i;
-  return order;
-}
-#endif
 
 template <typename IDType, typename ValueType>
 PermuteOrderOne<IDType, ValueType>::PermuteOrderOne(ParamsType params) {
@@ -609,7 +332,7 @@ DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-std::vector<ExtractableType *>
+std::vector<utils::Extractable *>
 DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::get_subs() {
   return {
       new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>(*this)};
@@ -744,7 +467,7 @@ Degrees<IDType, NNZType, ValueType>::get_sub_ids() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::vector<ExtractableType *> Degrees<IDType, NNZType, ValueType>::get_subs() {
+std::vector<utils::Extractable *> Degrees<IDType, NNZType, ValueType>::get_subs() {
   return {new Degrees<IDType, NNZType, ValueType>(*this)};
 }
 
@@ -863,7 +586,7 @@ std::vector<std::type_index> Degrees_DegreeDistribution<
 
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-std::vector<ExtractableType *> Degrees_DegreeDistribution<
+std::vector<utils::Extractable *> Degrees_DegreeDistribution<
     IDType, NNZType, ValueType, FeatureType>::get_subs() {
   auto *f1 = new Degrees<IDType, NNZType, ValueType>();
   if (this->pmap_.find(
@@ -943,389 +666,6 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
            std::forward<FeatureType *>(dist)}};
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-GrayReorder<IDType, NNZType, ValueType>::GrayReorder(
-    BitMapSize resolution, int nnz_threshold, int sparse_density_group_size) {
-  auto params_struct = new GrayReorderParams;
-  params_struct->resolution = resolution;
-  params_struct->nnz_threshold = nnz_threshold;
-  params_struct->sparse_density_group_size = sparse_density_group_size;
-  this->params_ = std::unique_ptr<GrayReorderParams>(params_struct);
-
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
-      GrayReorderingCSR);
-}
-template <typename IDType, typename NNZType, typename ValueType>
-GrayReorder<IDType, NNZType, ValueType>::GrayReorder(GrayReorderParams p)
-    : GrayReorder(p.resolution, p.nnz_threshold, p.sparse_density_group_size) {}
-
-template <typename IDType, typename NNZType, typename ValueType>
-bool GrayReorder<IDType, NNZType, ValueType>::desc_comparator(
-    const row_grey_pair &l, const row_grey_pair &r) {
-  return l.second > r.second;
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-bool GrayReorder<IDType, NNZType, ValueType>::asc_comparator(
-    const row_grey_pair &l, const row_grey_pair &r) {
-  return l.second < r.second;
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-// not sure if all IDTypes work for this
-unsigned long GrayReorder<IDType, NNZType, ValueType>::grey_bin_to_dec(
-    unsigned long n) {
-  unsigned long inv = 0;
-
-  for (; n; n = n >> 1) inv ^= n;
-
-  return inv;
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-void GrayReorder<IDType, NNZType, ValueType>::print_dec_in_bin(unsigned long n,
-                                                               int size) {
-  // array to store binary number
-  int binaryNum[size];
-
-  // counter for binary array
-  int i = 0;
-  while (n > 0) {
-    // storing remainder in binary array
-    binaryNum[i] = n % 2;
-    n = n / 2;
-    i++;
-  }
-
-  // printing binary array in reverse order
-  std::string bin_nums = "";
-  for (int j = i - 1; j >= 0; j--)
-    bin_nums = bin_nums + std::to_string(binaryNum[j]);
-  utils::Logger l(typeid(GrayReorder));
-  l.Log(bin_nums, utils::LogLevel::LOG_LVL_INFO);
-}
-
-// not sure if all IDTypes work for this
-template <typename IDType, typename NNZType, typename ValueType>
-unsigned long GrayReorder<IDType, NNZType, ValueType>::bin_to_grey(
-    unsigned long n) {
-  /* Right Shift the number by 1
-  taking xor with original number */
-  return n ^ (n >> 1);
-}
-
-// bool is_banded(std::vector<format::Format *> input_sf, int band_size = -1,
-// std::vector<IDType> order) {
-template <typename IDType, typename NNZType, typename ValueType>
-bool GrayReorder<IDType, NNZType, ValueType>::is_banded(
-    int nnz, int n_cols, NNZType *row_ptr, IDType *cols,
-    std::vector<IDType> order, int band_size) {
-  if (band_size == -1) band_size = n_cols / 64;
-  int band_count = 0;
-  bool banded = false;
-
-  for (int r = 0; r < order.size(); r++) {
-    for (int i = row_ptr[order[r]]; i < row_ptr[order[r] + 1]; i++) {
-      int col = cols[i];
-      if (abs(col - r) <= band_size) band_count++;
-    }
-  }
-
-  if (double(band_count) / nnz >= 0.3) {
-    banded = true;
-  }
-  utils::Logger logger(typeid(GrayReorder));
-  logger.Log("NNZ % in band: " + std::to_string(double(band_count) / nnz),
-             utils::LogLevel::LOG_LVL_INFO);
-  return banded;
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
-    std::vector<format::Format *> input_sf, utils::Parameters *poly_params) {
-  auto csr = input_sf[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  context::CPUContext *cpu_context =
-      static_cast<context::CPUContext *>(csr->get_context());
-
-  IDType n_rows = csr->get_dimensions()[0];
-  /*This array stores the permutation vector such as order[0] = 243 means that
-   * row 243 is the first row of the reordered matrix*/
-  IDType *order = new IDType[n_rows]();
-
-  GrayReorderParams *params = static_cast<GrayReorderParams *>(poly_params);
-  int group_size = params->sparse_density_group_size;
-  int bit_resolution = params->resolution;
-
-  int raise_to = 0;
-  int adder = 0;
-  int start_split_reorder, end_split_reorder;
-
-  int last_row_nnz_count = 0;
-  int threshold = 0;  // threshold used to set bit in bitmap to 1
-  bool decresc_grey_order = false;
-
-  int group_count = 0;
-
-  // Initializing row order
-  std::vector<IDType> v_order;
-  std::vector<IDType> sparse_v_order;
-  std::vector<IDType> dense_v_order;
-
-  // Splitting original matrix's rows in two submatrices
-  IDType sparse_dense_split = 0;
-  for (IDType i = 0; i < n_rows; i++) {
-    if ((csr->get_row_ptr()[i + 1] - csr->get_row_ptr()[i]) <=
-        params->nnz_threshold) {
-      sparse_v_order.push_back(i);
-      sparse_dense_split++;
-    } else {
-      dense_v_order.push_back(i);
-    }
-  }
-
-  v_order.reserve(sparse_v_order.size() +
-                  dense_v_order.size());  // preallocate memory
-
-  bool is_sparse_banded =
-      is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
-                csr->get_row_ptr(), csr->get_col(), sparse_v_order);
-  utils::Logger logger(typeid(GrayReorder));
-  if (is_sparse_banded)
-    logger.Log(
-        "Sparse Sub-Matrix highly banded - Performing just density reordering",
-        utils::LogLevel::LOG_LVL_INFO);
-
-  bool is_dense_banded =
-      is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
-                csr->get_row_ptr(), csr->get_col(), dense_v_order);
-  if (is_dense_banded)
-    logger.Log("Dense Sub-Matrix highly banded - Maintaining structure",
-               utils::LogLevel::LOG_LVL_INFO);
-
-  std::sort(sparse_v_order.begin(), sparse_v_order.end(),
-            [&](int i, int j) -> bool {
-              return (csr->get_row_ptr()[i + 1] - csr->get_row_ptr()[i]) <
-                     (csr->get_row_ptr()[j + 1] - csr->get_row_ptr()[j]);
-            });  // reorder sparse matrix into nnz amount
-
-  // bit resolution determines the width of the bitmap of each row
-  if (n_rows < bit_resolution) {
-    bit_resolution = n_rows;
-  }
-
-  int row_split = n_rows / bit_resolution;
-
-  auto nnz_per_row_split = new IDType[bit_resolution];
-  auto nnz_per_row_split_bin = new IDType[bit_resolution];
-
-  unsigned long decimal_bit_map = 0;
-  unsigned long dec_begin = 0;
-  int dec_begin_ind = 0;
-
-  std::vector<row_grey_pair>
-      reorder_section;  // vector that contains a section to be reordered
-
-  if (!is_sparse_banded) {  // if banded just row ordering by nnz count is
-                            // enough, else do bitmap reordering in groups
-
-    for (int i = 0; i < sparse_v_order.size();
-         i++) {  // sparse sub matrix if not highly banded
-      if (i == 0) {
-        last_row_nnz_count =
-            csr->get_row_ptr()[sparse_v_order[i] + 1] -
-            csr->get_row_ptr()[sparse_v_order[i]];  // get nnz count in first
-                                                    // row
-        start_split_reorder = 0;
-      }  // check if nnz amount changes from last row
-
-      if ((csr->get_row_ptr()[sparse_v_order[i] + 1] -
-           csr->get_row_ptr()[sparse_v_order[i]]) ==
-          0) {  // for cases where rows are empty
-        start_split_reorder = i + 1;
-        last_row_nnz_count = csr->get_row_ptr()[sparse_v_order[i + 1] + 1] -
-                             csr->get_row_ptr()[sparse_v_order[i + 1]];
-        continue;
-      }
-
-      // reset bitmap for this row
-      for (int j = 0; j < bit_resolution; j++) nnz_per_row_split[j] = 0;
-      for (int j = 0; j < bit_resolution; j++) nnz_per_row_split_bin[j] = 0;
-
-      // get number of nnz in each bitmap section
-      for (int k = csr->get_row_ptr()[sparse_v_order[i]];
-           k < csr->get_row_ptr()[sparse_v_order[i] + 1]; k++) {
-        nnz_per_row_split[csr->get_col()[k] / row_split]++;
-      }
-
-      // get bitmap of the row in decimal value (first rows are less significant
-      // bits)
-      decimal_bit_map = 0;
-      for (int j = 0; j < bit_resolution; j++) {
-        adder = 0;
-        if (nnz_per_row_split[j] > threshold) {
-          nnz_per_row_split_bin[j] = 1;
-          raise_to = j;
-          adder = pow(2, raise_to);
-
-          decimal_bit_map = decimal_bit_map + adder;
-        }
-      }
-
-      // if number of nnz changed from last row, increment group count, which
-      // might trigger a reorder of the group
-      if ((i != 0) &&
-          (last_row_nnz_count != (csr->get_row_ptr()[sparse_v_order[i] + 1] -
-                                  csr->get_row_ptr()[sparse_v_order[i]]))) {
-        group_count = group_count + 1;
-        logger.Log("Rows[" + std::to_string(start_split_reorder) + " -> " +
-                       std::to_string(i - 1) +
-                       "] NNZ Count: " + std::to_string(last_row_nnz_count),
-                   utils::LogLevel::LOG_LVL_INFO);
-        // update nnz count for current row
-        last_row_nnz_count = csr->get_row_ptr()[sparse_v_order[i] + 1] -
-                             csr->get_row_ptr()[sparse_v_order[i]];
-
-        // if group size achieved, start reordering section until this row
-        if (group_count == group_size) {
-          end_split_reorder = i;
-          logger.Log("Reorder Group[" + std::to_string(start_split_reorder) +
-                         " -> " + std::to_string(end_split_reorder - 1) + "]",
-                     utils::LogLevel::LOG_LVL_INFO);
-          // start next split the split for processing
-
-          // process and reorder the reordered_matrix array till this point
-          // (ascending or descending alternately)
-          if (!decresc_grey_order) {
-            sort(reorder_section.begin(), reorder_section.end(),
-                 asc_comparator);
-            decresc_grey_order = !decresc_grey_order;
-          } else {
-            sort(reorder_section.begin(), reorder_section.end(),
-                 desc_comparator);
-            decresc_grey_order = !decresc_grey_order;
-          }
-
-          dec_begin = reorder_section[0].second;
-          dec_begin_ind = start_split_reorder;
-
-          // apply reordered
-          for (int a = start_split_reorder; a < end_split_reorder; a++) {
-            if ((dec_begin !=
-                 reorder_section[a - start_split_reorder].second) &&
-                (a < 100000)) {
-              logger.Log("Rows[" + std::to_string(dec_begin_ind) + " -> " +
-                             std::to_string(a) + "] Grey Order: " +
-                             std::to_string(dec_begin) + "// Binary:",
-                         utils::LogLevel::LOG_LVL_INFO);
-              // print_dec_in_bin(bin_to_grey(dec_begin));
-
-              dec_begin = reorder_section[a - start_split_reorder].second;
-              dec_begin_ind = a;
-            }
-
-            sparse_v_order[a] = reorder_section[a - start_split_reorder].first;
-          }
-
-          start_split_reorder = i;
-
-          reorder_section.clear();
-          group_count = 0;
-        }
-      }
-
-      // if(decimal_bit_map != 0){
-      //   for(int i = 0; i < bit_resolution; i++){
-      //     std::cout << "[" << nnz_per_row_split_bin[(bit_resolution-1)-i] <<
-      //     "]";
-      //   }
-      //     std::cout << "\nRow "<< i << "[" << v_order[i] << "] grey value: "
-      //     << decimal_bit_map << " translates to: "<<
-      //     grey_bin_to_dec(decimal_bit_map) <<"\n";
-      // }
-
-      //
-
-      reorder_section.push_back(
-          row_grey_pair(sparse_v_order[i], grey_bin_to_dec(decimal_bit_map)));
-
-      // when reaching end of sparse submatrix, reorder section
-      if (i == sparse_v_order.size() - 1) {
-        end_split_reorder = sparse_v_order.size();
-        logger.Log("Rows[" + std::to_string(start_split_reorder) + " -> " +
-                       std::to_string(end_split_reorder - 1) +
-                       "] NNZ Count: " + std::to_string(last_row_nnz_count),
-                   utils::LogLevel::LOG_LVL_INFO);
-        if (!decresc_grey_order) {
-          sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
-          decresc_grey_order = !decresc_grey_order;
-        } else {
-          sort(reorder_section.begin(), reorder_section.end(), desc_comparator);
-          decresc_grey_order = !decresc_grey_order;
-        }
-        for (int a = start_split_reorder; a < end_split_reorder; a++) {
-          sparse_v_order[a] = reorder_section[a - start_split_reorder].first;
-        }
-      }
-    }
-
-    reorder_section.clear();
-  }
-
-  if (!is_dense_banded) {
-    logger.Log("Rows [" + std::to_string(sparse_dense_split) + "-" +
-                   std::to_string(n_rows) +
-                   "] Starting Dense Sorting through NNZ and Grey code..",
-               utils::LogLevel::LOG_LVL_INFO);
-
-    for (int i = 0; i < dense_v_order.size(); i++) {
-      // if first row, establish the nnz amount, and starting index
-      for (int j = 0; j < bit_resolution; j++) nnz_per_row_split[j] = 0;
-
-      for (int k = csr->get_row_ptr()[dense_v_order[i]];
-           k < csr->get_row_ptr()[dense_v_order[i] + 1]; k++) {
-        nnz_per_row_split[csr->get_col()[k] / row_split]++;
-      }
-      threshold = (csr->get_row_ptr()[dense_v_order[i] + 1] -
-                   csr->get_row_ptr()[dense_v_order[i]]) /
-                  bit_resolution;  // floor
-      decimal_bit_map = 0;
-      for (int j = 0; j < bit_resolution; j++) {
-        adder = 0;
-        if (nnz_per_row_split[j] > threshold) {
-          raise_to = j;  // row 0 = lowest significant bit
-          adder = pow(2, raise_to);
-
-          decimal_bit_map = decimal_bit_map + adder;
-        }
-      }
-      reorder_section.push_back(
-          row_grey_pair(dense_v_order[i], grey_bin_to_dec(decimal_bit_map)));
-    }
-    logger.Log("Reordering Rows based on grey values...",
-               utils::LogLevel::LOG_LVL_INFO);
-    std::sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
-
-    for (int a = 0; a < dense_v_order.size(); a++) {
-      dense_v_order[a] = reorder_section[a].first;
-    }
-
-    reorder_section.clear();
-  }
-
-  v_order.insert(v_order.end(), sparse_v_order.begin(), sparse_v_order.end());
-  v_order.insert(v_order.end(), dense_v_order.begin(), dense_v_order.end());
-
-  /*This order array stores the inverse permutation vector such as order[0] =
-   * 243 means that row 0 is placed at the row 243 of the reordered matrix*/
-  // std::vector<IDType> v_order_inv(n_rows);
-  for (int i = 0; i < n_rows; i++) {
-    order[v_order[i]] = i;
-  }
-  // std::copy(v_order_inv.begin(), v_order_inv.end(), order);
-
-  return order;
-}
 
 template <typename IDType>
 PartitionPreprocessType<IDType>::PartitionPreprocessType() = default;
@@ -1349,54 +689,8 @@ IDType *PartitionPreprocessType<IDType>::Partition(
 template <typename IDType>
 PartitionPreprocessType<IDType>::~PartitionPreprocessType() = default;
 
-#ifdef USE_RABBIT_ORDER
-
-template <typename IDType, typename NNZType, typename ValueType>
-RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder() {
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
-      CalculateReorderCSR);
-  this->params_ = std::make_unique<RabbitReorderParams>();
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-RabbitReorder<IDType, NNZType, ValueType>::RabbitReorder(
-    RabbitReorderParams params)
-    : RabbitReorder() {}
-
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *RabbitReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
-    std::vector<format::Format *> formats, utils::Parameters *params) {
-  using rabbit_order::vint;
-  typedef std::vector<std::vector<std::pair<vint, float>>> adjacency_list;
-
-  format::CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  IDType n = csr->get_dimensions()[0];
-  IDType *counts = new IDType[n]();
-  auto *idx = csr->get_row_ptr();
-  auto *adj = csr->get_col();
-
-  adjacency_list G(n);
-  for (size_t i = 0; i < n; i++) {
-    for (size_t j = idx[i]; j < idx[i + 1]; j++) {
-      vint source = i;
-      vint target = adj[j];
-      G[source].push_back(std::make_pair((vint)target, 1.0f));
-    }
-  }
-  const auto g = rabbit_order::aggregate(std::move(G));
-  const auto p = rabbit_order::compute_perm(g);
-  IDType *ptr = new IDType[n];
-  std::copy(p.get(), p.get() + n, ptr);
-  return ptr;
-}
-
-#endif
 
 #ifdef USE_METIS
-
-#include <metis.h>
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition() {
@@ -1427,102 +721,50 @@ IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
 
   MetisPartitionParams *mparams = static_cast<MetisPartitionParams *>(params);
 
-  idx_t n = (idx_t)csr->get_dimensions()[0];
+  metis::idx_t n = (metis::idx_t)csr->get_dimensions()[0];
 
   IDType *partition = new IDType[n];
 
-  idx_t options[METIS_NOPTIONS];
-  options[METIS_OPTION_OBJTYPE] = (idx_t)mparams->objtype;
-  options[METIS_OPTION_CTYPE] = (idx_t)mparams->ctype;
-  options[METIS_OPTION_IPTYPE] = (idx_t)mparams->iptype;
-  options[METIS_OPTION_RTYPE] = (idx_t)mparams->rtype;
-  options[METIS_OPTION_NO2HOP] = (idx_t)mparams->no2hop;
-  options[METIS_OPTION_NCUTS] = (idx_t)mparams->ncuts;
-  options[METIS_OPTION_NITER] = (idx_t)mparams->niter;
-  options[METIS_OPTION_UFACTOR] = (idx_t)mparams->ufactor;
-  options[METIS_OPTION_MINCONN] = (idx_t)mparams->minconn;
-  options[METIS_OPTION_CONTIG] = (idx_t)mparams->contig;
-  options[METIS_OPTION_SEED] = (idx_t)mparams->seed;
-  options[METIS_OPTION_NUMBERING] = (idx_t)mparams->numbering;
-  options[METIS_OPTION_DBGLVL] = (idx_t)0;
+  metis::idx_t options[METIS_NOPTIONS];
+  options[metis::METIS_OPTION_OBJTYPE] = (metis::idx_t)mparams->objtype;
+  options[metis::METIS_OPTION_CTYPE] = (metis::idx_t)mparams->ctype;
+  options[metis::METIS_OPTION_IPTYPE] = (metis::idx_t)mparams->iptype;
+  options[metis::METIS_OPTION_RTYPE] = (metis::idx_t)mparams->rtype;
+  options[metis::METIS_OPTION_NO2HOP] = (metis::idx_t)mparams->no2hop;
+  options[metis::METIS_OPTION_NCUTS] = (metis::idx_t)mparams->ncuts;
+  options[metis::METIS_OPTION_NITER] = (metis::idx_t)mparams->niter;
+  options[metis::METIS_OPTION_UFACTOR] = (metis::idx_t)mparams->ufactor;
+  options[metis::METIS_OPTION_MINCONN] = (metis::idx_t)mparams->minconn;
+  options[metis::METIS_OPTION_CONTIG] = (metis::idx_t)mparams->contig;
+  options[metis::METIS_OPTION_SEED] = (metis::idx_t)mparams->seed;
+  options[metis::METIS_OPTION_NUMBERING] = (metis::idx_t)mparams->numbering;
+  options[metis::METIS_OPTION_DBGLVL] = (metis::idx_t)0;
 
-  idx_t np = (idx_t)mparams->num_partitions;
-  idx_t nw = (idx_t)1;
-  idx_t objval;
 
-  if constexpr (std::is_same_v<IDType, idx_t> && std::is_same_v<NNZType, idx_t>) {
+  metis::idx_t np = (metis::idx_t)mparams->num_partitions;
+  metis::idx_t nw = (metis::idx_t)1;
+  metis::idx_t objval;
+
+  if constexpr (std::is_same_v<IDType, metis::idx_t> && std::is_same_v<NNZType, metis::idx_t>) {
     if (mparams->ptype == metis::METIS_PTYPE_RB) {
-      METIS_PartGraphRecursive(&n, &nw, (idx_t *)csr->get_row_ptr(),
-                               (idx_t *)csr->get_col(), nullptr, nullptr,
+      metis::METIS_PartGraphRecursive(&n, &nw, (metis::idx_t *)csr->get_row_ptr(),
+                               (metis::idx_t *)csr->get_col(), nullptr, nullptr,
                                nullptr, &np, nullptr, nullptr, options, &objval,
                                partition);
 
     } else {
-      METIS_PartGraphKway(&n, &nw, (idx_t *)csr->get_row_ptr(),
-                          (idx_t *)csr->get_col(), nullptr, nullptr, nullptr,
+      metis::METIS_PartGraphKway(&n, &nw, (metis::idx_t *)csr->get_row_ptr(),
+                          (metis::idx_t *)csr->get_col(), nullptr, nullptr, nullptr,
                           &np, nullptr, nullptr, options, &objval, partition);
     }
   } else {
     throw utils::TypeException("Metis Partitioner supports only " +
-                               std::to_string(sizeof(idx_t) * 8) +
+                               std::to_string(sizeof(metis::idx_t) * 8) +
                                "-bit signed integers for ids");
   }
   return partition;
 }
 
-template <typename IDType, typename NNZType, typename ValueType>
-MetisReorder<IDType, NNZType, ValueType>::MetisReorder() {
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-  this->params_ = std::make_unique<ParamsType>();
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
-    MetisReorderParams params) {
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
-  this->params_ = std::make_unique<ParamsType>(params);
-}
-
-template <typename IDType, typename NNZType, typename ValueType>
-IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
-    std::vector<format::Format *> formats,
-    sparsebase::utils::Parameters *params) {
-  format::CSR<IDType, NNZType, ValueType> *csr =
-      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  auto *mparams = static_cast<MetisReorderParams *>(params);
-  auto n = (idx_t)csr->get_dimensions()[0];
-
-  idx_t options[METIS_NOPTIONS];
-  options[METIS_OPTION_OBJTYPE] = metis::METIS_OBJTYPE_NODE;
-  options[METIS_OPTION_CTYPE] = (idx_t)mparams->ctype;
-  options[METIS_OPTION_IPTYPE] = metis::METIS_IPTYPE_NODE;
-  options[METIS_OPTION_RTYPE] = (idx_t)mparams->rtype;
-  options[METIS_OPTION_NO2HOP] = (idx_t)mparams->no2hop;
-  options[METIS_OPTION_NITER] = (idx_t)mparams->niter;
-  options[METIS_OPTION_UFACTOR] = (idx_t)mparams->ufactor;
-  options[METIS_OPTION_SEED] = (idx_t)mparams->seed;
-  options[METIS_OPTION_NUMBERING] = (idx_t)mparams->numbering;
-  options[METIS_OPTION_COMPRESS] = (idx_t)mparams->compress;
-  options[METIS_OPTION_CCORDER] = (idx_t)mparams->ccorder;
-  options[METIS_OPTION_PFACTOR] = (idx_t)mparams->pfactor;
-  options[METIS_OPTION_NSEPS] = (idx_t) mparams->nseps;
-  options[METIS_OPTION_DBGLVL] = (idx_t)0;
-
-  if constexpr (std::is_same_v<IDType, idx_t> && std::is_same_v<NNZType, idx_t>) {
-    auto *perm = new idx_t[n];
-    auto *inv_perm = new idx_t[n];
-    METIS_NodeND(&n, csr->get_row_ptr(), csr->get_col(), nullptr, options, perm,
-                 inv_perm);
-    delete[] perm;
-    return inv_perm;
-  } else {
-    throw utils::TypeException("MetisReorder supports only " +
-                               std::to_string(sizeof(idx_t) * 8) +
-                               "-bit signed integers for ids");
-  }
-}
 
 #endif
 
@@ -1684,97 +926,6 @@ IDType *PatohPartition<IDType, NNZType, ValueType>::PartitionCSR(
 }
 #endif
 
-template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
-ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(){
-  this->params_ =
-      std::make_unique<ReorderHeatmapParams>();
-  this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static(), format::Array<IDType>::get_id_static(), format::Array<IDType>::get_id_static()},
-      ReorderHeatmapCSRArrayArray);
-}
-
-template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
-ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmap(ReorderHeatmapParams params) : ReorderHeatmap(){
-  this->params_ =
-      std::make_unique<ReorderHeatmapParams>(params);
-}
-
-template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
-format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::Get(format::FormatOrderTwo<IDType, NNZType, ValueType> *format, format::FormatOrderOne<IDType>* permutation_r, format::FormatOrderOne<IDType>* permutation_c, std::vector<context::Context*> contexts, bool convert_input){
-  return this->Execute(this->params_.get(), contexts, convert_input, (format::Format*)format, (format::Format*)permutation_r,(format::Format*)permutation_c);
-}
-
-template <typename IDType, typename NNZType, typename ValueType, typename FloatType>
-format::FormatOrderOne<FloatType>* ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::ReorderHeatmapCSRArrayArray(std::vector<format::Format*> formats,
-                                    utils::Parameters * poly_params){
-  auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  auto order_r = formats[1]->AsAbsolute<format::Array<IDType>>()->get_vals();
-  auto order_c = formats[2]->AsAbsolute<format::Array<IDType>>()->get_vals();
-  auto* params = static_cast<ReorderHeatmapParams*>(poly_params);
-  int b = params->num_parts;
-  if (b > csr->get_dimensions()[0] || b > csr->get_dimensions()[1]) {
-    throw utils::ReorderException("Cannot generate heatmap for matrix when num_parts > number of rows or columns");
-  }
-  auto n = csr->get_dimensions()[0];
-  auto row_ptr = csr->get_row_ptr();
-  auto adj = csr->get_col();
-  IDType max_bw = 0;
-  FloatType mean_bw = 0;
-
-  IDType bsize = n / b;
-
-  // matrix of size num_parts x num_parts with number of edges in each square
-  auto density = new NNZType*[b];
-  for(NNZType i = 0; i < b; i++) {
-    density[i] = new NNZType[b];
-    memset(density[i], 0, sizeof(NNZType) * b);
-  }
-
-  for(IDType i = 0; i < n; i++) {
-    IDType u = order_r[i];
-    IDType bu = u / bsize;
-    if(bu == b) bu--;
-    for(NNZType ptr = row_ptr[i]; ptr < row_ptr[i+1]; ptr++) {
-      IDType v = order_c[adj[ptr]];
-      IDType bw = abs(std::make_signed_t<IDType>(u) - std::make_signed_t<IDType>(v));
-      max_bw = std::max<IDType>(max_bw, bw);
-      mean_bw += bw;
-
-      IDType bv = v / bsize;
-      if(bv == b) bv--;
-      density[bu][bv]++;
-    }
-  }
-  mean_bw = (mean_bw + 0.0f) / row_ptr[n];
-  //utils::Logger logger;
-  //logger.Log("BW stats -- Mean bw: "+std::to_string(mean_bw) + "Max bw: " + std::to_string(max_bw), utils::LOG_LVL_INFO);
-
-  FloatType para_mean_bw = 0;
-  mean_bw = 0;
-  int fblocks = 0;
-  //logger.Log("Printing blocks \n----------------------------------------------" << endl;
-  for(int i = 0; i < b; i++) {
-    for(int j = 0; j < b; j++) {
-      //     cout << std::setprecision(2) << density[i][j] / (row_ptr[n] + .0f) << "\t";
-      if(density[i][j] > 0) {
-        fblocks++;
-      }
-      int bw = std::abs(i - j);
-      mean_bw += bw * density[i][j];
-    }
-    //   cout << endl;
-  }
-  // cout << "---------------------------------------------------------------" << endl;
-  // cout << "Block BW stats -- No full blocks: " << fblocks << " Block BW: " << (mean_bw + 0.0f) / row_ptr[n] << endl;
-  // cout << "---------------------------------------------------------------" << endl;
-  auto heat_values = new FloatType[b*b];
-  for (int i = 0; i < b; i++){
-    for (int j = 0; j < b; j++){
-      heat_values[i*b+j] = density[i][j] / (row_ptr[n] + .0f);
-    }
-  }
-  return new format::Array<FloatType>(b*b, heat_values, format::kOwned);
-}
 
 #if !defined(_HEADER_ONLY)
 #include "init/preprocess.inc"

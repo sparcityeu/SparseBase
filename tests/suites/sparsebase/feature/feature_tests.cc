@@ -10,6 +10,7 @@
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
 
+#include "sparsebase/utils/extractable.h"
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
@@ -90,7 +91,7 @@ TEST(feature, FeatureExtractorRegisterMap) {
   sort(expected.begin(), expected.end());
   Extractor extractor =
       FeatureExtractor<vertex_type, edge_type, value_type, feature_type>();
-  vector<preprocess::ExtractableType *> featFuncs = extractor.GetFuncList();
+  vector<utils::Extractable *> featFuncs = extractor.GetFuncList();
   vector<type_index> funcs;
   for (auto &func : featFuncs) {
     funcs.push_back(func->get_id());

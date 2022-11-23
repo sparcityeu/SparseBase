@@ -7,6 +7,7 @@
 #include "sparsebase/format/csr.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/reorder/reorder.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
 
   cout << "Generating RCM ordering..." << endl;
 
-  preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer;
+  reorder::RCMReorder<vertex_type, edge_type, value_type> orderer;
   auto *con =
       g.get_connectivity()
           ->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();

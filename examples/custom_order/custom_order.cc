@@ -7,6 +7,8 @@
 #include "sparsebase/format/csr.h"
 #include "sparsebase/object/object.h"
 #include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/reorder/reorder.h"
+#include "sparsebase/bases/reorder_base.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -78,7 +80,7 @@ int main(int argc, char *argv[]) {
 
   // ReorderInstance<vertex_type, edge_type, value_type, GenericReorder>
   // orderer;
-  preprocess::GenericReorder<vertex_type, edge_type, value_type> orderer;
+  reorder::GenericReorder<vertex_type, edge_type, value_type> orderer;
   orderer.RegisterFunction(
       {format::CSR<vertex_type, edge_type, value_type>::get_id_static()},
       degree_reorder_csr);
@@ -102,7 +104,7 @@ int main(int argc, char *argv[]) {
 
   cout << "Checking the correctness of the ordering..." << endl;
   // We can easily get the inverse of our permutation (to reverse the ordering)
-  auto inv_permutation = preprocess::ReorderBase::InversePermutation(
+  auto inv_permutation = bases::ReorderBase::InversePermutation(
       permutation, con->get_dimensions()[0]);
   bool order_is_correct = true;
   set<vertex_type> check;
@@ -171,7 +173,7 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-  preprocess::ReorderBase::Reorder<preprocess::RCMReorder>(
+  bases::ReorderBase::Reorder<reorder::RCMReorder>(
       {}, orig_csr, {&cpu_context}, true);
   cout << "Inversion is correct\n";
   delete[] permutation;
