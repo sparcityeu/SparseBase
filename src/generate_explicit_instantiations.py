@@ -17,8 +17,6 @@ parser.add_argument('--dry-run', action='store_true', help= "Will not write the 
 
 parser.add_argument('--class-list', type=str, help= "Path to class instantiation json list")
 
-parser.add_argument('--pigo', type=str, help= "Use pigo (OFF/ON).")
-parser.add_argument('--cuda', type=str, help= "Use CUDA (OFF/ON).")
 args = parser.parse_args()
 
 id_types = ' '.join(args.id_types).split(',')
