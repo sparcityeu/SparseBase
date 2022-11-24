@@ -2,6 +2,7 @@
 #include <sparsebase/context/context.h>
 #include <sparsebase/format/csc.h>
 #include <sparsebase/io/mtx_reader.h>
+#include <sparsebase/bases/graph_feature_base.h>
 #include <sparsebase/preprocess/preprocess.h>
 
 #include <string>
@@ -58,9 +59,9 @@ int main() {
   format::Array<val> *x =
       bases::ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context}, true);
 
-  float *deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>(
+  float *deg_dist = bases::GraphFeatureBase ::GetDegreeDistribution<float>(
       A, {&cpu_context}, true);
-  int *deg = preprocess::GraphFeatureBase ::GetDegrees(A, {&cpu_context}, true);
+  int *deg = bases::GraphFeatureBase ::GetDegrees(A, {&cpu_context}, true);
   return 0;
 }
 
