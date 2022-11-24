@@ -331,7 +331,7 @@
     },
     {
       "template": "class Degrees<$id_type, $nnz_type, $value_type>",
-      "filename": "preprocess.inc",
+      "filename": "degrees.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -443,14 +443,14 @@
     },
     {
       "template": "class DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>",
-      "filename": "preprocess.inc",
+      "filename": "degree_distribution.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
     },
     {
       "template": "class Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>",
-      "filename": "preprocess.inc",
+      "filename": "degrees_degree_distribution.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null

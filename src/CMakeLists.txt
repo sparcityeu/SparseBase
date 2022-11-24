@@ -60,6 +60,9 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/feature/extractor.cc
           sparsebase/feature/feature_extractor.cc
           sparsebase/feature/feature_preprocess_type.cc
+          sparsebase/feature/degrees.cc
+          sparsebase/feature/degree_distribution.cc
+          sparsebase/feature/degrees_degree_distribution.cc
           sparsebase/experiment/concrete_experiment.cc
           sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
@@ -252,6 +255,9 @@ set(FEATURE_FILES
         sparsebase/feature/extractor.h
         sparsebase/feature/feature_extractor.h
         sparsebase/feature/feature_preprocess_type.h
+        sparsebase/feature/degrees.h
+        sparsebase/feature/degree_distribution.h
+        sparsebase/feature/degrees_degree_distribution.h
         )
 set(PREPROCESS_FILES
         sparsebase/preprocess/preprocess.h
@@ -334,6 +340,9 @@ if(${_HEADER_ONLY})
           sparsebase/feature/extractor.cc
           sparsebase/feature/feature_extractor.cc
           sparsebase/feature/feature_preprocess_type.cc
+          sparsebase/feature/degrees.cc
+          sparsebase/feature/degree_distribution.cc
+          sparsebase/feature/degrees_degree_distribution.cc
           )
   set(PREPROCESS_FILES ${PREPROCESS_FILES}
           sparsebase/preprocess/preprocess.cc

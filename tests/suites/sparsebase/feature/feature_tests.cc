@@ -5,6 +5,9 @@
 
 #include "gtest/gtest.h"
 #include "sparsebase/feature/feature_extractor.h"
+#include "sparsebase/feature/degrees.h"
+#include "sparsebase/feature/degree_distribution.h"
+#include "sparsebase/feature/degrees_degree_distribution.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
@@ -16,10 +19,10 @@
 
 TEST(feature, FeatureExtractorRegisterMap) {
   std::vector<type_index> expected = {
-      DegreeDistribution<vertex_type, edge_type, value_type,
+      feature::DegreeDistribution<vertex_type, edge_type, value_type,
                          feature_type>::get_id_static(),
-      Degrees<vertex_type, edge_type, feature_type>::get_id_static(),
-      Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
+      feature::Degrees<vertex_type, edge_type, feature_type>::get_id_static(),
+      feature::Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
                                  feature_type>::get_id_static()};
   sort(expected.begin(), expected.end());
   Extractor extractor =
@@ -42,20 +45,20 @@ TEST(feature, FeatureExtractorRegisterMap) {
 // TEST(feature, ClassMatcherMixinMatch){
 //   ClassMatcherMixin<ExtractableType *> cmm;
 //   auto degree_distribution =
-//       new DegreeDistribution<vertex_type, edge_type, value_type,
+//       new feature::DegreeDistribution<vertex_type, edge_type, value_type,
 //       feature_type>();
 //   cmm.RegisterClass(degree_distribution->get_sub_ids(), degree_distribution);
 //   auto degrees = new Degrees<vertex_type, edge_type, feature_type>();
 //   cmm.RegisterClass(degrees->get_sub_ids(), degrees);
 //   auto degrees_degreedistribution =
-//       new Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
+//       new feature::Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
 //       feature_type>();
 //   cmm.RegisterClass(degrees_degreedistribution->get_sub_ids(),
 //                       degrees_degreedistribution);
 //
 //   unordered_map<type_index, ExtractableType *> in;
-//   in.insert(make_pair(DegreeDistribution<vertex_type, edge_type, value_type,
-//   feature_type>::get_id_static(), new DegreeDistribution<vertex_type,
+//   in.insert(make_pair(feature::DegreeDistribution<vertex_type, edge_type, value_type,
+//   feature_type>::get_id_static(), new feature::DegreeDistribution<vertex_type,
 //   edge_type, value_type, feature_type>()));
 //   in.insert(make_pair(Degrees<vertex_type, edge_type,
 //   feature_type>::get_id_static(), new Degrees<vertex_type, edge_type,
@@ -66,9 +69,9 @@ TEST(feature, FeatureExtractorRegisterMap) {
 //   EXPECT_EQ(rs[0]->get_id(),
 //   degrees_degreedistribution->get_id());
 //
-//   in.insert(make_pair(Degrees_DegreeDistribution<vertex_type, edge_type,
+//   in.insert(make_pair(feature::Degrees_DegreeDistribution<vertex_type, edge_type,
 //   value_type, feature_type>::get_id_static(), new
-//   Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
+//   feature::Degrees_DegreeDistribution<vertex_type, edge_type, value_type,
 //   feature_type>())); rs = cmm.GetClasses(in); EXPECT_EQ(rs.size(), 2);
 //   EXPECT_EQ(rs[0]->get_id(),
 //   degrees_degreedistribution->get_id());
