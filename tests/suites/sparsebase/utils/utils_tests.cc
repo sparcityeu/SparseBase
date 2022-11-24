@@ -15,7 +15,6 @@
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
 
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/utils/utils.h"
 using namespace sparsebase;
 TEST(TypeIndexHash, Basic) {

@@ -19,7 +19,6 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/reorder/degree_reorder.h"
 #include "sparsebase/reorder/generic_reorder.h"
 #include "sparsebase/reorder/gray_reorder.h"
