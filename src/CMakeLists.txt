@@ -59,6 +59,7 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/partition/pulp_partition.cc
           sparsebase/feature/extractor.cc
           sparsebase/feature/feature_extractor.cc
+          sparsebase/feature/feature_preprocess_type.cc
           sparsebase/experiment/concrete_experiment.cc
           sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
@@ -250,6 +251,7 @@ set(FORMAT_FILES
 set(FEATURE_FILES
         sparsebase/feature/extractor.h
         sparsebase/feature/feature_extractor.h
+        sparsebase/feature/feature_preprocess_type.h
         )
 set(PREPROCESS_FILES
         sparsebase/preprocess/preprocess.h
@@ -331,6 +333,7 @@ if(${_HEADER_ONLY})
   set(FEATURE_FILES ${FEATURE_FILES}
           sparsebase/feature/extractor.cc
           sparsebase/feature/feature_extractor.cc
+          sparsebase/feature/feature_preprocess_type.cc
           )
   set(PREPROCESS_FILES ${PREPROCESS_FILES}
           sparsebase/preprocess/preprocess.cc

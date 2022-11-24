@@ -288,6 +288,41 @@
       "exceptions": null
     },
     {
+      "template": "class FeaturePreprocessType<$id_type*>",
+      "filename": "feature_preprocess_type.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FeaturePreprocessType<$id_type*>",
+      "filename": "feature_preprocess_type.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FeaturePreprocessType<$nnz_type*>",
+      "filename": "feature_preprocess_type.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class FeaturePreprocessType<$value_type*>",
+      "filename": "feature_preprocess_type.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": {"$value_type": ["void"]}
+    },
+    {
+      "template": "class FeaturePreprocessType<$float_type*>",
+      "filename": "feature_preprocess_type.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class FeatureExtractor<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "feature_extractor.inc",
       "ifdef": null,

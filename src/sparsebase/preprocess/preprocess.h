@@ -27,6 +27,7 @@
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
 #include "sparsebase/utils/extractable.h"
+#include "sparsebase/feature/feature_preprocess_type.h"
 
 #ifdef USE_METIS
 namespace sparsebase::metis {
@@ -35,25 +36,6 @@ namespace sparsebase::metis {
 #endif
 
 namespace sparsebase::preprocess {
-
-//! A class that does feature extraction.
-/*!
- * An Extractable class that has a function matching
- * capability. In other words, an Extractable to which implementation functions
- * can be added and used. @tparam FeatureType the return type of feature
- * extraction
- */
-template <typename FeatureType>
-class FeaturePreprocessType
-    : public utils::FunctionMatcherMixin<FeatureType,
-                                  utils::Extractable> {
- public:
-  std::shared_ptr<utils::Parameters> get_params() override;
-  std::shared_ptr<utils::Parameters> get_params(std::type_index) override;
-  void set_params(std::type_index, std::shared_ptr<utils::Parameters>) override;
-  std::type_index get_id() override;
-  ~FeaturePreprocessType();
-};
 
 //! An empty struct used for the parameters of JaccardWeights
 struct JaccardWeightsParams : utils::Parameters {};
@@ -107,7 +89,7 @@ struct DegreeDistributionParams : utils::Parameters {};
  */
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
-class DegreeDistribution : public FeaturePreprocessType<FeatureType *> {
+class DegreeDistribution : public feature::FeaturePreprocessType<FeatureType *> {
  public:
   //! An empty struct used for the parameters of DegreeDistribution
   typedef DegreeDistributionParams ParamsType;
@@ -194,7 +176,7 @@ struct DegreesParams : utils::Parameters {};
 //! Count the degrees of every vertex in the graph representation of a format
 //! object
 template <typename IDType, typename NNZType, typename ValueType>
-class Degrees : public FeaturePreprocessType<IDType *> {
+class Degrees : public feature::FeaturePreprocessType<IDType *> {
  public:
   //! An empty struct used for the parameters of Degrees
   typedef DegreesParams ParamsType;
@@ -263,7 +245,7 @@ struct Params : utils::Parameters {};
 template <typename IDType, typename NNZType, typename ValueType,
           typename FeatureType>
 class Degrees_DegreeDistribution
-    : public FeaturePreprocessType<
+    : public feature::FeaturePreprocessType<
           std::unordered_map<std::type_index, std::any>> {
   //! An empty struct used for the parameters of Degrees_DegreeDistribution
   typedef Params ParamsType;
