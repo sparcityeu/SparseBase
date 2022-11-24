@@ -4,15 +4,18 @@
 #include <unistd.h>
 #include <random>
 
-#include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/io/io.h"
-#include "sparsebase/experiment/experiment.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/array.h"
+#include "sparsebase/reorder/rcm_reorder.h"
+#include "sparsebase/io/mtx_reader.h"
+#include "sparsebase/io/edge_list_reader.h"
+#include "sparsebase/experiment/concrete_experiment.h"
+#include "sparsebase/experiment/experiment_helper.h"
 
 using namespace std;
 using namespace sparsebase;
 using namespace format;
-;
+using namespace reorder;
 using namespace utils;
 using namespace io;
 using namespace context;

@@ -60,11 +60,12 @@ The matrix we just read needs to be multiplied by a vector, and you will generat
 value_type * vec_ptr = new value_type[num_columns];
 // Fill the vector with random values
 filL_randomly(vec_ptr, num_columns);
-// Create a SparseBase Array as a wrapper around the raw array `vec_ptr`.
+// Create a SparseBase array as a wrapper around the raw array `ptr`.
 Array<value_type>* vec = new Array<value_type>(num_columns, vec_ptr, kOwned);
 // We can access metadata of the Array
 std::cout << "Vector has "
           << vec->get_dimensions()[0] << " elements " <<  std::endl;
+
 ```
 Placing raw data in a SparseBase format object allows you to leverage the library's conversion, preprocessing, feature extraction, and I/O capabilities with this data.
 
@@ -82,13 +83,13 @@ The last parameter in the `Array` constructor, `kOwned` tells the object that it
 
 Moving data between GPU the CPU is easy with SparseBase. Simply convert the formats you have into their `CUDA` counterparts.
 ```c++
-  // Context representing the GPU with ID 0 in the system
-  context::CUDAContext gpu0{0};
+// Context representing the GPU with ID 0 in the system
+context::CUDAContext gpu0{0};
 
-  // The conversion target is passed as a template parameter,
-  // and the context to convert it to is the parameter.
-  cuda::CUDACSR<id_type, nnz_type, value_type>* cuda_csr = csr->Convert<cuda::CUDACSR>(&gpu0);
-  cuda::CUDAArray<value_type>* cuda_array = vec->Convert<cuda::CUDAArray>(&gpu0);
+// The conversion target is passed as a template parameter,
+// and the context to convert it to is the parameter.
+CUDACSR<id_type, nnz_type, value_type>* cuda_csr = csr->Convert<CUDACSR>(&gpu0);
+CUDAArray<value_type>* cuda_array = vec->Convert<CUDAArray>(&gpu0);
 ```
 
 These `CUDA` format objects contain pointers at raw data on the GPU. Users can get and use this data in their own workflows. Note that the metadata of `CUDA` formats (order of the format, its dimensions, its number of non-zeros, and its context information) reside on the CPU. 
@@ -115,8 +116,8 @@ auto start = std::chrono::system_clock::now();
 spmv_1w1r<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(matrix_row_ptr, matrix_col, matrix_vals, vector_vals, result_ptr, num_rows);
 cudaDeviceSynchronize();
 if (!cudaPeekAtLastError() == cudaSuccess){
-    std::cout << "Kernel failed: " << cudaGetErrorString(cudaPeekAtLastError()) << std::endl;
-    return 1;
+  std::cout << "Kernel failed: " << cudaGetErrorString(cudaPeekAtLastError()) << std::endl;
+  return 1;
 }
 auto end = std::chrono::system_clock::now();
 std::chrono::duration<double> total_time = end-start;
@@ -134,7 +135,7 @@ context::CPUContext cpu;
 // Gray reordering
 GrayReorderParams gray_params(BitMapSize::BitSize32, 32, 32);
 // Create an inverse permutation array  of the matrix `csr`
-id_type * gray_reorder = ReorderBase::Reorder<GrayReorder>(gray_params, csr, {&cpu}, true);
+id_type * gray_reorder = bases::ReorderBase::Reorder<GrayReorder>(gray_params, csr, {&cpu}, true);
 ```
 We specify the reordering algorithm used by the `Reorder` function by passing its class as a template argument. 
 
@@ -149,14 +150,14 @@ Next, we must permute `csr` and `vec` according to this new order.
 ```c++
 // `Permute2D` returns a CSR object but stores it in a polymorphic
 // pointer at the superclass for two-dimensional formats, FormatOrderTwo.
-FormatOrderTwo<id_type, nnz_type, value_type>* gray_reordered_csr = ReorderBase::Permute2D(gray_reorder, csr, {&cpu}, true);
+FormatOrderTwo<id_type, nnz_type, value_type>* gray_reordered_csr = bases::ReorderBase::Permute2D(gray_reorder, csr, {&cpu}, true);
 // We move the reordered CSR to the GPU.
-cuda::CUDACSR<id_type, nnz_type, value_type>* cuda_gray_reordered_csr = gray_reordered_csr ->Convert<cuda::CUDACSR>(&gpu0);
+CUDACSR<id_type, nnz_type, value_type>* cuda_gray_reordered_csr = gray_reordered_csr ->Convert<CUDACSR>(&gpu0);
 // Rather than get the generic pointer to `FormatOrderOne`, we can cast the output
 // to the correct type in the same call to `Permute1D`
-Array<value_type>* gray_reordered_vec = ReorderBase::Permute1D<Array>(gray_reorder, vec, {&cpu}, true);
+Array<value_type>* gray_reordered_vec = bases::ReorderBase::Permute1D<Array>(gray_reorder, vec, {&cpu}, true);
 // We move this array to the GPU.
-cuda::CUDAArray<value_type>* cuda_gray_reordered_vec = gray_reordered_vec->Convert<cuda::CUDAArray>(&gpu0);
+CUDAArray<value_type>* cuda_gray_reordered_vec = gray_reordered_vec->Convert<CUDAArray>(&gpu0);
 ```
 
 The `Permute2D` call returns a `CSR` object, but it returns it as a polymorphic pointer to the superclass `FormatOrderTwo` which is the parent of `CSR` and other order-2 formats. We can directly copy the returned `CSR` to the GPU through this polymorphic pointer.
@@ -185,8 +186,8 @@ std::cout << "SpMV with Gray reordering takes: " << total_time.count() << " seco
 Now, let's try Reverse Cuthill McKee (RCM) reordering but this time, take advantage of the function matching capability in SparseBase.
 
 ```c++
-// We can pass the CUDACSR and the function will automatically convert it to CSR (i.e. move it to CPU) for reordering
-id_type* rcm_reorder = ReorderBase::Reorder<RCMReorder>({}, cuda_csr, {&cpu}, true);
+// We can pass the CUDACSR and the function will automatically convert it to CSR for reordering
+id_type* rcm_reorder = bases::ReorderBase::Reorder<RCMReorder>({}, cuda_csr, {&cpu}, true);
 ```
 Every preprocessing algorithm in the library (reordering, partitioning, feature extraction, etc.) can be implemented for many format types. In this case, `RCMReorder`is only implemented for the `CSR` type. However, when we set the `convert_input` parameter (last parameter) to `true` in the call, this will allow function matching to take place. 
 
@@ -205,11 +206,11 @@ The same function matching is available in every preprocess function in the libr
 std::vector<context::Context*> contexts = {&cpu, &gpu0};
 // We can apply the permutation to the CUDACSR directly, as well, but the returned
 // object will be a CSR since permutation will run on a CSR rathar than a CUDACSR
-auto rcm_reordered_csr = ReorderBase::Permute2D<CSR>(rcm_reorder, cuda_csr, contexts, true);
-auto cuda_rcm_reordered_csr = rcm_reordered_csr->Convert<cuda::CUDACSR>(&gpu0);
+auto rcm_reordered_csr = bases::ReorderBase::Permute2D<CSR>(rcm_reorder, cuda_csr, contexts, true);
+auto cuda_rcm_reordered_csr = rcm_reordered_csr->Convert<CUDACSR>(&gpu0);
 
-auto rcm_reordered_vec = ReorderBase::Permute1D<Array>(rcm_reorder, cuda_array, contexts, true);
-auto cuda_rcm_reordered_vec = rcm_reordered_vec->Convert<cuda::CUDAArray>(&gpu0);
+auto rcm_reordered_vec = bases::ReorderBase::Permute1D<Array>(rcm_reorder, cuda_array, contexts, true);
+auto cuda_rcm_reordered_vec = rcm_reordered_vec->Convert<CUDAArray>(&gpu0);
 ```
 
 Now, run the SpMV kernel with this new graph.
@@ -238,15 +239,15 @@ The last result calculated is the result of multiplying the input matrix and vec
 To do so, we will reverse the `rcm_reorder` permutation vector and use it to permute the result.
 ```c++
 // `reverse_reorder` can be used to undo the permutation done using `rcm_reorder`
-id_type * reverse_rcm_reorder = ReorderBase::InversePermutation(rcm_reorder, num_rows);
+id_type * reverse_rcm_reorder = bases::ReorderBase::InversePermutation(rcm_reorder, num_rows);
 ```
 We place the result array located on the GPU in a `CUDAArray` to use it in the `Permute1D` call.
 ```c++
 // We place the raw array in a CUDAArray to use Permute1D
-cuda::CUDAArray<value_type> cuda_rcm_reordered_result(num_rows, result_ptr, gpu0, kOwned);
-// Since `Permute1D` is only implemented for `Array`, function matching takes place
-FormatOrderOne<value_type>* foo_result = ReorderBase::Permute1D(reverse_rcm_reorder, &cuda_rcm_reordered_result, contexts, true);
-// Safely cast the pointer at the parent `FormatOrderOne` to a pointer at `Array`
+CUDAArray<value_type> cuda_rcm_reordered_result(num_rows, result_ptr, gpu0, kOwned);
+// Since `Permute1D` is only implemented for `Array`, the output will be an `Array`
+FormatOrderOne<value_type>* foo_result = bases::ReorderBase::Permute1D(reverse_rcm_reorder, &cuda_rcm_reordered_result, contexts, true);
+// Safely cast the pointer at the parent `FormatOrderOne` to `Array`
 Array<value_type>* arr_result = foo_result->As<Array>();
 ```
 Since `Permute1D` is only implemented on `Array` format types, the call to `Permute1D` above will convert the `CUDACSR` input to an `Array`, permute it, and return an `Array` with the result.
@@ -266,11 +267,12 @@ nvcc -std=c++17 tutorial_004.cu -lsparsebase -lgomp -std=c++17 -o spmv.out
 You should see output similar to the following, but with different timings:
 
 ```
+[11/24/22 14:10:12] [WARNING] [sparsebase::format::COO<unsigned int, unsigned int, float>] COO arrays must be sorted. Sorting...
 Matrix has 29957 rows, 29957 columns, and 1995041 non-zeros
 Vector has 29957 elements 
-SpMV without reordering takes: 0.000158657 seconds
-CSR column array must be sorted. Sorting...
-SpMV with Gray reordering takes: 0.000170343 seconds
-CSR column array must be sorted. Sorting...
-SpMV with RCM reordering takes: 0.000148291 seconds
+SpMV without reordering takes: 0.00015609 seconds
+[11/24/22 14:10:17] [WARNING] [sparsebase::format::CSR<unsigned int, unsigned int, float>] CSR column array must be sorted. Sorting...
+SpMV with Gray reordering takes: 0.000170223 seconds
+[11/24/22 14:10:17] [WARNING] [sparsebase::format::CSR<unsigned int, unsigned int, float>] CSR column array must be sorted. Sorting...
+SpMV with RCM reordering takes: 0.000148531 seconds
 ```
