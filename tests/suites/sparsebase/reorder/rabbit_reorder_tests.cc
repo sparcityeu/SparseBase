@@ -18,8 +18,8 @@
 #include "sparsebase/format/coo.h"
 
 #include "sparsebase/bases/reorder_base.h"
-#include "sparsebase/reorder/reorder.h"
-#include "sparsebase/reorder/gray_reorder.h"
+#include "sparsebase/reorder/reorderer.h"
+#include "sparsebase/reorder/rabbit_reorder.h"
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/exception.h"
 

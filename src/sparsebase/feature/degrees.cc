@@ -16,13 +16,13 @@
 namespace sparsebase::feature {
 
 template <typename IDType, typename NNZType, typename ValueType>
-Degrees<IDType, NNZType, ValueType>::Degrees(DegreesParams) {
+Degrees<IDType, NNZType, ValueType>::Degrees(ParamsType) {
   Degrees();
 }
 template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees() {
   Register();
-  this->params_ = std::shared_ptr<DegreesParams>(new DegreesParams());
+  this->params_ = std::shared_ptr<ParamsType>(new ParamsType());
   this->pmap_.insert({get_id_static(), this->params_});
 }
 
@@ -36,7 +36,7 @@ Degrees<IDType, NNZType, ValueType>::Degrees(
 
 template <typename IDType, typename NNZType, typename ValueType>
 Degrees<IDType, NNZType, ValueType>::Degrees(
-    const std::shared_ptr<DegreesParams> r) {
+    const std::shared_ptr<ParamsType> r) {
   Register();
   this->params_ = r;
   this->pmap_[get_id_static()] = r;
