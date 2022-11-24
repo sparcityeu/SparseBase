@@ -18,7 +18,6 @@
 #include "sparsebase/format/coo.h"
 
 #include "sparsebase/bases/reorder_base.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/reorder/reorder.h"
 #include "sparsebase/reorder/amd_reorder.h"
 #include "sparsebase/converter/converter.h"
