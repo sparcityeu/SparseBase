@@ -532,6 +532,43 @@ TEST(Format, IsAbsolute) {
 
   delete csr;
 }
+
+template <typename T>
+class StubFormatOrderOne : utils::IdentifiableImplementation<StubFormatOrderOne<T>, format::FormatOrderOne<T>>{
+
+ public:
+  StubFormatOrderOne () {
+    this->context_ = std::unique_ptr<context::Context>(new context::CPUContext);
+  }
+  format::Format *Clone() const { return nullptr; }
+};
+template <typename T>
+class dummy{};
+
+TEST(Is, FormatOrderOne){
+  
+  sparsebase::format::Array<int> array0(4, coo_vals,
+                                       sparsebase::format::kNotOwned);
+  ASSERT_TRUE(array0.Is<format::Array>());
+  ASSERT_FALSE(array0.Is<StubFormatOrderOne>());
+  ASSERT_FALSE(array0.Is<dummy>());
+  EXPECT_FALSE(array0.Is<format::FormatOrderOne>());
+}
+
+TEST(Is, FormatOrderTwo){
+  
+  sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
+                                             csr_vals);
+  sparsebase::format::COO<int, int, int> coo(4, 4, 4, coo_row, coo_col,
+                                             coo_vals);
+  EXPECT_THROW((csr.AsAbsolute<format::COO<int, int, int>>()), utils::TypeException);
+  EXPECT_ANY_THROW((csr.AsAbsolute<format::COO<int, int, int>>()));
+  EXPECT_EQ(csr.Is<format::CSR>(), true);
+  EXPECT_TRUE(csr.Is<format::CSR>());
+  EXPECT_FALSE(csr.Is<format::COO>());
+  EXPECT_FALSE(csr.Is<format::FormatOrderTwo>());
+}
+
 class TestFormat : utils::IdentifiableImplementation<TestFormat, format::FormatImplementation> {
  public:
   TestFormat() {
