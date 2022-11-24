@@ -14,7 +14,7 @@ typedef float value_type;
 
 using namespace sparsebase;
 using namespace io;
-using namespace preprocess;
+;
 using namespace format;
 
 #define THREADS_PER_BLOCK 512

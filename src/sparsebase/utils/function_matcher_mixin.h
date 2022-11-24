@@ -2,8 +2,8 @@
 #define SPARSEBASE_PROJECT_FUNCTIONMATCHERMIXIN_H
 
 #include "sparsebase/config.h"
-#include "parameterizable.h"
-#include "utils.h"
+#include "sparsebase/utils/parameterizable.h"
+#include "sparsebase/utils/utils.h"
 #include "sparsebase/converter/converter.h"
 #include <vector>
 

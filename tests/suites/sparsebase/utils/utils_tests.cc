@@ -14,21 +14,22 @@
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/csc.h"
-#include "sparsebase/format/coo.h"
 
-#include "sparsebase/bases/reorder_base.h"
 #include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/reorder/reorder.h"
-#include "sparsebase/reorder/gray_reorder.h"
-#include "sparsebase/converter/converter.h"
-#include "sparsebase/utils/exception.h"
-
-const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
-
+#include "sparsebase/utils/utils.h"
 using namespace sparsebase;
-;
-using namespace sparsebase::reorder;
-using namespace sparsebase::bases;
-#include "../functionality_common.inc"
-
+TEST(TypeIndexHash, Basic) {
+utils::TypeIndexVectorHash hasher;
+// Empty vector
+std::vector<std::type_index> vec;
+EXPECT_EQ(hasher(vec), 0);
+// Vector with values
+vec.push_back(typeid(int));
+vec.push_back(typeid(double));
+vec.push_back(typeid(float));
+size_t hash = 0;
+for (auto tid : vec) {
+hash += tid.hash_code();
+}
+EXPECT_EQ(hash, hasher(vec));
+}

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "sparsebase/config.h"
-#include "sparsebase/context/context.h"
+#include "sparsebase/context/cpu_context.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/utils.h"
 #include "sparsebase/converter/converter_order_two.h"

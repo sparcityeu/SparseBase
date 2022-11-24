@@ -21,8 +21,4 @@ struct Context : public utils::Identifiable{
 };
 
 }  // namespace sparsebase
-#include "cpu_context.h"
-#ifdef USE_CUDA
-#include "cuda_context_cuda.cuh"
-#endif
 #endif  // SPARSEBASE_SPARSEBASE_CONTEXT_CONTEXT_H_

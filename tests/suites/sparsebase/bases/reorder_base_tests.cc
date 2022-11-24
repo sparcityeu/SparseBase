@@ -15,22 +15,23 @@
 #include "sparsebase/format/coo.h"
 #include "sparsebase/format/csc.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
-#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/reorder/degree_reorder.h"
 #include "sparsebase/reorder/generic_reorder.h"
 #include "sparsebase/reorder/gray_reorder.h"
 #include "sparsebase/reorder/reorder_heatmap.h"
 #include "sparsebase/reorder/reorderer.h"
 #include "sparsebase/utils/exception.h"
+#ifdef USE_CUDA
+#include "sparsebase/format/cuda_csr_cuda.cuh"
+#include "sparsebase/format/cuda_array_cuda.cuh"
+#endif
 
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
 
 
 using namespace sparsebase;
-using namespace sparsebase::preprocess;
+;
 using namespace sparsebase::reorder;
 using namespace sparsebase::bases;
 #include "../functionality_common.inc"

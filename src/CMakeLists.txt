@@ -40,7 +40,6 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/converter/converter_order_two.cc
           sparsebase/converter/converter_order_one.cc
           sparsebase/converter/converter_store.cc
-          sparsebase/preprocess/preprocess.cc
           sparsebase/reorder/reorderer.cc
           sparsebase/reorder/rcm_reorder.cc
           sparsebase/reorder/degree_reorder.cc
@@ -63,6 +62,7 @@ if(NOT ${_HEADER_ONLY})
           sparsebase/feature/degrees.cc
           sparsebase/feature/degree_distribution.cc
           sparsebase/feature/degrees_degree_distribution.cc
+          sparsebase/feature/jaccard_weights.cc
           sparsebase/experiment/concrete_experiment.cc
           sparsebase/utils/utils.cc
           sparsebase/utils/logger.cc
@@ -73,7 +73,7 @@ if(NOT ${_HEADER_ONLY})
             sparsebase/format/cuda_csr_cuda.cu
             sparsebase/format/cuda_array_cuda.cu
             sparsebase/converter/converter_cuda.cu
-            sparsebase/preprocess/cuda/preprocess.cu
+            sparsebase/feature/jaccard_weights_cuda.cu
             sparsebase/context/cuda_context_cuda.cu
             sparsebase/converter/converter_order_two_cuda.cu
             sparsebase/converter/converter_order_one_cuda.cu
@@ -258,9 +258,7 @@ set(FEATURE_FILES
         sparsebase/feature/degrees.h
         sparsebase/feature/degree_distribution.h
         sparsebase/feature/degrees_degree_distribution.h
-        )
-set(PREPROCESS_FILES
-        sparsebase/preprocess/preprocess.h
+        sparsebase/feature/jaccard_weights.h
         )
 set(REORDERING_FILES
         sparsebase/reorder/reorderer.h
@@ -319,7 +317,6 @@ set(UTILS_FILES
         sparsebase/utils/class_matcher_mixin.h
         )
 set(EXPERIMENT_FILES
-        sparsebase/experiment/experiment.h
         sparsebase/experiment/concrete_experiment.h
         sparsebase/experiment/experiment_type.h
         sparsebase/experiment/experiment_helper.h
@@ -343,9 +340,7 @@ if(${_HEADER_ONLY})
           sparsebase/feature/degrees.cc
           sparsebase/feature/degree_distribution.cc
           sparsebase/feature/degrees_degree_distribution.cc
-          )
-  set(PREPROCESS_FILES ${PREPROCESS_FILES}
-          sparsebase/preprocess/preprocess.cc
+          sparsebase/feature/jaccard_weights.cc
           )
   set(REORDERING_FILES ${REORDERING_FILES}
           sparsebase/reorder/reorderer.cc
@@ -407,8 +402,6 @@ install(FILES ${FORMAT_FILES}
         DESTINATION include/sparsebase/format/)
 install(FILES ${FEATURE_FILES}
         DESTINATION include/sparsebase/feature/)
-install(FILES ${PREPROCESS_FILES}
-        DESTINATION include/sparsebase/preprocess/)
 install(FILES  ${REORDERING_FILES}
         DESTINATION include/sparsebase/reorder/)
 install(FILES  ${PERMUTER_FILES}
@@ -443,8 +436,8 @@ if(${USE_CUDA})
           sparsebase/utils/utils_cuda.cuh)
   set(CUDA_CONVERTER_FILES
           sparsebase/converter/converter_cuda.cuh)
-  set(CUDA_PREPROCESS_FILES
-          sparsebase/preprocess/cuda/preprocess.cuh)
+  set(CUDA_FEATURE_FILES
+          sparsebase/feature/jaccard_weights_cuda.cuh)
   set(CUDA_CONTEXT_FILES
           sparsebase/context/cuda_context_cuda.cuh)
   if(${_HEADER_ONLY})
@@ -456,8 +449,8 @@ if(${USE_CUDA})
             sparsebase/converter/converter_order_two_cuda.cu
             sparsebase/converter/converter_order_one_cuda.cu
             )
-    set(CUDA_PREPROCESS_FILES ${CUDA_PREPROCESS_FILES}
-            sparsebase/preprocess/cuda/preprocess.cu)
+    set(CUDA_FEATURE_FILES ${CUDA_FEATURE_FILES}
+            sparsebase/feature/jaccard_weights_cuda.cu)
     set(CUDA_CONTEXT_FILES ${CUDA_CONTEXT_FILES}
             sparsebase/context/cuda_context_cuda.cu)
   endif()
@@ -467,8 +460,9 @@ if(${USE_CUDA})
           DESTINATION include/sparsebase/utils/)
   install(FILES ${CUDA_CONVERTER_FILES}
           DESTINATION include/sparsebase/converter/)
-  install(FILES ${CUDA_PREPROCESS_FILES}
-          DESTINATION include/sparsebase/preprocess/cuda/)
+  install(FILES ${CUDA_FEATURE_FILES}
+          DESTINATION include/sparsebase/feature/)
+
   install(FILES ${CUDA_CONTEXT_FILES}
           DESTINATION include/sparsebase/context/)
 endif()

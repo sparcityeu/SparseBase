@@ -6,7 +6,7 @@
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
-#include "sparsebase/context/context.h"
+#include "sparsebase/context/cpu_context.h"
 #include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/utils.h"

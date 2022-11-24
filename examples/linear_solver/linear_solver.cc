@@ -3,7 +3,6 @@
 #include <sparsebase/format/csc.h>
 #include <sparsebase/io/mtx_reader.h>
 #include <sparsebase/bases/graph_feature_base.h>
-#include <sparsebase/preprocess/preprocess.h>
 
 #include <string>
 
@@ -13,7 +12,7 @@
 
 using namespace sparsebase;
 using namespace format;
-using namespace preprocess;
+;
 
 typedef int ull;
 typedef int val;
