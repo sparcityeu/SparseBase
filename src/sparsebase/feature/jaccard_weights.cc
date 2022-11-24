@@ -2,7 +2,6 @@
 #include "sparsebase/feature/jaccard_weights.h"
 #include "sparsebase/utils/parameterizable.h"
 #ifdef USE_CUDA
-#include "sparsebase/preprocess/cuda/preprocess.cuh"
 #include "sparsebase/format/cuda_csr_cuda.cuh"
 #endif
 
