@@ -31,7 +31,7 @@ class Feature : FeaturePreprocessType<FeatureType> {
 
 ### 2. Create a struct containing the parameters you need, and initialize them in the constructor
 
-Inside the class, create a new struct inheriting from `PreprocessParams`. Its members will be whichever parameters that your feature will require. We will call this struct `FeatureParams`. We add `alpha` and `beta` to it. If your feature do not require additional parameters you can skip this step.
+Outside the class, create a new struct inheriting from `PreprocessParams`. Its members will be whichever parameters that your feature will require. We will call this struct `FeatureParams`. We add `alpha` and `beta` to it. If your feature do not require additional parameters you can skip this step.
 Furthermore, create an instance of the struct you just defined and also create a `std::unordered_map<std::type_index, PreprocessParams>` that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the `feature` namespace.
 
 ```cpp
