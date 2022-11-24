@@ -34,7 +34,7 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
   this->pmap_.insert({get_id_static(), this->params_});
   std::shared_ptr<utils::Parameters> deg_dist_param(
       new DegreeDistributionParams);
-  std::shared_ptr<utils::Parameters> degs_param(new DegreesParams);
+  std::shared_ptr<utils::Parameters> degs_param(new utils::Parameters);
   this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
       FeatureType>::get_id_static()] =
       deg_dist_param;

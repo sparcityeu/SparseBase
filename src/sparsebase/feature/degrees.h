@@ -8,19 +8,17 @@
 #ifndef SPARSEBASE_PROJECT_DEGREES_H
 #define SPARSEBASE_PROJECT_DEGREES_H
 namespace sparsebase::feature {
-//! An empty struct used for the parameters of Degrees
-struct DegreesParams : utils::Parameters {};
 //! Count the degrees of every vertex in the graph representation of a format
 //! object
 template <typename IDType, typename NNZType, typename ValueType>
 class Degrees : public feature::FeaturePreprocessType<IDType *> {
  public:
   //! An empty struct used for the parameters of Degrees
-  typedef DegreesParams ParamsType;
+  typedef utils::Parameters ParamsType;
   Degrees();
-  Degrees(DegreesParams);
+  Degrees(ParamsType);
   Degrees(const Degrees<IDType, NNZType, ValueType> &d);
-  Degrees(std::shared_ptr<DegreesParams>);
+  Degrees(std::shared_ptr<ParamsType>);
   std::unordered_map<std::type_index, std::any> Extract(
       format::Format *format, std::vector<context::Context *>,
       bool convert_input) override;
