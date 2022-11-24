@@ -6,7 +6,6 @@
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/io/mtx_reader.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/feature/degrees.h"
 #include "sparsebase/feature/degree_distribution.h"
 

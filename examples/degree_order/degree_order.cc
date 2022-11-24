@@ -6,7 +6,6 @@
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/reorder/degree_reorder.h"
 #include "sparsebase/bases/reorder_base.h"
 #include "sparsebase/permute/permuter.h"

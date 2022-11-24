@@ -457,7 +457,7 @@
     },
     {
       "template": "class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>",
-      "filename": "preprocess.inc",
+      "filename": "jaccard_weights.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -534,7 +534,7 @@
     },
     {
       "template": "format::CUDAArray<$float_type>* RunJaccardKernel<$id_type, $nnz_type, $value_type, $float_type>(format::CUDACSR<$id_type, $nnz_type, $value_type>*)",
-      "filename": "preprocess.inc",
+      "filename": "jaccard_weights_cuda.inc",
       "ifdef": "USE_CUDA",
       "folder": "cuda",
       "exceptions": null

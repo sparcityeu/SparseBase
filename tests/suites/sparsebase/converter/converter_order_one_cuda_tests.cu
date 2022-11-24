@@ -1,6 +1,7 @@
 #include <iostream>
 #include "gtest/gtest.h"
 #include "sparsebase/sparsebase.h"
+#include "sparsebase/format/cuda_array_cuda.cuh"
 
 using namespace sparsebase;
 using namespace converter;

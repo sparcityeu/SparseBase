@@ -4,20 +4,20 @@
 #include <iostream>
 #include <random>
 
-#include "sparsebase/experiment/experiment.h"
+#include "sparsebase/experiment/concrete_experiment.h"
+#include "sparsebase/experiment/experiment_helper.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/mtx_reader.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/reorder/reorderer.h"
 
 using namespace std;
 using namespace sparsebase;
 using namespace format;
-using namespace preprocess;
+;
 using namespace utils;
 using namespace io;
 using namespace context;

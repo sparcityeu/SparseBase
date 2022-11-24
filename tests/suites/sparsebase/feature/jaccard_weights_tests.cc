@@ -1,27 +1,35 @@
+//
+// Created by Taha Atahan Akyildiz on 17.04.2022.
+//
+#include <iostream>
 
 #include "gtest/gtest.h"
-#include "sparsebase/config.h"
-#include "sparsebase/context/context.h"
-#include "sparsebase/context/cuda_context_cuda.cuh"
-#include "sparsebase/converter/converter.h"
+#include "sparsebase/feature/feature_extractor.h"
+#include "sparsebase/feature/jaccard_weights.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/format.h"
 #include "sparsebase/converter/converter_order_one.h"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
-#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/utils/extractable.h"
+
+
+const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
+
 using namespace sparsebase;
-const int n = 3;
-const int nnz = 4;
-int row_ptr[n + 1] = {0, 2, 3, 4};
-int cols[nnz] = {1, 2, 0, 0};
-int rows[nnz] = {0, 0, 1, 2};
-float distribution[n] = {2.0 / nnz, 1.0 / nnz, 1.0 / nnz};
-int degrees[n] = {2, 1, 1};
-format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, nullptr,
-                                      format::kNotOwned);
-format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, nullptr,
-                                      format::kNotOwned);
-sparsebase::context::CPUContext cpu_context;
+using namespace sparsebase::feature;
+#include "../functionality_common.inc"
+
+
+#ifndef USE_CUDA
+TEST(JaccardTest, NoCuda) {
+JaccardWeights<int, int, int, float> jac;
+EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, true),
+utils::FunctionNotFoundException);
+EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, false),
+utils::FunctionNotFoundException);
+}
+#else
 TEST(JaccardTest, Jaccard) {
-  sparsebase::preprocess::JaccardWeights<int, int, int, float> jac;
+  JaccardWeights<int, int, int, float> jac;
   context::CUDAContext gpu_context(0);
   auto jac_array = jac.GetJaccardWeights(&global_csr, {&gpu_context}, true);
   EXPECT_EQ(jac_array->get_id(),
@@ -36,3 +44,4 @@ TEST(JaccardTest, Jaccard) {
   EXPECT_THROW(jac.GetJaccardWeights(&global_csr, {&cpu_context}, false),
                utils::FunctionNotFoundException);
 }
+#endif

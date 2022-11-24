@@ -1,5 +1,5 @@
 #include "converter_cuda.cuh"
-#include "sparsebase/context/context.h"
+#include "sparsebase/context/cpu_context.h"
 #include "sparsebase/context/cuda_context_cuda.cuh"
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/format/cuda_csr_cuda.cuh"

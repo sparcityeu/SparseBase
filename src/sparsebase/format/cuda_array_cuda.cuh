@@ -1,5 +1,6 @@
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/utils/utils_cuda.cuh"
+#include "sparsebase/context/cuda_context_cuda.cuh"
 
 #ifndef SPARSEBASE_PROJECT_CUDA_ARRAY_CUDA_H
 #define SPARSEBASE_PROJECT_CUDA_ARRAY_CUDA_H

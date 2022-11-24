@@ -1,3 +1,6 @@
+#include "sparsebase/format/array.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/coo.h"
 const int n = 3;
 const int nnz = 4;
 int row_ptr[n + 1] = {0, 2, 3, 4};

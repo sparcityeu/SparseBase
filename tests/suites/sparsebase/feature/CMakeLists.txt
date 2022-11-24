@@ -42,3 +42,13 @@ target_link_libraries(sparsebase_feature_degrees_degree_distribution_tests.test 
 target_link_libraries(sparsebase_feature_degrees_degree_distribution_tests.test gtest gtest_main)
 
 add_test(NAME sparsebase_feature_degrees_degree_distribution_tests.test COMMAND sparsebase_feature_degrees_degree_distribution_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(jaccard_weights_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_jaccard_weights_tests.test jaccard_weights_tests.cc)
+target_link_libraries(sparsebase_feature_jaccard_weights_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_jaccard_weights_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_jaccard_weights_tests.test COMMAND sparsebase_feature_jaccard_weights_tests.test)
+

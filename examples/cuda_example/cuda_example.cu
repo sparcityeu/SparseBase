@@ -3,11 +3,11 @@
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/converter/converter_order_one.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/format/cuda_csr_cuda.cuh"
-#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/feature/jaccard_weights.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -63,7 +63,7 @@ int main() {
       new converter::ConverterOrderTwo<int, int, int>();
   auto array_converter = new converter::ConverterOrderOne<float>();
 
-  preprocess::JaccardWeights<int, int, int, float> jac;
+  feature::JaccardWeights<int, int, int, float> jac;
   auto array = jac.GetJaccardWeights({csr}, {&gpu_context, &cpu_context}, true);
 
   if (array->get_id() == context::CPUContext::get_id_static()) {

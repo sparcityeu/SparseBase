@@ -29,7 +29,7 @@
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
 
 using namespace sparsebase;
-using namespace sparsebase::preprocess;
+;
 using namespace sparsebase::reorder;
 using namespace sparsebase::bases;
 using namespace sparsebase::feature;

@@ -19,7 +19,6 @@
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/permute/permuter.h"
-#include "sparsebase/preprocess/preprocess.h"
 #include "sparsebase/reorder/degree_reorder.h"
 #include "sparsebase/reorder/reorderer.h"
 #include "sparsebase/utils/exception.h"
@@ -27,7 +26,7 @@ const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
 
 
 using namespace sparsebase;
-using namespace sparsebase::preprocess;
+;
 using namespace sparsebase::reorder;
 using namespace sparsebase::bases;
 using namespace sparsebase::permute;

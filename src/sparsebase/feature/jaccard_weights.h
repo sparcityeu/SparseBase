@@ -1,48 +1,19 @@
-/*******************************************************
- * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
- *Sener All rights reserved.
- *
- * This file is distributed under MIT license.
- * The complete license agreement can be obtained at:
- * https://sparcityeu.github.io/sparsebase/pages/license.html
- ********************************************************/
-#ifndef SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_
-#define SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_
-#include <any>
-#include <cmath>
-#include <iostream>
-#include <memory>
-#include <typeindex>
-#include <typeinfo>
-#include <unordered_map>
 #include <vector>
 
 #include "sparsebase/config.h"
-#include "sparsebase/context/context.h"
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
-
-#include "sparsebase/object/object.h"
-#include "sparsebase/converter/converter.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
-#include "sparsebase/utils/extractable.h"
-#include "sparsebase/feature/feature_preprocess_type.h"
 
-#ifdef USE_METIS
-namespace sparsebase::metis {
-#include <metis.h>
-}
-#endif
-
-namespace sparsebase::preprocess {
-
+#ifndef SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
+#define SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
+namespace sparsebase::feature {
 //! An empty struct used for the parameters of JaccardWeights
 struct JaccardWeightsParams : utils::Parameters {};
 //! Calculate the Jaccard Weights of the edges in a graph representation of a
 //! format object
 template <typename IDType, typename NNZType, typename ValueType,
-          typename FeatureType>
+    typename FeatureType>
 class JaccardWeights : public utils::FunctionMatcherMixin<format::Format *> {
  public:
   //! An empty struct used for the parameters of JaccardWeights
@@ -79,18 +50,17 @@ class JaccardWeights : public utils::FunctionMatcherMixin<format::Format *> {
   ~JaccardWeights();
 };
 
-
-
-}  // namespace sparsebase::preprocess
+}
 #ifdef _HEADER_ONLY
-#include "sparsebase/preprocess/preprocess.cc"
+#include "sparsebase/feature/jaccard_weights.cc"
 #endif
 
 #ifdef USE_CUDA
-#include "cuda/preprocess.cuh"
+#include "sparsebase/feature/jaccard_weights_cuda.cuh"
 #ifdef _HEADER_ONLY
-#include "cuda/preprocess.cu"
+#include "sparsebase/feature/jaccard_weights_cuda.cu"
 #endif
 #endif
 
-#endif  // SPARSEBASE_SPARSEBASE_PREPROCESS_PREPROCESS_H_
+
+#endif  // SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
