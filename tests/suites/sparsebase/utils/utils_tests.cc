@@ -1,17 +1,9 @@
-#include <iostream>
 #include <memory>
-#include <set>
-#include <tuple>
 #include <typeindex>
-#include <typeinfo>
-#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "sparsebase/config.h"
-#include "sparsebase/context/context.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/utils.h"

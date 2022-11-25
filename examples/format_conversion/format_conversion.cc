@@ -2,9 +2,6 @@
 
 #include "sparsebase/format/coo.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/format_order_two.h"
 
 using namespace std;
 using namespace sparsebase;

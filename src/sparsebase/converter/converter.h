@@ -24,7 +24,7 @@
 #include "sparsebase/config.h"
 #include "sparsebase/utils/utils.h"
 
-// Forward declerations for the `Convert` functions in
+// Forward decleration for the `Convert` functions in
 // sparsebase/format/format.h
 namespace sparsebase {
 namespace format {

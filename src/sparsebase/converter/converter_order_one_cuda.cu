@@ -20,7 +20,8 @@ format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
                cuda_array->get_num_nnz() * sizeof(ValueType),
                cudaMemcpyDeviceToHost);
   }
-  return new format::Array<ValueType>(cuda_array->get_num_nnz(), vals);
+  return new format::Array<ValueType>(cuda_array->get_num_nnz(), vals,
+                                      format::kOwned);
 }
 template <typename ValueType>
 format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
@@ -37,7 +38,7 @@ format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
                cudaMemcpyHostToDevice);
   }
   return new format::CUDAArray<ValueType>(array->get_num_nnz(), vals,
-                                          *gpu_context);
+                                          *gpu_context, format::kOwned);
 }
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/converter_order_one_cuda.inc"

@@ -28,7 +28,7 @@ std::unordered_map<std::string, format::Format *> LoadFormat(
   FormatType<IDType, NNZType, ValueType> *format =
       coo->template Convert<FormatType>();
   std::unordered_map<std::string, format::Format *> r;
-  r.emplace("format", format);
+  r["format"] = format;
   return r;
 }
 
@@ -41,7 +41,7 @@ std::unordered_map<std::string, format::Format *> LoadCSR(
   auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
   format::CSR<IDType, NNZType, ValueType> *csr = reader.ReadCSR();
   std::unordered_map<std::string, format::Format *> r;
-  r.emplace("format", csr);
+  r["format"] = csr;
   return r;
 }
 
@@ -54,7 +54,7 @@ std::unordered_map<std::string, format::Format *> LoadCOO(
   auto reader = ReaderType<IDType, NNZType, ValueType>(file_names[0]);
   format::COO<IDType, NNZType, ValueType> *csr = reader.ReadCOO();
   std::unordered_map<std::string, format::Format *> r;
-  r.emplace("format", csr);
+  r["format"] = csr;
   return r;
 }
 
@@ -69,7 +69,7 @@ std::unordered_map<std::string, format::Format *> LoadCSC(
   format::CSC<IDType, NNZType, ValueType> *csc =
       coo->template Convert<format::CSC>();
   std::unordered_map<std::string, format::Format *> r;
-  r.emplace("format", csc);
+  r["format"] = csc;
   return r;
 }
 
@@ -91,7 +91,7 @@ void ReorderCSR(std::unordered_map<std::string, format::Format *> &data,
       data["format"]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>(),
       {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
-  data.emplace("processed_format", A_csc);
+  data["processed_format"] = A_csc;
 }
 
 //! Example preprocessing function.
@@ -120,7 +120,7 @@ void Reorder(std::unordered_map<std::string, format::Format *> &data,
       data["format"]->AsAbsolute<FormatType<IDType, NNZType, ValueType>>(),
       {&context}, true);
   auto *A_csc = A_reordered->template Convert<format::CSR>();
-  data.emplace("processed_format", A_csc);
+  data["processed_format"] = A_csc;
 }
 }  // namespace sparsebase::experiment
 

@@ -9,7 +9,9 @@
 #include <sparsebase/context/context.h>
 
 #include <memory>
+#include <unordered_map>
 
+#include "sparsebase/format/format.h"
 #include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_EXTRACTABLE_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_EXTRACTABLE_H_

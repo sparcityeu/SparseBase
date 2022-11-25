@@ -1,7 +1,6 @@
 #include "sparsebase/reorder/metis_reorder.h"
 
 #include "sparsebase/reorder/reorderer.h"
-#include "sparsebase/utils/logger.h"
 
 namespace sparsebase::reorder {
 #ifdef USE_METIS

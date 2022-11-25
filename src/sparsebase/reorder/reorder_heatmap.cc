@@ -70,7 +70,7 @@ ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::
   for (IDType i = 0; i < n; i++) {
     IDType u = order_r[i];
     IDType bu = u / bsize;
-    if (bu == b) bu--;
+    if (bu >= b) bu = b - 1;
     for (NNZType ptr = row_ptr[i]; ptr < row_ptr[i + 1]; ptr++) {
       IDType v = order_c[adj[ptr]];
       IDType bw =
@@ -79,7 +79,7 @@ ReorderHeatmap<IDType, NNZType, ValueType, FloatType>::
       mean_bw += bw;
 
       IDType bv = v / bsize;
-      if (bv == b) bv--;
+      if (bv >= b) bv = b - 1;
       density[bu][bv]++;
     }
   }

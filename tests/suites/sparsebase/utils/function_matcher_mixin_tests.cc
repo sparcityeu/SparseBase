@@ -1,6 +1,4 @@
-#include <iostream>
 #include <memory>
-#include <set>
 #include <tuple>
 #include <typeindex>
 #include <typeinfo>
@@ -8,7 +6,6 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "sparsebase/config.h"
 #include "sparsebase/context/context.h"
 #include "sparsebase/format/csc.h"
 #include "sparsebase/format/csr.h"

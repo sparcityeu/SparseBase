@@ -15,6 +15,8 @@
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/extractable.h"
 
+using namespace feature;
+
 TEST(feature, FeatureExtractorRegisterMap) {
   std::vector<type_index> expected = {
       feature::DegreeDistribution<vertex_type, edge_type, value_type,

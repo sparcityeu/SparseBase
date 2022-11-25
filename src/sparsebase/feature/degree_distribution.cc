@@ -1,12 +1,6 @@
 #include "sparsebase/feature/degree_distribution.h"
 
-#include <algorithm>
-#include <iostream>
-#include <limits>
-#include <map>
 #include <memory>
-#include <queue>
-#include <set>
 #include <tuple>
 #include <unordered_map>
 #include <utility>

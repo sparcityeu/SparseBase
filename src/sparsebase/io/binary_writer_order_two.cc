@@ -45,8 +45,9 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCSR(
   if (csr->get_vals() != nullptr)
     if constexpr (!std::is_same_v<ValueType, void>)
       sbff.AddArray("vals", csr->get_vals(), m);
-    else
+    else {
       throw utils::WriterException("Cannot write vals array of type void");
+    }
 
   sbff.WriteObject(filename_);
 }

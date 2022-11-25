@@ -4,8 +4,6 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "sparsebase/converter/converter_order_one.h"
-#include "sparsebase/feature/feature_extractor.h"
 #include "sparsebase/feature/jaccard_weights.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"

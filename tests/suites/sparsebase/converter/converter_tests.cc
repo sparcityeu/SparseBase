@@ -90,8 +90,6 @@ TEST(Converter, ClearingASingleDirection) {
   EXPECT_TRUE(format::isTypeConversionSafe((T2)(-5.5), (T1)(-5.5))); \
   EXPECT_TRUE(format::isTypeConversionSafe((T2)(6.5), (T1)(6.5)));
 
-#include <stdint.h>
-
 #include <limits>
 #define MATCH_CHECK_ALL_CASES(T1, T2)                                       \
   MATCH_CHECKING_ONEVAL(T1, T2, 0)                                          \
@@ -192,16 +190,16 @@ TEST(Converter, ClearingASingleDirection) {
 
 TEST(isTypeConversionSafe, TypeConversions) {
   // int to int
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(char);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned char);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(short);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned short);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(int);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned int);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(long long);
-  // MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned long long);
-  // MATCH_CHECK_ALL_TYPES_FLOATING_POINT(float);
-  // MATCH_CHECK_ALL_TYPES_FLOATING_POINT(double);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(char);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned char);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(short);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned short);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(int);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned int);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(long long);
+  MATCH_CHECK_ALL_TYPES_INTEGRAL(unsigned long long);
+  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(float);
+  MATCH_CHECK_ALL_TYPES_FLOATING_POINT(double);
   // int to float
 
   // float to int

@@ -1,21 +1,10 @@
 #include "sparsebase/feature/jaccard_weights.h"
 
 #include "sparsebase/format/csr.h"
-#include "sparsebase/utils/parameterizable.h"
 #ifdef USE_CUDA
 #include "sparsebase/format/cuda_csr_cuda.cuh"
 #endif
 
-#include <algorithm>
-#include <iostream>
-#include <limits>
-#include <map>
-#include <memory>
-#include <queue>
-#include <set>
-#include <tuple>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
 namespace sparsebase::feature {

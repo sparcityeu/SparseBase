@@ -120,7 +120,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   int start_split_reorder, end_split_reorder;
 
   int last_row_nnz_count = 0;
-  int threshold = 0;  // threshold used to set bit in bitmap to 1
+  int threshold = 0;  // threshold used to set a bit in bitmap to 1
   bool decresc_grey_order = false;
 
   int group_count = 0;
@@ -167,7 +167,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
                      (csr->get_row_ptr()[j + 1] - csr->get_row_ptr()[j]);
             });  // reorder sparse matrix into nnz amount
 
-  // bit resolution determines the width of the bitmap of each row
+  // the bit resolution determines the width of the bitmap of each row
   if (n_rows < bit_resolution) {
     bit_resolution = n_rows;
   }

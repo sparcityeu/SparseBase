@@ -36,7 +36,7 @@ format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
   }
   return new format::CUDACSR<IDType, NNZType, ValueType>(
       csr->get_dimensions()[0], csr->get_dimensions()[0], csr->get_num_nnz(),
-      row_ptr, col, vals, *gpu_context);
+      row_ptr, col, vals, *gpu_context, format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
@@ -71,7 +71,8 @@ format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
   }
   return new format::CUDACSR<IDType, NNZType, ValueType>(
       cuda_csr->get_dimensions()[0], cuda_csr->get_dimensions()[0],
-      cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context);
+      cuda_csr->get_num_nnz(), row_ptr, col, vals, *dest_gpu_context,
+      format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
@@ -99,7 +100,8 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
                  cudaMemcpyDeviceToHost);
     }
   }
-  return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals);
+  return new format::CSR<IDType, NNZType, ValueType>(n, n, row_ptr, col, vals,
+                                                     format::kOwned);
 }
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/converter_order_two_cuda.inc"

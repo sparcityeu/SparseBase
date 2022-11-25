@@ -1,3 +1,5 @@
+#include "sparsebase/format/coo.h"
+#include "sparsebase/format/csr.h"
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = float;
@@ -5,11 +7,9 @@ using feature_type = float;
 
 using namespace std;
 
+#include "gtest/gtest.h"
 using namespace sparsebase;
 using namespace format;
-;
-using namespace feature;
-using namespace context;
 
 class COOMock : public ::testing::Test {
  protected:

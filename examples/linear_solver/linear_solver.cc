@@ -1,6 +1,5 @@
 #include <sparsebase/bases/graph_feature_base.h>
 #include <sparsebase/bases/reorder_base.h>
-#include <sparsebase/context/context.h>
 #include <sparsebase/format/csc.h>
 #include <sparsebase/io/mtx_reader.h>
 
