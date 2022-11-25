@@ -45,7 +45,7 @@ TEST(PatohPartition, BasicTest) {
   PatohPartition<int, int, void> partitioner;
   // This is a temporary solution intended to be replaced by the Downloaders
   // once finished
-  auto coo = io::IOBase::ReadMTXToCOO<int, int, void>(FILE_NAME);
+  auto coo = bases::IOBase::ReadMTXToCOO<int, int, void>(FILE_NAME);
   PatohPartitionParams params;
   params.num_partitions = 2;
   auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);

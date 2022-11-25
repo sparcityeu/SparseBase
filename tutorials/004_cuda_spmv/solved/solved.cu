@@ -20,6 +20,7 @@ typedef float value_type;
 
 using namespace sparsebase;
 using namespace io;
+using namespace bases;
 using namespace format;
 using namespace reorder;
 
