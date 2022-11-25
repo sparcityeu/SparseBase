@@ -13,7 +13,7 @@ class CUDAArray
                                                FormatOrderOne<ValueType>> {
  public:
   CUDAArray(DimensionType nnz, ValueType *row_ptr, context::CUDAContext context,
-            Ownership own = kNotOwned);
+            Ownership own = kOwned);
   CUDAArray(const CUDAArray<ValueType> &);
   CUDAArray(CUDAArray<ValueType> &&);
   CUDAArray<ValueType> &operator=(const CUDAArray<ValueType> &);

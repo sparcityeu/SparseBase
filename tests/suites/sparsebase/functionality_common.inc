@@ -1,3 +1,4 @@
+#include "gtest/gtest.h"
 #include "sparsebase/format/array.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/format/coo.h"

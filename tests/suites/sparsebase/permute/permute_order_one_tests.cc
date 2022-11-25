@@ -1,17 +1,10 @@
 #include <iostream>
 #include <memory>
-#include <set>
-#include <tuple>
-#include <typeindex>
 #include <typeinfo>
-#include <utility>
 #include <vector>
 
 #include "gtest/gtest.h"
 #include "sparsebase/bases/reorder_base.h"
-#include "sparsebase/config.h"
-#include "sparsebase/context/context.h"
-#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/coo.h"
 #include "sparsebase/format/csc.h"
 #include "sparsebase/format/csr.h"
@@ -21,7 +14,6 @@
 #include "sparsebase/permute/permute_order_one.h"
 #include "sparsebase/reorder/degree_reorder.h"
 #include "sparsebase/reorder/reorderer.h"
-#include "sparsebase/utils/exception.h"
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
 
 using namespace sparsebase;

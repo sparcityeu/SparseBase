@@ -24,7 +24,7 @@ class CUDACSR : public utils::IdentifiableImplementation<
  public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
           ValueType *vals, context::CUDAContext context,
-          Ownership own = kNotOwned);
+          Ownership own = kOwned);
   CUDACSR(const CUDACSR<IDType, NNZType, ValueType> &);
   CUDACSR(CUDACSR<IDType, NNZType, ValueType> &&);
   CUDACSR<IDType, NNZType, ValueType> &operator=(

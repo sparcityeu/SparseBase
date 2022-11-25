@@ -4,7 +4,6 @@
 #include <string>
 
 #include "sparsebase/config.h"
-#include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/mtx_reader.h"
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"

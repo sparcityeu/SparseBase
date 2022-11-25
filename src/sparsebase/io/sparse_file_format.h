@@ -215,9 +215,9 @@ struct SbffObject {
   }
 
   template <typename T>
-  void AddArray(std::string name, T *arr, size_t size) {
-    auto sbas_arr = SbffArray::Create(name, arr, size);
-    arrays.emplace(name, sbas_arr);
+  void AddArray(std::string array_name, T *arr, size_t size) {
+    auto sbas_arr = SbffArray::Create(array_name, arr, size);
+    arrays.emplace(array_name, sbas_arr);
     total_size += 1024 + sizeof(T) * size;
   }
 
@@ -227,9 +227,9 @@ struct SbffObject {
   }
 
   template <typename T>
-  size_t GetArray(std::string name, T *&ptr) {
+  size_t GetArray(std::string array_name, T *&ptr) {
     try {
-      SbffArray &arr = arrays.at(name);
+      SbffArray &arr = arrays.at(array_name);
 
       if (arr.type == "float" && !std::is_floating_point_v<T>) {
         throw sparsebase::utils::ReaderException(

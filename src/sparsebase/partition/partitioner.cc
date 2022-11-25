@@ -1,15 +1,7 @@
 #include "sparsebase/partition/partitioner.h"
 
-#include <algorithm>
-#include <map>
-#include <memory>
-#include <queue>
-#include <set>
-#include <tuple>
-#include <utility>
 #include <vector>
 
-#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/array.h"
 #include "sparsebase/format/coo.h"
 #include "sparsebase/format/csc.h"
@@ -18,8 +10,6 @@
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/extractable.h"
-#include "sparsebase/utils/function_matcher_mixin.h"
-#include "sparsebase/utils/logger.h"
 #include "sparsebase/utils/parameterizable.h"
 namespace sparsebase::partition {
 template <typename IDType>

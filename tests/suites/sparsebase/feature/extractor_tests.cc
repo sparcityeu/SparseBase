@@ -12,6 +12,9 @@
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/extractable.h"
 
+using namespace sparsebase::feature;
+using namespace sparsebase::context;
+
 TEST(feature, ExtractorAdd) {
   Extractor extractor =
       FeatureExtractor<vertex_type, edge_type, value_type, feature_type>();

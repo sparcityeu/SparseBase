@@ -1,7 +1,6 @@
 #include "sparsebase/reorder/rabbit_reorder.h"
 
 #include "sparsebase/reorder/reorderer.h"
-#include "sparsebase/utils/logger.h"
 
 #ifdef USE_RABBIT_ORDER
 #include "rabbit_order.hpp"

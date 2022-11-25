@@ -1,11 +1,8 @@
 #include "feature_extractor.h"
 
-#include <vector>
-
 #include "sparsebase/feature/degree_distribution.h"
 #include "sparsebase/feature/degrees.h"
 #include "sparsebase/feature/degrees_degree_distribution.h"
-#include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/extractable.h"
 
 namespace sparsebase::feature {

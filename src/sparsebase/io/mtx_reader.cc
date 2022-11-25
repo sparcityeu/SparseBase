@@ -1,6 +1,5 @@
 #include "sparsebase/io/mtx_reader.h"
 
-#include <fstream>
 #include <sstream>
 #include <string>
 

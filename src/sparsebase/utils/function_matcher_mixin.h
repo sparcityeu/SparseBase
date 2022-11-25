@@ -69,7 +69,7 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   /*!
     \param key_of_function key to unregister
     \return true if the key was unregistered successfully, and false if it
-    wasn't already registerd to something.
+    wasn't already registered to something.
   */
   bool UnregisterFunction(const Key &key_of_function);
 
@@ -117,7 +117,7 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * Determines the function needed to carry out preprocessing on input Format*
    * objects (given variadically), as well as the Format conversions needed on
    * the inputs, executes the preprocessing, and returns the results. Note: this
-   * function will delete any intermediery Format objects that were created due
+   * function will delete any intermediary Format objects that were created due
    * to a conversion.
    * \param params a polymorphic pointer at the
    * object containing hyperparameters needed for preprocessing.
@@ -143,7 +143,7 @@ class FunctionMatcherMixin : public PreprocessingImpl {
    * the inputs, executes the preprocessing, and returns:
    * - the preprocessing result.
    * - pointers at any Format objects that were created due to a conversion.
-   * Note: this function will delete any intermediery Format objects that were
+   * Note: this function will delete any intermediary Format objects that were
    * created due to a conversion.
    * \param PreprocessParams a polymorphic pointer
    * at the object containing hyperparameters needed for preprocessing.

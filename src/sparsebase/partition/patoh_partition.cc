@@ -2,7 +2,6 @@
 
 #include "sparsebase/format/csr.h"
 #include "sparsebase/partition/partitioner.h"
-#include "sparsebase/utils/logger.h"
 
 namespace sparsebase::partition {
 #ifdef USE_PATOH
