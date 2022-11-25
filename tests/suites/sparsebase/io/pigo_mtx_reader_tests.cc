@@ -3,8 +3,8 @@
 #include <unordered_set>
 
 #include "gtest/gtest.h"
-#include "sparsebase/sparsebase.h"
 #include "reader_data.inc"
+#include "sparsebase/sparsebase.h"
 
 TEST(PigoMTXReader, CSR) {
   // Write the mtx data to a file
@@ -17,8 +17,7 @@ TEST(PigoMTXReader, CSR) {
   ofs2 << mtx_data_with_values;
   ofs2.close();
 
-  sparsebase::io::PigoMTXReader<int, int, int> reader("test_pigo.mtx",
-                                                      false);
+  sparsebase::io::PigoMTXReader<int, int, int> reader("test_pigo.mtx", false);
   auto csr = reader.ReadCSR();
 
   // Check the dimensions
@@ -38,8 +37,8 @@ TEST(PigoMTXReader, CSR) {
     EXPECT_EQ(csr->get_col()[i], col[i]);
   }
 
-  sparsebase::io::PigoMTXReader<int, int, float> reader2(
-      "test_values_pigo.mtx", true);
+  sparsebase::io::PigoMTXReader<int, int, float> reader2("test_values_pigo.mtx",
+                                                         true);
   auto csr2 = reader2.ReadCSR();
 
   // Check the dimensions
@@ -73,8 +72,7 @@ TEST(PigoMTXReader, Basics) {
   ofs2 << mtx_data_with_values;
   ofs2.close();
 
-  sparsebase::io::PigoMTXReader<int, int, int> reader("test_pigo.mtx",
-                                                      false);
+  sparsebase::io::PigoMTXReader<int, int, int> reader("test_pigo.mtx", false);
   auto coo = reader.ReadCOO();
 
   // Check the dimensions
@@ -92,8 +90,8 @@ TEST(PigoMTXReader, Basics) {
     EXPECT_EQ(coo->get_col()[i], col[i]);
   }
 
-  sparsebase::io::PigoMTXReader<int, int, float> reader2(
-      "test_values_pigo.mtx", true);
+  sparsebase::io::PigoMTXReader<int, int, float> reader2("test_values_pigo.mtx",
+                                                         true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions

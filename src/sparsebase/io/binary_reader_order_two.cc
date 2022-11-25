@@ -1,9 +1,10 @@
+#include "sparsebase/io/binary_reader_order_two.h"
+
 #include "sparsebase/config.h"
 #include "sparsebase/io/reader.h"
-#include "sparsebase/io/binary_reader_order_two.h"
 #include "sparsebase/io/sparse_file_format.h"
 
-namespace sparsebase::io{
+namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 BinaryReaderOrderTwo<IDType, NNZType, ValueType>::BinaryReaderOrderTwo(
@@ -12,7 +13,7 @@ BinaryReaderOrderTwo<IDType, NNZType, ValueType>::BinaryReaderOrderTwo(
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
-*BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
+    *BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCSR() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
   if (sbff.get_name() != "csr") {
@@ -41,7 +42,7 @@ format::CSR<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType>
-*BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
+    *BinaryReaderOrderTwo<IDType, NNZType, ValueType>::ReadCOO() const {
   auto sbff = SbffObject::ReadObject(filename_);
 
   if (sbff.get_name() != "coo") {
@@ -74,4 +75,4 @@ format::COO<IDType, NNZType, ValueType>
 #ifndef _HEADER_ONLY
 #include "init/binary_reader_order_two.inc"
 #endif
-}
+}  // namespace sparsebase::io

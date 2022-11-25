@@ -10,7 +10,6 @@
 
 namespace sparsebase::reorder {
 
-
 enum BitMapSize{
   BitSize16 = 16,
   BitSize32 = 32/*,
@@ -58,7 +57,7 @@ class GrayReorder : public Reorderer<IDType> {
                                    utils::Parameters *poly_params);
 };
 
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/gray_reorder.cc"
 #endif

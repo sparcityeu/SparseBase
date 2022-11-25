@@ -6,7 +6,7 @@
 #define SPARSEBASE_PROJECT_PARAMETERIZABLE_H
 #include <memory>
 
-namespace sparsebase::utils{
+namespace sparsebase::utils {
 //! An abstraction for parameter objects used for preprocessing
 struct Parameters {};
 
@@ -19,6 +19,6 @@ class Parameterizable {
   //! Polymorphic pointer at a PreprocessParams object
   std::unique_ptr<Parameters> params_;
 };
-}
+}  // namespace sparsebase::utils
 
 #endif  // SPARSEBASE_PROJECT_PARAMETERIZABLE_H

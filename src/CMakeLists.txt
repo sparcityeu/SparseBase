@@ -1,4 +1,23 @@
-find_package(OpenMP REQUIRED)
+if(APPLE)
+  find_package(OpenMP)
+  # From https://github.com/microsoft/LightGBM/pull/5563/files
+  if(NOT OpenMP_FOUND)
+    # libomp 15.0+ from brew is keg-only, so have to search in other locations.
+    # See https://github.com/Homebrew/homebrew-core/issues/112107#issuecomment-1278042927.
+    execute_process(COMMAND brew --prefix libomp
+            OUTPUT_VARIABLE HOMEBREW_LIBOMP_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+    set(OpenMP_C_LIB_NAMES omp)
+    set(OpenMP_CXX_LIB_NAMES omp)
+    set(OpenMP_omp_LIBRARY ${HOMEBREW_LIBOMP_PREFIX}/lib/libomp.dylib)
+    find_package(OpenMP REQUIRED)
+  endif()
+else()
+  find_package(OpenMP REQUIRED)
+endif()
+
 set (CMAKE_CXX_STANDARD 17)
 # Creating the sparsebase library executable
 if(NOT ${_HEADER_ONLY})
@@ -122,7 +141,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION includ
 # Creating an alias for the library when used through "find_package()"
 add_library(sparsebase::sparsebase ALIAS sparsebase)
 
-# Installing the library, and creating the export set "sparsebaseTargets" 
+# Installing the library, and creating the export set "sparsebaseTargets"
 install(TARGETS sparsebase EXPORT sparsebaseTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         # telling the export set where the headers of the library are located

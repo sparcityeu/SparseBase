@@ -25,8 +25,7 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(
   rhs.vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
       nullptr, BlankDeleter<ValueType>());
   this->context_ = std::unique_ptr<sparsebase::context::Context>(
-      new sparsebase::context::CUDAContext(
-          rhs.get_cuda_context()->device_id));
+      new sparsebase::context::CUDAContext(rhs.get_cuda_context()->device_id));
 }
 template <typename IDType, typename NNZType, typename ValueType>
 CUDACSR<IDType, NNZType, ValueType>
@@ -128,8 +127,8 @@ CUDACSR<IDType, NNZType, ValueType>::CUDACSR(IDType n, IDType m, NNZType nnz,
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-context::CUDAContext *
-CUDACSR<IDType, NNZType, ValueType>::get_cuda_context() const {
+context::CUDAContext *CUDACSR<IDType, NNZType, ValueType>::get_cuda_context()
+    const {
   return static_cast<context::CUDAContext *>(this->get_context());
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -171,8 +170,9 @@ ValueType *CUDACSR<IDType, NNZType, ValueType>::release_vals() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-void CUDACSR<IDType, NNZType, ValueType>::set_col(
-    IDType *col, context::CUDAContext context, Ownership own) {
+void CUDACSR<IDType, NNZType, ValueType>::set_col(IDType *col,
+                                                  context::CUDAContext context,
+                                                  Ownership own) {
   if (own == kOwned) {
     this->col_ = std::unique_ptr<IDType, std::function<void(IDType *)>>(
         col, utils::CUDADeleter<IDType>());
@@ -195,8 +195,9 @@ void CUDACSR<IDType, NNZType, ValueType>::set_row_ptr(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-void CUDACSR<IDType, NNZType, ValueType>::set_vals(
-    ValueType *vals, context::CUDAContext context, Ownership own) {
+void CUDACSR<IDType, NNZType, ValueType>::set_vals(ValueType *vals,
+                                                   context::CUDAContext context,
+                                                   Ownership own) {
   if (own == kOwned) {
     this->vals_ = std::unique_ptr<ValueType, std::function<void(ValueType *)>>(
         vals, utils::CUDADeleter<ValueType>());
@@ -229,4 +230,4 @@ CUDACSR<IDType, NNZType, ValueType>::~CUDACSR() {}
 #ifndef _HEADER_ONLY
 #include "init/cuda/cuda_csr_cuda.inc"
 #endif
-}  // namespace cuda
+}  // namespace sparsebase::format

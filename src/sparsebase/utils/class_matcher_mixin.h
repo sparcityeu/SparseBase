@@ -1,18 +1,19 @@
 #ifndef SPARSEBASE_PROJECT_CLASS_MATCHER_MIXIN_H
 #define SPARSEBASE_PROJECT_CLASS_MATCHER_MIXIN_H
 
-#include "utils.h"
-#include <vector>
 #include <typeindex>
+#include <vector>
 
-namespace sparsebase::utils{
+#include "utils.h"
+
+namespace sparsebase::utils {
 
 template <class ClassType, typename Key = std::vector<std::type_index>,
-    typename KeyHash = utils::TypeIndexVectorHash,
-    typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
+          typename KeyHash = utils::TypeIndexVectorHash,
+          typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class ClassMatcherMixin {
 #ifdef DEBUG
-  public:
+ public:
 #else
  protected:
 #endif
@@ -29,14 +30,14 @@ class ClassMatcherMixin {
       std::unordered_map<std::type_index, ClassType> &source);
 };
 template <typename ClassType, typename Key, typename KeyHash,
-    typename KeyEqualTo>
+          typename KeyEqualTo>
 void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::RegisterClass(
     const std::vector<std::type_index> instants, ClassType val) {
   this->map_.insert({instants, val});
 }
 
 template <typename ClassType, typename Key, typename KeyHash,
-    typename KeyEqualTo>
+          typename KeyEqualTo>
 std::tuple<ClassType, std::vector<std::type_index>>
 ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::MatchClass(
     std::unordered_map<std::type_index, ClassType> &source,
@@ -74,7 +75,7 @@ ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::MatchClass(
 }
 
 template <typename ClassType, typename Key, typename KeyHash,
-    typename KeyEqualTo>
+          typename KeyEqualTo>
 void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClassesHelper(
     std::unordered_map<std::type_index, ClassType> &source,
     std::vector<std::type_index> &ordered, std::vector<ClassType> &res) {
@@ -108,7 +109,7 @@ void ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClassesHelper(
 }
 
 template <typename ClassType, typename Key, typename KeyHash,
-    typename KeyEqualTo>
+          typename KeyEqualTo>
 std::vector<ClassType>
 ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClasses(
     std::unordered_map<std::type_index, ClassType> &source) {
@@ -122,5 +123,5 @@ ClassMatcherMixin<ClassType, Key, KeyHash, KeyEqualTo>::GetClasses(
   GetClassesHelper(source, ordered, res);
   return res;
 }
-}
+}  // namespace sparsebase::utils
 #endif  // SPARSEBASE_PROJECT_CLASS_MATCHER_MIXIN_H

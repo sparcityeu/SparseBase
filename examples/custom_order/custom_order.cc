@@ -173,8 +173,8 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-  bases::ReorderBase::Reorder<reorder::RCMReorder>(
-      {}, orig_csr, {&cpu_context}, true);
+  bases::ReorderBase::Reorder<reorder::RCMReorder>({}, orig_csr, {&cpu_context},
+                                                   true);
   cout << "Inversion is correct\n";
   delete[] permutation;
   delete[] inv_permutation;

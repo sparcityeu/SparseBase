@@ -1,9 +1,9 @@
 #ifndef SPARSEBASE_PROJECT_EDGE_LIST__READER_H
 #define SPARSEBASE_PROJECT_EDGE_LIST__READER_H
+#include <string>
+
 #include "sparsebase/config.h"
 #include "sparsebase/io/reader.h"
-
-#include <string>
 
 namespace sparsebase::io {
 //! Reader for the Edge List file format
@@ -48,7 +48,7 @@ class EdgeListReader : public Reader,
   bool square_;
 };
 
-}
+}  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
 #include "edge_list_reader.cc"
 #endif

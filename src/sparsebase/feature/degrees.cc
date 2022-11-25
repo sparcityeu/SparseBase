@@ -1,5 +1,4 @@
 #include "sparsebase/feature/degrees.h"
-#include "sparsebase/utils/parameterizable.h"
 
 #include <algorithm>
 #include <iostream>
@@ -12,6 +11,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include "sparsebase/utils/parameterizable.h"
 
 namespace sparsebase::feature {
 
@@ -48,7 +49,8 @@ Degrees<IDType, NNZType, ValueType>::~Degrees() = default;
 template <typename IDType, typename NNZType, typename ValueType>
 void Degrees<IDType, NNZType, ValueType>::Register() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetDegreesCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+      GetDegreesCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -58,7 +60,8 @@ Degrees<IDType, NNZType, ValueType>::get_sub_ids() {
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::vector<utils::Extractable *> Degrees<IDType, NNZType, ValueType>::get_subs() {
+std::vector<utils::Extractable *>
+Degrees<IDType, NNZType, ValueType>::get_subs() {
   return {new Degrees<IDType, NNZType, ValueType>(*this)};
 }
 
@@ -78,17 +81,18 @@ Degrees<IDType, NNZType, ValueType>::Extract(format::Format *format,
 
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *Degrees<IDType, NNZType, ValueType>::GetDegrees(
-    format::Format *format, std::vector<context::Context *> c, bool convert_input) {
-  return this->Execute(this->params_.get(), c, convert_input,
-                       format);
+    format::Format *format, std::vector<context::Context *> c,
+    bool convert_input) {
+  return this->Execute(this->params_.get(), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 Degrees<IDType, NNZType, ValueType>::GetDegreesCached(
-    format::Format *format, std::vector<context::Context *> c, bool convert_input) {
-return this->CachedExecute(this->params_.get(), c,
-    convert_input, false, format);
+    format::Format *format, std::vector<context::Context *> c,
+    bool convert_input) {
+  return this->CachedExecute(this->params_.get(), c, convert_input, false,
+                             format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -109,4 +113,4 @@ IDType *Degrees<IDType, NNZType, ValueType>::GetDegreesCSR(
 #if !defined(_HEADER_ONLY)
 #include "init/degrees.inc"
 #endif
-}
+}  // namespace sparsebase::feature

@@ -1,7 +1,7 @@
 #include "sparsebase/format/format.h"
 #ifndef SPARSEBASE_PROJECT_FORMAT_IMPLEMENTATION_H
 #define SPARSEBASE_PROJECT_FORMAT_IMPLEMENTATION_H
-namespace sparsebase::format{
+namespace sparsebase::format {
 
 //! A class derived from the base Format class, mostly used for development
 //! purposes
@@ -26,20 +26,22 @@ class FormatImplementation : public Format {
   }
   virtual DimensionType get_num_nnz() const { return this->nnz_; }
   virtual DimensionType get_order() const { return this->order_; }
-  virtual context::Context *get_context() const { return this->context_.get().get(); }
+  virtual context::Context *get_context() const {
+    return this->context_.get().get();
+  }
 
   virtual std::type_index get_id() const {
     return this->context_.get()->get_id();
   }
-  virtual std::shared_ptr<converter::Converter const> get_converter()
-  const {
+  virtual std::shared_ptr<converter::Converter const> get_converter() const {
     return this->converter_;
-    //return std::dynamic_pointer_cast<converter::Converter>(this->converter_).get();
+    // return
+    // std::dynamic_pointer_cast<converter::Converter>(this->converter_).get();
   };
-  void set_converter(std::shared_ptr<converter::Converter> converter)
-  {
+  void set_converter(std::shared_ptr<converter::Converter> converter) {
     this->converter_ = converter;
   };
+
  protected:
   DimensionType order_;
   std::vector<DimensionType> dimension_;
@@ -47,5 +49,5 @@ class FormatImplementation : public Format {
   utils::OnceSettable<std::unique_ptr<sparsebase::context::Context>> context_;
   std::shared_ptr<converter::Converter> converter_;
 };
-}
+}  // namespace sparsebase::format
 #endif  // SPARSEBASE_PROJECT_FORMAT_IMPLEMENTATION_H

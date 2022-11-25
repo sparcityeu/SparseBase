@@ -3,8 +3,8 @@
 #include <unordered_set>
 
 #include "gtest/gtest.h"
-#include "sparsebase/sparsebase.h"
 #include "reader_data.inc"
+#include "sparsebase/sparsebase.h"
 
 TEST(BinaryOrderTwoReader, COO) {
   // Initialize a COO for testing

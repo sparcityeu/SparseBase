@@ -1,13 +1,15 @@
-#include "sparsebase/config.h"
 #include "pigo_mtx_reader.h"
+
+#include <fstream>
+#include <string>
+
+#include "sparsebase/config.h"
 #include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/mtx_reader.h"
-#include <string>
-#include <fstream>
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
-namespace sparsebase::io{
+namespace sparsebase::io {
 template <typename IDType, typename NNZType, typename ValueType>
 PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
     std::string filename, bool weighted, bool convert_to_zero_index)
@@ -24,7 +26,7 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType>
-*PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+    *PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #ifdef USE_PIGO
   format::COO<IDType, NNZType, ValueType> *coo;
 
@@ -83,7 +85,7 @@ format::COO<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
-*PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
+    *PigoMTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
   std::cout << "nnz " << coo->get_num_nnz() << " dim "
@@ -95,4 +97,4 @@ format::CSR<IDType, NNZType, ValueType>
 #ifndef _HEADER_ONLY
 #include "init/pigo_mtx_reader.inc"
 #endif
-}
+}  // namespace sparsebase::io

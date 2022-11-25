@@ -1,11 +1,12 @@
 #ifndef SPARSEBASE_PROJECT_FUNCTIONMATCHERMIXIN_H
 #define SPARSEBASE_PROJECT_FUNCTIONMATCHERMIXIN_H
 
+#include <vector>
+
 #include "sparsebase/config.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/utils/utils.h"
-#include "sparsebase/converter/converter.h"
-#include <vector>
 
 namespace sparsebase::utils {
 
@@ -31,12 +32,11 @@ using PreprocessFunction = ReturnType (*)(std::vector<format::Format *> formats,
   std::vector<std::type_index>> \tparam KeyHash the hash function used to has
   keys. \tparam KeyEqualTo the function used to evaluate equality of keys
 */
-template <typename ReturnType,
-    class PreprocessingImpl = Parameterizable,
-    typename Function = PreprocessFunction<ReturnType>,
-    typename Key = std::vector<std::type_index>,
-    typename KeyHash = TypeIndexVectorHash,
-    typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
+template <typename ReturnType, class PreprocessingImpl = Parameterizable,
+          typename Function = PreprocessFunction<ReturnType>,
+          typename Key = std::vector<std::type_index>,
+          typename KeyHash = TypeIndexVectorHash,
+          typename KeyEqualTo = std::equal_to<std::vector<std::type_index>>>
 class FunctionMatcherMixin : public PreprocessingImpl {
   //! Defines a map between `Key` objects and function pointer `Function`
   //! objects.
@@ -164,101 +164,100 @@ class FunctionMatcherMixin : public PreprocessingImpl {
   template <typename F, typename... SF>
   std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
   CachedExecute(utils::Parameters *params,
-  std::vector<context::Context *> contexts, bool convert_input,
-  bool clear_intermediate, F format, SF... formats);
+                std::vector<context::Context *> contexts, bool convert_input,
+                bool clear_intermediate, F format, SF... formats);
 };
 
 template <typename ReturnType, class PreprocessingImpl, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 template <typename F, typename... SF>
 std::tuple<std::vector<std::vector<format::Format *>>, ReturnType>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Function, Key, KeyHash,
-    KeyEqualTo>::CachedExecute(utils::Parameters *params,
-std::vector<context::Context *>
-    contexts,
-bool convert_input,
-bool clear_intermediate,
-    F format, SF... formats) {
-ConversionMap map = this->map_to_function_;
-// pack the Formats into a vector
-std::vector<format::Format *> packed_formats =
-    PackObjects(format, formats...);
-// pack the types of Formats into a vector
-std::vector<std::type_index> packed_format_types;
-for (auto f : packed_formats)
-packed_format_types.push_back(f->get_id());
-// get conversion schema
-std::tuple<Function, converter::ConversionSchema> ret =
-    GetFunction(packed_formats, packed_format_types, map, contexts);
-Function func = std::get<0>(ret);
-converter::ConversionSchema cs = std::get<1>(ret);
-// carry out conversion
-// ready_formats contains the format to use in preprocessing
-if (!convert_input) {
-for (const auto &conversion_chain : cs) {
-if (conversion_chain)
-throw utils::DirectExecutionNotAvailableException(
-    packed_format_types, this->GetAvailableFormats());
-}
-}
-std::vector<std::vector<format::Format *>> all_formats =
-    sparsebase::converter::Converter::ApplyConversionSchema(
-        cs, packed_formats, clear_intermediate);
-// The formats that will be used in the preprocessing implementation function
-// calls
-std::vector<format::Format *> final_formats;
-std::transform(all_formats.begin(), all_formats.end(),
-    std::back_inserter(final_formats),
-[](std::vector<format::Format *> conversion_chain) {
-return conversion_chain.back();
-});
-// Formats that are used to get to the final formats
-std::vector<std::vector<format::Format *>> intermediate_formats;
-std::transform(all_formats.begin(), all_formats.end(),
-    std::back_inserter(intermediate_formats),
-[](std::vector<format::Format *> conversion_chain) {
-if (conversion_chain.size() > 1)
-return std::vector<format::Format *>(
-    conversion_chain.begin() + 1, conversion_chain.end());
-return std::vector<format::Format *>();
-});
-// carry out the correct call
-return std::make_tuple(intermediate_formats, func(final_formats, params));
+                     KeyEqualTo>::CachedExecute(utils::Parameters *params,
+                                                std::vector<context::Context *>
+                                                    contexts,
+                                                bool convert_input,
+                                                bool clear_intermediate,
+                                                F format, SF... formats) {
+  ConversionMap map = this->map_to_function_;
+  // pack the Formats into a vector
+  std::vector<format::Format *> packed_formats =
+      PackObjects(format, formats...);
+  // pack the types of Formats into a vector
+  std::vector<std::type_index> packed_format_types;
+  for (auto f : packed_formats) packed_format_types.push_back(f->get_id());
+  // get conversion schema
+  std::tuple<Function, converter::ConversionSchema> ret =
+      GetFunction(packed_formats, packed_format_types, map, contexts);
+  Function func = std::get<0>(ret);
+  converter::ConversionSchema cs = std::get<1>(ret);
+  // carry out conversion
+  // ready_formats contains the format to use in preprocessing
+  if (!convert_input) {
+    for (const auto &conversion_chain : cs) {
+      if (conversion_chain)
+        throw utils::DirectExecutionNotAvailableException(
+            packed_format_types, this->GetAvailableFormats());
+    }
+  }
+  std::vector<std::vector<format::Format *>> all_formats =
+      sparsebase::converter::Converter::ApplyConversionSchema(
+          cs, packed_formats, clear_intermediate);
+  // The formats that will be used in the preprocessing implementation function
+  // calls
+  std::vector<format::Format *> final_formats;
+  std::transform(all_formats.begin(), all_formats.end(),
+                 std::back_inserter(final_formats),
+                 [](std::vector<format::Format *> conversion_chain) {
+                   return conversion_chain.back();
+                 });
+  // Formats that are used to get to the final formats
+  std::vector<std::vector<format::Format *>> intermediate_formats;
+  std::transform(all_formats.begin(), all_formats.end(),
+                 std::back_inserter(intermediate_formats),
+                 [](std::vector<format::Format *> conversion_chain) {
+                   if (conversion_chain.size() > 1)
+                     return std::vector<format::Format *>(
+                         conversion_chain.begin() + 1, conversion_chain.end());
+                   return std::vector<format::Format *>();
+                 });
+  // carry out the correct call
+  return std::make_tuple(intermediate_formats, func(final_formats, params));
 }
 
 template <typename ReturnType, class PreprocessingImpl, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 template <typename F, typename... SF>
 ReturnType FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::Execute(utils::Parameters *params,
                          std::vector<context::Context *> contexts,
-bool convert_input, F sf, SF... sfs) {
-auto cached_output =
-    CachedExecute(params, contexts, convert_input, true, sf, sfs...);
-auto converted_format_chains = std::get<0>(cached_output);
-auto return_object = std::get<1>(cached_output);
-for (const auto &converted_format_chain : converted_format_chains) {
-for (const auto &converted_format : converted_format_chain)
-delete converted_format;
-}
-return return_object;
+                         bool convert_input, F sf, SF... sfs) {
+  auto cached_output =
+      CachedExecute(params, contexts, convert_input, true, sf, sfs...);
+  auto converted_format_chains = std::get<0>(cached_output);
+  auto return_object = std::get<1>(cached_output);
+  for (const auto &converted_format_chain : converted_format_chains) {
+    for (const auto &converted_format : converted_format_chain)
+      delete converted_format;
+  }
+  return return_object;
 }
 
 template <typename ReturnType, class PreprocessingImpl, typename Key,
-    typename KeyHash, typename KeyEqualTo, typename Function>
+          typename KeyHash, typename KeyEqualTo, typename Function>
 template <typename Object>
 std::vector<Object>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
-    Function>::PackObjects(Object object) {
+                     Function>::PackObjects(Object object) {
   return {object};
 }
 template <typename ReturnType, class PreprocessingImpl, typename Key,
-    typename KeyHash, typename KeyEqualTo, typename Function>
+          typename KeyHash, typename KeyEqualTo, typename Function>
 template <typename Object, typename... Objects>
 std::vector<Object>
 FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
-    Function>::PackObjects(Object object, Objects... objects) {
+                     Function>::PackObjects(Object object, Objects... objects) {
   std::vector<Object> v = {object};
   std::vector<Object> remainder = PackObjects(objects...);
   for (auto i : remainder) {
@@ -267,7 +266,7 @@ FunctionMatcherMixin<ReturnType, PreprocessingImpl, Key, KeyHash, KeyEqualTo,
   return v;
 }
 template <typename ReturnType, class Preprocess, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 bool FunctionMatcherMixin<
     ReturnType, Preprocess, Function, Key, KeyHash,
     KeyEqualTo>::RegisterFunctionNoOverride(const Key &key_of_function,
@@ -281,7 +280,7 @@ bool FunctionMatcherMixin<
 }
 
 template <typename ReturnType, class Preprocess, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 void FunctionMatcherMixin<
     ReturnType, Preprocess, Function, Key, KeyHash,
     KeyEqualTo>::RegisterFunction(const Key &key_of_function,
@@ -289,10 +288,10 @@ void FunctionMatcherMixin<
   map_to_function_[key_of_function] = func_ptr;
 }
 template <typename ReturnType, class Preprocess, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 bool FunctionMatcherMixin<ReturnType, Preprocess, Function, Key, KeyHash,
-    KeyEqualTo>::UnregisterFunction(const Key &
-key_of_function) {
+                          KeyEqualTo>::UnregisterFunction(const Key &
+                                                              key_of_function) {
   if (map_to_function_.find(key_of_function) == map_to_function_.end()) {
     return false;  // function already exists for this Key
   } else {
@@ -301,7 +300,7 @@ key_of_function) {
   }
 }
 template <typename ReturnType, class PreprocessingImpl, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 bool FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::CheckIfKeyMatches(ConversionMap map, Key key,
@@ -332,7 +331,7 @@ bool FunctionMatcherMixin<
  * out on inputs
  */
 template <typename ReturnType, class PreprocessingImpl, typename Function,
-    typename Key, typename KeyHash, typename KeyEqualTo>
+          typename Key, typename KeyHash, typename KeyEqualTo>
 std::tuple<Function, converter::ConversionSchema> FunctionMatcherMixin<
     ReturnType, PreprocessingImpl, Function, Key, KeyHash,
     KeyEqualTo>::GetFunction(std::vector<format::Format *> packed_sfs, Key key,
@@ -415,5 +414,5 @@ std::tuple<Function, converter::ConversionSchema> FunctionMatcherMixin<
   }
   return std::make_tuple(func, cs);
 }
-}
+}  // namespace sparsebase::utils
 #endif  // SPARSEBASE_PROJECT_FUNCTIONMATCHERMIXIN_H

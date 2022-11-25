@@ -237,8 +237,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
                                   csr->get_row_ptr()[sparse_v_order[i]]))) {
         group_count = group_count + 1;
         logger.Log("Rows[" + std::to_string(start_split_reorder) + " -> " +
-                   std::to_string(i - 1) +
-                   "] NNZ Count: " + std::to_string(last_row_nnz_count),
+                       std::to_string(i - 1) +
+                       "] NNZ Count: " + std::to_string(last_row_nnz_count),
                    utils::LogLevel::LOG_LVL_INFO);
         // update nnz count for current row
         last_row_nnz_count = csr->get_row_ptr()[sparse_v_order[i] + 1] -
@@ -248,7 +248,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
         if (group_count == group_size) {
           end_split_reorder = i;
           logger.Log("Reorder Group[" + std::to_string(start_split_reorder) +
-                     " -> " + std::to_string(end_split_reorder - 1) + "]",
+                         " -> " + std::to_string(end_split_reorder - 1) + "]",
                      utils::LogLevel::LOG_LVL_INFO);
           // start next split the split for processing
 
@@ -273,8 +273,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
                  reorder_section[a - start_split_reorder].second) &&
                 (a < 100000)) {
               logger.Log("Rows[" + std::to_string(dec_begin_ind) + " -> " +
-                         std::to_string(a) + "] Grey Order: " +
-                         std::to_string(dec_begin) + "// Binary:",
+                             std::to_string(a) + "] Grey Order: " +
+                             std::to_string(dec_begin) + "// Binary:",
                          utils::LogLevel::LOG_LVL_INFO);
               // print_dec_in_bin(bin_to_grey(dec_begin));
 
@@ -311,8 +311,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       if (i == sparse_v_order.size() - 1) {
         end_split_reorder = sparse_v_order.size();
         logger.Log("Rows[" + std::to_string(start_split_reorder) + " -> " +
-                   std::to_string(end_split_reorder - 1) +
-                   "] NNZ Count: " + std::to_string(last_row_nnz_count),
+                       std::to_string(end_split_reorder - 1) +
+                       "] NNZ Count: " + std::to_string(last_row_nnz_count),
                    utils::LogLevel::LOG_LVL_INFO);
         if (!decresc_grey_order) {
           sort(reorder_section.begin(), reorder_section.end(), asc_comparator);
@@ -332,8 +332,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
 
   if (!is_dense_banded) {
     logger.Log("Rows [" + std::to_string(sparse_dense_split) + "-" +
-               std::to_string(n_rows) +
-               "] Starting Dense Sorting through NNZ and Grey code..",
+                   std::to_string(n_rows) +
+                   "] Starting Dense Sorting through NNZ and Grey code..",
                utils::LogLevel::LOG_LVL_INFO);
 
     for (int i = 0; i < dense_v_order.size(); i++) {
@@ -388,4 +388,4 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
 #if !defined(_HEADER_ONLY)
 #include "init/gray_reorder.inc"
 #endif
-}
+}  // namespace sparsebase::reorder

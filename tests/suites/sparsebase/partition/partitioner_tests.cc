@@ -27,12 +27,11 @@
 #include "sparsebase/converter/converter_cuda.cuh"
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
 #include "sparsebase/converter/converter_order_two_cuda.cuh"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #endif
 
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
-
 
 using namespace sparsebase;
 ;

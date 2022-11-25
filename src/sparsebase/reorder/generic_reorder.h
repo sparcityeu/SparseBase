@@ -16,7 +16,7 @@ class GenericReorder : public Reorderer<IDType> {
   typedef utils::Parameters ParamsType;
   GenericReorder();
 };
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/generic_reorder.cc"
 #endif

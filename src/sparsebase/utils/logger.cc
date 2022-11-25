@@ -1,11 +1,13 @@
 #include "logger.h"
+
+#include <algorithm>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <typeindex>
-#include <iostream>
-#include <fstream>
-#include <ctime>
-#include <sstream>
-#include <algorithm>
+
 #include "utils.h"
 namespace sparsebase::utils {
 
@@ -61,4 +63,4 @@ LogLevel Logger::level_ = LOG_LVL_WARNING;
 std::string Logger::filename_;
 bool Logger::use_stdout_ = true;
 bool Logger::use_stderr_ = false;
-}
+}  // namespace sparsebase::utils

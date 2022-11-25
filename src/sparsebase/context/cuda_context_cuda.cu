@@ -20,4 +20,4 @@ bool CUDAContext::IsEquivalent(Context *rhs) const {
   }
   return false;
 }
-}  // namespace sparsebase
+}  // namespace sparsebase::context

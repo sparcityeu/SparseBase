@@ -7,7 +7,6 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-
 #include "sparsebase/utils/class_matcher_mixin.h"
 #include "sparsebase/utils/extractable.h"
 #include "sparsebase/utils/utils.h"
@@ -36,16 +35,16 @@ class Extractor : public utils::ClassMatcherMixin<utils::Extractable *> {
       std::vector<Feature> &features, format::Format *format,
       const std::vector<context::Context *> &, bool convert_input);
   std::
-  unordered_map<std::type_index, std::any>
-  //! Computes the features that are added to in_ private data member.
-  /*!
-    Detailed Description.
-    @param format a format to be used as the data source.
-    @param con vector of contexts to be used to determine the where the
-    computation will take place. @return void
-  */
-  Extract(format::Format *format,
-          const std::vector<context::Context *> &con, bool convert_input);
+      unordered_map<std::type_index, std::any>
+      //! Computes the features that are added to in_ private data member.
+      /*!
+        Detailed Description.
+        @param format a format to be used as the data source.
+        @param con vector of contexts to be used to determine the where the
+        computation will take place. @return void
+      */
+      Extract(format::Format *format,
+              const std::vector<context::Context *> &con, bool convert_input);
   //! Adds a feature to private in_ data member.
   /*!
     Detailed Description.
@@ -85,7 +84,7 @@ class Extractor : public utils::ClassMatcherMixin<utils::Extractable *> {
    */
   std::unordered_map<std::type_index, utils::Extractable *> in_;
 };
-}
+}  // namespace sparsebase::feature
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/feature/extractor.cc"

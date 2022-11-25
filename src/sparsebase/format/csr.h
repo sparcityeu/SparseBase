@@ -1,9 +1,8 @@
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/utils.h"
-
-#include "sparsebase/format/format_order_two.h"
 #ifndef SPARSEBASE_PROJECT_CSR_H
 #define SPARSEBASE_PROJECT_CSR_H
 
@@ -26,38 +25,38 @@ namespace sparsebase::format {
  * in Algorithms and Architectures. CiteSeerX 10.1.1.211.5256.
  */
 template <typename IDType, typename NNZType, typename ValueType>
-class CSR
-    : public utils::IdentifiableImplementation<CSR<IDType, NNZType, ValueType>,
-        FormatOrderTwo<IDType, NNZType, ValueType>> {
-public:
-CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
-    Ownership own = kNotOwned, bool ignore_sort = false);
-CSR(const CSR<IDType, NNZType, ValueType> &);
-CSR(CSR<IDType, NNZType, ValueType> &&);
-CSR<IDType, NNZType, ValueType> &operator=(
-    const CSR<IDType, NNZType, ValueType> &);
-Format *Clone() const override;
-virtual ~CSR();
-NNZType *get_row_ptr() const;
-IDType *get_col() const;
-ValueType *get_vals() const;
+class CSR : public utils::IdentifiableImplementation<
+                CSR<IDType, NNZType, ValueType>,
+                FormatOrderTwo<IDType, NNZType, ValueType>> {
+ public:
+  CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
+      Ownership own = kNotOwned, bool ignore_sort = false);
+  CSR(const CSR<IDType, NNZType, ValueType> &);
+  CSR(CSR<IDType, NNZType, ValueType> &&);
+  CSR<IDType, NNZType, ValueType> &operator=(
+      const CSR<IDType, NNZType, ValueType> &);
+  Format *Clone() const override;
+  virtual ~CSR();
+  NNZType *get_row_ptr() const;
+  IDType *get_col() const;
+  ValueType *get_vals() const;
 
-NNZType *release_row_ptr();
-IDType *release_col();
-ValueType *release_vals();
+  NNZType *release_row_ptr();
+  IDType *release_col();
+  ValueType *release_vals();
 
-void set_row_ptr(NNZType *, Ownership own = kNotOwned);
-void set_col(IDType *, Ownership own = kNotOwned);
-void set_vals(ValueType *, Ownership own = kNotOwned);
+  void set_row_ptr(NNZType *, Ownership own = kNotOwned);
+  void set_col(IDType *, Ownership own = kNotOwned);
+  void set_vals(ValueType *, Ownership own = kNotOwned);
 
-virtual bool ColIsOwned();
-virtual bool RowPtrIsOwned();
-virtual bool ValsIsOwned();
+  virtual bool ColIsOwned();
+  virtual bool RowPtrIsOwned();
+  virtual bool ValsIsOwned();
 
-protected:
-std::unique_ptr<NNZType, std::function<void(NNZType *)>> row_ptr_;
-std::unique_ptr<IDType, std::function<void(IDType *)>> col_;
-std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
+ protected:
+  std::unique_ptr<NNZType, std::function<void(NNZType *)>> row_ptr_;
+  std::unique_ptr<IDType, std::function<void(IDType *)>> col_;
+  std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -101,7 +100,7 @@ struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter<
         dims[0], dims[1], new_row_ptr, new_col, new_vals, kOwned);
   }
 };
-}
+}  // namespace sparsebase::format
 
 #ifdef _HEADER_ONLY
 #include "csr.cc"

@@ -19,6 +19,6 @@ namespace sparsebase::converter {
 bool CUDAPeerToPeer(sparsebase::context::Context *from,
                     sparsebase::context::Context *to);
 
-}  // namespace sparsebase
+}  // namespace sparsebase::converter
 
 #endif  // SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_

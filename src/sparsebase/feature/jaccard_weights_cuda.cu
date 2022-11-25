@@ -1,6 +1,6 @@
-#include "sparsebase/format/cuda_csr_cuda.cuh"
-#include "sparsebase/format/cuda_array_cuda.cuh"
 #include "sparsebase/feature/jaccard_weights_cuda.cuh"
+#include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 
 namespace sparsebase::feature {
 
@@ -11,7 +11,7 @@ __global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj,
                                                       FeatureType *emetrics,
                                                       IDType SM_FAC);
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 format::CUDAArray<FeatureType> *RunJaccardKernel(
     format::CUDACSR<IDType, NNZType, ValueType> *cuda_csr) {
   context::CUDAContext *gpu_context =
@@ -42,9 +42,9 @@ format::CUDAArray<FeatureType> *RunJaccardKernel(
                (int)MAX_GRID_DIM);
 
   jac_binning_gpu_u_per_grid_bst_kernel<IDType, NNZType, FeatureType>
-  <<<grid, block, 0>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(),
-                       (NNZType)cuda_csr->get_dimensions()[0],
-                       jaccard_weights, 0);
+      <<<grid, block, 0>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(),
+                           (NNZType)cuda_csr->get_dimensions()[0],
+                           jaccard_weights, 0);
   cudaDeviceSynchronize();
   auto array = new format::CUDAArray<FeatureType>(
       cuda_csr->get_num_nnz(), jaccard_weights, *gpu_context);
@@ -152,4 +152,4 @@ __global__ void jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *xadj,
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/jaccard_weights_cuda.inc"
 #endif
-}
+}  // namespace sparsebase::feature

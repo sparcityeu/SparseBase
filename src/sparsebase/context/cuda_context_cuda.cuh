@@ -17,7 +17,7 @@ struct CUDAContext : utils::IdentifiableImplementation<CUDAContext, Context> {
   CUDAContext(int did);
   virtual bool IsEquivalent(Context *) const;
 };
-}  // namespace sparsebase
+}  // namespace sparsebase::context
 #ifdef _HEADER_ONLY
 #include "sparsebase/context/cuda_context_cuda.cu"
 #endif

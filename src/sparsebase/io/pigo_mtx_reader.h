@@ -1,11 +1,12 @@
 #ifndef SPARSEBASE_PROJECT_PIGO_MTX_READER_H
 #define SPARSEBASE_PROJECT_PIGO_MTX_READER_H
 
+#include <fstream>
+#include <string>
+
 #include "sparsebase/config.h"
 #include "sparsebase/io/reader.h"
-#include <string>
-#include <fstream>
-namespace sparsebase::io{
+namespace sparsebase::io {
 
 /*!
  * A parallelized MTX reader using the PIGO library
@@ -30,7 +31,7 @@ class PigoMTXReader : public Reader,
   bool weighted_;
   bool convert_to_zero_index_;
 };
-}
+}  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
 #include "pigo_mtx_reader.cc"
 #endif

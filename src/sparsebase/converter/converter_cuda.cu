@@ -9,12 +9,9 @@
 
 namespace sparsebase::converter {
 
-
 bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
-  if (!(to->get_id() ==
-            context::CUDAContext::get_id_static() ||
-        from->get_id() ==
-            context::CUDAContext::get_id_static()))
+  if (!(to->get_id() == context::CUDAContext::get_id_static() ||
+        from->get_id() == context::CUDAContext::get_id_static()))
     return false;
   auto from_gpu = static_cast<context::CUDAContext *>(from);
   auto to_gpu = static_cast<context::CUDAContext *>(to);
@@ -22,4 +19,4 @@ bool CUDAPeerToPeer(context::Context *from, context::Context *to) {
   cudaDeviceCanAccessPeer(&can_access, from_gpu->device_id, to_gpu->device_id);
   return can_access;
 }
-}  // namespace sparsebase
+}  // namespace sparsebase::converter

@@ -1,8 +1,9 @@
-#include "sparsebase/config.h"
-#include "sparsebase/io/reader.h"
 #include "sparsebase/io/edge_list_reader.h"
 
-namespace sparsebase::io{
+#include "sparsebase/config.h"
+#include "sparsebase/io/reader.h"
+
+namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 EdgeListReader<IDType, NNZType, ValueType>::EdgeListReader(
@@ -17,7 +18,7 @@ EdgeListReader<IDType, NNZType, ValueType>::EdgeListReader(
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType>
-*EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
+    *EdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
   std::ifstream infile(this->filename_);
   if (infile.is_open()) {
     if constexpr (std::is_same_v<ValueType, void>) {
@@ -157,7 +158,7 @@ format::COO<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
-*EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
+    *EdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
@@ -170,4 +171,4 @@ EdgeListReader<IDType, NNZType, ValueType>::~EdgeListReader(){};
 #ifndef _HEADER_ONLY
 #include "init/edge_list_reader.inc"
 #endif
-}
+}  // namespace sparsebase::io

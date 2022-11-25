@@ -1,8 +1,8 @@
 #ifndef SPARSEBASE_PROJECT_LOGGER_H
 #define SPARSEBASE_PROJECT_LOGGER_H
 
-#include <string>
 #include <fstream>
+#include <string>
 #include <typeindex>
 
 namespace sparsebase::utils {
@@ -41,7 +41,7 @@ class Logger {
 
   void Log(const std::string& message, LogLevel msg_level = LOG_LVL_INFO);
 };
-}
+}  // namespace sparsebase::utils
 #ifdef _HEADER_ONLY
 #include "logger.cc"
 #endif

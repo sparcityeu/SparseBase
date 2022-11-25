@@ -31,24 +31,25 @@ struct AMDReorderParams : utils::Parameters {
 
 //! A wrapper for the AMD reordering algorithm
 /*!
- * Wraps the AMD reordering algorithm library available here as supplemental material:
- * https://dl.acm.org/doi/abs/10.1145/1024074.1024081
- * The library must be compiled with the
- * USE_AMD_ORDER option turned on and the pre-built AMD library should be
- * available. See the Optional Dependencies page (under Getting Started) in our
- * documentation for more info.
+ * Wraps the AMD reordering algorithm library available here as supplemental
+ * material: https://dl.acm.org/doi/abs/10.1145/1024074.1024081 The library must
+ * be compiled with the USE_AMD_ORDER option turned on and the pre-built AMD
+ * library should be available. See the Optional Dependencies page (under
+ * Getting Started) in our documentation for more info.
  */
 template <typename IDType, typename NNZType, typename ValueType>
 class AMDReorder : public Reorderer<IDType> {
-public:
+ public:
   typedef AMDReorderParams ParamsType;
   AMDReorder(ParamsType);
   AMDReorder();
-protected:
-  static IDType* AMDReorderCSR(std::vector<format::Format*>, utils::Parameters*);
+
+ protected:
+  static IDType* AMDReorderCSR(std::vector<format::Format*>,
+                               utils::Parameters*);
 };
 #endif
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/amd_reorder.cc"
 #endif

@@ -54,10 +54,8 @@ class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
   Graph(Graph<VertexID, NumEdges, Weight> &&);
   Graph<VertexID, NumEdges, Weight> &operator=(
       const Graph<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCSR(
-      const io::ReadsCSR<VertexID, NumEdges, Weight> &);
-  void ReadConnectivityToCOO(
-      const io::ReadsCOO<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCSR(const io::ReadsCSR<VertexID, NumEdges, Weight> &);
+  void ReadConnectivityToCOO(const io::ReadsCOO<VertexID, NumEdges, Weight> &);
   void ReadConnectivityFromMTXToCOO(std::string filename);
   void ReadConnectivityFromEdgelistToCSR(std::string filename);
   void InitializeInfoFromConnection();

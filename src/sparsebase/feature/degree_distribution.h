@@ -1,10 +1,10 @@
 #include <vector>
 
 #include "sparsebase/config.h"
-#include "sparsebase/format/csr.h"
-#include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/feature/feature_preprocess_type.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/object/object.h"
+#include "sparsebase/utils/parameterizable.h"
 
 #ifndef SPARSEBASE_PROJECT_DEGREE_DISTRIBUTION_H
 #define SPARSEBASE_PROJECT_DEGREE_DISTRIBUTION_H
@@ -19,8 +19,9 @@ struct DegreeDistributionParams : utils::Parameters {};
  * should be a floating type
  */
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
-class DegreeDistribution : public feature::FeaturePreprocessType<FeatureType *> {
+          typename FeatureType>
+class DegreeDistribution
+    : public feature::FeaturePreprocessType<FeatureType *> {
  public:
   //! An empty struct used for the parameters of DegreeDistribution
   typedef DegreeDistributionParams ParamsType;
@@ -82,26 +83,26 @@ class DegreeDistribution : public feature::FeaturePreprocessType<FeatureType *> 
    */
   std::tuple<std::vector<std::vector<format::Format *>>, FeatureType *>
   GetDistributionCached(format::Format *format,
-  std::vector<context::Context *> contexts,
-  bool convert_input);
+                        std::vector<context::Context *> contexts,
+                        bool convert_input);
 
   static FeatureType
-  *
-  //! Degree distribution generation implementation function for CSRs
-  /*!
-   *
-   * @param format a single format pointer to any format
-   * @return an array of size formats[0].get_dimensions()[0] where element i
-   * is the degree distribution of the ith vertex in `formats[0]`
-   */
-  GetDegreeDistributionCSR(std::vector<format::Format *> formats,
-                           utils::Parameters *params);
+      *
+      //! Degree distribution generation implementation function for CSRs
+      /*!
+       *
+       * @param format a single format pointer to any format
+       * @return an array of size formats[0].get_dimensions()[0] where element i
+       * is the degree distribution of the ith vertex in `formats[0]`
+       */
+      GetDegreeDistributionCSR(std::vector<format::Format *> formats,
+                               utils::Parameters *params);
   ~DegreeDistribution();
 
  protected:
   void Register();
 };
-}
+}  // namespace sparsebase::feature
 #ifdef _HEADER_ONLY
 #include "sparsebase/feature/degree_distribution.cc"
 #endif

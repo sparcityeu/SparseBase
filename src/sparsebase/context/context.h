@@ -15,10 +15,10 @@
 #include "sparsebase/utils/utils.h"
 
 namespace sparsebase::context {
-struct Context : public utils::Identifiable{
+struct Context : public utils::Identifiable {
   virtual bool IsEquivalent(Context *) const = 0;
-  virtual ~Context(){}
+  virtual ~Context() {}
 };
 
-}  // namespace sparsebase
+}  // namespace sparsebase::context
 #endif  // SPARSEBASE_SPARSEBASE_CONTEXT_CONTEXT_H_

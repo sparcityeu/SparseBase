@@ -1,7 +1,7 @@
+#include <string>
+
 #include "sparsebase/config.h"
 #include "sparsebase/io/writer.h"
-
-#include <string>
 
 #ifndef SPARSEBASE_PROJECT_BINARY_WRITER_ORDER_ONE_H
 #define SPARSEBASE_PROJECT_BINARY_WRITER_ORDER_ONE_H
@@ -20,8 +20,7 @@ class BinaryWriterOrderOne : public Writer, public WritesArray<T> {
   std::string filename_;
 };
 
-
-}
+}  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
 #include "binary_writer_order_one.cc"
 #endif

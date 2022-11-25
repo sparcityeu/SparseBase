@@ -1,4 +1,5 @@
 #include "sparsebase/format/csr.h"
+
 #include "sparsebase/utils/logger.h"
 namespace sparsebase::format {
 template <typename IDType, typename NNZType, typename ValueType>
@@ -249,8 +250,7 @@ bool CSR<IDType, NNZType, ValueType>::ValsIsOwned() {
 template <typename IDType, typename NNZType, typename ValueType>
 CSR<IDType, NNZType, ValueType>::~CSR() {}
 
-
 #ifndef _HEADER_ONLY
 #include "init/csr.inc"
 #endif
-}
+}  // namespace sparsebase::format

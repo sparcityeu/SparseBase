@@ -1,8 +1,9 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/partition/partitioner.h"
-#include "sparsebase/format/csr.h"
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/partition/partitioner.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_METIS_PARTITION_H
 #define SPARSEBASE_PROJECT_METIS_PARTITION_H
 #ifdef USE_METIS
@@ -64,7 +65,7 @@ class MetisPartition : public Partitioner<IDType> {
 
 #endif
 
-}
+}  // namespace sparsebase::partition
 #ifdef _HEADER_ONLY
 #include "sparsebase/partition/metis_partition.cc"
 #endif

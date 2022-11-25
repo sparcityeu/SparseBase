@@ -41,8 +41,7 @@ class RCMReorder : public Reorderer<IDType> {
                                utils::Parameters *);
 };
 
-
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/rcm_reorder.cc"
 #endif

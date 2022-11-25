@@ -30,7 +30,7 @@ using namespace sparsebase::reorder;
 using namespace sparsebase::bases;
 #include "../functionality_common.inc"
 TEST(RCMReorderTest, BasicTest) {
-RCMReorder<int, int, int> reorder;
-auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
-check_reorder(order, n);
+  RCMReorder<int, int, int> reorder;
+  auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
+  check_reorder(order, n);
 }

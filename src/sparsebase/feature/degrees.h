@@ -1,9 +1,9 @@
 #include <vector>
 
 #include "sparsebase/config.h"
+#include "sparsebase/feature/feature_preprocess_type.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/feature/feature_preprocess_type.h"
 
 #ifndef SPARSEBASE_PROJECT_DEGREES_H
 #define SPARSEBASE_PROJECT_DEGREES_H
@@ -41,21 +41,21 @@ class Degrees : public feature::FeaturePreprocessType<IDType *> {
                      std::vector<context::Context *> contexts,
                      bool convert_input);
   std::
-  tuple<std::vector<std::vector<format::Format *>>, IDType *>
-  //! Degree generation executor function that carries out function matching
-  //! with cached output
-  /*!
-   *
-   * @param format a single format pointer to any format
-   * @param contexts vector of contexts that can be used for extracting
-   * features.
-   * @param convert_input whether or not to convert the input format if that
-   * is needed. @return an array of size format.get_dimensions()[0] where
-   * element i is the degree of the ith vertex in `format`
-   */
-  GetDegreesCached(format::Format *format,
-  std::vector<context::Context *> contexts,
-  bool convert_input);
+      tuple<std::vector<std::vector<format::Format *>>, IDType *>
+      //! Degree generation executor function that carries out function matching
+      //! with cached output
+      /*!
+       *
+       * @param format a single format pointer to any format
+       * @param contexts vector of contexts that can be used for extracting
+       * features.
+       * @param convert_input whether or not to convert the input format if that
+       * is needed. @return an array of size format.get_dimensions()[0] where
+       * element i is the degree of the ith vertex in `format`
+       */
+      GetDegreesCached(format::Format *format,
+                       std::vector<context::Context *> contexts,
+                       bool convert_input);
   //! Degree generation implementation function for CSRs
   /*!
    *
@@ -73,7 +73,7 @@ class Degrees : public feature::FeaturePreprocessType<IDType *> {
   void Register();
 };
 
-}
+}  // namespace sparsebase::feature
 #ifdef _HEADER_ONLY
 #include "sparsebase/feature/degrees.cc"
 #endif

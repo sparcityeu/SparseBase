@@ -1,16 +1,18 @@
-#include "sparsebase/config.h"
 #include "pigo_edge_list_reader.h"
-#include "sparsebase/io/edge_list_reader.h"
-#include <string>
+
 #include <fstream>
+#include <string>
+
+#include "sparsebase/config.h"
+#include "sparsebase/io/edge_list_reader.h"
 #ifdef USE_PIGO
 #include "sparsebase/external/pigo/pigo.hpp"
 #endif
-namespace sparsebase::io{
+namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
-*PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
+    *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCSR() const {
   format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converter;
   return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
@@ -19,7 +21,7 @@ format::CSR<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType>
-*PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
+    *PigoEdgeListReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #ifdef USE_PIGO
   if (weighted_) {
     if constexpr (!std::is_same_v<ValueType, void>) {
@@ -68,4 +70,4 @@ PigoEdgeListReader<IDType, NNZType, ValueType>::PigoEdgeListReader(
 #ifndef _HEADER_ONLY
 #include "init/pigo_edge_list_reader.inc"
 #endif
-}
+}  // namespace sparsebase::io

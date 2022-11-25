@@ -32,7 +32,7 @@ class RabbitReorder : public Reorderer<IDType> {
 
 #endif
 
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/rabbit_reorder.cc"
 #endif

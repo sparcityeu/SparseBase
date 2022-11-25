@@ -1,13 +1,13 @@
 #include <iostream>
 
+#include "sparsebase/feature/degree_distribution.h"
+#include "sparsebase/feature/degrees.h"
 #include "sparsebase/feature/feature_extractor.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/io/mtx_reader.h"
-#include "sparsebase/feature/degrees.h"
-#include "sparsebase/feature/degree_distribution.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -20,7 +20,7 @@ using feature_type = double;
 
 using degrees = feature::Degrees<vertex_type, edge_type, value_type>;
 using degree_dist = feature::DegreeDistribution<vertex_type, edge_type,
-                                                   value_type, feature_type>;
+                                                value_type, feature_type>;
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -44,9 +44,9 @@ int main(int argc, char *argv[]) {
     engine.Add(feature::Feature(degrees{}));
     engine.Subtract(feature::Feature(degrees{}));
     try {
-      engine.Add(feature::Feature(
-          feature::DegreeDistribution<vertex_type, edge_type,
-                                                     value_type, float>{}));
+      engine.Add(
+          feature::Feature(feature::DegreeDistribution<vertex_type, edge_type,
+                                                       value_type, float>{}));
     } catch (utils::FeatureException &ex) {
       cout << ex.what() << endl;
     }
@@ -67,10 +67,9 @@ int main(int argc, char *argv[]) {
     // extract features
     auto raws = engine.Extract(coo, {&cpu_context}, true);
     cout << "#features extracted: " << raws.size() << endl;
-    auto dgrs =
-        std::any_cast<vertex_type *>(raws[degrees::get_id_static()]);
-    auto dst = std::any_cast<feature_type *>(
-        raws[degree_dist::get_id_static()]);
+    auto dgrs = std::any_cast<vertex_type *>(raws[degrees::get_id_static()]);
+    auto dst =
+        std::any_cast<feature_type *>(raws[degree_dist::get_id_static()]);
     cout << "vertex 0 => degree: " << dgrs[2] << endl;
     cout << "dst[0] " << dst[2] << endl;
   }

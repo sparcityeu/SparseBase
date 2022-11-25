@@ -9,13 +9,13 @@
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_H_
 
+#include <any>
 #include <cstdint>
 #include <fstream>
 #include <limits>
 #include <string>
 #include <typeindex>
 #include <typeinfo>
-#include <any>
 
 #include "exception.h"
 
@@ -39,7 +39,8 @@ using std::numeric_limits;
 template <typename T, typename U>
 bool CanTypeFitValue(const U value) {
   bool decision;
-  if constexpr (std::is_integral_v<T> != std::is_integral_v<U>) decision = false;
+  if constexpr (std::is_integral_v<T> != std::is_integral_v<U>)
+    decision = false;
   if constexpr (std::is_integral_v<T> && std::is_integral_v<U>) {
     const intmax_t botT = []() {
       intmax_t ret;
@@ -52,36 +53,36 @@ bool CanTypeFitValue(const U value) {
     const intmax_t botU = []() {
       intmax_t ret;
       if constexpr (std::is_floating_point_v<U>)
-        ret= intmax_t(-(numeric_limits<U>::max()));
+        ret = intmax_t(-(numeric_limits<U>::max()));
       else
-        ret= intmax_t(numeric_limits<U>::min());
+        ret = intmax_t(numeric_limits<U>::min());
       return ret;
     }();
     const uintmax_t topT = uintmax_t(numeric_limits<T>::max());
     const uintmax_t topU = uintmax_t(numeric_limits<U>::max());
     decision = !((botT > botU && value < (U)(botT)) ||
-             (topT < topU && value > (U)(topT)));
+                 (topT < topU && value > (U)(topT)));
   } else if constexpr (!std::is_integral_v<T> && !std::is_integral_v<U>) {
     const double botT = []() {
       T ret;
       if constexpr (std::is_floating_point_v<T>)
-        ret= T(-(numeric_limits<T>::max()));
+        ret = T(-(numeric_limits<T>::max()));
       else
-        ret= T(numeric_limits<T>::min());
+        ret = T(numeric_limits<T>::min());
       return ret;
     }();
     const double botU = []() {
       U ret;
       if constexpr (std::is_floating_point_v<U>)
-        ret= U(-(numeric_limits<U>::max()));
+        ret = U(-(numeric_limits<U>::max()));
       else
-        ret= U(numeric_limits<U>::min());
+        ret = U(numeric_limits<U>::min());
       return ret;
     }();
     const double topT = numeric_limits<T>::max();
     const double topU = numeric_limits<U>::max();
     decision = !((botT > botU && value < (U)(botT)) ||
-             (topT < topU && value > (U)(topT)));
+                 (topT < topU && value > (U)(topT)));
   }
   return decision;
   //} else if constexpr (std::is_integral_v<T> && !std::is_integral_v<U> ){
@@ -127,8 +128,9 @@ inline bool isTypeConversionSafe(FromType from_val, ToType to_val) {
 }
 
 template <typename ToType, typename FromType, typename SizeType>
-ToType* ConvertArrayType(FromType* from_ptr, SizeType size) {
-  if constexpr (!(std::is_same_v<ToType, void> && std::is_same_v<FromType, void>)){
+ToType *ConvertArrayType(FromType *from_ptr, SizeType size) {
+  if constexpr (!(std::is_same_v<ToType, void> &&
+                  std::is_same_v<FromType, void>)) {
     if (from_ptr == nullptr) return nullptr;
     auto to_ptr = new ToType[size];
     for (SizeType i = 0; i < size; i++) {
@@ -151,9 +153,9 @@ class OnceSettable {
  public:
   OnceSettable() : is_set_(false) {}
   operator T() const { return data_; }
-  OnceSettable(const OnceSettable&) = delete;
-  OnceSettable(OnceSettable&&) = delete;
-  OnceSettable& operator=(T&& data) {
+  OnceSettable(const OnceSettable &) = delete;
+  OnceSettable(OnceSettable &&) = delete;
+  OnceSettable &operator=(T &&data) {
     if (!is_set_) {
       data_ = std::move(data);
       is_set_ = true;
@@ -161,35 +163,32 @@ class OnceSettable {
     }
     throw utils::AttemptToReset<T>();
   }
-  const T& get() const { return data_; }
+  const T &get() const { return data_; }
 
  private:
   T data_;
   bool is_set_;
 };
-std::string demangle(const std::string& name);
+std::string demangle(const std::string &name);
 
 std::string demangle(std::type_index type);
 
 class Identifiable {
-  public:
+ public:
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
   virtual std::type_index get_id() const = 0;
 
   virtual std::string get_name() const = 0;
-
 };
 template <typename IdentifiableType, typename Base>
-class IdentifiableImplementation : public Base{
-  public:
+class IdentifiableImplementation : public Base {
+ public:
   //! Returns the std::type_index for the concrete Format class that this
   //! instance is a member of
   virtual std::type_index get_id() const { return typeid(IdentifiableType); }
 
-  virtual std::string get_name() const {
-    return utils::demangle(get_id());
-  };
+  virtual std::string get_name() const { return utils::demangle(get_id()); };
 
   //! A static variant of the get_id() function
   static std::type_index get_id_static() { return typeid(IdentifiableType); }
@@ -197,10 +196,7 @@ class IdentifiableImplementation : public Base{
   static std::string get_name_static() {
     return utils::demangle(get_id_static());
   };
-
 };
-
-
 
 template <typename Interface>
 struct Implementation {

@@ -1,28 +1,21 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/partition/partitioner.h"
-#include "sparsebase/format/csr.h"
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/partition/partitioner.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_PATOH_PARTITION_H
 #define SPARSEBASE_PROJECT_PATOH_PARTITION_H
 namespace sparsebase::partition {
 
-
 #ifdef USE_PATOH
 
 namespace patoh {
-enum Objective {
-  CON = 1,
-  CUT = 2
-};
+enum Objective { CON = 1, CUT = 2 };
 
-enum ParameterInit {
-  DEFAULT = 0,
-  SPEED = 1,
-  QUALITY = 2
-};
+enum ParameterInit { DEFAULT = 0, SPEED = 1, QUALITY = 2 };
 
-}
+}  // namespace patoh
 
 //! Parameters for the PulpPartition class
 struct PatohPartitionParams : utils::Parameters {
@@ -55,9 +48,7 @@ class PatohPartition : public Partitioner<IDType> {
 };
 #endif
 
-
-
-}
+}  // namespace sparsebase::partition
 #ifdef _HEADER_ONLY
 #include "sparsebase/partition/patoh_partition.cc"
 #endif

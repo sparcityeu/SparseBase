@@ -2,8 +2,9 @@
 // Created by Amro on 3/31/2022.
 //
 
-#include "sparsebase/context/context.h"
 #include "sparsebase/context/cpu_context.h"
+
+#include "sparsebase/context/context.h"
 
 namespace sparsebase::context {
 

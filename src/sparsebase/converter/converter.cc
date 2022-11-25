@@ -11,11 +11,9 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-
-#include "sparsebase/utils/utils.h"
-#include "sparsebase/utils/logger.h"
 #include "sparsebase/utils/exception.h"
-
+#include "sparsebase/utils/logger.h"
+#include "sparsebase/utils/utils.h"
 
 namespace sparsebase::converter {
 
@@ -26,13 +24,13 @@ ConversionMap *Converter::get_conversion_map(bool is_move_conversion) {
     return &copy_conversion_map_;
 }
 
-const ConversionMap * Converter::get_conversion_map(bool is_move_conversion) const {
+const ConversionMap *Converter::get_conversion_map(
+    bool is_move_conversion) const {
   if (is_move_conversion)
     return &move_conversion_map_;
   else
     return &copy_conversion_map_;
 }
-
 
 void Converter::RegisterConversionFunction(std::type_index from_type,
                                            std::type_index to_type,
@@ -64,9 +62,10 @@ void Converter::RegisterConversionFunction(std::type_index from_type,
   }
 }
 
-format::Format *Converter::Convert(format::Format *source, std::type_index to_type,
-                           std::vector<context::Context *> to_contexts,
-                           bool is_move_conversion) const {
+format::Format *Converter::Convert(format::Format *source,
+                                   std::type_index to_type,
+                                   std::vector<context::Context *> to_contexts,
+                                   bool is_move_conversion) const {
   auto outputs =
       ConvertCached(source, to_type, to_contexts, is_move_conversion);
   if (outputs.size() > 1)
@@ -78,9 +77,10 @@ format::Format *Converter::Convert(format::Format *source, std::type_index to_ty
   return outputs.back();
 }
 
-std::vector<format::Format *> Converter::ConvertCached (
+std::vector<format::Format *> Converter::ConvertCached(
     format::Format *source, std::type_index to_type,
-    std::vector<context::Context *> to_contexts, bool is_move_conversion) const {
+    std::vector<context::Context *> to_contexts,
+    bool is_move_conversion) const {
   if (to_type == source->get_id() &&
       std::find_if(to_contexts.begin(), to_contexts.end(),
                    [&source](context::Context *from) {
@@ -90,26 +90,26 @@ std::vector<format::Format *> Converter::ConvertCached (
   }
 
   ConversionChain chain =
-      GetConversionChain(source->get_id(), source->get_context(),
-                         to_type, to_contexts, is_move_conversion);
+      GetConversionChain(source->get_id(), source->get_context(), to_type,
+                         to_contexts, is_move_conversion);
   if (!chain)
     throw utils::ConversionException(source->get_name(),
-                              utils::demangle(to_type));
+                                     utils::demangle(to_type));
   auto outputs = ApplyConversionChain(chain, source, false);
   return std::vector<format::Format *>(outputs.begin() + 1, outputs.end());
 }
 
-format::Format *Converter::Convert(format::Format *source, std::type_index to_type,
-                           context::Context *to_context,
-                           bool is_move_conversion) const {
+format::Format *Converter::Convert(format::Format *source,
+                                   std::type_index to_type,
+                                   context::Context *to_context,
+                                   bool is_move_conversion) const {
   return Convert(source, to_type, std::vector<context::Context *>({to_context}),
                  is_move_conversion);
 }
 
-std::vector<format::Format *> Converter::ConvertCached(format::Format *source,
-                                               std::type_index to_type,
-                                               context::Context *to_context,
-                                               bool is_move_conversion) const {
+std::vector<format::Format *> Converter::ConvertCached(
+    format::Format *source, std::type_index to_type,
+    context::Context *to_context, bool is_move_conversion) const {
   return ConvertCached(source, to_type,
                        std::vector<context::Context *>({to_context}),
                        is_move_conversion);
@@ -138,7 +138,7 @@ std::forward<context::Context *>(to_context));
 std::vector<ConversionStep> Converter::ConversionBFS(
     std::type_index from_type, context::Context *from_context,
     std::type_index to_type, const std::vector<context::Context *> &to_contexts,
-    const ConversionMap * map) {
+    const ConversionMap *map) {
   std::deque<std::type_index> frontier{from_type};
   std::unordered_map<std::type_index,
                      std::pair<std::type_index, ConversionStep>>
@@ -155,18 +155,19 @@ std::vector<ConversionStep> Converter::ConversionBFS(
         for (const auto &neighbor : map->at(curr)) {
           if (seen.find(neighbor.first) == seen.end()) {
             for (auto curr_to_neighbor_functions :
-                neighbor.second) {  // go over every edge curr->neighbor
+                 neighbor.second) {  // go over every edge curr->neighbor
               bool found_an_edge = false;
-              for (auto to_context : to_contexts) {  // check if, with the given
-                                                    // contexts, this edge exists
+              for (auto to_context :
+                   to_contexts) {  // check if, with the given
+                                   // contexts, this edge exists
                 if (std::get<0>(curr_to_neighbor_functions)(from_context,
                                                             to_context)) {
                   seen.emplace(
                       neighbor.first,
                       std::make_pair(
-                          curr,
-                          std::make_tuple(std::get<1>(curr_to_neighbor_functions),
-                                          to_context, 1)));
+                          curr, std::make_tuple(
+                                    std::get<1>(curr_to_neighbor_functions),
+                                    to_context, 1)));
                   frontier.emplace_back(neighbor.first);
                   if (neighbor.first == to_type) {
                     std::vector<ConversionStep> output(level);

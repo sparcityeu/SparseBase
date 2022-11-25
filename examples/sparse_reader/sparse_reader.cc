@@ -1,10 +1,10 @@
 #include <iostream>
 
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/format/csr.h"
-#include "sparsebase/object/object.h"
 #include "sparsebase/io/mtx_reader.h"
+#include "sparsebase/object/object.h"
 
 using vertex_type = unsigned int;
 using edge_type = unsigned int;
@@ -27,8 +27,7 @@ int main(int argc, char *argv[]) {
   // value_type>(file_name);
   object::Graph<vertex_type, edge_type, value_type> g;
   g.ReadConnectivityToCOO(
-      sparsebase::io::MTXReader<vertex_type, edge_type, value_type>(
-          file_name));
+      sparsebase::io::MTXReader<vertex_type, edge_type, value_type>(file_name));
 
   cout << "Number of vertices: " << g.n_ << endl;
   cout << "Number of edges: " << g.m_ << endl;

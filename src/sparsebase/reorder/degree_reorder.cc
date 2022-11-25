@@ -1,6 +1,7 @@
 #include "sparsebase/reorder/degree_reorder.h"
-#include "sparsebase/reorder/degree_reorder.h"
+
 #include "sparsebase/format/csr.h"
+#include "sparsebase/reorder/degree_reorder.h"
 
 namespace sparsebase::reorder {
 
@@ -15,14 +16,13 @@ DegreeReorder<IDType, NNZType, ValueType>::DegreeReorder(bool ascending) {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       CalculateReorderCSR);
-  this->params_ =
-      std::make_unique<DegreeReorderParams>(ascending);
+  this->params_ = std::make_unique<DegreeReorderParams>(ascending);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
   format::CSR<IDType, NNZType, ValueType> *csr =
-                                   formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
   bool ascending = cast_params->ascending;
   IDType n = csr->get_dimensions()[0];
@@ -62,4 +62,4 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
 #if !defined(_HEADER_ONLY)
 #include "init/degree_reorder.inc"
 #endif
-}
+}  // namespace sparsebase::reorder

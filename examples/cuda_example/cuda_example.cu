@@ -2,12 +2,12 @@
 
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/converter/converter_order_one.h"
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/csr.h"
-#include "sparsebase/format/array.h"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
-#include "sparsebase/format/cuda_array_cuda.cuh"
 #include "sparsebase/feature/jaccard_weights.h"
+#include "sparsebase/format/array.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
+#include "sparsebase/format/format.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -59,8 +59,7 @@ int main() {
   format::CSR<int, int, int> *csr =
       new format::CSR<int, int, int>(5, 5, row_ptr, col, vals);
 
-  auto graph_converter =
-      new converter::ConverterOrderTwo<int, int, int>();
+  auto graph_converter = new converter::ConverterOrderTwo<int, int, int>();
   auto array_converter = new converter::ConverterOrderOne<float>();
 
   feature::JaccardWeights<int, int, int, float> jac;
@@ -71,16 +70,14 @@ int main() {
         array_converter->Convert<format::Array<float>>(array, &cpu_context);
     print_array(cpu_array->get_vals(), cpu_array->get_num_nnz());
   }
-  if (array->get_id() ==
-      context::CUDAContext::get_id_static()) {
-    auto gpu_array = array_converter->Convert<format::CUDAArray<float>>(
-        array, &gpu_context);
+  if (array->get_id() == context::CUDAContext::get_id_static()) {
+    auto gpu_array =
+        array_converter->Convert<format::CUDAArray<float>>(array, &gpu_context);
     print_array_cuda<<<1, 1>>>(gpu_array->get_vals(), gpu_array->get_num_nnz());
   }
 
-  auto cuda_csr =
-      graph_converter->Convert<format::CUDACSR<int, int, int>>(
-          csr, &gpu_context);
+  auto cuda_csr = graph_converter->Convert<format::CUDACSR<int, int, int>>(
+      csr, &gpu_context);
 
   print_csr_cuda<<<1, 1>>>(cuda_csr->get_row_ptr(), cuda_csr->get_col(),
                            cuda_csr->get_dimensions()[0]);
