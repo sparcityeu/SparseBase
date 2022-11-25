@@ -2,8 +2,8 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/utils/parameterizable.h"
 #include "sparsebase/utils/function_matcher_mixin.h"
+#include "sparsebase/utils/parameterizable.h"
 
 #ifndef SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
 #define SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
@@ -13,7 +13,7 @@ struct JaccardWeightsParams : utils::Parameters {};
 //! Calculate the Jaccard Weights of the edges in a graph representation of a
 //! format object
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 class JaccardWeights : public utils::FunctionMatcherMixin<format::Format *> {
  public:
   //! An empty struct used for the parameters of JaccardWeights
@@ -50,7 +50,7 @@ class JaccardWeights : public utils::FunctionMatcherMixin<format::Format *> {
   ~JaccardWeights();
 };
 
-}
+}  // namespace sparsebase::feature
 #ifdef _HEADER_ONLY
 #include "sparsebase/feature/jaccard_weights.cc"
 #endif
@@ -61,6 +61,5 @@ class JaccardWeights : public utils::FunctionMatcherMixin<format::Format *> {
 #include "sparsebase/feature/jaccard_weights_cuda.cu"
 #endif
 #endif
-
 
 #endif  // SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H

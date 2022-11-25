@@ -14,7 +14,7 @@ format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
 template <typename ValueType>
 format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
                                                   context::Context *context);
-}
+}  // namespace sparsebase::converter
 #ifdef _HEADER_ONLY
 #include "converter_order_one_cuda.cu"
 #endif

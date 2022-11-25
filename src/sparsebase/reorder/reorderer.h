@@ -9,13 +9,12 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-
-#include "sparsebase/converter/converter.h"
-#include "sparsebase/utils/function_matcher_mixin.h"
 #include "sparsebase/utils/extractable.h"
+#include "sparsebase/utils/function_matcher_mixin.h"
 #ifndef SPARSEBASE_PROJECT_REORDERING_H
 #define SPARSEBASE_PROJECT_REORDERING_H
 
@@ -118,8 +117,6 @@ class Reorderer : public utils::FunctionMatcherMixin<IDType *> {
                    bool convert_input);
   virtual ~Reorderer();
 };
-
-
 
 }  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY

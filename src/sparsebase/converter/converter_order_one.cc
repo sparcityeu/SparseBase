@@ -1,14 +1,15 @@
-#include "sparsebase/converter/converter.h"
 #include "sparsebase/converter/converter_order_one.h"
+
+#include "sparsebase/converter/converter.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/array.h"
 
 #ifdef USE_CUDA
 #include "sparsebase/converter/converter_cuda.cuh"
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #endif
 namespace sparsebase::converter {
 
@@ -29,16 +30,14 @@ void ConverterOrderOne<ValueType>::ResetConverterOrderOne() {
       format::CUDAArray<ValueType>::get_id_static(),
       converter::ArrayCUDAArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_id() ==
-               context::CUDAContext::get_id_static();
+        return to->get_id() == context::CUDAContext::get_id_static();
       });
   this->RegisterConversionFunction(
       format::CUDAArray<ValueType>::get_id_static(),
       format::Array<ValueType>::get_id_static(),
       converter::CUDAArrayArrayConditionalFunction<ValueType>,
       [](context::Context *, context::Context *to) -> bool {
-        return to->get_id() ==
-               context::CPUContext::get_id_static();
+        return to->get_id() == context::CPUContext::get_id_static();
       });
 #endif
 }
@@ -51,4 +50,4 @@ ConverterOrderOne<ValueType>::ConverterOrderOne() {
 #ifndef _HEADER_ONLY
 #include "init/converter_order_one.inc"
 #endif
-}
+}  // namespace sparsebase::converter

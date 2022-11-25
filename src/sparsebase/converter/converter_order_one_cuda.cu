@@ -1,10 +1,9 @@
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
-#include "sparsebase/format/format.h"
-#include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/array.h"
 #include "sparsebase/format/cuda_array_cuda.cuh"
-
+#include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
 
 namespace sparsebase::converter {
 template <typename ValueType>
@@ -38,9 +37,9 @@ format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
                cudaMemcpyHostToDevice);
   }
   return new format::CUDAArray<ValueType>(array->get_num_nnz(), vals,
-                                                *gpu_context);
+                                          *gpu_context);
 }
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/converter_order_one_cuda.inc"
 #endif
-}
+}  // namespace sparsebase::converter

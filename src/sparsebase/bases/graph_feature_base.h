@@ -1,5 +1,3 @@
-#include "sparsebase/feature/degrees.h"
-#include "sparsebase/feature/degree_distribution.h"
 #include <algorithm>
 #include <iostream>
 #include <limits>
@@ -11,6 +9,9 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include "sparsebase/feature/degree_distribution.h"
+#include "sparsebase/feature/degrees.h"
 #ifndef SPARSEBASE_PROJECT_GRAPH_FEATURE_BASE_H
 #define SPARSEBASE_PROJECT_GRAPH_FEATURE_BASE_H
 
@@ -30,11 +31,12 @@ class GraphFeatureBase {
    * with the degree distribution of each vertex.
    */
   template <typename FeatureType, typename AutoIDType, typename AutoNNZType,
-      typename AutoValueType>
+            typename AutoValueType>
   static FeatureType *GetDegreeDistribution(
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
       std::vector<context::Context *> contexts, bool convert_input) {
-    feature::DegreeDistribution<AutoIDType, AutoNNZType, AutoValueType, FeatureType>
+    feature::DegreeDistribution<AutoIDType, AutoNNZType, AutoValueType,
+                                FeatureType>
         deg_dist;
     return deg_dist.GetDistribution(format, contexts, convert_input);
   }
@@ -52,19 +54,20 @@ class GraphFeatureBase {
    * to execute the permutation).
    */
   template <typename FeatureType, typename AutoIDType, typename AutoNNZType,
-      typename AutoValueType>
+            typename AutoValueType>
   static std::pair<std::vector<format::FormatOrderTwo<AutoIDType, AutoNNZType,
-      AutoValueType> *>,
-  FeatureType *>
+                                                      AutoValueType> *>,
+                   FeatureType *>
   GetDegreeDistributionCached(
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
-  std::vector<context::Context *> contexts) {
-    feature::DegreeDistribution<AutoIDType, AutoNNZType, AutoValueType, FeatureType>
+      std::vector<context::Context *> contexts) {
+    feature::DegreeDistribution<AutoIDType, AutoNNZType, AutoValueType,
+                                FeatureType>
         deg_dist;
     auto output = deg_dist.GetDistributionCached(format, contexts, true);
     std::vector<
-    format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
-                                                    converted_formats;
+        format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
+        converted_formats;
     std::transform(
         std::get<0>(output)[0].begin(), std::get<0>(output)[0].end(),
         std::back_inserter(converted_formats),
@@ -107,16 +110,16 @@ class GraphFeatureBase {
    */
   template <typename AutoIDType, typename AutoNNZType, typename AutoValueType>
   static std::pair<std::vector<format::FormatOrderTwo<AutoIDType, AutoNNZType,
-      AutoValueType> *>,
-  AutoNNZType *>
+                                                      AutoValueType> *>,
+                   AutoNNZType *>
   GetDegreesCached(
       format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
-  std::vector<context::Context *> contexts) {
+      std::vector<context::Context *> contexts) {
     feature::Degrees<AutoIDType, AutoNNZType, AutoValueType> deg_dist;
     auto output = deg_dist.GetDegreesCached(format, contexts, true);
     std::vector<
-    format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
-                                                    converted_formats;
+        format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
+        converted_formats;
     std::transform(
         std::get<0>(output)[0].begin(), std::get<0>(output)[0].end(),
         std::back_inserter(converted_formats),
@@ -128,6 +131,6 @@ class GraphFeatureBase {
     return std::make_pair(converted_formats, std::get<1>(output));
   }
 };
-}
+}  // namespace sparsebase::bases
 
 #endif  // SPARSEBASE_PROJECT_GRAPH_FEATURE_BASE_H

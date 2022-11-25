@@ -17,7 +17,7 @@ class ConverterOrderTwo
   void ResetConverterOrderTwo();
   virtual void Reset();
 };
-}
+}  // namespace sparsebase::converter
 #ifdef _HEADER_ONLY
 #include "converter_order_two.cc"
 #endif

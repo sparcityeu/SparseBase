@@ -9,13 +9,12 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-
-#include "sparsebase/converter/converter.h"
-#include "sparsebase/utils/function_matcher_mixin.h"
 #include "sparsebase/utils/extractable.h"
+#include "sparsebase/utils/function_matcher_mixin.h"
 #ifndef SPARSEBASE_PROJECT_PERMUTER_H
 #define SPARSEBASE_PROJECT_PERMUTER_H
 
@@ -25,9 +24,8 @@ template <typename InputFormatType, typename ReturnFormatType>
 class Permuter : public utils::FunctionMatcherMixin<ReturnFormatType *> {
  public:
   Permuter() {
-    static_assert(
-        std::is_base_of<format::Format, InputFormatType>::value,
-        "Permuter must take as input a Format object");
+    static_assert(std::is_base_of<format::Format, InputFormatType>::value,
+                  "Permuter must take as input a Format object");
     static_assert(std::is_base_of<format::Format, ReturnFormatType>::value,
                   "Permuter must return a Format object");
   }
@@ -57,7 +55,8 @@ class Permuter : public utils::FunctionMatcherMixin<ReturnFormatType *> {
    * needed.
    * @return a transformed Format object
    */
-  ReturnFormatType *GetPermutation(format::Format *csr, utils::Parameters *params,
+  ReturnFormatType *GetPermutation(format::Format *csr,
+                                   utils::Parameters *params,
                                    std::vector<context::Context *>,
                                    bool convert_input);
   //! Permute `format` to a new format according to an inverse permutation
@@ -77,8 +76,8 @@ class Permuter : public utils::FunctionMatcherMixin<ReturnFormatType *> {
    */
   std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
   GetPermutationCached(format::Format *csr,
-  std::vector<context::Context *> contexts,
-  bool convert_input);
+                       std::vector<context::Context *> contexts,
+                       bool convert_input);
   //! Permute `format` to a new format according to an inverse permutation
   //! using one of the contexts in `contexts`
   /*!
@@ -97,12 +96,12 @@ class Permuter : public utils::FunctionMatcherMixin<ReturnFormatType *> {
    */
   std::tuple<std::vector<std::vector<format::Format *>>, ReturnFormatType *>
   GetPermutationCached(format::Format *csr, utils::Parameters *params,
-      std::vector<context::Context *> contexts,
-  bool convert_input);
+                       std::vector<context::Context *> contexts,
+                       bool convert_input);
   virtual ~Permuter();
 };
 
-}  // namespace sparsebase::reorder
+}  // namespace sparsebase::permute
 #ifdef _HEADER_ONLY
 #include "sparsebase/permute/permuter.cc"
 #endif

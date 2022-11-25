@@ -11,18 +11,16 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
-#include "sparsebase/utils/exception.h"
-#include "sparsebase/utils/utils.h"
-
 #include "sparsebase/converter/converter_order_two.h"
 #include "sparsebase/format/format_implementation.h"
+#include "sparsebase/utils/exception.h"
+#include "sparsebase/utils/utils.h"
 #ifndef SPARSEBASE_PROJECT_FORMAT_ORDER_TWO_H
 #define SPARSEBASE_PROJECT_FORMAT_ORDER_TWO_H
 namespace sparsebase::format {
 
 template <typename IDType, typename NNZType, typename ValueType>
-class FormatOrderTwo
-    : public FormatImplementation {
+class FormatOrderTwo : public FormatImplementation {
  public:
   FormatOrderTwo();
 
@@ -45,11 +43,11 @@ class FormatOrderTwo
       bool is_move_conversion = false);
 
   template <template <typename, typename, typename> class ToType,
-      typename ToIDType, typename ToNNZType, typename ToValueType>
+            typename ToIDType, typename ToNNZType, typename ToValueType>
   ToType<ToIDType, ToNNZType, ToValueType> *Convert(
       bool is_move_conversion = false);
   template <template <typename, typename, typename> class ToType,
-      typename ToIDType, typename ToNNZType, typename ToValueType>
+            typename ToIDType, typename ToNNZType, typename ToValueType>
   struct TypeConverter {
     ToType<ToIDType, ToNNZType, ToValueType> *operator()(
         FormatOrderTwo<IDType, NNZType, ValueType> *, bool) {
@@ -69,27 +67,26 @@ class FormatOrderTwo
   template <template <typename, typename, typename> typename T>
   typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type *As() {
     static_assert(std::is_base_of_v<FormatOrderTwo<IDType, NNZType, ValueType>,
-                  T<IDType, NNZType, ValueType>>,
-    "Cannot cast to a non-FormatOrderTwo class");
+                                    T<IDType, NNZType, ValueType>>,
+                  "Cannot cast to a non-FormatOrderTwo class");
     using TBase =
         typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type;
     if (this->get_id() == std::type_index(typeid(TBase))) {
       return static_cast<TBase *>(this);
     }
-    throw utils::TypeException(this->get_name(),
-                               typeid(TBase).name());
+    throw utils::TypeException(this->get_name(), typeid(TBase).name());
   }
 };
 template <typename IDType, typename NNZType, typename ValueType>
 template <template <typename, typename, typename> class ToType>
 ToType<IDType, NNZType, ValueType>
-*FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
-    context::Context *to_context, bool is_move_conversion) {
+    *FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
+        context::Context *to_context, bool is_move_conversion) {
   static_assert(
       std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
-          ToType<IDType, NNZType, ValueType>>::value,
+                      ToType<IDType, NNZType, ValueType>>::value,
       "T must be an order two format");
-  //converter::Converter* converter = this->converter_.get();
+  // converter::Converter* converter = this->converter_.get();
   auto converter = this->get_converter();
   context::Context *actual_context =
       to_context == nullptr ? this->get_context() : to_context;
@@ -102,14 +99,14 @@ ToType<IDType, NNZType, ValueType>
 template <typename IDType, typename NNZType, typename ValueType>
 template <template <typename, typename, typename> class ToType>
 ToType<IDType, NNZType, ValueType>
-*FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
-    const std::vector<context::Context *> &to_contexts,
-    bool is_move_conversion) {
+    *FormatOrderTwo<IDType, NNZType, ValueType>::Convert(
+        const std::vector<context::Context *> &to_contexts,
+        bool is_move_conversion) {
   static_assert(
       std::is_base_of<format::FormatOrderTwo<IDType, NNZType, ValueType>,
-          ToType<IDType, NNZType, ValueType>>::value,
+                      ToType<IDType, NNZType, ValueType>>::value,
       "T must be an order two format");
-  //auto* converter = this->converter_.get();
+  // auto* converter = this->converter_.get();
   auto converter = this->get_converter();
   std::vector<context::Context *> vec = {this->get_context()};
   std::vector<context::Context *> actual_contexts =
@@ -122,20 +119,19 @@ ToType<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 template <template <typename, typename, typename> class ToType,
-    typename ToIDType, typename ToNNZType, typename ToValueType>
+          typename ToIDType, typename ToNNZType, typename ToValueType>
 ToType<ToIDType, ToNNZType, ToValueType> *
 FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
   static_assert(
       std::is_base_of<format::FormatOrderTwo<ToIDType, ToNNZType, ToValueType>,
-          ToType<ToIDType, ToNNZType, ToValueType>>::value,
+                      ToType<ToIDType, ToNNZType, ToValueType>>::value,
       "T must be an order two format");
-  //auto* converter = this->converter_.get();
+  // auto* converter = this->converter_.get();
   auto converter = this->get_converter();
-  if (this->get_id() !=
-      ToType<IDType, NNZType, ValueType>::get_id_static()) {
+  if (this->get_id() != ToType<IDType, NNZType, ValueType>::get_id_static()) {
     auto converted_format =
-    converter->template Convert<ToType<IDType, NNZType, ValueType>>(
-        this, this->get_context(), is_move_conversion);
+        converter->template Convert<ToType<IDType, NNZType, ValueType>>(
+            this, this->get_context(), is_move_conversion);
     auto type_converted_format =
         TypeConverter<ToType, ToIDType, ToNNZType, ToValueType>()(
             converted_format, is_move_conversion);
@@ -146,7 +142,7 @@ FormatOrderTwo<IDType, NNZType, ValueType>::Convert(bool is_move_conversion) {
         this, is_move_conversion);
   }
 }
-}
+}  // namespace sparsebase::format
 #ifdef _HEADER_ONLY
 #include "format_order_two.cc"
 #endif

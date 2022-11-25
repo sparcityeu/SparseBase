@@ -9,7 +9,8 @@ namespace sparsebase::reorder {
 template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+      GetReorderCSR);
   this->params_ = std::make_unique<ParamsType>();
 }
 
@@ -17,7 +18,8 @@ template <typename IDType, typename NNZType, typename ValueType>
 MetisReorder<IDType, NNZType, ValueType>::MetisReorder(
     MetisReorderParams params) {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+      GetReorderCSR);
   this->params_ = std::make_unique<ParamsType>(params);
 }
 
@@ -43,14 +45,15 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   options[metis::METIS_OPTION_COMPRESS] = (metis::idx_t)mparams->compress;
   options[metis::METIS_OPTION_CCORDER] = (metis::idx_t)mparams->ccorder;
   options[metis::METIS_OPTION_PFACTOR] = (metis::idx_t)mparams->pfactor;
-  options[metis::METIS_OPTION_NSEPS] = (metis::idx_t) mparams->nseps;
+  options[metis::METIS_OPTION_NSEPS] = (metis::idx_t)mparams->nseps;
   options[metis::METIS_OPTION_DBGLVL] = (metis::idx_t)0;
 
-  if constexpr (std::is_same_v<IDType, metis::idx_t> && std::is_same_v<NNZType, metis::idx_t>) {
+  if constexpr (std::is_same_v<IDType, metis::idx_t> &&
+                std::is_same_v<NNZType, metis::idx_t>) {
     auto *perm = new metis::idx_t[n];
     auto *inv_perm = new metis::idx_t[n];
-    metis::METIS_NodeND(&n, csr->get_row_ptr(), csr->get_col(), nullptr, options, perm,
-                        inv_perm);
+    metis::METIS_NodeND(&n, csr->get_row_ptr(), csr->get_col(), nullptr,
+                        options, perm, inv_perm);
     delete[] perm;
     return inv_perm;
   } else {
@@ -64,4 +67,4 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 #if !defined(_HEADER_ONLY)
 #include "init/metis_reorder.inc"
 #endif
-}
+}  // namespace sparsebase::reorder

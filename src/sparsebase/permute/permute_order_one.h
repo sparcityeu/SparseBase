@@ -1,8 +1,9 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/permute/permuter.h"
-#include "sparsebase/format/array.h"
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/array.h"
+#include "sparsebase/permute/permuter.h"
+#include "sparsebase/utils/parameterizable.h"
 
 #ifndef SPARSEBASE_PROJECT_PERMUTE_ORDER_ONE_H
 #define SPARSEBASE_PROJECT_PERMUTE_ORDER_ONE_H
@@ -21,31 +22,29 @@ struct PermuteOrderOneParams : utils::Parameters {
   explicit PermuteOrderOneParams(IDType *order) : order(order){};
 };
 template <typename IDType, typename ValueType>
-class PermuteOrderOne
-    : public Permuter<format::FormatOrderOne<ValueType>,
-      format::FormatOrderOne<ValueType>> {
-public:
-PermuteOrderOne(IDType *);
-//! Struct used to store permutation vectors used by each instance of
-//! PermuteOrderTwo
-typedef PermuteOrderOneParams<IDType> ParamsType;
-explicit PermuteOrderOne(ParamsType);
+class PermuteOrderOne : public Permuter<format::FormatOrderOne<ValueType>,
+                                        format::FormatOrderOne<ValueType>> {
+ public:
+  PermuteOrderOne(IDType *);
+  //! Struct used to store permutation vectors used by each instance of
+  //! PermuteOrderTwo
+  typedef PermuteOrderOneParams<IDType> ParamsType;
+  explicit PermuteOrderOne(ParamsType);
 
-protected:
-//! An implementation function that will transform a CSR format into another
-//! CSR
-/*!
- *
- * @param formats a vector containing a single Format object of type Array
- * @param params a polymorphic pointer at a `TransformParams` object
- * @return a transformed Format object of type CSR
- */
-static format::FormatOrderOne<ValueType> *PermuteArray(
-    std::vector<format::Format *> formats, utils::Parameters *);
+ protected:
+  //! An implementation function that will transform a CSR format into another
+  //! CSR
+  /*!
+   *
+   * @param formats a vector containing a single Format object of type Array
+   * @param params a polymorphic pointer at a `TransformParams` object
+   * @return a transformed Format object of type CSR
+   */
+  static format::FormatOrderOne<ValueType> *PermuteArray(
+      std::vector<format::Format *> formats, utils::Parameters *);
 };
 
-
-}
+}  // namespace sparsebase::permute
 #ifdef _HEADER_ONLY
 #include "sparsebase/permute/permute_order_one.cc"
 #endif

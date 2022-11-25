@@ -1,4 +1,5 @@
 #include "sparsebase/format/coo.h"
+
 #include "sparsebase/utils/logger.h"
 namespace sparsebase::format {
 template <typename IDType, typename NNZType, typename ValueType>
@@ -250,4 +251,4 @@ COO<IDType, NNZType, ValueType>::~COO(){};
 #ifndef _HEADER_ONLY
 #include "init/coo.inc"
 #endif
-}
+}  // namespace sparsebase::format

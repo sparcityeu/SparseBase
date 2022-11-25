@@ -27,7 +27,8 @@ AbstractObject<IDType, NNZType, ValueType>::AbstractObject(
     : connectivity_((format::Format *)rhs.connectivity_->Clone(),
                     format::BlankDeleter<format::Format>()){};
 template <typename IDType, typename NNZType, typename ValueType>
-format::Format *AbstractObject<IDType, NNZType, ValueType>::get_connectivity() const {
+format::Format *AbstractObject<IDType, NNZType, ValueType>::get_connectivity()
+    const {
   return connectivity_.get();
 }
 template <typename IDType, typename NNZType, typename ValueType>
@@ -36,21 +37,25 @@ bool AbstractObject<IDType, NNZType, ValueType>::ConnectivityIsOwned() const {
           typeid(format::BlankDeleter<format::Format>));
 }
 template <typename IDType, typename NNZType, typename ValueType>
-format::Format *AbstractObject<IDType, NNZType, ValueType>::release_connectivity() {
+format::Format *
+AbstractObject<IDType, NNZType, ValueType>::release_connectivity() {
   auto ptr = connectivity_.release();
-  connectivity_ = std::unique_ptr<format::Format, std::function<void(format::Format *)>>(
-      ptr, format::BlankDeleter<format::Format>());
+  connectivity_ =
+      std::unique_ptr<format::Format, std::function<void(format::Format *)>>(
+          ptr, format::BlankDeleter<format::Format>());
   return ptr;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-void AbstractObject<IDType, NNZType, ValueType>::set_connectivity(format::Format *conn,
-                                                                  bool own) {
+void AbstractObject<IDType, NNZType, ValueType>::set_connectivity(
+    format::Format *conn, bool own) {
   if (own)
-    connectivity_ = std::unique_ptr<format::Format, std::function<void(format::Format *)>>(
-        conn, format::Deleter<format::Format>());
+    connectivity_ =
+        std::unique_ptr<format::Format, std::function<void(format::Format *)>>(
+            conn, format::Deleter<format::Format>());
   else
-    connectivity_ = std::unique_ptr<format::Format, std::function<void(format::Format *)>>(
-        conn, format::BlankDeleter<format::Format>());
+    connectivity_ =
+        std::unique_ptr<format::Format, std::function<void(format::Format *)>>(
+            conn, format::BlankDeleter<format::Format>());
 }
 
 template <typename VertexID, typename NumEdges, typename Weight>
@@ -63,15 +68,15 @@ Graph<VertexID, NumEdges, Weight>::Graph(
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight>::Graph(
     const Graph<VertexID, NumEdges, Weight> &rhs) {
-  this->set_connectivity(static_cast<format::Format *>(rhs.connectivity_->Clone()),
-                         true);
+  this->set_connectivity(
+      static_cast<format::Format *>(rhs.connectivity_->Clone()), true);
   InitializeInfoFromConnection();
 }
 template <typename VertexID, typename NumEdges, typename Weight>
 Graph<VertexID, NumEdges, Weight> &Graph<VertexID, NumEdges, Weight>::operator=(
     const Graph<VertexID, NumEdges, Weight> &rhs) {
-  this->set_connectivity(static_cast<format::Format *>(rhs.connectivity_->Clone()),
-                         true);
+  this->set_connectivity(
+      static_cast<format::Format *>(rhs.connectivity_->Clone()), true);
   InitializeInfoFromConnection();
   return *this;
 }
@@ -105,8 +110,8 @@ void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCSR(
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityFromEdgelistToCSR(
     std::string filename) {
-  io::EdgeListReader<VertexID, NumEdges, Weight> reader(
-      filename, false, false, false, true, true);
+  io::EdgeListReader<VertexID, NumEdges, Weight> reader(filename, false, false,
+                                                        false, true, true);
   this->set_connectivity(reader.ReadCSR(), true);
   this->VerifyStructure();
   InitializeInfoFromConnection();

@@ -27,12 +27,11 @@
 #include "sparsebase/converter/converter_cuda.cuh"
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
 #include "sparsebase/converter/converter_order_two_cuda.cuh"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #endif
 
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
-
 
 using namespace sparsebase;
 ;
@@ -42,27 +41,32 @@ using namespace sparsebase::bases;
 #include "../functionality_common.inc"
 #ifdef USE_METIS
 TEST(MetisPartition, BasicTest) {
-  if (typeid(metis::idx_t) == typeid(int)){
+  if (typeid(metis::idx_t) == typeid(int)) {
     MetisPartition<int, int, int> partitioner;
     MetisPartitionParams params;
     params.num_partitions = 2;
-    auto part2 = partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
-    check_partition(part2, n, (int) 2);
+    auto part2 =
+        partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
+    check_partition(part2, n, (int)2);
     params.num_partitions = 4;
-    auto part4 = partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
-    check_partition(part4, n, (int) 4);
+    auto part4 =
+        partitioner.Partition(&global_coo, &params, {&cpu_context}, true);
+    check_partition(part4, n, (int)4);
   } else {
     MetisPartition<int64_t, int64_t, int64_t> partitioner;
-    auto global_coo_64_bit = global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(false);
+    auto global_coo_64_bit =
+        global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(
+            false);
     MetisPartitionParams params;
     params.num_partitions = 2;
-    auto part2 = partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
-    check_partition(part2, (int64_t) n, (int64_t) 2);
+    auto part2 =
+        partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
+    check_partition(part2, (int64_t)n, (int64_t)2);
     params.num_partitions = 4;
-    auto part4 = partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
-    check_partition(part4, (int64_t) n, (int64_t) 4);
+    auto part4 =
+        partitioner.Partition(global_coo_64_bit, &params, {&cpu_context}, true);
+    check_partition(part4, (int64_t)n, (int64_t)4);
   }
 }
 
 #endif
-

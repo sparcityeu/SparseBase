@@ -31,15 +31,17 @@ using namespace sparsebase::bases;
 #include "../functionality_common.inc"
 #ifdef USE_METIS
 TEST(MetisReorder, BasicTest) {
-  if (typeid(metis::idx_t) == typeid(int)){
+  if (typeid(metis::idx_t) == typeid(int)) {
     MetisReorder<int, int, int> reorder;
     auto order = reorder.GetReorder(&global_coo, {&cpu_context}, true);
     check_reorder(order, n);
   } else {
-    auto global_coo_64_bit = global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(false);
+    auto global_coo_64_bit =
+        global_coo.Convert<sparsebase::format::COO, int64_t, int64_t, int64_t>(
+            false);
     MetisReorder<int64_t, int64_t, int64_t> reorder;
     auto order = reorder.GetReorder(global_coo_64_bit, {&cpu_context}, true);
-    check_reorder(order, (int64_t) n);
+    check_reorder(order, (int64_t)n);
   }
 }
 #endif

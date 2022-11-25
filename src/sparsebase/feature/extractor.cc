@@ -1,8 +1,9 @@
 #include "sparsebase/feature/extractor.h"
+
 #include <vector>
 
-#include "sparsebase/utils/extractable.h"
 #include "sparsebase/utils/exception.h"
+#include "sparsebase/utils/extractable.h"
 
 namespace sparsebase::feature {
 
@@ -64,8 +65,7 @@ void Extractor::Add(Feature f) {
       }
     }
   } else {
-    throw utils::FeatureException(f->get_id().name(),
-                                  typeid(this).name());
+    throw utils::FeatureException(f->get_id().name(), typeid(this).name());
   }
 }
 

@@ -59,8 +59,7 @@ CUDAArray<ValueType>::CUDAArray(const CUDAArray<ValueType> &rhs)
 }
 template <typename ValueType>
 CUDAArray<ValueType>::CUDAArray(DimensionType nnz, ValueType *vals,
-                                context::CUDAContext context,
-                                Ownership own)
+                                context::CUDAContext context, Ownership own)
     : vals_(vals, BlankDeleter<ValueType>()) {
   static_assert(!std::is_same_v<ValueType, void>,
                 "Cannot create CUDAArray with void ValueType");
@@ -123,4 +122,4 @@ CUDAArray<ValueType>::~CUDAArray() {}
 #ifndef _HEADER_ONLY
 #include "init/cuda/cuda_array_cuda.inc"
 #endif
-}
+}  // namespace sparsebase::format

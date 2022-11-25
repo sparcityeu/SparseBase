@@ -9,7 +9,6 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-
 #include "sparsebase/io/binary_reader_order_one.h"
 #include "sparsebase/io/binary_reader_order_two.h"
 #include "sparsebase/io/binary_writer_order_one.h"
@@ -23,7 +22,6 @@
 
 #ifndef SPARSEBASE_PROJECT_IOBASE_H
 #define SPARSEBASE_PROJECT_IOBASE_H
-
 
 namespace sparsebase::io {
 class IOBase {
@@ -291,5 +289,5 @@ class IOBase {
     return writer.WriteArray(array);
   }
 };
-}  // namespace sparsebase
+}  // namespace sparsebase::io
 #endif  // SPARSEBASE_PROJECT_IOBASE_H

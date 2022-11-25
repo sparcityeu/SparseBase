@@ -27,12 +27,11 @@
 #include "sparsebase/converter/converter_cuda.cuh"
 #include "sparsebase/converter/converter_order_one_cuda.cuh"
 #include "sparsebase/converter/converter_order_two_cuda.cuh"
-#include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/cuda_array_cuda.cuh"
+#include "sparsebase/format/cuda_csr_cuda.cuh"
 #endif
 
 const std::string FILE_NAME = "../../../../examples/data/ash958.mtx";
-
 
 using namespace sparsebase;
 ;
@@ -43,8 +42,9 @@ using namespace sparsebase::bases;
 #ifdef USE_PULP
 TEST(PulpPartition, BasicTest) {
   PulpPartition<int, long, void> partitioner;
-  // This is a temporary solution intended to be replaced by the Downloaders once finished
-  auto coo = io::IOBase::ReadMTXToCOO<int,long,void>(FILE_NAME);
+  // This is a temporary solution intended to be replaced by the Downloaders
+  // once finished
+  auto coo = io::IOBase::ReadMTXToCOO<int, long, void>(FILE_NAME);
   PulpPartitionParams params;
   params.num_partitions = 2;
   auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);

@@ -55,4 +55,4 @@ IDType *RabbitReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
 #if !defined(_HEADER_ONLY)
 #include "init/rabbit_reorder.inc"
 #endif
-}
+}  // namespace sparsebase::reorder

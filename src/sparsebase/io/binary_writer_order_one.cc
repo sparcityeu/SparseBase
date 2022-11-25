@@ -1,10 +1,12 @@
-#include <string>
-#include "sparsebase/config.h"
-#include "sparsebase/io/writer.h"
 #include "sparsebase/io/binary_writer_order_one.h"
-#include "sparsebase/io/sparse_file_format.h"
 
-namespace sparsebase::io{
+#include <string>
+
+#include "sparsebase/config.h"
+#include "sparsebase/io/sparse_file_format.h"
+#include "sparsebase/io/writer.h"
+
+namespace sparsebase::io {
 
 template <typename T>
 BinaryWriterOrderOne<T>::BinaryWriterOrderOne(std::string filename)
@@ -24,4 +26,4 @@ void BinaryWriterOrderOne<T>::WriteArray(format::Array<T> *arr) const {
 #ifndef _HEADER_ONLY
 #include "init/binary_writer_order_one.inc"
 #endif
-}
+}  // namespace sparsebase::io

@@ -1,6 +1,7 @@
-#include "sparsebase/partition/partitioner.h"
 #include "sparsebase/partition/metis_partition.h"
+
 #include "sparsebase/format/csr.h"
+#include "sparsebase/partition/partitioner.h"
 #include "sparsebase/utils/logger.h"
 
 #ifdef USE_METIS
@@ -13,23 +14,19 @@ namespace sparsebase::partition {
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition() {
-
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
-  this->params_ =
-      std::make_unique<MetisPartitionParams>();
+  this->params_ = std::make_unique<MetisPartitionParams>();
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisPartition<IDType, NNZType, ValueType>::MetisPartition(
     MetisPartitionParams params) {
-
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
-  this->params_ =
-      std::make_unique<MetisPartitionParams>(params);
+  this->params_ = std::make_unique<MetisPartitionParams>(params);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -59,22 +56,23 @@ IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
   options[metis::METIS_OPTION_NUMBERING] = (metis::idx_t)mparams->numbering;
   options[metis::METIS_OPTION_DBGLVL] = (metis::idx_t)0;
 
-
   metis::idx_t np = (metis::idx_t)mparams->num_partitions;
   metis::idx_t nw = (metis::idx_t)1;
   metis::idx_t objval;
 
-  if constexpr (std::is_same_v<IDType, metis::idx_t> && std::is_same_v<NNZType, metis::idx_t>) {
+  if constexpr (std::is_same_v<IDType, metis::idx_t> &&
+                std::is_same_v<NNZType, metis::idx_t>) {
     if (mparams->ptype == metis::METIS_PTYPE_RB) {
-      metis::METIS_PartGraphRecursive(&n, &nw, (metis::idx_t *)csr->get_row_ptr(),
-                                      (metis::idx_t *)csr->get_col(), nullptr, nullptr,
-                                      nullptr, &np, nullptr, nullptr, options, &objval,
-                                      partition);
+      metis::METIS_PartGraphRecursive(
+          &n, &nw, (metis::idx_t *)csr->get_row_ptr(),
+          (metis::idx_t *)csr->get_col(), nullptr, nullptr, nullptr, &np,
+          nullptr, nullptr, options, &objval, partition);
 
     } else {
       metis::METIS_PartGraphKway(&n, &nw, (metis::idx_t *)csr->get_row_ptr(),
-                                 (metis::idx_t *)csr->get_col(), nullptr, nullptr, nullptr,
-                                 &np, nullptr, nullptr, options, &objval, partition);
+                                 (metis::idx_t *)csr->get_col(), nullptr,
+                                 nullptr, nullptr, &np, nullptr, nullptr,
+                                 options, &objval, partition);
     }
   } else {
     throw utils::TypeException("Metis Partitioner supports only " +
@@ -84,9 +82,8 @@ IDType *MetisPartition<IDType, NNZType, ValueType>::PartitionCSR(
   return partition;
 }
 
-
 #endif
 #if !defined(_HEADER_ONLY)
 #include "init/metis_partition.inc"
 #endif
-}
+}  // namespace sparsebase::partition

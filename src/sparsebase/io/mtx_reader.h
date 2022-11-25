@@ -1,9 +1,9 @@
 #ifndef SPARSEBASE_PROJECT_MTX_READER_H
 #define SPARSEBASE_PROJECT_MTX_READER_H
-#include "sparsebase/io/reader.h"
 #include "sparsebase/config.h"
+#include "sparsebase/io/reader.h"
 
-namespace sparsebase::io{
+namespace sparsebase::io {
 #define MMX_PREFIX "%%MatrixMarket"
 //! Reader for the Matrix Market File Format
 /*!
@@ -56,7 +56,7 @@ class MTXReader : public Reader,
   bool convert_to_zero_index_;
   MTXOptions options_;
 };
-}
+}  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
 #include "mtx_reader.cc"
 #endif

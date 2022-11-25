@@ -1,11 +1,12 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/partition/partitioner.h"
-#include "sparsebase/format/csr.h"
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/partition/partitioner.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_PULP_PARTITION_H
 #define SPARSEBASE_PROJECT_PULP_PARTITION_H
-namespace sparsebase::partition{
+namespace sparsebase::partition {
 
 #ifdef USE_PULP
 
@@ -26,8 +27,8 @@ struct PulpPartitionParams : utils::Parameters {
 //! A wrapper for the PULP graph partitioner
 /* !
  * Wraps the PULP partitioner available here:
- * https://github.com/HPCGraphAnalysis/PuLP. The library must be compiled with the
- * USE_PULP option turned on and the pre-built PULP library should be
+ * https://github.com/HPCGraphAnalysis/PuLP. The library must be compiled with
+ * the USE_PULP option turned on and the pre-built PULP library should be
  * available. See the Optional Dependencies page (under Getting Started) in our
  * documentation for more info.
  */
@@ -43,7 +44,7 @@ class PulpPartition : public Partitioner<IDType> {
   PulpPartition(ParamsType params);
 };
 #endif
-}
+}  // namespace sparsebase::partition
 #ifdef _HEADER_ONLY
 #include "sparsebase/partition/pulp_partition.cc"
 #endif

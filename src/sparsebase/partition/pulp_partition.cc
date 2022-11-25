@@ -1,6 +1,7 @@
-#include "sparsebase/partition/partitioner.h"
 #include "sparsebase/partition/pulp_partition.h"
+
 #include "sparsebase/format/csr.h"
+#include "sparsebase/partition/partitioner.h"
 #include "sparsebase/utils/logger.h"
 
 namespace sparsebase::partition {
@@ -13,8 +14,7 @@ PulpPartition<IDType, NNZType, ValueType>::PulpPartition() {
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, PartitionCSR);
 
-  this->params_ =
-      std::unique_ptr<PulpPartitionParams>(new PulpPartitionParams);
+  this->params_ = std::unique_ptr<PulpPartitionParams>(new PulpPartitionParams);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -49,7 +49,7 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
   con.do_maxcut_balance = pparams->do_maxcut_balance;
 
   int np = pparams->num_partitions;
-  IDType* partition = new IDType[n];
+  IDType *partition = new IDType[n];
 
   if constexpr (std::is_same_v<IDType, int> && std::is_same_v<NNZType, long>) {
     pulp_graph_t graph;
@@ -62,7 +62,8 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
     graph.vertex_weights_sum = 0;
     pulp_run(&graph, &con, partition, np);
   } else {
-    throw utils::TypeException("Pulp Partitioner requires IDType=int, NNZType=long");
+    throw utils::TypeException(
+        "Pulp Partitioner requires IDType=int, NNZType=long");
   }
   return partition;
 }
@@ -71,4 +72,4 @@ IDType *PulpPartition<IDType, NNZType, ValueType>::PartitionCSR(
 #if !defined(_HEADER_ONLY)
 #include "init/pulp_partition.inc"
 #endif
-}
+}  // namespace sparsebase::partition

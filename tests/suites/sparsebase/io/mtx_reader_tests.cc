@@ -3,8 +3,8 @@
 #include <unordered_set>
 
 #include "gtest/gtest.h"
-#include "sparsebase/sparsebase.h"
 #include "reader_data.inc"
+#include "sparsebase/sparsebase.h"
 
 void checkArrayReading(std::string filename) {
   // Read one column file
@@ -45,17 +45,16 @@ TEST(MTXReader, ArrayOneColArray) {
   // Write the mtx data to a file
   checkArrayReading("one_col_array.mtx");
 }
- TEST(MTXReader, ReadingWeightedIntoVoidValues) {
-
+TEST(MTXReader, ReadingWeightedIntoVoidValues) {
   // Write the mtx data with values to a file
   std::ofstream ofs2("test_values.mtx");
   ofs2 << mtx_data_with_values;
   ofs2.close();
 
   // Read the weighted file using sparsebase
-  EXPECT_THROW((sparsebase::io::MTXReader<int, int, void>(
-                   "test_values.mtx", true)),
-               sparsebase::utils::ReaderException);
+  EXPECT_THROW(
+      (sparsebase::io::MTXReader<int, int, void>("test_values.mtx", true)),
+      sparsebase::utils::ReaderException);
 }
 TEST(MTXReader, BasicsGeneral) {
   // Write the mtx data to a file
@@ -88,8 +87,7 @@ TEST(MTXReader, BasicsGeneral) {
   }
 
   // Read the weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, float> reader2("test_values.mtx",
-                                                     true);
+  sparsebase::io::MTXReader<int, int, float> reader2("test_values.mtx", true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions
@@ -141,8 +139,7 @@ TEST(MTXReader, BasicsArray) {
   }
 
   // Read the weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, float> reader2("test_values.mtx",
-                                                     true);
+  sparsebase::io::MTXReader<int, int, float> reader2("test_values.mtx", true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions
@@ -194,8 +191,8 @@ TEST(MTXReader, BasicsSymmetric) {
   }
 
   // Read the weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, float> reader2(
-      "test_symm_values.mtx", true);
+  sparsebase::io::MTXReader<int, int, float> reader2("test_symm_values.mtx",
+                                                     true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions

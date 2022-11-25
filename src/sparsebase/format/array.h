@@ -1,9 +1,8 @@
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
+#include "sparsebase/format/format_order_one.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/utils.h"
-
-#include "sparsebase/format/format_order_one.h"
 #ifndef SPARSEBASE_PROJECT_ARRAY_H
 #define SPARSEBASE_PROJECT_ARRAY_H
 namespace sparsebase::format {
@@ -53,7 +52,7 @@ struct FormatOrderOne<ValueType>::TypeConverter<format::Array, ToValueType> {
     return new Array<ToValueType>(num_nnz, new_vals, kOwned);
   }
 };
-}
+}  // namespace sparsebase::format
 
 #ifdef _HEADER_ONLY
 #include "array.cc"

@@ -1,8 +1,8 @@
 #include "sparsebase/feature/feature_preprocess_type.h"
 
+#include <any>
 #include <memory>
 #include <unordered_map>
-#include <any>
 
 namespace sparsebase::feature {
 
@@ -40,7 +40,8 @@ std::type_index FeaturePreprocessType<FeatureType>::get_id() {
 
 #if !defined(_HEADER_ONLY)
 #include "init/feature_preprocess_type.inc"
-template class FeaturePreprocessType<std::unordered_map<std::type_index, std::any>>;
+template class FeaturePreprocessType<
+    std::unordered_map<std::type_index, std::any>>;
 #endif
 
-}
+}  // namespace sparsebase::feature

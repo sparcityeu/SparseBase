@@ -1,15 +1,12 @@
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/utils/exception.h"
 #include "sparsebase/utils/utils.h"
-
-#include "sparsebase/format/format_order_two.h"
 #ifndef SPARSEBASE_PROJECT_CSC_H
 #define SPARSEBASE_PROJECT_CSC_H
 
 namespace sparsebase::format {
-
-
 
 //! Compressed Sparse Column Sparse Data Format
 /*!
@@ -28,9 +25,9 @@ namespace sparsebase::format {
  * in Algorithms and Architectures. CiteSeerX 10.1.1.211.5256.
  */
 template <typename IDType, typename NNZType, typename ValueType>
-class CSC
-    : public utils::IdentifiableImplementation<CSC<IDType, NNZType, ValueType>,
-        FormatOrderTwo<IDType, NNZType, ValueType>> {
+class CSC : public utils::IdentifiableImplementation<
+                CSC<IDType, NNZType, ValueType>,
+                FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   CSC(IDType n, IDType m, NNZType *col_ptr, IDType *col, ValueType *vals,
       Ownership own = kNotOwned, bool ignore_sort = false);
@@ -81,26 +78,26 @@ struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter<
           utils::ConvertArrayType<ToNNZType>(csc->get_col_ptr(), dims[0] + 1);
     } else {
       if constexpr (std::is_same_v<NNZType, ToNNZType>)
-      new_col_ptr = csc->release_col_ptr();
+        new_col_ptr = csc->release_col_ptr();
     }
 
     if (!is_move_conversion || !std::is_same_v<IDType, ToIDType>) {
       new_row = utils::ConvertArrayType<ToIDType>(csc->get_row(), num_nnz);
     } else {
       if constexpr (std::is_same_v<IDType, ToIDType>)
-      new_row = csc->release_row();
+        new_row = csc->release_row();
     }
     if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
       new_vals = utils::ConvertArrayType<ToValueType>(csc->get_vals(), num_nnz);
     } else {
       if constexpr (std::is_same_v<ValueType, ToValueType>)
-      new_vals = csc->release_vals();
+        new_vals = csc->release_vals();
     }
     return new CSC<ToIDType, ToNNZType, ToValueType>(
         dims[0], dims[1], new_col_ptr, new_row, new_vals, kOwned);
   }
 };
-}
+}  // namespace sparsebase::format
 
 #ifdef _HEADER_ONLY
 #include "csc.cc"

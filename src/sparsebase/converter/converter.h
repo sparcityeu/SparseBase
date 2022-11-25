@@ -9,17 +9,16 @@
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_CONVERTER_CONVERTER_H_
 
-#include <functional>
-#include <optional>
-#include <tuple>
-#include <unordered_map>
 #include <algorithm>
 #include <cstring>
 #include <fstream>
 #include <functional>
 #include <memory>
+#include <optional>
+#include <tuple>
 #include <typeindex>
 #include <typeinfo>
+#include <unordered_map>
 #include <vector>
 
 #include "sparsebase/config.h"
@@ -87,7 +86,7 @@ class Converter {
    * @param is_move_conversion to get the move ConversionMap or the copy one.
    * @return
    */
-  const ConversionMap * get_conversion_map(bool is_move_conversion) const;
+  const ConversionMap *get_conversion_map(bool is_move_conversion) const;
 
   //! Returns a conversion path from from_type to to_type using contexts in
   //! to_contexts.
@@ -104,7 +103,8 @@ class Converter {
   static std::vector<ConversionStep> ConversionBFS(
       std::type_index from_type, context::Context *from_context,
       std::type_index to_type,
-      const std::vector<context::Context *> &to_contexts, const ConversionMap * map);
+      const std::vector<context::Context *> &to_contexts,
+      const ConversionMap *map);
 
  public:
   //! Register a conversion function from one type to another.
@@ -158,10 +158,9 @@ class Converter {
    * @return a vector of formats, with the last (back) format being the
    * target format, and the ones before it being intermediate ones.
    */
-  std::vector<format::Format *> ConvertCached(format::Format *source,
-                                              std::type_index to_type,
-                                              context::Context *to_context,
-                                              bool is_move_conversion = false) const;
+  std::vector<format::Format *> ConvertCached(
+      format::Format *source, std::type_index to_type,
+      context::Context *to_context, bool is_move_conversion = false) const;
 
   //! Converts a source format to a destination format.
   /*!
@@ -211,8 +210,8 @@ class Converter {
   template <typename FormatType>
   FormatType *Convert(format::Format *source, context::Context *to_context,
                       bool is_move_conversion = false) const {
-    auto *res = this->Convert(source, FormatType::get_id_static(),
-                              to_context, is_move_conversion);
+    auto *res = this->Convert(source, FormatType::get_id_static(), to_context,
+                              is_move_conversion);
     return res->template AsAbsolute<FormatType>();
   }
 
@@ -233,8 +232,8 @@ class Converter {
   FormatType *Convert(format::Format *source,
                       std::vector<context::Context *> to_contexts,
                       bool is_move_conversion = false) const {
-    auto *res = this->Convert(source, FormatType::get_id_static(),
-                              to_contexts, is_move_conversion);
+    auto *res = this->Convert(source, FormatType::get_id_static(), to_contexts,
+                              is_move_conversion);
     return res->template AsAbsolute<FormatType>();
   }
 
@@ -362,7 +361,9 @@ template <class ConverterType>
 class ConverterImpl : public Converter {
  public:
   //! Returns the type_index for the Converter instance
-  virtual std::type_index get_converter_type() const { return typeid(ConverterType); }
+  virtual std::type_index get_converter_type() const {
+    return typeid(ConverterType);
+  }
 };
 
 }  // namespace converter

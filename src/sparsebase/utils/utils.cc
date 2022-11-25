@@ -9,7 +9,7 @@
 
 namespace sparsebase::utils {
 std::size_t TypeIndexVectorHash::operator()(
-    const std::vector<std::type_index> &vf) const {
+    const std::vector<std::type_index>& vf) const {
   size_t hash = 0;
   for (auto f : vf) hash += f.hash_code();
   return hash;

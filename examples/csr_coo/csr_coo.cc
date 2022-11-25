@@ -37,8 +37,7 @@ int main(int argc, char *argv[]) {
 
   {
     string file_name = argv[1];
-    io::MTXReader<unsigned int, unsigned int, unsigned int> reader(
-        file_name);
+    io::MTXReader<unsigned int, unsigned int, unsigned int> reader(file_name);
     format::COO<unsigned int, unsigned int, unsigned int> *coo =
         reader.ReadCOO();
     auto format = coo->get_id();

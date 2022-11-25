@@ -1,10 +1,12 @@
-#include <string>
-#include "sparsebase/config.h"
-#include "sparsebase/io/writer.h"
 #include "sparsebase/io/binary_writer_order_two.h"
-#include "sparsebase/io/sparse_file_format.h"
 
-namespace sparsebase::io{
+#include <string>
+
+#include "sparsebase/config.h"
+#include "sparsebase/io/sparse_file_format.h"
+#include "sparsebase/io/writer.h"
+
+namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 BinaryWriterOrderTwo<IDType, NNZType, ValueType>::BinaryWriterOrderTwo(
@@ -21,7 +23,7 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCOO(
 
   if (coo->get_vals() != nullptr)
     if constexpr (!std::is_same_v<ValueType, void>)
-  sbff.AddArray("vals", coo->get_vals(), coo->get_num_nnz());
+      sbff.AddArray("vals", coo->get_vals(), coo->get_num_nnz());
 
   sbff.WriteObject(filename_);
 }
@@ -42,13 +44,13 @@ void BinaryWriterOrderTwo<IDType, NNZType, ValueType>::WriteCSR(
 
   if (csr->get_vals() != nullptr)
     if constexpr (!std::is_same_v<ValueType, void>)
-  sbff.AddArray("vals", csr->get_vals(), m);
-  else
-  throw utils::WriterException("Cannot write vals array of type void");
+      sbff.AddArray("vals", csr->get_vals(), m);
+    else
+      throw utils::WriterException("Cannot write vals array of type void");
 
   sbff.WriteObject(filename_);
 }
 #ifndef _HEADER_ONLY
 #include "init/binary_writer_order_two.inc"
 #endif
-}
+}  // namespace sparsebase::io

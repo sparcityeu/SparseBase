@@ -1,8 +1,9 @@
-#include "sparsebase/config.h"
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/permute/permuter.h"
-#include "sparsebase/format/array.h"
 #include <vector>
+
+#include "sparsebase/config.h"
+#include "sparsebase/format/array.h"
+#include "sparsebase/permute/permuter.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_PERMUTE_ORDER_TWO_H
 #define SPARSEBASE_PROJECT_PERMUTE_ORDER_TWO_H
 namespace sparsebase::permute {
@@ -23,31 +24,29 @@ struct PermuteOrderTwoParams : utils::Parameters {
 };
 template <typename IDType, typename NNZType, typename ValueType>
 class PermuteOrderTwo
-    : public Permuter<
-        format::FormatOrderTwo<IDType, NNZType, ValueType>,
-      format::FormatOrderTwo<IDType, NNZType, ValueType>> {
-public:
-PermuteOrderTwo(IDType *, IDType *);
-explicit PermuteOrderTwo(PermuteOrderTwoParams<IDType>);
-//! Struct used to store permutation vectors used by each instance of
-//! PermuteOrderTwo
-typedef PermuteOrderTwoParams<IDType> ParamsType;
+    : public Permuter<format::FormatOrderTwo<IDType, NNZType, ValueType>,
+                      format::FormatOrderTwo<IDType, NNZType, ValueType>> {
+ public:
+  PermuteOrderTwo(IDType *, IDType *);
+  explicit PermuteOrderTwo(PermuteOrderTwoParams<IDType>);
+  //! Struct used to store permutation vectors used by each instance of
+  //! PermuteOrderTwo
+  typedef PermuteOrderTwoParams<IDType> ParamsType;
 
-protected:
-//! An implementation function that will transform a CSR format into another
-//! CSR
-/*!
- *
- * @param formats a vector containing a single Format object of type CSR
- * @param params a polymorphic pointer at a `TransformParams` object
- * @return a transformed Format object of type CSR
- */
-static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwoCSR(
-    std::vector<format::Format *> formats, utils::Parameters *);
+ protected:
+  //! An implementation function that will transform a CSR format into another
+  //! CSR
+  /*!
+   *
+   * @param formats a vector containing a single Format object of type CSR
+   * @param params a polymorphic pointer at a `TransformParams` object
+   * @return a transformed Format object of type CSR
+   */
+  static format::FormatOrderTwo<IDType, NNZType, ValueType> *PermuteOrderTwoCSR(
+      std::vector<format::Format *> formats, utils::Parameters *);
 };
 
-
-}
+}  // namespace sparsebase::permute
 #ifdef _HEADER_ONLY
 #include "sparsebase/permute/permute_order_two.cc"
 #endif

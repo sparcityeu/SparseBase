@@ -1,7 +1,8 @@
 #include <memory>
-#include "sparsebase/utils/parameterizable.h"
-#include "sparsebase/utils/function_matcher_mixin.h"
+
 #include "sparsebase/utils/extractable.h"
+#include "sparsebase/utils/function_matcher_mixin.h"
+#include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_PROJECT_FEATURE_PREPROCESS_TYPE_H
 #define SPARSEBASE_PROJECT_FEATURE_PREPROCESS_TYPE_H
 namespace sparsebase::feature {
@@ -14,8 +15,7 @@ namespace sparsebase::feature {
  */
 template <typename FeatureType>
 class FeaturePreprocessType
-    : public utils::FunctionMatcherMixin<FeatureType,
-        utils::Extractable> {
+    : public utils::FunctionMatcherMixin<FeatureType, utils::Extractable> {
  public:
   std::shared_ptr<utils::Parameters> get_params() override;
   std::shared_ptr<utils::Parameters> get_params(std::type_index) override;
@@ -24,7 +24,7 @@ class FeaturePreprocessType
   ~FeaturePreprocessType();
 };
 
-}
+}  // namespace sparsebase::feature
 
 #ifdef _HEADER_ONLY
 #include "sparsebase/feature/feature_preprocess_type.cc"

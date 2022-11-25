@@ -1,7 +1,4 @@
-#include "sparsebase/feature/degrees.h"
-#include "sparsebase/feature/degree_distribution.h"
 #include "sparsebase/feature/degrees_degree_distribution.h"
-#include "sparsebase/utils/parameterizable.h"
 
 #include <algorithm>
 #include <iostream>
@@ -15,18 +12,22 @@
 #include <utility>
 #include <vector>
 
+#include "sparsebase/feature/degree_distribution.h"
+#include "sparsebase/feature/degrees.h"
+#include "sparsebase/utils/parameterizable.h"
+
 namespace sparsebase::feature {
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType,
-    FeatureType>::Degrees_DegreeDistribution(Params) {
+                           FeatureType>::Degrees_DegreeDistribution(Params) {
   Degrees_DegreeDistribution();
 }
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType,
-    FeatureType>::Degrees_DegreeDistribution() {
+                           FeatureType>::Degrees_DegreeDistribution() {
   this->Register();
   // this->RegisterFunction(
   //     {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetCSR);
@@ -36,47 +37,49 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType,
       new DegreeDistributionParams);
   std::shared_ptr<utils::Parameters> degs_param(new utils::Parameters);
   this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
-      FeatureType>::get_id_static()] =
+                                 FeatureType>::get_id_static()] =
       deg_dist_param;
   this->pmap_[Degrees<IDType, NNZType, ValueType>::get_id_static()] =
       degs_param;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 void Degrees_DegreeDistribution<IDType, NNZType, ValueType,
-    FeatureType>::Register() {
+                                FeatureType>::Register() {
   this->RegisterFunction(
-      std::vector<std::type_index>({format::CSR<IDType, NNZType, ValueType>::get_id_static()}), GetCSR);
+      std::vector<std::type_index>(
+          {format::CSR<IDType, NNZType, ValueType>::get_id_static()}),
+      GetCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
-Degrees_DegreeDistribution(const Degrees_DegreeDistribution<
-IDType, NNZType, ValueType, FeatureType> &d) {
+    Degrees_DegreeDistribution(const Degrees_DegreeDistribution<
+                               IDType, NNZType, ValueType, FeatureType> &d) {
   Register();
   this->params_ = d.params_;
   this->pmap_ = d.pmap_;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::
-Degrees_DegreeDistribution(const std::shared_ptr<Params> r) {
+    Degrees_DegreeDistribution(const std::shared_ptr<Params> r) {
   Register();
   this->params_ = r;
   this->pmap_[get_id_static()] = r;
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType,
-    FeatureType>::~Degrees_DegreeDistribution() =
-default;
+                           FeatureType>::~Degrees_DegreeDistribution() =
+    default;
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 std::vector<std::type_index> Degrees_DegreeDistribution<
     IDType, NNZType, ValueType, FeatureType>::get_sub_ids() {
   std::vector<std::type_index> r = {
@@ -87,28 +90,26 @@ std::vector<std::type_index> Degrees_DegreeDistribution<
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 std::vector<utils::Extractable *> Degrees_DegreeDistribution<
     IDType, NNZType, ValueType, FeatureType>::get_subs() {
   auto *f1 = new Degrees<IDType, NNZType, ValueType>();
-  if (this->pmap_.find(
-      Degrees<IDType, NNZType, ValueType>::get_id_static()) !=
+  if (this->pmap_.find(Degrees<IDType, NNZType, ValueType>::get_id_static()) !=
       this->pmap_.end()) {
-    f1->set_params(Degrees<IDType, NNZType, ValueType>::get_id_static(),
-                   this->pmap_[Degrees<IDType, NNZType,
-                       ValueType>::get_id_static()]);
+    f1->set_params(
+        Degrees<IDType, NNZType, ValueType>::get_id_static(),
+        this->pmap_[Degrees<IDType, NNZType, ValueType>::get_id_static()]);
   }
 
   auto *f2 = new DegreeDistribution<IDType, NNZType, ValueType, FeatureType>();
-  if (this->pmap_.find(
-      DegreeDistribution<IDType, NNZType, ValueType,
-          FeatureType>::get_id_static()) !=
+  if (this->pmap_.find(DegreeDistribution<IDType, NNZType, ValueType,
+                                          FeatureType>::get_id_static()) !=
       this->pmap_.end()) {
     f2->set_params(
         DegreeDistribution<IDType, NNZType, ValueType,
-            FeatureType>::get_id_static(),
+                           FeatureType>::get_id_static(),
         this->pmap_[DegreeDistribution<IDType, NNZType, ValueType,
-            FeatureType>::get_id_static()]);
+                                       FeatureType>::get_id_static()]);
   }
 
   auto ids = this->get_sub_ids();
@@ -119,15 +120,15 @@ std::vector<utils::Extractable *> Degrees_DegreeDistribution<
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
-std::type_index Degrees_DegreeDistribution<
-    IDType, NNZType, ValueType, FeatureType>::get_id_static() {
+          typename FeatureType>
+std::type_index Degrees_DegreeDistribution<IDType, NNZType, ValueType,
+                                           FeatureType>::get_id_static() {
   return typeid(
       Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>);
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 std::unordered_map<std::type_index, std::any>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(
     format::Format *format, std::vector<context::Context *> c,
@@ -136,17 +137,17 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Extract(
 };
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 std::unordered_map<std::type_index, std::any>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::Get(
-    format::Format *format, std::vector<context::Context *> c, bool convert_input) {
+    format::Format *format, std::vector<context::Context *> c,
+    bool convert_input) {
   Params params;
-  return this->Execute(this->params_.get(), c, convert_input,
-                       format);
+  return this->Execute(this->params_.get(), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType,
-    typename FeatureType>
+          typename FeatureType>
 std::unordered_map<std::type_index, std::any>
 Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
@@ -162,13 +163,13 @@ Degrees_DegreeDistribution<IDType, NNZType, ValueType, FeatureType>::GetCSR(
     dist[i] = (rows[i + 1] - rows[i]) / (FeatureType)num_edges;
   }
   return {{Degrees<IDType, NNZType, ValueType>::get_id_static(),
-              std::forward<IDType *>(degrees)},
+           std::forward<IDType *>(degrees)},
           {DegreeDistribution<IDType, NNZType, ValueType,
-              FeatureType>::get_id_static(),
-              std::forward<FeatureType *>(dist)}};
+                              FeatureType>::get_id_static(),
+           std::forward<FeatureType *>(dist)}};
 }
 
 #if !defined(_HEADER_ONLY)
 #include "init/degrees_degree_distribution.inc"
 #endif
-}
+}  // namespace sparsebase::feature

@@ -1,8 +1,8 @@
+#include <sparsebase/bases/graph_feature_base.h>
 #include <sparsebase/bases/reorder_base.h>
 #include <sparsebase/context/context.h>
 #include <sparsebase/format/csc.h>
 #include <sparsebase/io/mtx_reader.h>
-#include <sparsebase/bases/graph_feature_base.h>
 
 #include <string>
 
@@ -36,7 +36,8 @@ int main() {
   io::MTXReader<ull, ull, val> A_reader(A_filename, true);
   COO<ull, ull, val> *A = A_reader.ReadCOO();
 
-  ull *perm = bases::ReorderBase::Reorder<reorder::RCMReorder>({}, A, {&cpu_context}, true);
+  ull *perm = bases::ReorderBase::Reorder<reorder::RCMReorder>(
+      {}, A, {&cpu_context}, true);
 
   auto *A_reordered =
       bases::ReorderBase::Permute2D<CSC>(perm, A, {&cpu_context}, true);
@@ -54,9 +55,10 @@ int main() {
   // solving for x
   Array<val> *inv_x = new Array<val>(3, nullptr);
 
-  ull *inv_perm = bases::ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
-  format::Array<val> *x =
-      bases::ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context}, true);
+  ull *inv_perm =
+      bases::ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
+  format::Array<val> *x = bases::ReorderBase::Permute1D<Array>(
+      inv_perm, inv_x, {&cpu_context}, true);
 
   float *deg_dist = bases::GraphFeatureBase ::GetDegreeDistribution<float>(
       A, {&cpu_context}, true);

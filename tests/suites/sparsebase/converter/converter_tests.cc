@@ -6,13 +6,10 @@
 using namespace sparsebase;
 using namespace converter;
 
-
-
 TEST(Converter, ClearingAllFunctions) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::converter::ConverterOrderTwo<int, int, int>
-      converterOrderTwo;
+  sparsebase::converter::ConverterOrderTwo<int, int, int> converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
   converterOrderTwo.ClearConversionFunctions();
@@ -28,18 +25,16 @@ TEST(Converter, ClearingAllFunctions) {
       [](sparsebase::context::Context*, sparsebase::context::Context*) -> bool {
         return true;
       });
-  EXPECT_EQ(
-      (converterOrderTwo.Convert(
-          &csr, sparsebase::format::COO<int, int, int>::get_id_static(),
-          &cpu_context)),
-      nullptr);
+  EXPECT_EQ((converterOrderTwo.Convert(
+                &csr, sparsebase::format::COO<int, int, int>::get_id_static(),
+                &cpu_context)),
+            nullptr);
 }
 
 TEST(Converter, ClearingASingleDirection) {
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  sparsebase::converter::ConverterOrderTwo<int, int, int>
-      converterOrderTwo;
+  sparsebase::converter::ConverterOrderTwo<int, int, int> converterOrderTwo;
   sparsebase::context::CPUContext cpu_context;
 
   converterOrderTwo.ClearConversionFunctions(
@@ -63,11 +58,10 @@ TEST(Converter, ClearingASingleDirection) {
       [](sparsebase::context::Context*, sparsebase::context::Context*) -> bool {
         return true;
       });
-  EXPECT_EQ(
-      (converterOrderTwo.Convert(
-          &csr, sparsebase::format::COO<int, int, int>::get_id_static(),
-          &cpu_context)),
-      nullptr);
+  EXPECT_EQ((converterOrderTwo.Convert(
+                &csr, sparsebase::format::COO<int, int, int>::get_id_static(),
+                &cpu_context)),
+            nullptr);
 }
 
 #define MATCH_CHECKING_ONEVAL(T1, T2, val)                                \
@@ -740,7 +734,8 @@ TEST(ApplyConversionSchema, ClearIntermediate) {
 #define TYPE int, int, int
 class ConversionChainFixture : public ::testing::Test {
  protected:
-  struct FakeContext : utils::IdentifiableImplementation<FakeContext, context::Context> {
+  struct FakeContext
+      : utils::IdentifiableImplementation<FakeContext, context::Context> {
     virtual bool IsEquivalent(context::Context* i) const {
       return i->get_id() == this->get_id();
     };
@@ -752,29 +747,21 @@ class ConversionChainFixture : public ::testing::Test {
         n, m, nnz, coo_row, coo_col, coo_vals, sparsebase::format::kNotOwned);
     csc = new format::CSC<int, int, int>(n, m, csc_col_ptr, csc_row, csc_vals,
                                          sparsebase::format::kNotOwned);
-    c.ClearConversionFunctions(csr->get_id(), coo->get_id(),
-                               false);
-    c.ClearConversionFunctions(csr->get_id(), csc->get_id(),
-                               false);
-    c.ClearConversionFunctions(coo->get_id(), csc->get_id(),
-                               false);
-    c.ClearConversionFunctions(coo->get_id(), csr->get_id(),
-                               false);
-    c.ClearConversionFunctions(csc->get_id(), csr->get_id(),
-                               false);
-    c.ClearConversionFunctions(csc->get_id(), coo->get_id(),
-                               false);
+    c.ClearConversionFunctions(csr->get_id(), coo->get_id(), false);
+    c.ClearConversionFunctions(csr->get_id(), csc->get_id(), false);
+    c.ClearConversionFunctions(coo->get_id(), csc->get_id(), false);
+    c.ClearConversionFunctions(coo->get_id(), csr->get_id(), false);
+    c.ClearConversionFunctions(csc->get_id(), csr->get_id(), false);
+    c.ClearConversionFunctions(csc->get_id(), coo->get_id(), false);
     c.RegisterConversionFunction(
         csr->get_id(), coo->get_id(), returnCoo,
         [](context::Context*, context::Context* to) -> bool {
-          return to->get_id() ==
-                 context::CPUContext::get_id_static();
+          return to->get_id() == context::CPUContext::get_id_static();
         });
     c.RegisterConversionFunction(
         coo->get_id(), csr->get_id(), returnCsr,
         [](context::Context* from, context::Context* to) -> bool {
-          return to->get_id() ==
-                 FakeContext::get_id_static();
+          return to->get_id() == FakeContext::get_id_static();
         });
   }
   void TearDown() override {
@@ -797,34 +784,32 @@ TEST_F(ConversionChainFixture, SingleStep) {
   format::Format* output_format;
   // single format
   // No conversion -- wrong context
-  chain = c.GetConversionChain(coo->get_id(), &cpu_c,
-                               csr->get_id(), {&cpu_c}, false);
+  chain = c.GetConversionChain(coo->get_id(), &cpu_c, csr->get_id(), {&cpu_c},
+                               false);
   EXPECT_EQ(chain.has_value(), false);
   // No conversion -- no function
-  chain = c.GetConversionChain(csc->get_id(), &cpu_c,
-                               csr->get_id(), {&cpu_c}, false);
+  chain = c.GetConversionChain(csc->get_id(), &cpu_c, csr->get_id(), {&cpu_c},
+                               false);
   EXPECT_EQ(chain.has_value(), false);
   // One conversion -- cpu context
-  chain = c.GetConversionChain(csr->get_id(), &cpu_c,
-                               coo->get_id(), {&cpu_c}, false);
+  chain = c.GetConversionChain(csr->get_id(), &cpu_c, coo->get_id(), {&cpu_c},
+                               false);
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             context::CPUContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(nullptr, nullptr);
-  EXPECT_EQ(output_format->get_id(),
-            (format::COO<TYPE>::get_id_static()));
+  EXPECT_EQ(output_format->get_id(), (format::COO<TYPE>::get_id_static()));
   delete output_format;
   // One conversion -- fake context
-  chain = c.GetConversionChain(coo->get_id(), &cpu_c,
-                               csr->get_id(), {&fake_c}, false);
+  chain = c.GetConversionChain(coo->get_id(), &cpu_c, csr->get_id(), {&fake_c},
+                               false);
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 1);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             FakeContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(nullptr, nullptr);
-  EXPECT_EQ(output_format->get_id(),
-            (format::CSR<TYPE>::get_id_static()));
+  EXPECT_EQ(output_format->get_id(), (format::CSR<TYPE>::get_id_static()));
   delete output_format;
   // Multiple conversions
 }
@@ -841,50 +826,44 @@ TEST_F(ConversionChainFixture, MultiStep) {
       });
   // single format
   // No conversion -- only one needed context
-  chain = c.GetConversionChain(csr->get_id(), &cpu_c,
-                               csc->get_id(), {&cpu_c}, false);
+  chain = c.GetConversionChain(csr->get_id(), &cpu_c, csc->get_id(), {&cpu_c},
+                               false);
   EXPECT_EQ(chain.has_value(), false);
   // No conversion -- only one needed context
-  chain = c.GetConversionChain(csr->get_id(), &cpu_c,
-                               csc->get_id(), {&fake_c}, false);
+  chain = c.GetConversionChain(csr->get_id(), &cpu_c, csc->get_id(), {&fake_c},
+                               false);
   EXPECT_EQ(chain.has_value(), false);
   // Two conversions -- only one needed context
-  chain = c.GetConversionChain(csr->get_id(), &cpu_c,
-                               csc->get_id(), {&fake_c, &cpu_c}, false);
+  chain = c.GetConversionChain(csr->get_id(), &cpu_c, csc->get_id(),
+                               {&fake_c, &cpu_c}, false);
   EXPECT_EQ(chain.has_value(), true);
   EXPECT_EQ((std::get<0>(*chain)).size(), 2);
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[0])->get_id()),
             context::CPUContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[0]))(nullptr, nullptr);
-  EXPECT_EQ(output_format->get_id(),
-            (format::COO<TYPE>::get_id_static()));
+  EXPECT_EQ(output_format->get_id(), (format::COO<TYPE>::get_id_static()));
   delete output_format;
   EXPECT_EQ((std::get<1>(std::get<0>(*chain)[1])->get_id()),
             FakeContext::get_id_static());
   output_format = (std::get<0>(std::get<0>(*chain)[1]))(nullptr, nullptr);
-  EXPECT_EQ(output_format->get_id(),
-            (format::CSC<TYPE>::get_id_static()));
+  EXPECT_EQ(output_format->get_id(), (format::CSC<TYPE>::get_id_static()));
   delete output_format;
 }
 TEST_F(ConversionChainFixture, CanConvert) {
   // single step
   // can
-  EXPECT_TRUE(
-      c.CanConvert(csr->get_id(), &cpu_c, coo->get_id(), &cpu_c));
+  EXPECT_TRUE(c.CanConvert(csr->get_id(), &cpu_c, coo->get_id(), &cpu_c));
   // can
-  EXPECT_TRUE(c.CanConvert(csr->get_id(), &cpu_c, coo->get_id(),
-                           {&cpu_c, &fake_c}));
+  EXPECT_TRUE(
+      c.CanConvert(csr->get_id(), &cpu_c, coo->get_id(), {&cpu_c, &fake_c}));
   // can't -- wrong context
-  EXPECT_FALSE(c.CanConvert(csr->get_id(), &fake_c, coo->get_id(),
-                            &fake_c));
+  EXPECT_FALSE(c.CanConvert(csr->get_id(), &fake_c, coo->get_id(), &fake_c));
   // can -- same context and format
-  EXPECT_TRUE(c.CanConvert(coo->get_id(), &fake_c, coo->get_id(),
-                           &fake_c));
-  EXPECT_TRUE(c.CanConvert(coo->get_id(), &fake_c, coo->get_id(),
-                           {&cpu_c, &fake_c}));
+  EXPECT_TRUE(c.CanConvert(coo->get_id(), &fake_c, coo->get_id(), &fake_c));
+  EXPECT_TRUE(
+      c.CanConvert(coo->get_id(), &fake_c, coo->get_id(), {&cpu_c, &fake_c}));
   // can't -- different context but same format
-  EXPECT_FALSE(c.CanConvert(coo->get_id(), &fake_c, coo->get_id(),
-                            &cpu_c));
+  EXPECT_FALSE(c.CanConvert(coo->get_id(), &fake_c, coo->get_id(), &cpu_c));
 
   // multi-step
   c.RegisterConversionFunction(
@@ -893,25 +872,27 @@ TEST_F(ConversionChainFixture, CanConvert) {
         return to->get_id() == FakeContext::get_id_static();
       });
   // can
-  EXPECT_TRUE(c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(),
-                           {&fake_c, &cpu_c}));
+  EXPECT_TRUE(
+      c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(), {&fake_c, &cpu_c}));
   // can't -- wrong contexts
-  EXPECT_FALSE(c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(),
-                            {&cpu_c, &cpu_c}));
-  EXPECT_FALSE(c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(),
-                            {&fake_c, &fake_c}));
+  EXPECT_FALSE(
+      c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(), {&cpu_c, &cpu_c}));
+  EXPECT_FALSE(
+      c.CanConvert(csr->get_id(), &cpu_c, csc->get_id(), {&fake_c, &fake_c}));
 }
 #include "sparsebase/converter/converter_store.h"
 
-TEST(ConverterStore, All){
+TEST(ConverterStore, All) {
   using ConvStore = sparsebase::converter::ConverterStore;
-  using ConvType = sparsebase::converter::ConverterOrderTwo<unsigned int, int, unsigned int>;
+  using ConvType =
+      sparsebase::converter::ConverterOrderTwo<unsigned int, int, unsigned int>;
   // check the singleton-ness
   EXPECT_EQ(&ConvStore::GetStore(), &ConvStore::GetStore());
   // Check the reference counter value
   sparsebase::format::CSR<int, int, int> csr(
       n, m, csr_row_ptr, csr_col, csr_vals, sparsebase::format::kNotOwned);
-  auto new_csr = csr.Convert<sparsebase::format::CSR, unsigned int, int, unsigned int>();
+  auto new_csr =
+      csr.Convert<sparsebase::format::CSR, unsigned int, int, unsigned int>();
   auto ptr = ConvStore::GetStore().get_converter<ConvType>();
   EXPECT_EQ(ptr.use_count(), 2);
   auto ptr2 = ConvStore::GetStore().get_converter<ConvType>();

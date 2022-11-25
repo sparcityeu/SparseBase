@@ -17,11 +17,10 @@
 
 namespace sparsebase::format {
 
-
 template <typename IDType, typename NNZType, typename ValueType>
-class CUDACSR
-    : public utils::IdentifiableImplementation<CUDACSR<IDType, NNZType, ValueType>,
-                                  FormatOrderTwo<IDType, NNZType, ValueType>> {
+class CUDACSR : public utils::IdentifiableImplementation<
+                    CUDACSR<IDType, NNZType, ValueType>,
+                    FormatOrderTwo<IDType, NNZType, ValueType>> {
  public:
   CUDACSR(IDType n, IDType m, NNZType nnz, NNZType *row_ptr, IDType *col,
           ValueType *vals, context::CUDAContext context,
@@ -59,8 +58,7 @@ class CUDACSR
   std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
 };
 
-
-}  // namespace sparsebase
+}  // namespace sparsebase::format
 #ifdef _HEADER_ONLY
 #include "cuda_csr_cuda.cu"
 #endif

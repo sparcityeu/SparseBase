@@ -1,11 +1,10 @@
 #include <iostream>
 
+#include "common.inc"
 #include "gtest/gtest.h"
 #include "sparsebase/sparsebase.h"
-#include "common.inc"
 
 using namespace sparsebase;
-
 
 TEST(Format, Is) {
   int *new_csr_row_ptr = new int[5];
@@ -16,9 +15,8 @@ TEST(Format, Is) {
   std::copy(csr_vals, csr_vals + 4, new_csr_vals);
 
   // Construct an owned CSR
-  auto *csr = new format::CSR<int, int, int>(
-      4, 4, new_csr_row_ptr, new_csr_col, new_csr_vals,
-      format::kOwned);
+  auto *csr = new format::CSR<int, int, int>(4, 4, new_csr_row_ptr, new_csr_col,
+                                             new_csr_vals, format::kOwned);
 
   bool res = csr->Is<format::CSR<int, int, int>>();
   EXPECT_TRUE(res);
@@ -32,7 +30,9 @@ TEST(Format, Is) {
 
   delete csr;
 }
-class TestFormat : utils::IdentifiableImplementation<TestFormat, format::FormatImplementation> {
+class TestFormat
+    : utils::IdentifiableImplementation<TestFormat,
+                                        format::FormatImplementation> {
  public:
   TestFormat() {
     this->context_ = std::unique_ptr<context::Context>(new context::CPUContext);

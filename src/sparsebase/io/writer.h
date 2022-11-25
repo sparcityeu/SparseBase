@@ -11,14 +11,13 @@
 
 #include <string>
 
+#include "sparsebase/format/array.h"
+#include "sparsebase/format/coo.h"
+#include "sparsebase/format/csc.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
-#include "sparsebase/format/array.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/format/csr.h"
-#include "sparsebase/format/csc.h"
-#include "sparsebase/format/coo.h"
-
 
 namespace sparsebase {
 
@@ -50,7 +49,6 @@ class WritesArray {
   //! Writes the given Array instance to a file
   virtual void WriteArray(format::Array<T> *arr) const = 0;
 };
-
 
 }  // namespace io
 

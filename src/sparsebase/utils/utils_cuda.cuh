@@ -8,6 +8,6 @@ struct CUDADeleter {
   void operator()(T *obj) { cudaFree(obj); }
 };
 
-}
+}  // namespace sparsebase::utils
 
 #endif  // SPARSEBASE_PROJECT_UTILS_CUDA_CUH

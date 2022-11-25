@@ -1,4 +1,5 @@
 #include "sparsebase/format/csc.h"
+
 #include "sparsebase/utils/logger.h"
 namespace sparsebase::format {
 
@@ -252,4 +253,4 @@ CSC<IDType, NNZType, ValueType>::~CSC() {}
 #ifndef _HEADER_ONLY
 #include "init/csc.inc"
 #endif
-}
+}  // namespace sparsebase::format

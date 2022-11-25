@@ -1,16 +1,16 @@
 #include "sparsebase/converter/converter.h"
 #include "sparsebase/converter/converter_order_two.h"
 #include "sparsebase/converter/converter_order_two_cuda.cuh"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/cuda_csr_cuda.cuh"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-#include "sparsebase/format/csr.h"
 
 namespace sparsebase::converter {
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
-                                      context::Context *context) {
+                                              context::Context *context) {
   context::CUDAContext *gpu_context =
       static_cast<context::CUDAContext *>(context);
   auto csr = source->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
@@ -40,7 +40,7 @@ format::Format *CsrCUDACsrConditionalFunction(format::Format *source,
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
-                                          context::Context *context) {
+                                                  context::Context *context) {
   context::CUDAContext *dest_gpu_context =
       static_cast<context::CUDAContext *>(context);
   auto cuda_csr =
@@ -75,7 +75,7 @@ format::Format *CUDACsrCUDACsrConditionalFunction(format::Format *source,
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
-                                      context::Context *context) {
+                                              context::Context *context) {
   context::CUDAContext *gpu_context =
       static_cast<context::CUDAContext *>(source->get_context());
   auto cuda_csr =
@@ -104,4 +104,4 @@ format::Format *CUDACsrCsrConditionalFunction(format::Format *source,
 #if !defined(_HEADER_ONLY)
 #include "init/cuda/converter_order_two_cuda.inc"
 #endif
-}
+}  // namespace sparsebase::converter

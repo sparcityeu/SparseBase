@@ -1,6 +1,7 @@
 #include "sparsebase/permute/permute_order_two.h"
-#include "sparsebase/format/csr.h"
+
 #include "sparsebase/format/array.h"
+#include "sparsebase/format/csr.h"
 
 namespace sparsebase::permute {
 template <typename IDType, typename NNZType, typename ValueType>
@@ -9,8 +10,8 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
   this->RegisterFunction(
       {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
       PermuteOrderTwoCSR);
-  this->params_ = std::make_unique<PermuteOrderTwoParams<IDType>>(
-      row_order, col_order);
+  this->params_ =
+      std::make_unique<PermuteOrderTwoParams<IDType>>(row_order, col_order);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
@@ -19,8 +20,8 @@ PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwo(
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::FormatOrderTwo<IDType, NNZType, ValueType>
-*PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
-    std::vector<format::Format *> formats, utils::Parameters *params) {
+    *PermuteOrderTwo<IDType, NNZType, ValueType>::PermuteOrderTwoCSR(
+        std::vector<format::Format *> formats, utils::Parameters *params) {
   auto *sp = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   auto row_order =
       static_cast<PermuteOrderTwoParams<IDType> *>(params)->row_order;
@@ -72,11 +73,12 @@ format::FormatOrderTwo<IDType, NNZType, ValueType>
     }
   }
   if (row_order == nullptr) delete[] inverse_row_order;
-  format::CSR<IDType, NNZType, ValueType> *csr = new format::CSR(n, m, nxadj, nadj, nvals);
+  format::CSR<IDType, NNZType, ValueType> *csr =
+      new format::CSR(n, m, nxadj, nadj, nvals);
   return csr;
 }
 
 #if !defined(_HEADER_ONLY)
 #include "init/permute_order_two.inc"
 #endif
-}
+}  // namespace sparsebase::permute

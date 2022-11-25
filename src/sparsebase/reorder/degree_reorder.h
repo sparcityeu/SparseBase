@@ -40,7 +40,7 @@ class DegreeReorder : public Reorderer<IDType> {
                                      utils::Parameters *params);
 };
 
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/degree_reorder.cc"
 #endif

@@ -1,8 +1,10 @@
-#include "sparsebase/config.h"
 #include "sparsebase/io/mtx_reader.h"
-#include <string>
+
 #include <fstream>
 #include <sstream>
+#include <string>
+
+#include "sparsebase/config.h"
 
 namespace sparsebase::io {
 
@@ -61,30 +63,30 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::real;
     if constexpr (std::is_same<void, ValueType>::value)
-    throw utils::ReaderException(
-        "You are reading the values of the matrix market file into a void "
-        "array");
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "double") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::double_field;
     if constexpr (std::is_same<void, ValueType>::value)
-    throw utils::ReaderException(
-        "You are reading the values of the matrix market file into a void "
-        "array");
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "complex") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
     if constexpr (std::is_same<void, ValueType>::value)
-    throw utils::ReaderException(
-        "You are reading the values of the matrix market file into a void "
-        "array");
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "integer") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
     if constexpr (std::is_same<void, ValueType>::value)
-    throw utils::ReaderException(
-        "You are reading the values of the matrix market file into a void "
-        "array");
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
   } else if (field == "pattern") {
     options.field =
         MTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::pattern;
@@ -101,7 +103,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
         MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::symmetric;
   } else if (symmetry == "skew-symmetric") {
     options.symmetry = MTXReader<IDType, NNZType,
-        ValueType>::MTXSymmetryOptions::skew_symmetric;
+                                 ValueType>::MTXSymmetryOptions::skew_symmetric;
   } else if (symmetry == "hermitian") {
     options.symmetry =
         MTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::hermitian;
@@ -117,7 +119,7 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
 template <typename IDType, typename NNZType, typename ValueType>
 template <bool weighted>
 format::COO<IDType, NNZType, ValueType>
-*MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
+    *MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   std::ifstream fin(filename_);
   // Ignore headers and comments:
   while (fin.peek() == '%')
@@ -162,7 +164,7 @@ format::COO<IDType, NNZType, ValueType>
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType>
-*MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+    *MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   bool weighted = options_.field != MTXFieldOptions::pattern;
   if (options_.format == MTXFormatOptions::array) {
     if (weighted) {
@@ -238,10 +240,10 @@ format::COO<IDType, NNZType, ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType>
-*MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
+    *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
   if constexpr (std::is_same_v<ValueType, void>)
-  throw utils::ReaderException(
-      "Cannot read a matrix market file into an Array with void ValueType");
+    throw utils::ReaderException(
+        "Cannot read a matrix market file into an Array with void ValueType");
   else {
     std::ifstream fin(filename_);
 
@@ -281,7 +283,7 @@ format::Array<ValueType>
 template <typename IDType, typename NNZType, typename ValueType>
 template <bool weighted, int symm, bool conv_to_zero>
 format::COO<IDType, NNZType, ValueType>
-*MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
+    *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
@@ -371,15 +373,15 @@ format::COO<IDType, NNZType, ValueType>
         actual_nnzs++;
         bool check_diagonal;
         if constexpr (symm == (int)MTXSymmetryOptions::skew_symmetric)
-        check_diagonal = false;
+          check_diagonal = false;
         else
-        check_diagonal = true;
+          check_diagonal = true;
         if (check_diagonal && m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
           if constexpr (weighted && !std::is_same_v<void, ValueType> &&
-                                                          weighted)
-          vals[actual_nnzs] = vals[actual_nnzs - 1];
+                        weighted)
+            vals[actual_nnzs] = vals[actual_nnzs - 1];
           actual_nnzs++;
         }
       }
@@ -414,7 +416,7 @@ format::COO<IDType, NNZType, ValueType>
 }
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType>
-*MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
+    *MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
   if constexpr (!std::is_same_v<void, ValueType>) {
     std::ifstream fin(filename_);
     // Ignore headers and comments:
@@ -447,7 +449,7 @@ format::Array<ValueType>
     }
 
     auto array = new format::Array<ValueType>(/*nnz_counter*/ total_values,
-                                                              vals, format::kOwned);
+                                              vals, format::kOwned);
     return array;
 
   } else {
@@ -459,7 +461,7 @@ format::Array<ValueType>
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::Array<ValueType> *MTXReader<IDType, NNZType, ValueType>::ReadArray()
-const {
+    const {
   // check object
   if constexpr (std::is_same_v<ValueType, void>) {
     throw utils::ReaderException(
@@ -489,7 +491,7 @@ const {
 
 template <typename IDType, typename NNZType, typename ValueType>
 format::CSR<IDType, NNZType, ValueType>
-*MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
+    *MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;
@@ -502,4 +504,4 @@ MTXReader<IDType, NNZType, ValueType>::~MTXReader(){};
 #ifndef _HEADER_ONLY
 #include "init/mtx_reader.inc"
 #endif
-}
+}  // namespace sparsebase::io

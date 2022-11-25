@@ -1,18 +1,22 @@
 #include "sparsebase/reorder/rcm_reorder.h"
-#include "sparsebase/format/csr.h"
+
 #include <queue>
+
+#include "sparsebase/format/csr.h"
 
 namespace sparsebase::reorder {
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder() {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+      GetReorderCSR);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 RCMReorder<IDType, NNZType, ValueType>::RCMReorder(RCMReorderParams p) {
   this->RegisterFunction(
-      {format::CSR<IDType, NNZType, ValueType>::get_id_static()}, GetReorderCSR);
+      {format::CSR<IDType, NNZType, ValueType>::get_id_static()},
+      GetReorderCSR);
 }
 template <typename IDType, typename NNZType, typename ValueType>
 IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
@@ -58,7 +62,7 @@ template <typename IDType, typename NNZType, typename ValueType>
 IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
   format::CSR<IDType, NNZType, ValueType> *csr =
-                                   formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
+      formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   NNZType *xadj = csr->get_row_ptr();
   IDType *adj = csr->get_col();
   IDType n = csr->get_dimensions()[0];
@@ -120,8 +124,7 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   return Q;
 }
 
-
 #if !defined(_HEADER_ONLY)
 #include "init/rcm_reorder.inc"
 #endif
-}
+}  // namespace sparsebase::reorder

@@ -9,13 +9,12 @@
 
 #include "sparsebase/config.h"
 #include "sparsebase/context/cpu_context.h"
+#include "sparsebase/converter/converter.h"
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
-
-#include "sparsebase/converter/converter.h"
-#include "sparsebase/utils/function_matcher_mixin.h"
 #include "sparsebase/utils/extractable.h"
+#include "sparsebase/utils/function_matcher_mixin.h"
 #ifndef SPARSEBASE_PROJECT_PARTITIONER_H
 #define SPARSEBASE_PROJECT_PARTITIONER_H
 
@@ -63,8 +62,7 @@ class Partitioner : public utils::FunctionMatcherMixin<IDType *> {
   virtual ~Partitioner();
 };
 
-
-}  // namespace sparsebase::reorder
+}  // namespace sparsebase::partition
 #ifdef _HEADER_ONLY
 #include "sparsebase/partition/partitioner.cc"
 #endif

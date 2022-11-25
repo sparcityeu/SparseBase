@@ -38,8 +38,7 @@ class MetisReorder : public Reorderer<IDType> {
 
 #endif
 
-
-}
+}  // namespace sparsebase::reorder
 #ifdef _HEADER_ONLY
 #include "sparsebase/reorder/metis_reorder.cc"
 #endif

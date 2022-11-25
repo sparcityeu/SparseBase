@@ -33,7 +33,7 @@ template <typename ValueType>
 class ConverterOrderOne;
 template <typename IDType, typename NNZType, typename ValueType>
 class ConverterOrderTwo;
-}
+}  // namespace converter
 
 namespace format {
 
@@ -93,10 +93,10 @@ class Format : public utils::Identifiable {
    * with varying template types (like CSR<int,int,int> and CSR<int,int,float)
    * will also have different identifiers.
    */
-  //virtual std::type_index get_id() = 0;
+  // virtual std::type_index get_id() = 0;
 
   ////! Similar to get_id but returns a demangled name instead
-  //virtual std::string get_name() = 0;
+  // virtual std::string get_name() = 0;
 
   virtual ~Format() = default;
 
@@ -121,9 +121,9 @@ class Format : public utils::Identifiable {
 
   //! Returns a pointer at the converter of this format instance
   virtual std::shared_ptr<converter::Converter const> get_converter() const = 0;
-  
+
   //! Sets a new converter for this format instance
-  //virtual void set_converter(converter::Converter*) = 0;
+  // virtual void set_converter(converter::Converter*) = 0;
 
   //! Templated function that can be used to cast to a concrete format class
   /*!
@@ -161,8 +161,6 @@ class Format : public utils::Identifiable {
     return this->get_id() == std::type_index(typeid(TBase));
   }
 };
-
-
 
 }  // namespace format
 

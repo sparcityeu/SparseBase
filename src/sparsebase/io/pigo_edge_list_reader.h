@@ -1,10 +1,11 @@
+#include <fstream>
+#include <string>
+
 #include "sparsebase/config.h"
 #include "sparsebase/io/reader.h"
-#include <string>
-#include <fstream>
 #ifndef SPARSEBASE_PROJECT_PIGO_EDGE_LIST_READER_H
 #define SPARSEBASE_PROJECT_PIGO_EDGE_LIST_READER_H
-namespace sparsebase::io{
+namespace sparsebase::io {
 /*!
  * A parallelized EdgeList reader using the PIGO library
  * (This feature is currently experimental and not available on all platforms,
@@ -25,7 +26,7 @@ class PigoEdgeListReader : public Reader,
   std::string filename_;
   bool weighted_;
 };
-}
+}  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
 #include "pigo_edge_list_reader.cc"
 #endif

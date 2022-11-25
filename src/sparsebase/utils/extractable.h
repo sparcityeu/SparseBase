@@ -6,13 +6,15 @@
  * The complete license agreement can be obtained at:
  * https://sparcityeu.github.io/sparsebase/pages/license.html
  ********************************************************/
-#include <memory>
 #include <sparsebase/context/context.h>
+
+#include <memory>
+
 #include "sparsebase/utils/parameterizable.h"
 #ifndef SPARSEBASE_SPARSEBASE_UTILS_EXTRACTABLE_H_
 #define SPARSEBASE_SPARSEBASE_UTILS_EXTRACTABLE_H_
 
-namespace sparsebase::utils{
+namespace sparsebase::utils {
 
 //! Abstract class that can be utilized with fusued feature extraction
 /*!
@@ -91,5 +93,5 @@ class Extractable {
   std::unordered_map<std::type_index, std::shared_ptr<utils::Parameters>> pmap_;
 };
 
-}
+}  // namespace sparsebase::utils
 #endif

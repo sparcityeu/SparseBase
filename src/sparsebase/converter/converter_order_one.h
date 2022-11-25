@@ -2,7 +2,7 @@
 #define SPARSEBASE_PROJECT_CONVERTER_ORDER_ONE_H
 #include "converter.h"
 #include "sparsebase/config.h"
-namespace sparsebase::converter{
+namespace sparsebase::converter {
 
 //! An instance of this class can be used to convert between order one formats
 //! (Array)
@@ -15,7 +15,7 @@ class ConverterOrderOne : public ConverterImpl<ConverterOrderOne<ValueType>> {
   virtual void Reset();
 };
 
-}
+}  // namespace sparsebase::converter
 #ifdef _HEADER_ONLY
 #include "converter_order_one.cc"
 #endif

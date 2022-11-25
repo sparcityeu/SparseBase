@@ -1,4 +1,5 @@
 #include "sparsebase/format/array.h"
+
 #include "sparsebase/utils/logger.h"
 namespace sparsebase::format {
 
@@ -122,4 +123,4 @@ Array<ValueType>::~Array() {
 #ifndef _HEADER_ONLY
 #include "init/array.inc"
 #endif
-}
+}  // namespace sparsebase::format
