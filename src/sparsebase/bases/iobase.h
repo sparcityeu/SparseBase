@@ -23,7 +23,7 @@
 #ifndef SPARSEBASE_PROJECT_IOBASE_H
 #define SPARSEBASE_PROJECT_IOBASE_H
 
-namespace sparsebase::io {
+namespace sparsebase::bases {
 class IOBase {
  public:
   //! Read a matrix market file into a CSR format
@@ -44,8 +44,8 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static format::CSR<IDType, NNZType, ValueType>* ReadMTXToCSR(
       std::string filename, bool convert_index_to_zero = true) {
-    MTXReader<IDType, NNZType, ValueType> reader(filename,
-                                                 convert_index_to_zero);
+    io::MTXReader<IDType, NNZType, ValueType> reader(filename,
+                                                     convert_index_to_zero);
     return reader.ReadCSR();
   }
   //! Read a matrix market file into a COO format
@@ -66,8 +66,8 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static format::COO<IDType, NNZType, ValueType>* ReadMTXToCOO(
       std::string filename, bool convert_index_to_zero = true) {
-    MTXReader<IDType, NNZType, ValueType> reader(filename,
-                                                 convert_index_to_zero);
+    io::MTXReader<IDType, NNZType, ValueType> reader(filename,
+                                                     convert_index_to_zero);
     return reader.ReadCOO();
   }
   //! Read a matrix market file into a dense array format.
@@ -89,8 +89,8 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static format::Array<ValueType>* ReadMTXToArray(
       std::string filename, bool convert_index_to_zero = true) {
-    MTXReader<IDType, NNZType, ValueType> reader(filename,
-                                                 convert_index_to_zero);
+    io::MTXReader<IDType, NNZType, ValueType> reader(filename,
+                                                     convert_index_to_zero);
     return reader.ReadArray();
   }
 
@@ -112,27 +112,29 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static format::CSR<IDType, NNZType, ValueType>* ReadPigoMTXToCSR(
       std::string filename, bool weighted, bool convert_index_to_zero = true) {
-    PigoMTXReader<IDType, NNZType, ValueType> reader(filename, weighted,
-                                                     convert_index_to_zero);
+    io::PigoMTXReader<IDType, NNZType, ValueType> reader(filename, weighted,
+                                                         convert_index_to_zero);
     return reader.ReadCSR();
   }
   template <typename IDType, typename NNZType, typename ValueType>
   static format::COO<IDType, NNZType, ValueType>* ReadPigoMTXToCOO(
       std::string filename, bool weighted, bool convert_index_to_zero = true) {
-    PigoMTXReader<IDType, NNZType, ValueType> reader(filename, weighted,
-                                                     convert_index_to_zero);
+    io::PigoMTXReader<IDType, NNZType, ValueType> reader(filename, weighted,
+                                                         convert_index_to_zero);
     return reader.ReadCOO();
   }
   template <typename IDType, typename NNZType, typename ValueType>
   static format::CSR<IDType, NNZType, ValueType>* ReadPigoEdgeListToCSR(
       std::string filename, bool weighted) {
-    PigoEdgeListReader<IDType, NNZType, ValueType> reader(filename, weighted);
+    io::PigoEdgeListReader<IDType, NNZType, ValueType> reader(filename,
+                                                              weighted);
     return reader.ReadCSR();
   }
   template <typename IDType, typename NNZType, typename ValueType>
   static format::COO<IDType, NNZType, ValueType>* ReadPigoEdgeListToCOO(
       std::string filename, bool weighted) {
-    PigoEdgeListReader<IDType, NNZType, ValueType> reader(filename, weighted);
+    io::PigoEdgeListReader<IDType, NNZType, ValueType> reader(filename,
+                                                              weighted);
     return reader.ReadCOO();
   }
 
@@ -157,7 +159,7 @@ class IOBase {
       std::string filename, bool weighted = false,
       bool remove_self_edges = false, bool read_undirected = true,
       bool square = false) {
-    EdgeListReader<IDType, NNZType, ValueType> reader(
+    io::EdgeListReader<IDType, NNZType, ValueType> reader(
         filename, weighted, true, remove_self_edges, read_undirected, square);
     return reader.ReadCSR();
   }
@@ -182,7 +184,7 @@ class IOBase {
       std::string filename, bool weighted = false,
       bool remove_self_edges = false, bool read_undirected = true,
       bool square = false) {
-    EdgeListReader<IDType, NNZType, ValueType> reader(
+    io::EdgeListReader<IDType, NNZType, ValueType> reader(
         filename, weighted, true, remove_self_edges, read_undirected, square);
     return reader.ReadCOO();
   }
@@ -202,7 +204,7 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static format::CSR<IDType, NNZType, ValueType>* ReadBinaryToCSR(
       std::string filename) {
-    BinaryReaderOrderTwo<IDType, NNZType, ValueType> reader(filename);
+    io::BinaryReaderOrderTwo<IDType, NNZType, ValueType> reader(filename);
     return reader.ReadCSR();
   }
   //! Read an SparseBase Binary file into a COO
@@ -220,7 +222,7 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static format::COO<IDType, NNZType, ValueType>* ReadBinaryToCOO(
       std::string filename) {
-    BinaryReaderOrderTwo<IDType, NNZType, ValueType> reader(filename);
+    io::BinaryReaderOrderTwo<IDType, NNZType, ValueType> reader(filename);
     return reader.ReadCOO();
   }
 
@@ -234,7 +236,7 @@ class IOBase {
    */
   template <typename ValueType>
   static format::Array<ValueType>* ReadBinaryToArray(std::string filename) {
-    BinaryReaderOrderOne<ValueType> reader(filename);
+    io::BinaryReaderOrderOne<ValueType> reader(filename);
     return reader.ReadArray();
   }
 
@@ -253,7 +255,7 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static void WriteCOOToBinary(format::COO<IDType, NNZType, ValueType>* coo,
                                std::string filename) {
-    BinaryWriterOrderTwo<IDType, NNZType, ValueType> writer(filename);
+    io::BinaryWriterOrderTwo<IDType, NNZType, ValueType> writer(filename);
     return writer.WriteCOO(coo);
   }
   //! Write a CSR object to a SparseBase binary file
@@ -271,7 +273,7 @@ class IOBase {
   template <typename IDType, typename NNZType, typename ValueType>
   static void WriteCSRToBinary(format::CSR<IDType, NNZType, ValueType>* csr,
                                std::string filename) {
-    BinaryWriterOrderTwo<IDType, NNZType, ValueType> writer(filename);
+    io::BinaryWriterOrderTwo<IDType, NNZType, ValueType> writer(filename);
     return writer.WriteCSR(csr);
   }
   //! Write an Array object to a SparseBase binary file
@@ -285,9 +287,9 @@ class IOBase {
   template <typename ValueType>
   static void WriteArrayToBinary(format::Array<ValueType>* array,
                                  std::string filename) {
-    BinaryWriterOrderOne<ValueType> writer(filename);
+    io::BinaryWriterOrderOne<ValueType> writer(filename);
     return writer.WriteArray(array);
   }
 };
-}  // namespace sparsebase::io
+}  // namespace sparsebase::bases
 #endif  // SPARSEBASE_PROJECT_IOBASE_H

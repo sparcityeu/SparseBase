@@ -44,7 +44,7 @@ TEST(PulpPartition, BasicTest) {
   PulpPartition<int, long, void> partitioner;
   // This is a temporary solution intended to be replaced by the Downloaders
   // once finished
-  auto coo = io::IOBase::ReadMTXToCOO<int, long, void>(FILE_NAME);
+  auto coo = bases::IOBase::ReadMTXToCOO<int, long, void>(FILE_NAME);
   PulpPartitionParams params;
   params.num_partitions = 2;
   auto part2 = partitioner.Partition(coo, &params, {&cpu_context}, true);
