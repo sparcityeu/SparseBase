@@ -44,7 +44,7 @@ if (WIN32 OR APPLE)
   set(USE_PIGO OFF)
 endif()
 
-if(MSYS OR MINGW)
+if(NOT APPLE AND (MSYS OR MINGW))
   add_compile_options("-Wa,-mbig-obj")
 endif()
 
