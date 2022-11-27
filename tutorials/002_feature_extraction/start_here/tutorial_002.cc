@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace sparsebase;
+using namespace utils::io;
 using namespace format;
 
 using vertex_type = unsigned int;
