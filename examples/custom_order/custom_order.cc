@@ -1,10 +1,14 @@
 #include <iostream>
 #include <set>
 
+#include "sparsebase/bases/reorder_base.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/permute/permuter.h"
+#include "sparsebase/reorder/reorderer.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -13,12 +17,12 @@ using vertex_type = unsigned int;
 using edge_type = unsigned int;
 using value_type = unsigned int;
 
-struct customParam : preprocess::PreprocessParams {
+struct customParam : utils::Parameters {
   customParam(int h) : hyperparameter(h) {}
   int hyperparameter;
 };
 vertex_type *degree_reorder_csr(std::vector<format::Format *> formats,
-                                preprocess::PreprocessParams *params) {
+                                utils::Parameters *params) {
   format::CSR<vertex_type, edge_type, value_type> *csr =
       formats[0]->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
   customParam *cast_params = static_cast<customParam *>(params);
@@ -76,7 +80,7 @@ int main(int argc, char *argv[]) {
 
   // ReorderInstance<vertex_type, edge_type, value_type, GenericReorder>
   // orderer;
-  preprocess::GenericReorder<vertex_type, edge_type, value_type> orderer;
+  reorder::GenericReorder<vertex_type, edge_type, value_type> orderer;
   orderer.RegisterFunction(
       {format::CSR<vertex_type, edge_type, value_type>::get_id_static()},
       degree_reorder_csr);
@@ -100,7 +104,7 @@ int main(int argc, char *argv[]) {
 
   cout << "Checking the correctness of the ordering..." << endl;
   // We can easily get the inverse of our permutation (to reverse the ordering)
-  auto inv_permutation = preprocess::ReorderBase::InversePermutation(
+  auto inv_permutation = bases::ReorderBase::InversePermutation(
       permutation, con->get_dimensions()[0]);
   bool order_is_correct = true;
   set<vertex_type> check;
@@ -131,10 +135,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(
+  permute::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(
       permutation, permutation);
   format::Format *perm_csr =
-      transformer.GetTransformation(con, {&cpu_context}, true);
+      transformer.GetPermutation(con, {&cpu_context}, true);
   auto *n_row_ptr =
       perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()
           ->get_row_ptr();
@@ -153,10 +157,10 @@ int main(int argc, char *argv[]) {
   if (transform_is_correct) {
     cout << "Transformation is correct." << endl;
   }
-  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(
+  permute::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(
       inv_permutation, inv_permutation);
   auto perm_then_inv_perm_csr =
-      inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)
+      inv_trans.GetPermutation(perm_csr, {&cpu_context}, true)
           ->As<format::CSR>();
   auto orig_csr =
       con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
@@ -169,8 +173,8 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-  preprocess::ReorderBase::Reorder<preprocess::RCMReorder>(
-      {}, orig_csr, {&cpu_context}, true);
+  bases::ReorderBase::Reorder<reorder::RCMReorder>({}, orig_csr, {&cpu_context},
+                                                   true);
   cout << "Inversion is correct\n";
   delete[] permutation;
   delete[] inv_permutation;

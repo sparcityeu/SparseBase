@@ -57,7 +57,6 @@ class ReorderException : public Exception {
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 
-
 class ReaderException : public Exception {
   std::string msg_;
 
@@ -192,9 +191,7 @@ class AllocationException : public Exception {
   std::string msg_;
 
  public:
-  AllocationException() {
-    msg_ = "Memory Allocation Operation Failed";
-  }
+  AllocationException() { msg_ = "Memory Allocation Operation Failed"; }
   virtual const char *what() const throw() { return msg_.c_str(); }
 };
 

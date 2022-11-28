@@ -1,20 +1,17 @@
-#include <omp.h>
-#include <sparsebase/context/context.h>
-#include <sparsebase/preprocess/preprocess.h>
-#include <sparsebase/utils/converter/converter.h>
-#include <sparsebase/utils/io/reader.h>
-#include <stdio.h>
+#include <sparsebase/bases/graph_feature_base.h>
+#include <sparsebase/bases/reorder_base.h>
+#include <sparsebase/format/csc.h>
+#include <sparsebase/io/mtx_reader.h>
 
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <tuple>
+
+#include "sparsebase/reorder/reorderer.h"
 
 #define CHECK
 
 using namespace sparsebase;
 using namespace format;
-using namespace preprocess;
+;
 
 typedef int ull;
 typedef int val;
@@ -35,34 +32,36 @@ int main() {
   // Hamrjki thinkVle1/Hamrle1.mtx
   context::CPUContext cpu_context;
 
-  utils::io::MTXReader<ull, ull, val> A_reader(A_filename, true);
+  io::MTXReader<ull, ull, val> A_reader(A_filename, true);
   COO<ull, ull, val> *A = A_reader.ReadCOO();
 
-  ull *perm = ReorderBase::Reorder<RCMReorder>({}, A, {&cpu_context}, true);
+  ull *perm = bases::ReorderBase::Reorder<reorder::RCMReorder>(
+      {}, A, {&cpu_context}, true);
 
   auto *A_reordered =
-      ReorderBase::Permute2D<CSC>(perm, A, {&cpu_context}, true);
+      bases::ReorderBase::Permute2D<CSC>(perm, A, {&cpu_context}, true);
 
   auto *A_csc = A_reordered->Convert<CSC>();
 
-  // utils::io::MTXReader<ull, ull, val> b_reader(B_filename);
+  // io::MTXReader<ull, ull, val> b_reader(B_filename);
   // format::Array<val> * b = b_reader.ReadArray();
 
   Array<val> *b = new Array<val>(3, nullptr);
 
   Array<val> *b_reordered =
-      ReorderBase::Permute1D<Array>(perm, b, {&cpu_context}, true);
+      bases::ReorderBase::Permute1D<Array>(perm, b, {&cpu_context}, true);
 
   // solving for x
   Array<val> *inv_x = new Array<val>(3, nullptr);
 
-  ull *inv_perm = ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
-  format::Array<val> *x =
-      ReorderBase::Permute1D<Array>(inv_perm, inv_x, {&cpu_context}, true);
+  ull *inv_perm =
+      bases::ReorderBase::InversePermutation(perm, A->get_dimensions()[0]);
+  format::Array<val> *x = bases::ReorderBase::Permute1D<Array>(
+      inv_perm, inv_x, {&cpu_context}, true);
 
-  float *deg_dist = preprocess::GraphFeatureBase ::GetDegreeDistribution<float>(
+  float *deg_dist = bases::GraphFeatureBase ::GetDegreeDistribution<float>(
       A, {&cpu_context}, true);
-  int *deg = preprocess::GraphFeatureBase ::GetDegrees(A, {&cpu_context}, true);
+  int *deg = bases::GraphFeatureBase ::GetDegrees(A, {&cpu_context}, true);
   return 0;
 }
 

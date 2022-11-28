@@ -17,8 +17,6 @@ parser.add_argument('--dry-run', action='store_true', help= "Will not write the 
 
 parser.add_argument('--class-list', type=str, help= "Path to class instantiation json list")
 
-parser.add_argument('--pigo', type=str, help= "Use pigo (OFF/ON).")
-parser.add_argument('--cuda', type=str, help= "Use CUDA (OFF/ON).")
 args = parser.parse_args()
 
 id_types = ' '.join(args.id_types).split(',')
@@ -90,21 +88,22 @@ def gen_inst(template, filename, ifdef=None, folder=output_folder, exceptions=No
 #reading class registration file
 with open(class_list, 'r') as read_file:
     data = json.load(read_file)
-    
+
 opened_files = {}
 class_instantiation_list = data.get("classes")
 for each_class in class_instantiation_list:
-    
+
     file_name = each_class.get("filename")
-    if not file_name in opened_files:
-        opened_files[file_name] = True
-        reset_file(file_name)
-    
     if each_class.get("folder"):
         store_at = os.path.join(output_folder, each_class.get("folder"))
     else:
         store_at = output_folder
-        
+
+    if not (file_name, store_at) in opened_files:
+        opened_files[(file_name, store_at)] = True
+        reset_file(file_name, store_at)
+
+
     gen_inst(
         template=each_class.get("template"),
         filename=file_name,

@@ -1,7 +1,8 @@
-#include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/iobase.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/context/context.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/bases/iobase.h"
+#include "sparsebase/bases/reorder_base.h"
+#include "sparsebase/reorder/rcm_reorder.h"
+#include "sparsebase/context/cpu_context.h"
 #include <string>
 #include <iostream>
 
@@ -10,8 +11,9 @@ typedef unsigned int nnz_type;
 typedef void value_type;
 
 using namespace sparsebase;
-using namespace utils::io;
-using namespace preprocess;
+using namespace io;
+using namespace bases;
+using namespace reorder;
 using namespace format;
 
 int main(int argc, char * argv[]){

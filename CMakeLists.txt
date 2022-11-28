@@ -13,9 +13,10 @@ option(USE_CUDA "Enable CUDA" OFF)
 option(USE_PIGO "Use PIGO for parallel I/O" ON)
 option(BUILD_EXAMPLES "Build example codes" ON)
 set(ID_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing IDs")
-set(NNZ_TYPES "int64_t" "uint64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
-set(VALUE_TYPES "int32_t" "uint32_t" "float" "double" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
+set(NNZ_TYPES "int64_t" "int32_t" "uint32_t" CACHE STRING "C++ data types used for variables storing numbers of non-zeros")
+set(VALUE_TYPES "int32_t" "uint32_t" "float" "double" "int64_t" "void" CACHE STRING "C++ data types used for variables storing values inside formats")
 set(FLOAT_TYPES "float" "double" CACHE STRING "C++ data types used for variables storing floating point numbers")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 if(${USE_CUDA})
@@ -43,46 +44,25 @@ if (WIN32 OR APPLE)
   set(USE_PIGO OFF)
 endif()
 
-
-
-include( CheckCXXCompilerFlag )
-check_cxx_compiler_flag( "-std=c++17"   COMPILER_SUPPORTS_CXX17 )
-check_cxx_compiler_flag( "-std=c++11"   COMPILER_SUPPORTS_CXX11 )
-check_cxx_compiler_flag( "-std=c++0x"   COMPILER_SUPPORTS_CXX0X )
-if( COMPILER_SUPPORTS_CXX17 )
-  if( CMAKE_COMPILER_IS_GNUCXX )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17" )
-  else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" )
-  endif()
-elseif( COMPILER_SUPPORTS_CXX11 )
-  if( CMAKE_COMPILER_IS_GNUCXX )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11" )
-  else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
-  endif()
-elseif( COMPILER_SUPPORTS_CXX0X)
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x" )
-else()
-  # MSVC, On by default (if available)
-endif()
-# Got this from https://github.com/district10/cmake-templates/blob/master/cpp11_vs2010/CMakeLists.txt
-
-if(MSYS OR MINGW)
+if(NOT APPLE AND (MSYS OR MINGW))
   add_compile_options("-Wa,-mbig-obj")
 endif()
 
 add_subdirectory(src)
-if (${BUILD_EXAMPLES})
-  add_subdirectory(examples)
-endif()
 
+# Formats the source files using the clang-format tool
 add_custom_target(format
   COMMAND bash ${CMAKE_SOURCE_DIR}/.format.bash ${CMAKE_SOURCE_DIR}
   COMMENT "Formatting source files"
 )
 
-if ( RUN_TESTS )
+# Examples directory
+if (${BUILD_EXAMPLES})
+  add_subdirectory(examples)
+endif()
+
+# Tests directory
+if (${RUN_TESTS})
   execute_process(
     COMMAND git submodule update --recursive --init
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -98,7 +78,7 @@ install(EXPORT sparsebaseTargets
   FILE sparsebaseTargets.cmake
 )
 
-# configure the package configuration file
+# Configure the package configuration file
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
   "Config.cmake.in"
@@ -108,21 +88,21 @@ configure_package_config_file(
   CMAKE_INSTALL_LIBDIR
 )
 
-# create the package version file
+# Create the package version file
 write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfigVersion.cmake
   VERSION ${sparsebase_VERSION}
   COMPATIBILITY SameMajorVersion
 )
 
-# install the package
+# Install the package
 install(
     FILES   "${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfig.cmake"
             "${CMAKE_CURRENT_BINARY_DIR}/sparsebaseConfigVersion.cmake"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/sparsebase"
 )
 
-# install license
+# Install license
 install(
     FILES LICENSE
     DESTINATION include/sparsebase

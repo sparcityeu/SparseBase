@@ -1,3 +1,5 @@
+#include "sparsebase/partition/metis_partition.h"
+
 #include <sparsebase/sparsebase.h>
 
 #include <iostream>
@@ -20,17 +22,15 @@ int main(int argc, char** argv) {
   context::CPUContext cpu_context;
 
   cout << "Reading inputs..." << endl;
-  format::COO<TYPES>* coo =
-      utils::io::EdgeListReader<TYPES>(file_name).ReadCOO();
-  format::CSR<TYPES>* csr =
-      utils::io::EdgeListReader<TYPES>(file_name).ReadCSR();
+  format::COO<TYPES>* coo = io::EdgeListReader<TYPES>(file_name).ReadCOO();
+  format::CSR<TYPES>* csr = io::EdgeListReader<TYPES>(file_name).ReadCSR();
 
   cout << "Setting partition params..." << endl;
-  preprocess::MetisPartition<TYPES> metis;
-  preprocess::MetisPartitionParams params;
+  partition::MetisPartition<TYPES> metis;
+  partition::MetisPartitionParams params;
   params.seed = 12;
   params.ufactor = 50;
-  params.rtype = preprocess::metis::METIS_RTYPE_GREEDY;
+  params.rtype = metis::METIS_RTYPE_GREEDY;
 
   cout << "Partitioning CSR..." << endl;
   auto* res2 = metis.Partition(csr, &params, {&cpu_context}, false);

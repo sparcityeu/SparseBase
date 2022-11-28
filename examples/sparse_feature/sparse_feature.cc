@@ -1,9 +1,13 @@
 #include <iostream>
 
-#include "sparsebase/feature/feature.h"
+#include "sparsebase/feature/degree_distribution.h"
+#include "sparsebase/feature/degrees.h"
+#include "sparsebase/feature/feature_extractor.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
+#include "sparsebase/io/mtx_reader.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -14,9 +18,9 @@ using edge_type = unsigned int;
 using value_type = float;
 using feature_type = double;
 
-using degrees = preprocess::Degrees<vertex_type, edge_type, value_type>;
-using degree_dist = preprocess::DegreeDistribution<vertex_type, edge_type,
-                                                   value_type, feature_type>;
+using degrees = feature::Degrees<vertex_type, edge_type, value_type>;
+using degree_dist = feature::DegreeDistribution<vertex_type, edge_type,
+                                                value_type, feature_type>;
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -27,7 +31,7 @@ int main(int argc, char *argv[]) {
   }
 
   string file_name = argv[1];
-  sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type> reader(
+  sparsebase::io::MTXReader<vertex_type, edge_type, value_type> reader(
       file_name);
   COO<vertex_type, edge_type, value_type> *coo = reader.ReadCOO();
   context::CPUContext cpu_context;
@@ -40,16 +44,16 @@ int main(int argc, char *argv[]) {
     engine.Add(feature::Feature(degrees{}));
     engine.Subtract(feature::Feature(degrees{}));
     try {
-      engine.Add(feature::Feature(
-          sparsebase::preprocess::DegreeDistribution<vertex_type, edge_type,
-                                                     value_type, float>{}));
+      engine.Add(
+          feature::Feature(feature::DegreeDistribution<vertex_type, edge_type,
+                                                       value_type, float>{}));
     } catch (utils::FeatureException &ex) {
       cout << ex.what() << endl;
     }
     engine.Add(feature::Feature(degrees{}));
     engine.Add(feature::Feature(degree_dist{}));
     // engine.Add(feature::Feature(
-    //     preprocess::Degrees_DegreeDistribution<vertex_type, edge_type,
+    //     feature::Degrees_DegreeDistribution<vertex_type, edge_type,
     //                                            value_type, feature_type>{}));
 
     // print features to be extracted
@@ -63,10 +67,9 @@ int main(int argc, char *argv[]) {
     // extract features
     auto raws = engine.Extract(coo, {&cpu_context}, true);
     cout << "#features extracted: " << raws.size() << endl;
-    auto dgrs =
-        std::any_cast<vertex_type *>(raws[degrees::get_id_static()]);
-    auto dst = std::any_cast<feature_type *>(
-        raws[degree_dist::get_id_static()]);
+    auto dgrs = std::any_cast<vertex_type *>(raws[degrees::get_id_static()]);
+    auto dst =
+        std::any_cast<feature_type *>(raws[degree_dist::get_id_static()]);
     cout << "vertex 0 => degree: " << dgrs[2] << endl;
     cout << "dst[0] " << dst[2] << endl;
   }

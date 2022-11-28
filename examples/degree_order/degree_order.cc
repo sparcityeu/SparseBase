@@ -1,10 +1,14 @@
 #include <iostream>
 #include <set>
 
+#include "sparsebase/bases/reorder_base.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/permute/permuter.h"
+#include "sparsebase/reorder/degree_reorder.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -37,7 +41,7 @@ int main(int argc, char *argv[]) {
   cout << "Sorting the vertices according to degree (degree ordering)..."
        << endl;
 
-  preprocess::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
+  reorder::DegreeReorder<vertex_type, edge_type, value_type> orderer(1);
   format::Format *con = g.get_connectivity();
   vertex_type *permutation = orderer.GetReorder(con, {&cpu_context}, false);
   vertex_type n = con->get_dimensions()[0];
@@ -57,7 +61,7 @@ int main(int argc, char *argv[]) {
 
   cout << "Checking the correctness of the ordering..." << endl;
   // We can easily get the inverse of our permutation (to reverse the ordering)
-  auto inv_permutation = preprocess::ReorderBase::InversePermutation(
+  auto inv_permutation = bases::ReorderBase::InversePermutation(
       permutation, con->get_dimensions()[0]);
   bool order_is_correct = true;
   set<vertex_type> check;
@@ -84,10 +88,10 @@ int main(int argc, char *argv[]) {
   if (order_is_correct) {
     cout << "Order is correct." << endl;
   }
-  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(
+  permute::PermuteOrderTwo<vertex_type, edge_type, value_type> transformer(
       permutation, permutation);
   format::Format *perm_csr =
-      transformer.GetTransformation(con, {&cpu_context}, true);
+      transformer.GetPermutation(con, {&cpu_context}, true);
   auto *n_row_ptr =
       perm_csr->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>()
           ->get_row_ptr();
@@ -107,10 +111,10 @@ int main(int argc, char *argv[]) {
     cout << "Transformation is correct." << endl;
   }
   // We can reverse the ordering easily
-  preprocess::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(
+  permute::PermuteOrderTwo<vertex_type, edge_type, value_type> inv_trans(
       inv_permutation, inv_permutation);
   auto perm_then_inv_perm_csr =
-      inv_trans.GetTransformation(perm_csr, {&cpu_context}, true)
+      inv_trans.GetPermutation(perm_csr, {&cpu_context}, true)
           ->As<format::CSR>();
   auto orig_csr =
       con->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
