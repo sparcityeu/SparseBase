@@ -16,8 +16,8 @@ Start by navigating to the directory `tutorials/002_feature_extraction/start_her
 In addition to renaming primitive types, we also define aliases for the following feature classes to improve the readability of our code.
 
 ```c++
-using degrees = preprocess::Degrees<vertex_type, edge_type, value_type>;
-using degree_dist = preprocess::DegreeDistribution<vertex_type, edge_type,
+using degrees = feature::Degrees<vertex_type, edge_type, value_type>;
+using degree_dist = feature::DegreeDistribution<vertex_type, edge_type,
     value_type, feature_type>;
 ```
 
@@ -33,9 +33,7 @@ Begin your main program by reading the matrix-market file into a `COO` object us
 ```c++
 // The name of the matrix-market file
 string file_name = argv[1];
-// Initialize a reader object with the matrix-market file inputted
-sparsebase::io::MTXReader<vertex_type, edge_type, value_type> reader(
-    file_name);
+
 // Read the matrix in to a COO representation
 COO<vertex_type, edge_type, value_type> *coo = IOBase::ReadMTXToCOO<vertex_type, edge_type, value_type>(file_name);
 ```
@@ -67,7 +65,7 @@ Print out the added features.
 auto fs = engine.GetList();
 cout << endl << "Features that will be extracted: " << endl;
 for (auto f : fs) {
-cout << utils::demangle(f.name()) << endl;
+  cout << utils::demangle(f.name()) << endl;
 }
 cout << endl;
 ```
