@@ -116,6 +116,7 @@ Degree of vertex 0: 0
 Degree of vertex 1: 11
 Degree of vertex 2: 11
 
+[11/24/22 14:18:45] [WARNING] [sparsebase::format::CSR<unsigned int, unsigned int, void>] CSR column array must be sorted. Sorting...
 Reordered graph:
 Number of vertices: 40
 Number of edges: 340

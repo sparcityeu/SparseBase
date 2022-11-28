@@ -1,7 +1,10 @@
 #include <iostream>
 
+#include "sparsebase/format/coo.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/utils/converter/converter.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -20,12 +23,11 @@ int main() {
       new format::COO<int, int, int>(6, 6, 6, row, col, vals);
   context::CPUContext cpu_context;
 
-  auto converter = new utils::converter::ConverterOrderTwo<int, int, int>();
+  auto converter = new converter::ConverterOrderTwo<int, int, int>();
 
   converter->RegisterConversionFunction(
       format::COO<int, int, int>::get_id_static(),
-      format::CSR<int, int, int>::get_id_static(),
-      MyFunction<int, int, int>,
+      format::CSR<int, int, int>::get_id_static(), MyFunction<int, int, int>,
       [](context::Context *, context::Context *) -> bool { return true; });
 
   auto csr = converter->Convert(

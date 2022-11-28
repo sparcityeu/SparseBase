@@ -1,15 +1,20 @@
 #include <iostream>
 
+#include "sparsebase/converter/converter.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/utils/converter/converter.h"
 
 using namespace std;
 using namespace sparsebase;
 using namespace sparsebase::format;
 using namespace sparsebase::object;
 
-class MyFormat : public utils::IdentifiableImplementation<MyFormat, format::FormatImplementation> {
+class MyFormat
+    : public utils::IdentifiableImplementation<MyFormat,
+                                               format::FormatImplementation> {
  public:
   MyFormat() {
     order_ = 2;
@@ -31,10 +36,10 @@ int main(int argc, char *argv[]) {
   Graph<int, int, int> *graph = new Graph<int, int, int>(my_format);
 
   // Custom conversion using the custom format
-  utils::converter::ConverterOrderTwo<int, int, int> converter;
+  converter::ConverterOrderTwo<int, int, int> converter;
   converter.RegisterConversionFunction(
-      COO<int, int, int>::get_id_static(),
-      MyFormat::get_id_static(), COOToMyFormat,
+      COO<int, int, int>::get_id_static(), MyFormat::get_id_static(),
+      COOToMyFormat,
       [](context::Context *, context::Context *) { return true; });
   int row[6] = {0, 0, 1, 1, 2, 2};
   int col[6] = {0, 1, 1, 2, 3, 3};

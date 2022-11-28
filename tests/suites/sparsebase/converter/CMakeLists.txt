@@ -1,0 +1,42 @@
+if(${USE_CUDA})
+set_source_files_properties(converter_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_converter_converter_tests.test converter_tests.cc)
+target_link_libraries(sparsebase_converter_converter_tests.test sparsebase)
+target_link_libraries(sparsebase_converter_converter_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_converter_converter_tests.test COMMAND sparsebase_converter_converter_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(converter_order_two_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_converter_converter_order_two_tests.test converter_order_two_tests.cc)
+target_link_libraries(sparsebase_converter_converter_order_two_tests.test sparsebase)
+target_link_libraries(sparsebase_converter_converter_order_two_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_converter_converter_order_two_tests.test COMMAND sparsebase_converter_converter_order_two_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(converter_order_one_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_converter_converter_order_one_tests.test converter_order_one_tests.cc)
+target_link_libraries(sparsebase_converter_converter_order_one_tests.test sparsebase)
+target_link_libraries(sparsebase_converter_converter_order_one_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_converter_converter_order_one_tests.test COMMAND sparsebase_converter_converter_order_one_tests.test)
+
+if(${USE_CUDA})
+add_executable(sparsebase_converter_converter_order_one_cuda_tests.test converter_order_one_cuda_tests.cu)
+target_link_libraries(sparsebase_converter_converter_order_one_cuda_tests.test sparsebase)
+target_link_libraries(sparsebase_converter_converter_order_one_cuda_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_converter_converter_order_one_cuda_tests.test COMMAND sparsebase_converter_converter_order_one_cuda_tests.test)
+endif()
+
+if(${USE_CUDA})
+    add_executable(sparsebase_converter_converter_order_two_cuda_tests.test converter_order_two_cuda_tests.cu)
+    target_link_libraries(sparsebase_converter_converter_order_two_cuda_tests.test sparsebase)
+    target_link_libraries(sparsebase_converter_converter_order_two_cuda_tests.test gtest gtest_main)
+
+    add_test(NAME sparsebase_converter_converter_order_two_cuda_tests.test COMMAND sparsebase_converter_converter_order_two_cuda_tests.test)
+endif()

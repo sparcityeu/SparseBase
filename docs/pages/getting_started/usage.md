@@ -69,15 +69,15 @@ make format
 SparseBase can be included using the ``sparsebase.h`` header file.
 
 ```cpp
-#include "sparsebase.h"
+#include "sparsebase/sparsebase.h"
 ```
 
 If desired users can include individual namespaces using their respective headers. 
 This can be useful to reduce compile times if the header only build is being used.
 
 ```cpp
-#include "sparsebase/utils/io/reader.h"
-#include "sparsebase/preprocess/preprocess.h"
+#include "sparsebase/io/mtx_reader.h"
+#include "sparsebase/reorder/rcm_reorder.h"
 ```
 
 ## Aliasing
@@ -90,11 +90,13 @@ In such cases the namespaces can be aliased using the C++11 `using` keyword.
 
 ```cpp
 using sbfo = sparsebase::format;
-using sbio = sparsebase::utils::io;
-using sbco = sparsebase::utils::converter;
-using sbfe = spasebase::feature;
+using sbio = sparsebase::io;
+using sbco = sparsebase::converter;
+using sbfe = sparsebase::feature;
 using sbob = sparsebase::object;
-using sbpe = sparsebase::preprocess;
+using sbre = sparsebase::reorder;
+using sbpa = sparsebase::partition;
+using sbpe = sparsebase::permutation;
 using sbco = sparsebase::context;
 using sbut = sparsebase::utils;
 ```
@@ -121,6 +123,7 @@ CSR<iif> csr = ...;
 Multiple sparse data formats are supported including:
 - COO (Coordinate List)
 - CSR (Compressed Sparse Row)
+- CSC (Compressed Sparse Column)
 
 In the code snippet below you can see the creation of a CSR type object 
 which only contains connectivity information. As a result the value argument is set to `nullptr` and the last template argument (`ValueType`) is set to `void`.
@@ -222,8 +225,8 @@ Currently, we support two sparse data file formats:
 Reading such files can easily be done using the `IOBase` class.
 
 ```cpp
-auto coo = sparsebase::utils::io::IOBase::ReadMTXtoCOO<int,int,float>();
-auto csr = sparsebase::utils::io::IOBase::ReadEdgeListtoCSR<int,int,float>();
+auto coo = sparsebase::io::IOBase::ReadMTXtoCOO<int,int,float>();
+auto csr = sparsebase::io::IOBase::ReadEdgeListtoCSR<int,int,float>();
 ```
 
 ```{note}
@@ -236,11 +239,11 @@ However they may not support all the options of our default readers.
 Users can also use the underlying reader classes directly if need be. 
 ```cpp
 // Reading a mtx file into a COO format
-auto reader = new sparsebase::utils::io::MTXReader<int, int, float>(file_name);
+auto reader = new sparsebase::io::MTXReader<int, int, float>(file_name);
 auto coo = reader->ReadCOO();
 
 // Reading an edge list file into a CSR format
-auto reader2 = new sparsebase::utils::io::EdgeListReader<int, int, float>(file_name);
+auto reader2 = new sparsebase::io::EdgeListReader<int, int, float>(file_name);
 auto csr = reader2->ReadCSR();
 ```
 
@@ -274,7 +277,7 @@ above if this is not desired.
 Graphs can be created using any Format as the connectivity information of the graph.
 
 ```cpp
-auto reader = new sparsebase::utils::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
+auto reader = new sparsebase::io::MTXReader<vertex_type, edge_type, value_type>(file_name);
 auto data = reader->ReadCOO();
 auto g = sparsebase::object::Graph<vertex_type, edge_type, value_type>(data);
 ```
@@ -294,7 +297,7 @@ Sparse data formats can be reordered easily using the `ReorderBase` class.
 
 
 ```cpp
-sparsebase::preprocess::DegreeReorderParams params(true);
+sparsebase::reorder::DegreeReorderParams params(true);
 sparsebase::context::CPUContext cpu_context;
 IDType* order = ReorderBase::Reorder<DegreeReorder>(params, format, {&cpu_context}, true);
 ```
@@ -311,9 +314,9 @@ As an alternative to `ReorderBase`, the user can also directly call the underlyi
 Below you can see an example of an RCM reordering of a graph using this method.
 
 ```cpp
-sparsebase::preprocess::RCMReorder<int,int,float> orderer;
+sparsebase::reorder::RCMReorder<int,int,float> orderer;
 sparsebase::context::CPUContext cpu_context;
-IDType * order = orderer.GetReorder(format, {&cpu_context});
+IDType * order = orderer.GetReorder(format, {&cpu_context}, true);
 ```
 
 In both cases the returned value is an array describing the reordering.
@@ -322,9 +325,9 @@ This can be done using `ReorderBase` or again manually as shown below.
 
 ```cpp
 // Using ReorderBase
-auto new_format = ReorderBase.Permute2D(order, format, {&cpu_context}, true);
+auto new_format = ReorderBase::Permute2D(order, format, {&cpu_context}, true);
 
 // Manual Method
-preprocess::PermuteOrderTwo<int, int, float> permute(order, order);
-auto new_format = permute.GetTransformation(format, {&cpu_context});
+premute::PermuteOrderTwo<int, int, float> permute(order, order);
+auto new_format = permute.GetPermutation(format, {&cpu_context});
 ```
