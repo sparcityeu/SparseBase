@@ -180,7 +180,7 @@ Step two is much simpler than it sounds. To the file `src/class_instantiation_li
 ```json
 {
   "template": "class FeatureX<$id_type, $nnz_type, $value_type, $float_type>",
-  "filename": "feature.inc",
+  "filename": "feature_x.inc",
   "ifdef": null,
   "folder": null,
   "exceptions": null
@@ -189,6 +189,18 @@ Step two is much simpler than it sounds. To the file `src/class_instantiation_li
 The `template` field is the class declaration. The four variables beginning with `$` in the declaration above are placeholders that will be filled with the `IDType`, `NNZType`, `ValueType`, and `FeatureType` data types the user selects when compiling the library. If a user compiles the library with three `IDType` data types, two `NNZType` data types, two `ValueType` data types, and a single `FeatureType` then the class will be compiled with 3 * 2 * 2 * 1 = 12 different type combinations.
 
 The `filename` field is the name of the file to which these instantiations will be printed, and it matches the name of the header file in which the class is defined.
+
+Finally, in the implementation file (`feature_x.cc`), you must include the file which will contain your explicit instantiations. That file will be located in a directory `init` and will have the name given to the JSON object as `filename`. Notice that we only want to use explicit instantiations if the library is not in header-only mode. That is why we must make this `include` statement contingent on `_HEADER_ONLY` not being defined. 
+For `FeatureX`, we add the following lines:
+```c++
+// File: src/sparsebase/feature/feature_x.cc
+namespace sparsebase::feature {
+    // ...
+}
+#ifndef _HEADER_ONLY
+#include "init/feature_x.inc"
+#endif
+```
 
 ### Result
 
