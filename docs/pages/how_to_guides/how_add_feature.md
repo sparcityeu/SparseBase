@@ -6,10 +6,10 @@ Adding new features to SparseBase is simple. It consists of six steps:
 
 1. Create a new class for your feature. It must inherit from the base `FeaturePreprocessType` class.
 2. `FeaturePreprocessType` implements the `ExtractableType` interface thus all virtual functions defined by `ExtractableType` must be implemented. `ExtractableType` provides a template for all the functionality needed for feature extraction.
-3. Inside the class, create a new struct that will contain the parameters needed by your feature, and initialize it in the constructor. Note: This step is only needed if your feature requires parameters to work with.
+3. Create a new struct that will contain the parameters needed by your feature, and initialize it in the constructor. Note: This step is only needed if your feature requires parameters to work with.
 4. Add implementation functions that will carry out the feature calculation.
 5. Register the implementation functions in the constructor.
-6. Add explicit template instantiations of your class to the python script.
+6. Add explicit template instantiations of your class to the JSON file.
 
 ## Example
 
@@ -32,9 +32,9 @@ The class will be split into a header file and an implementation file. Both file
 
 And at the top of the implementation file, include the created header.
 ```c++
-#include "sparasebase/reorder/feature.h"
+#include "sparasebase/reorder/feature_x.h"
 ```
-In the header file, add the definition of your class. It must be templated on four types `IDType`, `NNZType`, `ValueType`, and `FeatureType` which define the data types of the `Format` and the return type of the feature class.  Finally, as mentioned above, `FeatureX` must inherit from the class `FeaturePreprocessType`.
+In the header file, add the definition of your class. It must be templated on four types `IDType`, `NNZType`, `ValueType`, and `FeatureType` which define the data types of the `Format` and the return type of the feature class. Finally, as mentioned above, `FeatureX` must inherit from the class `FeaturePreprocessType`.
 
 ```cpp
 namespace sparsebase::feature{
@@ -48,7 +48,7 @@ For now, the definition file will be empty.
 
 Finally, we must include the definition file inside the header file to enable header-only usage of the class. We make this inclusion conditional on the preprocessor directive `_HEADER_ONLY`. We make this addition to `feature.h` as follows:
 ```c++
-// File: src/sparsebase/reorder/optimal_reorder.h
+// File: src/sparsebase/feature/feature_x.h
 namespace sparsebase::feature {
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class FeatureX : FeaturePreprocessType<FeatureType> {
@@ -59,7 +59,7 @@ class FeatureX : FeaturePreprocessType<FeatureType> {
 #endif
 ```
 
-Notice that the include is added _outside_ the `sparsebase::feature` namespace.
+Notice that the `include` statement is added _outside_ the `sparsebase::feature` namespace.
 
 > **Compiled vs. header-only**. In header-only mode, the user includes the code they want to use in their own code and compiles it as needed. In the compiled mode, the library classes and functions are precompiled into a static library and the user links to them at compile-time.
 
@@ -67,10 +67,10 @@ Notice that the include is added _outside_ the `sparsebase::feature` namespace.
 
 In the header file created in step 1, create a new struct inheriting from `utils::Parameters`. Its members will be whichever hyperparameters your feature will require. The naming convention for these structs is the name of the reordering class suffixed with `Params`. For our class, that would be `FeatureXParams`. We add `alpha` and `beta` to it. You may also add custom constructors for your parameter struct. If your feature do not require additional parameters you can skip this step.
 
-Furthermore, create an instance of the struct you just defined and also create a `std::unordered_map<std::type_index, PreprocessParams>` that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the `feature` namespace.
+Furthermore, create an instance of the struct you just defined and also create a `std::unordered_map<std::type_index, utils::Parameters>` that holds the parameters of features separately (only applicable if the class implements more than one feature simultaneously). This is especially important for the functionalities provided by the `feature` namespace.
 
 ```cpp
-struct FeatureParams : Preprocess {
+struct FeatureXParams : utils::Parameters {
     float alpha;
     float beta;
 }
@@ -90,7 +90,7 @@ template <typename IDType, typename NNZType, typename ValueType, typename Featur
 class FeatureX : FeaturePreprocessType<FeatureType> {
 	// ...
 	FeatureX(float alpha, float beta){
-		this->params_ = std::make_shared<FeatureParams>(alpha, beta);
+		this->params_ = std::make_shared<FeatureXParams>(alpha, beta);
         pmap_.insert(get_id_static(), this->params_);
 	// ...
 };
@@ -116,34 +116,37 @@ The Extract function is used by the `feature::Extractor` to call the implementat
 
 ### 4. Add implementations for the feature class
 
-Add implementation functions that will carry out the computations for the feature to the file `sparsebase/src/sparse_preprocess.cc`. Each function will be specific for an input `Format`. These functions should match the function signature provided in `FunctionMatcherMixin`:
+Add implementation functions that will carry out the computations of the feature to the `FeatureX` class. Each function will be specific for an input `Format`. These functions should match the function signature provided in `FunctionMatcherMixin`:
 
 ```cpp
-using PreprocessFunction = ReturnType (*)(std::vector<format::Format *>, Parameters *);
+using PreprocessFunction = ReturnType (*)(std::vector<format::Format *>, utils::Parameters *);
 ```
 Not that the functions must also be *static*. This is required to enable the mechanism of choosing the correct implementation function for the input `Format`.
 
 Your function takes the following parameters:
 
 1. A vector of pointers at `Format` objects.
-2. A pointer at a `Parameters` struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your feature.
+2. A pointer at a `utils::Parameters` struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your feature.
 
 For our example, we add two functions, `FeatureCSR()` and `FeatureCOO()`:
 
 ```cpp
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/coo.h"
+
 template <typename IDType, typename NNZType, typename ValueType, typename FeatureType>
 class FeatureX : FeaturePreprocessType<FeatureType> {
 	//.......
-	static FeatureType* FeatureCSR(std::vector<Format<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
-		auto csr = static_cast<sparsebase::CSR<IDType, NumNonZerosType, ValueType>(input_sf[0]);
-		FeatureParams* params = static_cast<OptimalReorderParams*>(params);
+	static FeatureType* FeatureCSR(std::vector<Format*> input_sf, utils::Parameters* params){
+		auto csr = static_cast<sparsebase::CSR<IDType, NNZType, ValueType>(input_sf[0]);
+		FeatureXParams* params = static_cast<FeatureXParams*>(params);
 		// ... carry out feature extraction
 		return feature;
 	}
 
-	static FeatureType* FeatureCOO(std::vector<Format<IDType, NNZType, ValueType>*> input_sf, PreprocessParams* params){
+	static FeatureType* FeatureCOO(std::vector<Format*> input_sf, utils::Parameters* params){
 		auto coo = static_cast<sparsebase::COO<IDType, NNZType, ValueType>(input_sf[0]);
-		FeatureParams* params = static_cast<FeatureParams*>(params);
+		FeatureXParams* params = static_cast<FeatureXParams*>(params);
 		// ... carry out feature extraction
 		return feature;
 	}
@@ -186,7 +189,7 @@ Step two is much simpler than it sounds. To the file `src/class_instantiation_li
   "exceptions": null
 }
 ```
-The `template` field is the class declaration. The four variables beginning with `$` in the declaration above are placeholders that will be filled with the `IDType`, `NNZType`, `ValueType`, and `FeatureType` data types the user selects when compiling the library. If a user compiles the library with three `IDType` data types, two `NNZType` data types, two `ValueType` data types, and a single `FeatureType` then the class will be compiled with 3 * 2 * 2 * 1 = 12 different type combinations.
+The `template` field is the class declaration. The four variables beginning with `$` in the declaration above are placeholders that will be filled with the `IDType`, `NNZType`, `ValueType`, and `FeatureType` data types the user selects when compiling the library. If a user compiles the library with three `IDType` data types, two `NNZType` data types, two `ValueType` data types, and a single `FeatureType` then the class will be compiled with 3 \* 2 \* 2 \* 1 = 12 different type combinations.
 
 The `filename` field is the name of the file to which these instantiations will be printed, and it matches the name of the header file in which the class is defined.
 
