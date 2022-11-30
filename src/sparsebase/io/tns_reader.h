@@ -7,7 +7,7 @@ namespace sparsebase::io {
 
 //! Reader for the TNS format specified in FROSTT.
 /*!
- * Detailed explanations of the MTX format can be found in these links:
+ * Detailed explanations of the TNS format can be found in this link:
  * - http://frostt.io/tensors/file-formats.html
  */
 template <typename IDType, typename NNZType, typename ValueType>
@@ -22,7 +22,7 @@ class TNSReader : public Reader,
    * such that they start from 0 instead of 1
    */
   explicit TNSReader(std::string filename, bool convert_to_zero_index = true);
-  format::COO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const override;
+  format::HigherOrderCOO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const override;
   ~TNSReader() override;
 
  private:
