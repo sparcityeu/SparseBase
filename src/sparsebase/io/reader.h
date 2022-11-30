@@ -58,6 +58,13 @@ class ReadsArray {
   virtual format::Array<T> *ReadArray() const = 0;
 };
 
+//! Interface for readers that can return a HigherOrderCOO instance
+template <typename IDType, typename NNZType, typename ValueType>
+class ReadsHigherOrderCOO {
+ public:
+  //! Reads the file to a HigherOrderCOO instance and returns a pointer to it
+  virtual format::HigherOrderCOO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const = 0;
+};
 }  // namespace io
 
 }  // namespace sparsebase
