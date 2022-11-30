@@ -8,9 +8,9 @@
 namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
-TNSReader<IDType, NNZType, ValueType>::TNSReader(std::string filename,
+TNSReader<IDType, NNZType, ValueType>::TNSReader(std::string filename, bool store_values,
                                                  bool convert_to_zero_index)
-    : filename_(filename), convert_to_zero_index_(convert_to_zero_index) {
+    : filename_(filename), convert_to_zero_index_(convert_to_zero_index), store_values_(store_values) {
   std::ifstream fin(filename_);
 
   if (!fin.is_open())

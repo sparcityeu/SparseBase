@@ -50,6 +50,6 @@ class HigherOrderCOO : public utils::IdentifiableImplementation<
 }  // namespace sparsebase::format
 
 #ifdef _HEADER_ONLY
-#include "coo.cc"
+#include "higher_order_coo.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_HigherOrderCOO_H

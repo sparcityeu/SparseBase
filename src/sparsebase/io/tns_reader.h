@@ -21,13 +21,14 @@ class TNSReader : public Reader,
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
    */
-  explicit TNSReader(std::string filename, bool convert_to_zero_index = true);
+  explicit TNSReader(std::string filename, bool store_values = true, bool convert_to_zero_index = true);
   format::HigherOrderCOO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const override;
   ~TNSReader() override;
 
  private:
   std::string filename_;
   bool convert_to_zero_index_;
+  bool store_values_;
 };
 }  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
