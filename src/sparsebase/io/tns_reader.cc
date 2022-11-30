@@ -18,7 +18,7 @@ TNSReader<IDType, NNZType, ValueType>::TNSReader(std::string filename,
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType>
+format::HigherOrderCOO<IDType, NNZType, ValueType>
     *TNSReader<IDType, NNZType, ValueType>::ReadHigherOrderCOO() const {
   std::ifstream fin(filename_);
 
