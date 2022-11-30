@@ -6,7 +6,7 @@
 
 using namespace sparsebase;
 
-TEST(Format, Is) {
+TEST(Format, IsAbsolute) {
   int *new_csr_row_ptr = new int[5];
   int *new_csr_col = new int[4];
   int *new_csr_vals = new int[4];
@@ -18,14 +18,14 @@ TEST(Format, Is) {
   auto *csr = new format::CSR<int, int, int>(4, 4, new_csr_row_ptr, new_csr_col,
                                              new_csr_vals, format::kOwned);
 
-  bool res = csr->Is<format::CSR<int, int, int>>();
+  bool res = csr->IsAbsolute<format::CSR<int, int, int>>();
   EXPECT_TRUE(res);
-  res = csr->Is<format::CSR<int, int, int> *>();
+  res = csr->IsAbsolute<format::CSR<int, int, int> *>();
   EXPECT_TRUE(res);
 
-  res = csr->Is<format::COO<int, int, int>>();
+  res = csr->IsAbsolute<format::COO<int, int, int>>();
   EXPECT_FALSE(res);
-  res = csr->Is<format::CSR<int, int, float>>();
+  res = csr->IsAbsolute<format::CSR<int, int, float>>();
   EXPECT_FALSE(res);
 
   delete csr;

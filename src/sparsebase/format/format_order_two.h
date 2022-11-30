@@ -76,6 +76,11 @@ class FormatOrderTwo : public FormatImplementation {
     }
     throw utils::TypeException(this->get_name(), typeid(TBase).name());
   }
+  template <template <typename, typename, typename> typename T>
+  bool Is() {
+    using TBase = typename std::remove_pointer<T<IDType, NNZType, ValueType>>::type;
+    return this->get_id() == std::type_index(typeid(TBase));
+	}
 };
 template <typename IDType, typename NNZType, typename ValueType>
 template <template <typename, typename, typename> class ToType>

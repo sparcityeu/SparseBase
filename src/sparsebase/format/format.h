@@ -156,10 +156,10 @@ class Format : public utils::Identifiable {
    * @return true if the type of this object is T
    */
   template <typename T>
-  bool Is() {
-    using TBase = typename std::remove_pointer<T>::type;
-    return this->get_id() == std::type_index(typeid(TBase));
-  }
+  bool IsAbsolute() {
+    using Tbase = typename std::remove_pointer<T>::type;
+    return this->get_id() == std::type_index(typeid(Tbase));
+}
 };
 
 }  // namespace format
