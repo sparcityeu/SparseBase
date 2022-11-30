@@ -52,3 +52,22 @@ TEST(FormatOrderTwo, ConvertDifferentFormat) {
     EXPECT_EQ(coo_converted->get_vals()[i], coo_vals[i]);
   }
 }
+
+
+template <typename T>
+class dummy{};
+
+
+TEST(Is, FormatOrderTwo){
+  
+  sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col,
+                                             csr_vals);
+  sparsebase::format::COO<int, int, int> coo(4, 4, 4, coo_row, coo_col,
+                                             coo_vals);
+  EXPECT_THROW((csr.AsAbsolute<sparsebase::format::COO<int, int, int>>()), sparsebase::utils::TypeException);
+  EXPECT_ANY_THROW((csr.AsAbsolute<sparsebase::format::COO<int, int, int>>()));
+  EXPECT_EQ(csr.Is<sparsebase::format::CSR>(), true);
+  EXPECT_TRUE(csr.Is<sparsebase::format::CSR>());
+  EXPECT_FALSE(csr.Is<sparsebase::format::COO>());
+  EXPECT_FALSE(csr.Is<sparsebase::format::FormatOrderTwo>());
+}
