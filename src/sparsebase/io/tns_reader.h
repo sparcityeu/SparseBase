@@ -21,17 +21,11 @@ class TNSReader : public Reader,
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
    */
-  explicit MTXReader(std::string filename, bool convert_to_zero_index = true);
+  explicit TNSReader(std::string filename, bool convert_to_zero_index = true);
   format::COO<IDType, NNZType, ValueType> *ReadHigherOrderCOO() const override;
   ~TNSReader() override;
 
  private:
-  format::Array<ValueType> *ReadCoordinateIntoArray() const;
-  format::Array<ValueType> *ReadArrayIntoArray() const;
-  template <bool weighted>
-  format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
-  template <bool weighted, int symm, bool conv_to_zero>
-  format::COO<IDType, NNZType, ValueType> *ReadCoordinateIntoCOO() const;
   std::string filename_;
   bool convert_to_zero_index_;
 };

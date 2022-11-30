@@ -23,6 +23,7 @@
 #include "sparsebase/format/csr.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/higher_order_coo.h"
 
 namespace sparsebase {
 

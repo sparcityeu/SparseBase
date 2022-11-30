@@ -44,7 +44,7 @@ format::COO<IDType, NNZType, ValueType>
     if (w != 0) {
       long_cols[num_nnz] = l / N;
       long_rows[num_nnz] = l % N;
-      if constexpr (weighted) long_vals[num_nnz] = w;
+      if constexpr (store_values) long_vals[num_nnz] = w;
       num_nnz++;
     }
     // nnz_counter += w != 0;
@@ -55,7 +55,9 @@ format::COO<IDType, NNZType, ValueType>
   std::copy(long_rows, long_rows + num_nnz, row);
   std::copy(long_cols, long_cols + num_nnz, col);
   ValueType *vals = nullptr;
-  if constexpr (weighted) {
+
+  if constexpr (true) { //change true to store_values boolean.
+    
     vals = new ValueType[num_nnz];
     std::copy(long_vals, long_vals + num_nnz, vals);
   }
