@@ -1,10 +1,6 @@
 #include <iostream>
 
-#include "sparsebase/format/format.h"
-#include "sparsebase/object/object.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/exception.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/io/mtx_reader.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -22,7 +18,7 @@ int main(int argc, char *argv[]) {
   {
     format::CSR<unsigned int, unsigned int, unsigned int> csr(3, 3, row_ptr,
                                                               col, nullptr);
-    auto format = csr.get_format_id();
+    auto format = csr.get_id();
     auto dimensions = csr.get_dimensions();
     auto row_ptr2 = csr.get_row_ptr();
     auto col2 = csr.get_col();
@@ -41,17 +37,15 @@ int main(int argc, char *argv[]) {
 
   {
     string file_name = argv[1];
-    bool weighted = false;
-    utils::io::MTXReader<unsigned int, unsigned int, unsigned int> reader(
-        file_name, weighted);
+    io::MTXReader<unsigned int, unsigned int, unsigned int> reader(file_name);
     format::COO<unsigned int, unsigned int, unsigned int> *coo =
         reader.ReadCOO();
-    auto format = coo->get_format_id();
+    auto format = coo->get_id();
     auto dimensions = coo->get_dimensions();
     auto coo_col = coo->get_col();
     auto coo_row = coo->get_row();
     auto coo_vals = coo->get_vals();
-    cout << "Format: " << coo->get_format_id().name() << endl;
+    cout << "Format: " << coo->get_name() << endl;
     cout << "# of dimensions: " << dimensions.size() << endl;
     for (int i = 0; i < dimensions.size(); i++) {
       cout << "Dim " << i << " size " << dimensions[i] << endl;

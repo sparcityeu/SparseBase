@@ -1,10 +1,11 @@
 #include <iostream>
 #include <set>
 
-#include "sparsebase/format/format.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/reorder/rcm_reorder.h"
 
 using namespace std;
 using namespace sparsebase;
@@ -36,10 +37,11 @@ int main(int argc, char *argv[]) {
 
   cout << "Generating RCM ordering..." << endl;
 
-  preprocess::RCMReorder<vertex_type, edge_type, value_type> orderer;
-  auto *con = g.get_connectivity()
-                  ->As<format::CSR<vertex_type, edge_type, value_type>>();
-  vertex_type *order = orderer.GetReorder(con, {&cpu_context});
+  reorder::RCMReorder<vertex_type, edge_type, value_type> orderer;
+  auto *con =
+      g.get_connectivity()
+          ->AsAbsolute<format::CSR<vertex_type, edge_type, value_type>>();
+  vertex_type *order = orderer.GetReorder(con, {&cpu_context}, false);
   auto xadj = con->get_row_ptr();
   auto adj = con->get_col();
   vertex_type n = con->get_dimensions()[0];

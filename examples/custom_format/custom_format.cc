@@ -1,16 +1,21 @@
 #include <iostream>
 
+#include "sparsebase/converter/converter.h"
+#include "sparsebase/format/csr.h"
 #include "sparsebase/format/format.h"
+#include "sparsebase/format/format_order_one.h"
+#include "sparsebase/format/format_order_two.h"
 #include "sparsebase/object/object.h"
-#include "sparsebase/utils/converter/converter.h"
 
 using namespace std;
 using namespace sparsebase;
 using namespace sparsebase::format;
 using namespace sparsebase::object;
 
-class MyFormat : public format::FormatImplementation<MyFormat> {
-public:
+class MyFormat
+    : public utils::IdentifiableImplementation<MyFormat,
+                                               format::FormatImplementation> {
+ public:
   MyFormat() {
     order_ = 2;
     dimension_ = {4, 4};
@@ -25,16 +30,16 @@ Format *COOToMyFormat(Format *source, context::Context *) {
 int main(int argc, char *argv[]) {
   // Custom Format creation and casting
   Format *format = new MyFormat;
-  MyFormat *my_format = format->As<MyFormat>();
+  MyFormat *my_format = format->AsAbsolute<MyFormat>();
 
   // Using it in an Object
   Graph<int, int, int> *graph = new Graph<int, int, int>(my_format);
 
   // Custom conversion using the custom format
-  utils::converter::ConverterOrderTwo<int, int, int> converter;
-  converter.RegisterConditionalConversionFunction(
-      COO<int, int, int>::get_format_id_static(),
-      MyFormat::get_format_id_static(), COOToMyFormat,
+  converter::ConverterOrderTwo<int, int, int> converter;
+  converter.RegisterConversionFunction(
+      COO<int, int, int>::get_id_static(), MyFormat::get_id_static(),
+      COOToMyFormat,
       [](context::Context *, context::Context *) { return true; });
   int row[6] = {0, 0, 1, 1, 2, 2};
   int col[6] = {0, 1, 1, 2, 3, 3};

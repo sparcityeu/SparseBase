@@ -1,0 +1,206 @@
+name: Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  BUILD_TYPE: Release
+  LIB_DIR: /usr/lib/x86_64-linux-gnu
+  INC_DIR: /usr/include
+  PULP_LINK: https://github.com/HPCGraphAnalysis/PuLP.git
+  RABBIT_ORDER_LINK: https://raw.githubusercontent.com/araij/rabbit_order/master/rabbit_order.hpp
+  PATOH_LINK: https://faculty.cc.gatech.edu/~umit/PaToH/patoh-Linux-x86_64.tar.gz
+  AMD_LINK: https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F1024074.1024081&file=837.zip
+
+jobs:
+
+  test_win:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: MSYS2 Setup
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: false
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja mingw-w64-x86_64-lld
+
+      - name: Configure CMake
+        working-directory: ${{github.workspace}}
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_FLAGS="-fuse-ld=lld" -DRUN_TESTS=ON
+
+      - name: Build
+        working-directory: ${{github.workspace}}
+        run: cmake --build build --config ${{env.BUILD_TYPE}} -j 2
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+  test_mac:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: brew install llvm libomp python3 cmake make
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 3
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+  test_ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DRUN_TESTS=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+      - name: Install
+        working-directory: ${{github.workspace}}/build
+        run: sudo cmake --install .
+
+      - name: Test Install
+        working-directory: ${{github.workspace}}/examples
+        run: |
+          g++ csr_coo/csr_coo.cc -lsparsebase -fopenmp -O3 -std=c++17
+          g++ degree_order/degree_order.cc -lsparsebase -fopenmp -O3 -std=c++17
+          g++ custom_experiment/custom_experiment.cc -lsparsebase -fopenmp -O3 -std=c++17
+
+
+
+  test_header_only:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3
+
+      - name: Configure CMake (Header Only)
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D_HEADER_ONLY=ON -DRUN_TESTS=ON
+
+      - name: Build (Header Only)
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
+
+      - name: Run Examples (Header Only)
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests (Header Only)
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V
+
+      - name: Install (Header Only)
+        working-directory: ${{github.workspace}}/build
+        run: sudo cmake --install .
+
+      - name: Test Install (Header Only)
+        working-directory: ${{github.workspace}}/examples
+        run: |
+          g++ csr_coo/csr_coo.cc -fopenmp -O3 -std=c++17
+          g++ degree_order/degree_order.cc -fopenmp -O3 -std=c++17
+          g++ custom_experiment/custom_experiment.cc -fopenmp -O3 -std=c++17
+
+
+  test_opt_dep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install -y cmake make gcc libomp-dev python3 libmetis-dev libboost-all-dev
+
+      - name: Install Rabbit Order
+        run: sudo wget $RABBIT_ORDER_LINK -O ${{env.INC_DIR}}/rabbit_order.hpp
+
+      - name: Install Pulp
+        run: |
+          git clone --depth 1 $PULP_LINK pulp
+          cd pulp
+          ./install
+          sudo mv ./lib/* $LIB_DIR
+          sudo mv ./include/* $INC_DIR
+
+      - name: Install Patoh
+        run: |
+          mkdir patoh
+          cd patoh
+          wget $PATOH_LINK
+          tar xzf patoh-Linux-x86_64.tar.gz
+          sudo mv build/Linux-x86_64/libpatoh.a $LIB_DIR
+          sudo mv build/Linux-x86_64/patoh.h $INC_DIR
+
+      - name: Install AMD Order
+        run: |
+          wget '${{env.AMD_LINK}}' -O AMD.zip 
+          unzip AMD.zip 
+          cd 837
+          make lib
+          sudo mv Lib/libamd.a $LIB_DIR
+          sudo mv Include/amd.h $INC_DIR
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="${{env.LIB_DIR}};${{env.INC_DIR}}" -DRUN_TESTS=ON -DUSE_METIS=ON -DUSE_RABBIT_ORDER=ON -DUSE_PATOH=ON -DUSE_PULP=ON -DUSE_AMD_ORDER=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 2
+
+      - name: Run Examples
+        working-directory: ${{github.workspace}}/build/examples
+        run: python3 run_all_examples.py
+
+      - name: Run Tests
+        working-directory: ${{github.workspace}}/build
+        run: ctest -V

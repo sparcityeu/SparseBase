@@ -1,0 +1,41 @@
+if(${USE_CUDA})
+    set_source_files_properties(partitioner_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_partition_partitioner_tests.test partitioner_tests.cc)
+target_link_libraries(sparsebase_partition_partitioner_tests.test sparsebase)
+target_link_libraries(sparsebase_partition_partitioner_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_partition_partitioner_tests COMMAND sparsebase_partition_partitioner_tests.test)
+
+if(${USE_METIS})
+    if(${USE_CUDA})
+        set_source_files_properties(metis_partition_tests.cc PROPERTIES LANGUAGE CUDA)
+    endif()
+    add_executable(sparsebase_partition_metis_partition_tests.test metis_partition_tests.cc)
+    target_link_libraries(sparsebase_partition_metis_partition_tests.test sparsebase)
+    target_link_libraries(sparsebase_partition_metis_partition_tests.test gtest gtest_main)
+
+    add_test(NAME sparsebase_partition_metis_partition_tests COMMAND sparsebase_partition_metis_partition_tests.test)
+endif()
+
+if(${USE_PATOH})
+    if(${USE_CUDA})
+        set_source_files_properties(patoh_partition_tests.cc PROPERTIES LANGUAGE CUDA)
+    endif()
+    add_executable(sparsebase_partition_patoh_partition_tests.test patoh_partition_tests.cc)
+    target_link_libraries(sparsebase_partition_patoh_partition_tests.test sparsebase)
+    target_link_libraries(sparsebase_partition_patoh_partition_tests.test gtest gtest_main)
+
+    add_test(NAME sparsebase_partition_patoh_partition_tests COMMAND sparsebase_partition_patoh_partition_tests.test)
+endif()
+
+if(${USE_PULP})
+    if(${USE_CUDA})
+        set_source_files_properties(pulp_partition_tests.cc PROPERTIES LANGUAGE CUDA)
+    endif()
+    add_executable(sparsebase_partition_pulp_partition_tests.test pulp_partition_tests.cc)
+    target_link_libraries(sparsebase_partition_pulp_partition_tests.test sparsebase)
+    target_link_libraries(sparsebase_partition_pulp_partition_tests.test gtest gtest_main)
+
+    add_test(NAME sparsebase_partition_pulp_partition_tests COMMAND sparsebase_partition_pulp_partition_tests.test)
+endif()

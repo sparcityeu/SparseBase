@@ -1,181 +1,147 @@
-find_package(OpenMP REQUIRED)
+if(APPLE)
+  find_package(OpenMP)
+  # From https://github.com/microsoft/LightGBM/pull/5563/files
+  if(NOT OpenMP_FOUND)
+    # libomp 15.0+ from brew is keg-only, so have to search in other locations.
+    # See https://github.com/Homebrew/homebrew-core/issues/112107#issuecomment-1278042927.
+    execute_process(COMMAND brew --prefix libomp
+            OUTPUT_VARIABLE HOMEBREW_LIBOMP_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+    set(OpenMP_C_LIB_NAMES omp)
+    set(OpenMP_CXX_LIB_NAMES omp)
+    set(OpenMP_omp_LIBRARY ${HOMEBREW_LIBOMP_PREFIX}/lib/libomp.dylib)
+    find_package(OpenMP REQUIRED)
+  endif()
+else()
+  find_package(OpenMP REQUIRED)
+endif()
+
 set (CMAKE_CXX_STANDARD 17)
 # Creating the sparsebase library executable
 if(NOT ${_HEADER_ONLY})
-  find_package (Python COMPONENTS Interpreter)
-  list(JOIN ID_TYPES "," ID_TYPES_JOINED)
-  list(JOIN NNZ_TYPES "," NNZ_TYPES_JOINED)
-  list(JOIN VALUE_TYPES "," VALUE_TYPES_JOINED)
-  list(JOIN FLOAT_TYPES "," FLOAT_TYPES_JOINED)
-  execute_process(COMMAND ${Python_EXECUTABLE}
-    ${CMAKE_SOURCE_DIR}/src/generate_explicit_instantiations.py
-    --id-types ${ID_TYPES_JOINED} 
-    --nnz-types ${NNZ_TYPES_JOINED} 
-    --value-types ${VALUE_TYPES_JOINED} 
-    --float-types ${FLOAT_TYPES_JOINED}
-    --pigo ${USE_PIGO}
-    --cuda ${CUDA}
-    --output-folder ${PROJECT_BINARY_DIR}/init)
-  set(LIB_FILES
-    sparsebase/format/format.cc
-    sparsebase/context/context.cc
-    sparsebase/utils/io/reader.cc
-    sparsebase/object/object.cc
-    sparsebase/utils/converter/converter.cc
-    sparsebase/preprocess/preprocess.cc
-    sparsebase/feature/feature.cc
-    sparsebase/utils/io/writer.cc
-  )
-  if (${CUDA})
+  include(cmake/generate_instantiations.cmake)
+  generate_instantiations()
 
-    set(LIB_FILES ${LIB_FILES}
-      sparsebase/format/cuda/format.cu
-      sparsebase/utils/converter/cuda/converter.cu
-      sparsebase/preprocess/cuda/preprocess.cu
-      sparsebase/context/cuda/context.cu)
+  # Find the C++ source files
+  file(GLOB_RECURSE CC_FILES *.cc)
+
+  # Find the CUDA source files
+  file(GLOB_RECURSE CU_FILES *.cu)
+
+  # Set library source files
+  set(LIB_FILES ${CC_FILES})
+  if (${USE_CUDA})
+    set(LIB_FILES ${CC_FILES} ${CU_FILES})
   endif()
+
   add_library(sparsebase ${LIB_FILES})
   # defining the include paths of the library
   target_include_directories(sparsebase PUBLIC
-    # Location of the headers at build time
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
-    # Location of the headers at install time
-    $<INSTALL_INTERFACE:include>)
+          # Location of the headers at build time
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+          # Location of the headers at install time
+          $<INSTALL_INTERFACE:include>)
   target_compile_features(sparsebase PUBLIC cxx_std_17)
-  target_link_libraries(sparsebase OpenMP::OpenMP_CXX)
+  target_link_libraries(sparsebase PUBLIC OpenMP::OpenMP_CXX)
 else()
   add_library(sparsebase INTERFACE)
   target_compile_features(sparsebase INTERFACE cxx_std_17)
   target_link_libraries(sparsebase INTERFACE OpenMP::OpenMP_CXX )
   # defining the include paths of the library
   target_include_directories(sparsebase INTERFACE
-    # Location of the headers at build time
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    # Location of the headers at install time
-    $<INSTALL_INTERFACE:include>)
-endif()
-### Installation plan
-set(SINGLE_HEADER_FILE 
-  sparsebase/sparsebase.h
-)
-set(CONTEXT_FILES 
-  sparsebase/context/context.h
-)
-set(FORMAT_FILES 
-  sparsebase/format/format.h
-)
-set(FEATURE_FILES 
-  sparsebase/feature/feature.h
-)
-set(PREPROCESS_FILES 
-  sparsebase/preprocess/preprocess.h
-)
-set(OBJECT_FILES 
-  sparsebase/object/object.h
-)
-set(IO_FILES 
-  sparsebase/utils/io/reader.h
-  sparsebase/utils/io/sparse_file_format.h
-  sparsebase/utils/io/writer.h
-)
-set(CONVERTER_FILES 
-  sparsebase/utils/converter/converter.h
-)
-set(EXCEPTION_FILES 
-  sparsebase/utils/exception.h
-)
-if(${_HEADER_ONLY})
-  set(CONTEXT_FILES ${CONTEXT_FILES}
-    sparsebase/context/context.cc
-  )
-  set(FORMAT_FILES ${FORMAT_FILES}
-    sparsebase/format/format.cc
-  )
-  set(FEATURE_FILES ${FEATURE_FILES}
-    sparsebase/feature/feature.cc
-  )
-  set(PREPROCESS_FILES ${PREPROCESS_FILES} 
-    sparsebase/preprocess/preprocess.cc
-  )
-  set(OBJECT_FILES ${OBJECT_FILES}
-    sparsebase/object/object.cc
-  )
-  set(IO_FILES ${IO_FILES}
-    sparsebase/utils/io/reader.cc
-    sparsebase/utils/io/writer.cc
-  )
-  set(CONVERTER_FILES ${CONVERTER_FILES}
-    sparsebase/utils/converter/converter.cc
-  )
-endif()
-install(FILES ${SINGLE_HEADER_FILE}
-  DESTINATION include)
-install(FILES ${CONTEXT_FILES}
-  DESTINATION include/sparsebase/context/)
-install(FILES ${FORMAT_FILES}
-  DESTINATION include/sparsebase/format/)
-install(FILES ${FEATURE_FILES}
-  DESTINATION include/sparsebase/feature/)
-install(FILES ${PREPROCESS_FILES}
-  DESTINATION include/sparsebase/preprocess/)
-install(FILES ${OBJECT_FILES}
-  DESTINATION include/sparsebase/object/)
-install(FILES ${IO_FILES}
-  DESTINATION include/sparsebase/utils/io/)
-install(FILES ${CONVERTER_FILES}
-  DESTINATION include/sparsebase/utils/converter/)
-install(FILES ${EXCEPTION_FILES}
-  DESTINATION include/sparsebase/utils/)
-
-if(USE_PIGO)
-  install(FILES sparsebase/external/pigo/pigo.hpp
-    DESTINATION include/sparsebase/external/pigo)
+          # Location of the headers at build time
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+          # Location of the headers at install time
+          $<INSTALL_INTERFACE:include>)
 endif()
 
-install(FILES 
-  sparsebase/external/json/json.hpp
-  DESTINATION include/sparsebase/external/json/)
+# Contains macro for adding optional libraries
+include(cmake/add_opt_library.cmake)
 
-if(${CUDA})
-  set(CUDA_FORMAT_FILES
-    sparsebase/format/cuda/format.cuh)
-  set(CUDA_CONVERTER_FILES
-    sparsebase/utils/converter/cuda/converter.cuh)
-  set(CUDA_PREPROCESS_FILES
-    sparsebase/preprocess/cuda/preprocess.cuh)
-  set(CUDA_CONTEXT_FILES
-    sparsebase/context/cuda/context.cuh)
-  if(${_HEADER_ONLY})
-    set(CUDA_FORMAT_FILES ${CUDA_FORMAT_FILES}
-      sparsebase/format/cuda/format.cu)
-    set(CUDA_CONVERTER_FILES ${CUDA_CONVERTER_FILES}
-      sparsebase/utils/converter/cuda/converter.cu)
-    set(CUDA_PREPROCESS_FILES ${CUDA_PREPROCESS_FILES}
-      sparsebase/preprocess/cuda/preprocess.cu)
-    set(CUDA_CONTEXT_FILES ${CUDA_CONTEXT_FILES}
-      sparsebase/context/cuda/context.cu)
+# External Optional Libraries
+option(USE_METIS "Enable METIS integration" OFF)
+if(USE_METIS)
+  add_opt_library("metis" "OFF")
+endif()
+
+option(USE_AMD_ORDER "Enable AMD reorder integration" OFF)
+if(USE_AMD_ORDER)
+  add_opt_library("amd" "OFF")
+endif()
+
+option(USE_RABBIT_ORDER "Enable Rabbit order integration" OFF)
+if(USE_RABBIT_ORDER)
+  find_package(Boost)
+  if (NOT Boost_FOUND)
+    message(FATAL_ERROR "Boost is required to use Rabbit order")
   endif()
-  install(FILES ${CUDA_FORMAT_FILES}
-    DESTINATION include/sparsebase/format/cuda/)
-  install(FILES ${CUDA_CONVERTER_FILES}
-    DESTINATION include/sparsebase/utils/converter/cuda/)
-  install(FILES ${CUDA_PREPROCESS_FILES}
-    DESTINATION include/sparsebase/preprocess/cuda/)
-  install(FILES ${CUDA_CONTEXT_FILES}
-    DESTINATION include/sparsebase/context/cuda/)
+  if (NOT ${_HEADER_ONLY})
+    target_include_directories(sparsebase PRIVATE ${Boost_INCLUDE_DIRS} )
+  else()
+    target_include_directories(sparsebase INTERFACE ${Boost_INCLUDE_DIRS} )
+  endif()
+  find_library(NUMA_LIBRARIES NAMES numa)
+  if (NOT NUMA_LIBRARIES)
+    message(FATAL_ERROR "Numa is required to use Rabbit order")
+  endif()
+  if (NOT ${_HEADER_ONLY})
+    target_link_libraries(sparsebase PUBLIC numa)
+  else()
+    target_link_libraries(sparsebase INTERFACE numa)
+  endif()
+  add_opt_library("rabbit_order" "ON")
 endif()
+
+option(USE_PULP "Enable PULP integration" OFF)
+if(USE_PULP)
+  add_opt_library("pulp" "OFF")
+endif()
+
+option(USE_PATOH "Enable PATOH integration" OFF)
+if(USE_PATOH)
+  add_opt_library("patoh" "OFF")
+endif()
+
+### Create configuration file for install
+configure_file(
+        "${PROJECT_SOURCE_DIR}/src/sparsebase/config.h.in"
+        "${PROJECT_BINARY_DIR}/src/sparsebase/config.h"
+)
+
+# Defines some paths used for installation
+include(GNUInstallDirs)
+
+# Install the files
+# If header_only excludes all ".cc" files
+if(${_HEADER_ONLY})
+  install(DIRECTORY sparsebase
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+          PATTERN "*.py" EXCLUDE
+          PATTERN "*.in" EXCLUDE
+          )
+else()
+  install(DIRECTORY sparsebase
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+          PATTERN "*.py" EXCLUDE
+          PATTERN "*.in" EXCLUDE
+          PATTERN "*.cc" EXCLUDE
+          PATTERN "*.cu" EXCLUDE
+          )
+endif()
+
+
+# Install the created config file
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION include/sparsebase)
 
 # Creating an alias for the library when used through "find_package()"
 add_library(sparsebase::sparsebase ALIAS sparsebase)
-# Installing the headers to the include directory
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparsebase/config.h DESTINATION include/sparsebase)
-#install(DIRECTORY ${CMAKE_BINARY_DIR}/init DESTINATION include/sparsebase)
-include(GNUInstallDirs)
 
-# Installing the library, and creating the export set "sparsebaseTargets" 
+# Installing the library, and creating the export set "sparsebaseTargets"
 install(TARGETS sparsebase EXPORT sparsebaseTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         # telling the export set where the headers of the library are located
