@@ -1,29 +1,32 @@
-#include "sparsebase/format/format.h"
-#include "sparsebase/utils/io/reader.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/context/context.h"
+#include "sparsebase/format/csr.h"
+#include "sparsebase/bases/iobase.h"
+#include "sparsebase/bases/reorder_base.h"
+#include "sparsebase/reorder/rcm_reorder.h"
+#include "sparsebase/context/cpu_context.h"
 #include <string>
 #include <iostream>
 
-typedef unsigned int IDType;
-typedef unsigned int NNZType;
-typedef unsigned int ValueType;
+typedef unsigned int id_type;
+typedef unsigned int nnz_type;
+typedef void value_type;
 
 using namespace sparsebase;
+using namespace io;
+using namespace bases;
+using namespace reorder;
+using namespace format;
+
 int main(int argc, char * argv[]){
     if (argc < 2){
         std::cout << "Please enter the name of the edgelist file as a parameter\n";
         return 1;
     }
     // The name of the edge list file in disk
-    std::string filename(argv[1]); 
-    // Create a reader object and set the name of the file it will read
-    utils::io::EdgeListReader<IDType, NNZType, ValueType> reader(filename);
-    // Read the file into a CSR format
-    format::CSR<IDType, NNZType, ValueType>* csr = reader.ReadCSR();
-
-    std::cout << "Original graph:" << std::endl; 
-    // get a vector representing the dimensions of the matrix represented by `csr`, 
+    std::string filename(argv[1]);
+    // Read the edge list file into a CSR object
+    CSR<id_type, nnz_type, value_type>* csr = IOBase::ReadEdgeListToCSR<id_type, nnz_type, value_type>(filename);
+    std::cout << "Original graph:" << std::endl;
+    // get a array representing the dimensions of the matrix represented by `csr`,
     // i.e, the adjacency matrix of the graph
     std::cout << "Number of vertices: " << csr->get_dimensions()[0] << std::endl;
     // Number of non-zeros in the matrix represented by `csr`
@@ -36,24 +39,24 @@ int main(int argc, char * argv[]){
     std::cout << "Degree of vertex 2: " << row_ptr[3]-row_ptr[2] << std::endl;
     std::cout << std::endl;
 
-    // Create a DegreeReorder object and tell it to sort in descending order
-    bool ascending = false;
-    preprocess::DegreeReorder<IDType, NNZType, ValueType> reorderer(ascending);
     // Create a CPU context
     context::CPUContext cpu_context;
-    // Create a reordering of `csr` using one of the passed contexts 
+    // We would like to order the vertices by degrees in descending order
+    bool ascending = false;
+    DegreeReorderParams params(ascending);
+    // Create a permutation array of `csr` using one of the passed contexts
     // (in this case, only one is passed)
-    IDType* new_order = reorderer.GetReorder(csr, {&cpu_context});
+    // The last argument tells the function to convert the input format if needed
+    id_type* new_order = ReorderBase::Reorder<DegreeReorder>(params, csr, {&cpu_context}, true);
 
-    // Transform object takes the reordering as an argument
-    preprocess::Transform<IDType, NNZType, ValueType> transform(new_order);
-    // The transformer will use `new_order` to restructure `csr`
-    format::Format* format = transform.GetTransformation(csr, {&cpu_context});
-    // The abstract `Format` pointer is casted into a `CSR` pointer
-    format::CSR<IDType, NNZType, ValueType>* new_csr = 
-      format->As<format::CSR<IDType, NNZType, ValueType>>();
-
-    std::cout << "Reordered graph:" << std::endl; 
+    // Permute2D permutes the rows and columns of `csr` according to `new_order`
+    // Similar to `Reorder`, we specify the contexts to use,
+    // and whether the library can convert the input if needed
+    FormatOrderTwo<id_type, nnz_type, value_type>* new_format =
+        ReorderBase::Permute2D(new_order, csr, {&cpu_context}, true);
+    // Cast the polymorphic pointer to a pointer at CSR
+    CSR<id_type, nnz_type, value_type>* new_csr = new_format->As<CSR>();
+    std::cout << "Reordered graph:" << std::endl;
     std::cout << "Number of vertices: " << new_csr->get_dimensions()[0] << std::endl;
     std::cout << "Number of edges: " << new_csr->get_num_nnz() << std::endl;
 

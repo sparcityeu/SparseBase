@@ -1,11 +1,13 @@
-#include "sparsebase/feature/feature.h"
+#include "sparsebase/feature/feature_extractor.h"
+#include "sparsebase/feature/degrees.h"
+#include "sparsebase/feature/degree_distribution.h"
 #include "sparsebase/format/format.h"
-#include "sparsebase/preprocess/preprocess.h"
-#include "sparsebase/utils/io/reader.h"
+#include "sparsebase/bases/iobase.h"
 #include <iostream>
 
 using namespace std;
 using namespace sparsebase;
+using namespace bases;
 using namespace format;
 
 using vertex_type = unsigned int;
@@ -13,8 +15,8 @@ using edge_type = unsigned int;
 using value_type = float;
 using feature_type = double;
 
-using degrees = preprocess::Degrees<vertex_type, edge_type, value_type>;
-using degree_dist = preprocess::DegreeDistribution<vertex_type, edge_type,
+using degrees = feature::Degrees<vertex_type, edge_type, value_type>;
+using degree_dist = feature::DegreeDistribution<vertex_type, edge_type,
     value_type, feature_type>;
 
 int main(int argc, char * argv[]){
