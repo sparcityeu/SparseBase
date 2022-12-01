@@ -29,7 +29,7 @@ TEST_F(LoadDataFixture, LoadCSR) {
   auto data = LoadCSR<MTXReader, vertex_type, edge_type, value_type>(files);
   EXPECT_EQ(data.size(), 1);
   EXPECT_TRUE(data.find("format") != data.end());
-  bool res = data["format"]->Is<CSR<vertex_type, edge_type, value_type>>();
+  bool res = data["format"]->IsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
 
@@ -37,7 +37,7 @@ TEST_F(LoadDataFixture, LoadCOO) {
   auto data = LoadCOO<MTXReader, vertex_type, edge_type, value_type>(files);
   EXPECT_EQ(data.size(), 1);
   EXPECT_TRUE(data.find("format") != data.end());
-  bool res = data["format"]->Is<COO<vertex_type, edge_type, value_type>>();
+  bool res = data["format"]->IsAbsolute<COO<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
 
@@ -45,7 +45,7 @@ TEST_F(LoadDataFixture, LoadCSC) {
   auto data = LoadCSC<MTXReader, vertex_type, edge_type, value_type>(files);
   EXPECT_EQ(data.size(), 1);
   EXPECT_TRUE(data.find("format") != data.end());
-  bool res = data["format"]->Is<CSC<vertex_type, edge_type, value_type>>();
+  bool res = data["format"]->IsAbsolute<CSC<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
 
@@ -54,7 +54,7 @@ TEST_F(LoadDataFixture, LoadFormat) {
       LoadFormat<CSR, MTXReader, vertex_type, edge_type, value_type>(files);
   EXPECT_EQ(data.size(), 1);
   EXPECT_TRUE(data.find("format") != data.end());
-  bool res = data["format"]->Is<CSR<vertex_type, edge_type, value_type>>();
+  bool res = data["format"]->IsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
 
@@ -79,7 +79,7 @@ TEST_F(ReorderFixture, ReorderCSR) {
   EXPECT_EQ(data.size(), 2);
   EXPECT_TRUE(data.find("processed_format") != data.end());
   bool res =
-      data["processed_format"]->Is<CSR<vertex_type, edge_type, value_type>>();
+      data["processed_format"]->IsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
 
@@ -90,7 +90,7 @@ TEST_F(ReorderFixture, Reorder) {
   EXPECT_EQ(data.size(), 2);
   EXPECT_TRUE(data.find("processed_format") != data.end());
   bool res =
-      data["processed_format"]->Is<CSR<vertex_type, edge_type, value_type>>();
+      data["processed_format"]->IsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
 
@@ -100,6 +100,6 @@ TEST_F(ReorderFixture, Pass) {
   EXPECT_EQ(data.size(), 2);
   EXPECT_TRUE(data.find("processed_format") != data.end());
   bool res =
-      data["processed_format"]->Is<CSR<vertex_type, edge_type, value_type>>();
+      data["processed_format"]->IsAbsolute<CSR<vertex_type, edge_type, value_type>>();
   EXPECT_TRUE(res);
 }
