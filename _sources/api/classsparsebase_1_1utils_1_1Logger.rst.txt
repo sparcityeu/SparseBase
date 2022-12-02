@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1Logger:
+
+Class Logger
+============
+
+- Defined in :ref:`file_src_sparsebase_utils_logger.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::Logger
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -21,7 +21,22 @@ Directories
 .. toctree::
    :maxdepth: 5
 
+   dir_src_sparsebase_bases.rst
+
+.. toctree::
+   :maxdepth: 5
+
    dir_src_sparsebase_context.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_converter.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_experiment.rst
 
 .. toctree::
    :maxdepth: 5
@@ -36,27 +51,32 @@ Directories
 .. toctree::
    :maxdepth: 5
 
+   dir_src_sparsebase_io.rst
+
+.. toctree::
+   :maxdepth: 5
+
    dir_src_sparsebase_object.rst
 
 .. toctree::
    :maxdepth: 5
 
-   dir_src_sparsebase_preprocess.rst
+   dir_src_sparsebase_partition.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_permute.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_sparsebase_reorder.rst
 
 .. toctree::
    :maxdepth: 5
 
    dir_src_sparsebase_utils.rst
-
-.. toctree::
-   :maxdepth: 5
-
-   dir_src_sparsebase_utils_converter.rst
-
-.. toctree::
-   :maxdepth: 5
-
-   dir_src_sparsebase_utils_io.rst
 
 Files
 *****
@@ -65,12 +85,77 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_src_CMakeLists.txt.rst
+   file_src_sparsebase_reorder_amd_reorder.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_context_context.cc.rst
+   file_src_sparsebase_reorder_amd_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_array.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_array.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_reader_order_one.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_reader_order_one.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_reader_order_two.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_reader_order_two.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_writer_order_one.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_writer_order_one.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_writer_order_two.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_binary_writer_order_two.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_class_matcher_mixin.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_experiment_concrete_experiment.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_experiment_concrete_experiment.h.rst
 
 .. toctree::
    :maxdepth: 5
@@ -80,12 +165,192 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_converter_converter.cc.rst
+   file_src_sparsebase_converter_converter.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_converter_converter.h.rst
+   file_src_sparsebase_converter_converter.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_one.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_one.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_one_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_one_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_two.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_two.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_two_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_order_two_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_store.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_converter_converter_store.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_coo.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_coo.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_context_cpu_context.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_context_cpu_context.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_csc.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_csc.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_csr.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_csr.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_cuda_array_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_cuda_array_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_context_cuda_context_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_context_cuda_context_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_cuda_csr_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_cuda_csr_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_degree_distribution.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_degree_distribution.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_degree_reorder.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_degree_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_degrees.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_degrees.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_degrees_degree_distribution.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_degrees_degree_distribution.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_edge_list_reader.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_edge_list_reader.h.rst
 
 .. toctree::
    :maxdepth: 5
@@ -95,22 +360,172 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_feature_feature.cc.rst
+   file_src_sparsebase_experiment_experiment_helper.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_feature_feature.h.rst
+   file_src_sparsebase_experiment_experiment_type.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_format_format.cc.rst
+   file_src_sparsebase_utils_extractable.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_extractor.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_extractor.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_feature_extractor.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_feature_extractor.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_feature_preprocess_type.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_feature_preprocess_type.h.rst
 
 .. toctree::
    :maxdepth: 5
 
    file_src_sparsebase_format_format.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_format_implementation.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_format_order_one.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_format_order_one.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_format_order_two.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_format_format_order_two.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_function_matcher_mixin.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_generic_reorder.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_generic_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_bases_graph_feature_base.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_gray_reorder.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_gray_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_bases_iobase.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_jaccard_weights.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_jaccard_weights.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_jaccard_weights_cuda.cu.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_feature_jaccard_weights_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_logger.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_logger.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_partition_metis_partition.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_partition_metis_partition.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_metis_reorder.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_metis_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_mtx_reader.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_mtx_reader.h.rst
 
 .. toctree::
    :maxdepth: 5
@@ -125,27 +540,142 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_preprocess_preprocess.cc.rst
+   file_src_sparsebase_utils_parameterizable.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_preprocess_preprocess.h.rst
+   file_src_sparsebase_partition_partitioner.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_io_reader.cc.rst
+   file_src_sparsebase_partition_partitioner.h.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_io_reader.h.rst
+   file_src_sparsebase_partition_patoh_partition.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_io_sparse_file_format.h.rst
+   file_src_sparsebase_partition_patoh_partition.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_permute_permute_order_one.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_permute_permute_order_one.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_permute_permute_order_two.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_permute_permute_order_two.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_permute_permuter.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_permute_permuter.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_pigo_edge_list_reader.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_pigo_edge_list_reader.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_pigo_mtx_reader.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_pigo_mtx_reader.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_partition_pulp_partition.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_partition_pulp_partition.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_rabbit_reorder.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_rabbit_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_rcm_reorder.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_rcm_reorder.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_reader.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_bases_reorder_base.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_reorder_heatmap.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_reorder_heatmap.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_reorderer.cc.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_reorder_reorderer.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_sparse_file_format.h.rst
 
 .. toctree::
    :maxdepth: 5
@@ -155,9 +685,19 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_io_writer.cc.rst
+   file_src_sparsebase_utils_utils.cc.rst
 
 .. toctree::
    :maxdepth: 5
 
-   file_src_sparsebase_utils_io_writer.h.rst
+   file_src_sparsebase_utils_utils.h.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_utils_utils_cuda.cuh.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_sparsebase_io_writer.h.rst

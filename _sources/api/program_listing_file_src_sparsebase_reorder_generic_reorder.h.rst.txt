@@ -1,0 +1,34 @@
+
+.. _program_listing_file_src_sparsebase_reorder_generic_reorder.h:
+
+Program Listing for File generic_reorder.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_reorder_generic_reorder.h>` (``src/sparsebase/reorder/generic_reorder.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <vector>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/format/csr.h"
+   #include "sparsebase/reorder/reorderer.h"
+   #include "sparsebase/utils/parameterizable.h"
+   #ifndef SPARSEBASE_PROJECT_GENERIC_REORDER_H
+   #define SPARSEBASE_PROJECT_GENERIC_REORDER_H
+   
+   namespace sparsebase::reorder {
+   template <typename IDType, typename NNZType, typename ValueType>
+   class GenericReorder : public Reorderer<IDType> {
+    public:
+     typedef utils::Parameters ParamsType;
+     GenericReorder();
+   };
+   }  // namespace sparsebase::reorder
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/reorder/generic_reorder.cc"
+   #endif
+   
+   #endif  // SPARSEBASE_PROJECT_GENERIC_REORDER_H

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Class CUDAArray &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Template Class CUDACSR" href="classsparsebase_1_1format_1_1CUDACSR.html" />
+    <link rel="prev" title="Template Class CSR" href="classsparsebase_1_1format_1_1CSR.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Template Class CUDAArray</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1format_1_1CUDAArray.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="template-class-cudaarray">
+<span id="exhale-class-classsparsebase-1-1format-1-1cudaarray"></span><h1>Template Class CUDAArray<a class="headerlink" href="#template-class-cudaarray" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_format_cuda_array_cuda.cuh.html#file-src-sparsebase-format-cuda-array-cuda-cuh"><span class="std std-ref">File cuda_array_cuda.cuh</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::utils::IdentifiableImplementation&lt;</span> <span class="pre">CUDAArray&lt;</span> <span class="pre">ValueType</span> <span class="pre">&gt;,</span> <span class="pre">FormatOrderOne&lt;</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1utils_1_1IdentifiableImplementation.html#exhale-class-classsparsebase-1-1utils-1-1identifiableimplementation"><span class="std std-ref">Template Class IdentifiableImplementation</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase6format9CUDAArrayE">
+<span id="_CPPv3I0EN10sparsebase6format9CUDAArrayE"></span><span id="_CPPv2I0EN10sparsebase6format9CUDAArrayE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1format_1_1CUDAArray"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CUDAArray</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1utils_1_1IdentifiableImplementation.html#_CPPv4I00EN10sparsebase5utils26IdentifiableImplementationE" title="sparsebase::utils::IdentifiableImplementation"><span class="n"><span class="pre">IdentifiableImplementation</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray"><span class="n"><span class="pre">CUDAArray</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="classsparsebase_1_1format_1_1FormatOrderOne.html#_CPPv4I0EN10sparsebase6format14FormatOrderOneE" title="sparsebase::format::FormatOrderOne"><span class="n"><span class="pre">FormatOrderOne</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayE13DimensionTypeP9ValueTypeN7context11CUDAContextE9Ownership">
+<span id="_CPPv3N10sparsebase6format9CUDAArray9CUDAArrayE13DimensionTypeP9ValueTypeN7context11CUDAContextE9Ownership"></span><span id="_CPPv2N10sparsebase6format9CUDAArray9CUDAArrayE13DimensionTypeP9ValueTypeN7context11CUDAContextE9Ownership"></span><span id="sparsebase::format::CUDAArray::CUDAArray__DimensionType.ValueTypeP.context::CUDAContext.Ownership"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1a0b79eb159473faf50dc63e903c3ff62c"></span><span class="sig-name descname"><span class="n"><span class="pre">CUDAArray</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="typedef_format_8h_1affa315fe21ff65a43000df3ab2d9eebe.html#_CPPv4N10sparsebase6format13DimensionTypeE" title="sparsebase::format::DimensionType"><span class="n"><span class="pre">DimensionType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">nnz</span></span>, <a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">row_ptr</span></span>, <a class="reference internal" href="#_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayE13DimensionTypeP9ValueTypeN7context11CUDAContextE9Ownership" title="sparsebase::format::CUDAArray::CUDAArray::context"><span class="n"><span class="pre">context</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">CUDAContext</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">context</span></span>, <a class="reference internal" href="enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6.html#_CPPv4N10sparsebase6format9OwnershipE" title="sparsebase::format::Ownership"><span class="n"><span class="pre">Ownership</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">own</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6.html#_CPPv4N10sparsebase6format9Ownership6kOwnedE" title="sparsebase::format::kOwned"><span class="n"><span class="pre">kOwned</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayE13DimensionTypeP9ValueTypeN7context11CUDAContextE9Ownership" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayERK9CUDAArrayI9ValueTypeE">
+<span id="_CPPv3N10sparsebase6format9CUDAArray9CUDAArrayERK9CUDAArrayI9ValueTypeE"></span><span id="_CPPv2N10sparsebase6format9CUDAArray9CUDAArrayERK9CUDAArrayI9ValueTypeE"></span><span id="sparsebase::format::CUDAArray::CUDAArray__CUDAArray:ValueType:CR"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1af44bcdc911a991b534fa234362841de1"></span><span class="sig-name descname"><span class="n"><span class="pre">CUDAArray</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayERK9CUDAArrayI9ValueTypeE" title="sparsebase::format::CUDAArray::CUDAArray"><span class="n"><span class="pre">CUDAArray</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayERK9CUDAArrayI9ValueTypeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayERR9CUDAArrayI9ValueTypeE">
+<span id="_CPPv3N10sparsebase6format9CUDAArray9CUDAArrayERR9CUDAArrayI9ValueTypeE"></span><span id="_CPPv2N10sparsebase6format9CUDAArray9CUDAArrayERR9CUDAArrayI9ValueTypeE"></span><span id="sparsebase::format::CUDAArray::CUDAArray__CUDAArray:ValueType:RR"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1af23eb71ff3158c01466ac5992d3f2b13"></span><span class="sig-name descname"><span class="n"><span class="pre">CUDAArray</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayERR9CUDAArrayI9ValueTypeE" title="sparsebase::format::CUDAArray::CUDAArray"><span class="n"><span class="pre">CUDAArray</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray9CUDAArrayERR9CUDAArrayI9ValueTypeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArrayaSERK9CUDAArrayI9ValueTypeE">
+<span id="_CPPv3N10sparsebase6format9CUDAArrayaSERK9CUDAArrayI9ValueTypeE"></span><span id="_CPPv2N10sparsebase6format9CUDAArrayaSERK9CUDAArrayI9ValueTypeE"></span><span id="sparsebase::format::CUDAArray::assign-operator__CUDAArray:ValueType:CR"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1a3607464e246b82bd6f66789abc722804"></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray"><span class="n"><span class="pre">CUDAArray</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray"><span class="n"><span class="pre">CUDAArray</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArrayaSERK9CUDAArrayI9ValueTypeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase6format9CUDAArray5CloneEv">
+<span id="_CPPv3NK10sparsebase6format9CUDAArray5CloneEv"></span><span id="_CPPv2NK10sparsebase6format9CUDAArray5CloneEv"></span><span id="sparsebase::format::CUDAArray::CloneC"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1a3d185b0316de323a1c922c6594257707"></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Clone</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase6format9CUDAArray5CloneEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArrayD0Ev">
+<span id="_CPPv3N10sparsebase6format9CUDAArrayD0Ev"></span><span id="_CPPv2N10sparsebase6format9CUDAArrayD0Ev"></span><span id="sparsebase::format::CUDAArray::~CUDAArray"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1abe7fdd50715a1d43a9340dc80023933b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~CUDAArray</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArrayD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase6format9CUDAArray8get_valsEv">
+<span id="_CPPv3NK10sparsebase6format9CUDAArray8get_valsEv"></span><span id="_CPPv2NK10sparsebase6format9CUDAArray8get_valsEv"></span><span id="sparsebase::format::CUDAArray::get_valsC"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1a21f58268b38b02b22b0c1041d3249af4"></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">get_vals</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase6format9CUDAArray8get_valsEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray12release_valsEv">
+<span id="_CPPv3N10sparsebase6format9CUDAArray12release_valsEv"></span><span id="_CPPv2N10sparsebase6format9CUDAArray12release_valsEv"></span><span id="sparsebase::format::CUDAArray::release_vals"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1a0f990877dccfb54b66ac602c3c3b331d"></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">release_vals</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray12release_valsEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray8set_valsEP9ValueType9Ownership">
+<span id="_CPPv3N10sparsebase6format9CUDAArray8set_valsEP9ValueType9Ownership"></span><span id="_CPPv2N10sparsebase6format9CUDAArray8set_valsEP9ValueType9Ownership"></span><span id="sparsebase::format::CUDAArray::set_vals__ValueTypeP.Ownership"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1ac0575812ceb603d3c3ba5bd39a993eca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_vals</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">*</span></span>, <a class="reference internal" href="enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6.html#_CPPv4N10sparsebase6format9OwnershipE" title="sparsebase::format::Ownership"><span class="n"><span class="pre">Ownership</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">own</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_format_8h_1ae47d7de73f7f3a5d50b9f03c2ae3c0d6.html#_CPPv4N10sparsebase6format9Ownership9kNotOwnedE" title="sparsebase::format::kNotOwned"><span class="n"><span class="pre">kNotOwned</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray8set_valsEP9ValueType9Ownership" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray11ValsIsOwnedEv">
+<span id="_CPPv3N10sparsebase6format9CUDAArray11ValsIsOwnedEv"></span><span id="_CPPv2N10sparsebase6format9CUDAArray11ValsIsOwnedEv"></span><span id="sparsebase::format::CUDAArray::ValsIsOwned"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1add5cb1eb82f1715d264a46480a9565fb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValsIsOwned</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray11ValsIsOwnedEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format9CUDAArray5vals_E">
+<span id="_CPPv3N10sparsebase6format9CUDAArray5vals_E"></span><span id="_CPPv2N10sparsebase6format9CUDAArray5vals_E"></span><span class="target" id="classsparsebase_1_1format_1_1CUDAArray_1ab62ce5856752959bb34d4d658d14508e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format9CUDAArrayE" title="sparsebase::format::CUDAArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vals_</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format9CUDAArray5vals_E" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1format_1_1CSR.html" class="btn btn-neutral float-left" title="Template Class CSR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1format_1_1CUDACSR.html" class="btn btn-neutral float-right" title="Template Class CUDACSR" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

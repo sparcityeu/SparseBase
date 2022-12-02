@@ -1,0 +1,50 @@
+
+.. _file_src_sparsebase_reorder_metis_reorder.cc:
+
+File metis_reorder.cc
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_reorder>` (``src/sparsebase/reorder``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/reorder/metis_reorder.cc``)
+--------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_reorder_metis_reorder.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/metis_reorder.inc``
+
+- ``sparsebase/reorder/metis_reorder.h`` (:ref:`file_src_sparsebase_reorder_metis_reorder.h`)
+
+- ``sparsebase/reorder/reorderer.h`` (:ref:`file_src_sparsebase_reorder_reorderer.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__reorder`
+

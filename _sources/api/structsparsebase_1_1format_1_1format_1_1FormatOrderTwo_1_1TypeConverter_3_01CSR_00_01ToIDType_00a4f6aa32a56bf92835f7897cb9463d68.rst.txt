@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1format_1_1format_1_1FormatOrderTwo_1_1TypeConverter_3_01CSR_00_01ToIDType_00a4f6aa32a56bf92835f7897cb9463d68:
+
+Template Struct TypeConverter< CSR, ToIDType, ToNNZType, ToValueType >
+======================================================================
+
+- Defined in :ref:`file_src_sparsebase_format_csr.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::format::format::FormatOrderTwo::TypeConverter< CSR, ToIDType, ToNNZType, ToValueType >
+   :members:
+   :protected-members:
+   :undoc-members:

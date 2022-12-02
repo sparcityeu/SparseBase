@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accelerating SpMV on the GPU using reordering &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Explanations" href="../explanations/index.html" />
+    <link rel="prev" title="Creating an SPMV Experiment" href="003_experiment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="001_reordering.html">Reordering a graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="002_feature_extraction.html">Feature Extraction from a Matrix Market File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="003_experiment.html">Creating an SPMV Experiment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Accelerating SpMV on the GPU using reordering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#objective">Objective</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#steps">Steps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#read-a-matrix-and-a-vector-from-matrix-market-files">1. Read a matrix and a vector from matrix market files.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-sparsebase-array-from-raw-c-data">2. Create a SparseBase <code class="docutils literal notranslate"><span class="pre">Array</span></code> from raw C++ data.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generate-gray-code-reordering-of-a-matrix-and-use-it-to-permute-the-matrix-and-an-array">4. Generate Gray code reordering of a matrix and use it to permute the matrix and an array.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generate-rcm-reordering-of-a-matrix-by-utilizing-automatic-function-matching-and-conversion">6. Generate RCM reordering of a matrix by utilizing automatic function matching and conversion.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inverse-the-order-of-the-result-array">6. Inverse the order of the result array.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compile-and-run-the-code">7. Compile and run the code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+      <li>Accelerating SpMV on the GPU using reordering</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/tutorials/004_cuda_spmv.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="accelerating-spmv-on-the-gpu-using-reordering">
+<h1>Accelerating SpMV on the GPU using reordering<a class="headerlink" href="#accelerating-spmv-on-the-gpu-using-reordering" title="Permalink to this headline"></a></h1>
+<section id="objective">
+<h2>Objective<a class="headerlink" href="#objective" title="Permalink to this headline"></a></h2>
+<p>Move matrices and vectors between the CPU and GPU and reorder a matrix to accelerate SpMV.</p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>In this tutorial, you will use SparseBase to do the following:</p>
+<ol class="arabic simple">
+<li><p>Read a matrix from a matrix market file into a SparseBase <code class="docutils literal notranslate"><span class="pre">CSR</span></code>.</p></li>
+<li><p>Create a SparseBase <code class="docutils literal notranslate"><span class="pre">Array</span></code> from raw C++ data.</p></li>
+<li><p>Move data to the GPU and use it in an SpMV operation.</p></li>
+<li><p>Generate Gray code reordering of a matrix and use it to permute the matrix and an array.</p></li>
+<li><p>Generate RCM reordering of a matrix by utilizing automatic function matching and conversion.</p></li>
+<li><p>Inverse the order of the result array.</p></li>
+<li><p>Compile and run the code.</p></li>
+</ol>
+</section>
+<section id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline"></a></h2>
+<p>Start by navigating to the directory <code class="docutils literal notranslate"><span class="pre">tutorials/004_cuda_spmv/start_here/</span></code>. Open the file <code class="docutils literal notranslate"><span class="pre">tutorial_004.cu</span></code> using a code editor and follow along with the tutorial.</p>
+<p>The file contains some boilerplate code that includes the appropriate headers, creates some type definitions, and uses the <code class="docutils literal notranslate"><span class="pre">sparsebase</span></code> namespace. It also includes the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernel <code class="docutils literal notranslate"><span class="pre">spmv_1w1r</span></code> which carries out sparse matrix-vector multiplication. It takes the sparse matrix operand as a Compressed Sparse Row (CSR) matrix, and the vector operand as a dense array, and writes the multiplication result in a dense array.</p>
+<p>The completed tutorial code can be found in <code class="docutils literal notranslate"><span class="pre">tutorials/004_reordering/solved/solved.cu</span></code>.</p>
+<p>To demonstrate our code, we will use a matrix from the <a class="reference external" href="http://sparse.tamu.edu">SuiteSparse</a> matrix collection. In this example, we use the <code class="docutils literal notranslate"><span class="pre">POLYFLOW/mixtank_new</span></code> matrix, however, any symmetric matrix can be used as well. This code sample works with the matrix market file format. You can get this file from the following <a class="reference external" href="https://sparse.tamu.edu/POLYFLOW/mixtank_new">link</a>.</p>
+</section>
+<section id="steps">
+<h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline"></a></h2>
+<section id="read-a-matrix-and-a-vector-from-matrix-market-files">
+<h3>1. Read a matrix and a vector from matrix market files.<a class="headerlink" href="#read-a-matrix-and-a-vector-from-matrix-market-files" title="Permalink to this headline"></a></h3>
+<p>Begin your main program by reading the sparse matrix operand from a matrix market file into a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> object using the <code class="docutils literal notranslate"><span class="pre">ReadMTXToCSR</span></code> function in <code class="docutils literal notranslate"><span class="pre">IOBase</span></code>.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// The name of the matrix market file in disk</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">matrix_filename</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"></span>
+<span class="c1">// Read the edge list file into a CSR object</span>
+<span class="n">CSR</span><span class="o">&lt;</span><span class="n">id_type</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_type</span><span class="p">,</span><span class="w"> </span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IOBase</span><span class="o">::</span><span class="n">ReadMTXToCSR</span><span class="o">&lt;</span><span class="n">id_type</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_type</span><span class="p">,</span><span class="w"> </span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">matrix_filename</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The three templated type parameters of the <code class="docutils literal notranslate"><span class="pre">CSR</span></code> and <code class="docutils literal notranslate"><span class="pre">ReadMTXToCSR</span></code> objects determine the data types that will store the number of rows and columns in the matrix, the number of non-zeros, and the values of the data in the matrix, respectively. These types are defined at the beginning of the file. You will find that these three template types are used by most classes of the library.</p>
+<p>To get a feel for the data you just read, print some of its properties.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// get_dimensions() returns a vector with the dimension of</span>
+<span class="c1">// each order of the format object</span>
+<span class="n">id_type</span><span class="w"> </span><span class="n">num_rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
+<span class="n">id_type</span><span class="w"> </span><span class="n">num_columns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">()[</span><span class="mi">1</span><span class="p">];</span><span class="w"></span>
+<span class="n">nnz_type</span><span class="w"> </span><span class="n">num_non_zeros</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_num_nnz</span><span class="p">();</span><span class="w"></span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Matrix has &quot;</span><span class="w"></span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_rows</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; rows, &quot;</span><span class="w"></span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_columns</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; columns, and &quot;</span><span class="w"></span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_non_zeros</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; non-zeros&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-sparsebase-array-from-raw-c-data">
+<h3>2. Create a SparseBase <code class="docutils literal notranslate"><span class="pre">Array</span></code> from raw C++ data.<a class="headerlink" href="#create-a-sparsebase-array-from-raw-c-data" title="Permalink to this headline"></a></h3>
+<p>The matrix we just read needs to be multiplied by a vector, and you will generate this vector.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Raw C++ array that will contain the data</span>
+<span class="n">value_type</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vec_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">value_type</span><span class="p">[</span><span class="n">num_columns</span><span class="p">];</span><span class="w"></span>
+<span class="c1">// Fill the vector with random values</span>
+<span class="n">filL_randomly</span><span class="p">(</span><span class="n">vec_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">num_columns</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// Create a SparseBase array as a wrapper around the raw array `ptr`.</span>
+<span class="n">Array</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Array</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">num_columns</span><span class="p">,</span><span class="w"> </span><span class="n">vec_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">kOwned</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// We can access metadata of the Array</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Vector has &quot;</span><span class="w"></span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">vec</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; elements &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Placing raw data in a SparseBase format object allows you to leverage the library’s conversion, preprocessing, feature extraction, and I/O capabilities with this data.</p>
+<p>The last parameter in the <code class="docutils literal notranslate"><span class="pre">Array</span></code> constructor, <code class="docutils literal notranslate"><span class="pre">kOwned</span></code> tells the object that it owns the data it wraps; once <code class="docutils literal notranslate"><span class="pre">vec</span></code> is deleted, the array <code class="docutils literal notranslate"><span class="pre">vec_ptr</span></code> will also be deleted.</p>
+<blockquote>
+<div><p>Alternatively, we could have read the vector that is downloaded with the matrix from SuiteSparse as a second parameter.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// The name of the matrix market file in disk</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">vector_filename</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span><span class="w"></span>
+<span class="c1">// Read the matrix market file into an Array object</span>
+<span class="n">Array</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IOBase</span><span class="o">::</span><span class="n">ReadArrayFromMTX</span><span class="o">&lt;</span><span class="n">id_type</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_type</span><span class="p">,</span><span class="w"> </span><span class="n">value_type</span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">vector_filename</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Move data to the GPU and use it in an SpMV operation.</p></li>
+</ol>
+<p>Moving data between GPU the CPU is easy with SparseBase. Simply convert the formats you have into their <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> counterparts.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Context representing the GPU with ID 0 in the system</span>
+<span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span><span class="w"> </span><span class="n">gpu0</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="w"></span>
+
+<span class="c1">// The conversion target is passed as a template parameter,</span>
+<span class="c1">// and the context to convert it to is the parameter.</span>
+<span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">id_type</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_type</span><span class="p">,</span><span class="w"> </span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">cuda_csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">CUDACSR</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">);</span><span class="w"></span>
+<span class="n">CUDAArray</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">cuda_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="o">-&gt;</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">CUDAArray</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>These <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> format objects contain pointers at raw data on the GPU. Users can get and use this data in their own workflows. Note that the metadata of <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> formats (order of the format, its dimensions, its number of non-zeros, and its context information) reside on the CPU.</p>
+<p>In addition to the operands, you also need to allocate memory to store the result calculated on the GPU.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">value_type</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">result_ptr</span><span class="p">;</span><span class="w"></span>
+<span class="c1">// Allocate the memory using the native CUDA call</span>
+<span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">num_rows</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">value_type</span><span class="p">));</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Now, fetch the raw pointers inside the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> formats and use them in a call to the SpMV kernel.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// These pointers point at data on the GPU</span>
+<span class="n">nnz_type</span><span class="o">*</span><span class="w"> </span><span class="n">matrix_row_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cuda_csr</span><span class="o">-&gt;</span><span class="n">get_row_ptr</span><span class="p">();</span><span class="w"></span>
+<span class="n">id_type</span><span class="o">*</span><span class="w"> </span><span class="n">matrix_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cuda_csr</span><span class="o">-&gt;</span><span class="n">get_col</span><span class="p">();</span><span class="w"></span>
+<span class="n">value_type</span><span class="o">*</span><span class="w"> </span><span class="n">matrix_vals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cuda_csr</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">();</span><span class="w"></span>
+
+<span class="n">value_type</span><span class="o">*</span><span class="w"> </span><span class="n">vector_vals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cuda_array</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">();</span><span class="w"></span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="n">spmv_1w1r</span><span class="o">&lt;&lt;&lt;</span><span class="n">NUM_BLOCKS</span><span class="p">,</span><span class="w"> </span><span class="n">THREADS_PER_BLOCK</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">matrix_row_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">matrix_col</span><span class="p">,</span><span class="w"> </span><span class="n">matrix_vals</span><span class="p">,</span><span class="w"> </span><span class="n">vector_vals</span><span class="p">,</span><span class="w"> </span><span class="n">result_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">num_rows</span><span class="p">);</span><span class="w"></span>
+<span class="n">cudaDeviceSynchronize</span><span class="p">();</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">cudaPeekAtLastError</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">){</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Kernel failed: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cudaGetErrorString</span><span class="p">(</span><span class="n">cudaPeekAtLastError</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">total_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">;</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;SpMV without reordering takes: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">total_time</span><span class="p">.</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; seconds&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="generate-gray-code-reordering-of-a-matrix-and-use-it-to-permute-the-matrix-and-an-array">
+<h3>4. Generate Gray code reordering of a matrix and use it to permute the matrix and an array.<a class="headerlink" href="#generate-gray-code-reordering-of-a-matrix-and-use-it-to-permute-the-matrix-and-an-array" title="Permalink to this headline"></a></h3>
+<p>Now, we will try the Gray code reordering algorithm on our matrix to see if it will accelerate our SpMV. Start by finding the reordering vector.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// A context representing the host system</span>
+<span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span><span class="w"> </span><span class="n">cpu</span><span class="p">;</span><span class="w"></span>
+<span class="c1">// Create a parameters object to store special parameters specific</span>
+<span class="c1">// Gray reordering</span>
+<span class="n">GrayReorderParams</span><span class="w"> </span><span class="nf">gray_params</span><span class="p">(</span><span class="n">BitMapSize</span><span class="o">::</span><span class="n">BitSize32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// Create an inverse permutation array  of the matrix `csr`</span>
+<span class="n">id_type</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gray_reorder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Reorder</span><span class="o">&lt;</span><span class="n">GrayReorder</span><span class="o">&gt;</span><span class="p">(</span><span class="n">gray_params</span><span class="p">,</span><span class="w"> </span><span class="n">csr</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We specify the reordering algorithm used by the <code class="docutils literal notranslate"><span class="pre">Reorder</span></code> function by passing its class as a template argument.</p>
+<p>The first parameter to the function is the parameter struct of the selected reordering algorithm. For context, each reordering algorithm (and preprocessing in general) has its own associated parameters struct that contains hyperparameters specific to it.</p>
+<p>The last two parameters are related to the function matching mechanism in SparseBase, which we will show an example of in the next step. Just know that they control whether the input format can be converted if needed.</p>
+<p>The output array <code class="docutils literal notranslate"><span class="pre">gray_reorder</span></code> is an array containing the <em>inverse permutation</em> of all the rows/columns of <code class="docutils literal notranslate"><span class="pre">csr</span></code>. In other words, <code class="docutils literal notranslate"><span class="pre">gray_reorder[i]</span> <span class="pre">=</span> <span class="pre">j</span></code> indicates that the row <code class="docutils literal notranslate"><span class="pre">i</span></code> in <code class="docutils literal notranslate"><span class="pre">csr</span></code> is at location <code class="docutils literal notranslate"><span class="pre">j</span></code> after reordering.</p>
+<p>Next, we must permute <code class="docutils literal notranslate"><span class="pre">csr</span></code> and <code class="docutils literal notranslate"><span class="pre">vec</span></code> according to this new order.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// `Permute2D` returns a CSR object but stores it in a polymorphic</span>
+<span class="c1">// pointer at the superclass for two-dimensional formats, FormatOrderTwo.</span>
+<span class="n">FormatOrderTwo</span><span class="o">&lt;</span><span class="n">id_type</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_type</span><span class="p">,</span><span class="w"> </span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">gray_reordered_csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Permute2D</span><span class="p">(</span><span class="n">gray_reorder</span><span class="p">,</span><span class="w"> </span><span class="n">csr</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// We move the reordered CSR to the GPU.</span>
+<span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">id_type</span><span class="p">,</span><span class="w"> </span><span class="n">nnz_type</span><span class="p">,</span><span class="w"> </span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">cuda_gray_reordered_csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gray_reordered_csr</span><span class="w"> </span><span class="o">-&gt;</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">CUDACSR</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// Rather than get the generic pointer to `FormatOrderOne`, we can cast the output</span>
+<span class="c1">// to the correct type in the same call to `Permute1D`</span>
+<span class="n">Array</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">gray_reordered_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Permute1D</span><span class="o">&lt;</span><span class="n">Array</span><span class="o">&gt;</span><span class="p">(</span><span class="n">gray_reorder</span><span class="p">,</span><span class="w"> </span><span class="n">vec</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// We move this array to the GPU.</span>
+<span class="n">CUDAArray</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">cuda_gray_reordered_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gray_reordered_vec</span><span class="o">-&gt;</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">CUDAArray</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Permute2D</span></code> call returns a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> object, but it returns it as a polymorphic pointer to the superclass <code class="docutils literal notranslate"><span class="pre">FormatOrderTwo</span></code> which is the parent of <code class="docutils literal notranslate"><span class="pre">CSR</span></code> and other order-2 formats. We can directly copy the returned <code class="docutils literal notranslate"><span class="pre">CSR</span></code> to the GPU through this polymorphic pointer.</p>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">Permute2D</span></code>, <code class="docutils literal notranslate"><span class="pre">Permute1D</span></code> also returns a polymorphic pointer at the superclass <code class="docutils literal notranslate"><span class="pre">FormatOrderOne</span></code> (parent of <code class="docutils literal notranslate"><span class="pre">Array</span></code> and <code class="docutils literal notranslate"><span class="pre">CUDAArray</span></code>). However, if we know the data type of the returned object, we can cast the returned pointer to that type by passing it as a template argument to the function. Note that, if the cast fails, an exception will be thrown.</p>
+<p>Let’s try multiplication using the reordered data.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="n">spmv_1w1r</span><span class="o">&lt;&lt;&lt;</span><span class="n">NUM_BLOCKS</span><span class="p">,</span><span class="w"> </span><span class="n">THREADS_PER_BLOCK</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">cuda_gray_reordered_csr</span><span class="w"> </span><span class="o">-&gt;</span><span class="n">get_row_ptr</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">cuda_gray_reordered_csr</span><span class="o">-&gt;</span><span class="n">get_col</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">cuda_gray_reordered_csr</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">cuda_gray_reordered_vec</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">result_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">num_rows</span><span class="p">);</span><span class="w"></span>
+<span class="n">cudaDeviceSynchronize</span><span class="p">();</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">cudaPeekAtLastError</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">){</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Kernel failed: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cudaGetErrorString</span><span class="p">(</span><span class="n">cudaPeekAtLastError</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="n">total_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">;</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;SpMV with Gray reordering takes: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">total_time</span><span class="p">.</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; seconds&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="generate-rcm-reordering-of-a-matrix-by-utilizing-automatic-function-matching-and-conversion">
+<h3>6. Generate RCM reordering of a matrix by utilizing automatic function matching and conversion.<a class="headerlink" href="#generate-rcm-reordering-of-a-matrix-by-utilizing-automatic-function-matching-and-conversion" title="Permalink to this headline"></a></h3>
+<p>Now, let’s try Reverse Cuthill McKee (RCM) reordering but this time, take advantage of the function matching capability in SparseBase.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// We can pass the CUDACSR and the function will automatically convert it to CSR for reordering</span>
+<span class="n">id_type</span><span class="o">*</span><span class="w"> </span><span class="n">rcm_reorder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Reorder</span><span class="o">&lt;</span><span class="n">RCMReorder</span><span class="o">&gt;</span><span class="p">({},</span><span class="w"> </span><span class="n">cuda_csr</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Every preprocessing algorithm in the library (reordering, partitioning, feature extraction, etc.) can be implemented for many format types. In this case, <code class="docutils literal notranslate"><span class="pre">RCMReorder</span></code>is only implemented for the <code class="docutils literal notranslate"><span class="pre">CSR</span></code> type. However, when we set the <code class="docutils literal notranslate"><span class="pre">convert_input</span></code> parameter (last parameter) to <code class="docutils literal notranslate"><span class="pre">true</span></code> in the call, this will allow function matching to take place.</p>
+<p>Function matching takes the input formats to a preprocessing and the contexts the user passes to the function call, and, if the input format can’t be used directly for the preprocessing (i.e., no function exists for the input’s format type), it attempts to convert the input (using the passed contexts) to a format for which an implementation exists in the preprocessing. When the conversion context is different from input format’s context, that entails copying data to the a different context.</p>
+<p>In this case, the <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code> input cannot be reordered directly, so it is converted to a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> (copied to CPU), and then that <code class="docutils literal notranslate"><span class="pre">CSR</span></code> object is used for reordering.</p>
+<p>The procedure for <code class="docutils literal notranslate"><span class="pre">RCMReorder</span></code> is demonstrated in the following figure.
+<img alt="Matching CUDACSR to CSR in RCM reordering" src="../../_images/rcm_reorder_cudacsr.png" /></p>
+<blockquote>
+<div><p>Note: the intermediate <code class="docutils literal notranslate"><span class="pre">CSR</span></code> object used for the function is deleted after execution. However, the user can use the <code class="docutils literal notranslate"><span class="pre">Cached</span></code> version of the <code class="docutils literal notranslate"><span class="pre">Reorder</span></code> function to get the intermediate <code class="docutils literal notranslate"><span class="pre">CSR</span></code> along with the output.</p>
+</div></blockquote>
+<p>The same function matching is available in every preprocess function in the library, including permutation functions. <code class="docutils literal notranslate"><span class="pre">Permute2D</span></code> only has an implementation for the <code class="docutils literal notranslate"><span class="pre">CSR</span></code> format type, and <code class="docutils literal notranslate"><span class="pre">Permute1D</span></code> is only implemented for <code class="docutils literal notranslate"><span class="pre">Array</span></code> format type. Therefore, passing <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> formats to them will trigger function matching. Let’s do just that.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// A list of available contexts</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">contexts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">};</span><span class="w"></span>
+<span class="c1">// We can apply the permutation to the CUDACSR directly, as well, but the returned</span>
+<span class="c1">// object will be a CSR since permutation will run on a CSR rathar than a CUDACSR</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">rcm_reordered_csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Permute2D</span><span class="o">&lt;</span><span class="n">CSR</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rcm_reorder</span><span class="p">,</span><span class="w"> </span><span class="n">cuda_csr</span><span class="p">,</span><span class="w"> </span><span class="n">contexts</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="n">cuda_rcm_reordered_csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rcm_reordered_csr</span><span class="o">-&gt;</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">CUDACSR</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">);</span><span class="w"></span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">rcm_reordered_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Permute1D</span><span class="o">&lt;</span><span class="n">Array</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rcm_reorder</span><span class="p">,</span><span class="w"> </span><span class="n">cuda_array</span><span class="p">,</span><span class="w"> </span><span class="n">contexts</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="k">auto</span><span class="w"> </span><span class="n">cuda_rcm_reordered_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rcm_reordered_vec</span><span class="o">-&gt;</span><span class="n">Convert</span><span class="o">&lt;</span><span class="n">CUDAArray</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gpu0</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Now, run the SpMV kernel with this new graph.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="n">spmv_1w1r</span><span class="o">&lt;&lt;&lt;</span><span class="n">NUM_BLOCKS</span><span class="p">,</span><span class="w"> </span><span class="n">THREADS_PER_BLOCK</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">cuda_rcm_reordered_csr</span><span class="o">-&gt;</span><span class="n">get_row_ptr</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">cuda_rcm_reordered_csr</span><span class="o">-&gt;</span><span class="n">get_col</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">cuda_rcm_reordered_csr</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">cuda_rcm_reordered_vec</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">result_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">num_rows</span><span class="p">);</span><span class="w"></span>
+<span class="n">cudaDeviceSynchronize</span><span class="p">();</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">cudaPeekAtLastError</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cudaSuccess</span><span class="p">){</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Kernel failed: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cudaGetErrorString</span><span class="p">(</span><span class="n">cudaPeekAtLastError</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span><span class="w"></span>
+<span class="n">total_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">;</span><span class="w"></span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;SpMV with RCM reordering takes: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">total_time</span><span class="p">.</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; seconds&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="inverse-the-order-of-the-result-array">
+<h3>6. Inverse the order of the result array.<a class="headerlink" href="#inverse-the-order-of-the-result-array" title="Permalink to this headline"></a></h3>
+<p>The last result calculated is the result of multiplying the input matrix and vector after they had been reordered according to the RCM reorder array <code class="docutils literal notranslate"><span class="pre">rcm_reorder</span></code>. In other words, the output vector is a permutation of the actual output array. We must reverse its permutation to match the order of the original input matrix and vector.</p>
+<p>To do so, we will reverse the <code class="docutils literal notranslate"><span class="pre">rcm_reorder</span></code> permutation vector and use it to permute the result.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// `reverse_reorder` can be used to undo the permutation done using `rcm_reorder`</span>
+<span class="n">id_type</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">reverse_rcm_reorder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">InversePermutation</span><span class="p">(</span><span class="n">rcm_reorder</span><span class="p">,</span><span class="w"> </span><span class="n">num_rows</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We place the result array located on the GPU in a <code class="docutils literal notranslate"><span class="pre">CUDAArray</span></code> to use it in the <code class="docutils literal notranslate"><span class="pre">Permute1D</span></code> call.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// We place the raw array in a CUDAArray to use Permute1D</span>
+<span class="n">CUDAArray</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cuda_rcm_reordered_result</span><span class="p">(</span><span class="n">num_rows</span><span class="p">,</span><span class="w"> </span><span class="n">result_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">gpu0</span><span class="p">,</span><span class="w"> </span><span class="n">kOwned</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// Since `Permute1D` is only implemented for `Array`, the output will be an `Array`</span>
+<span class="n">FormatOrderOne</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">foo_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bases</span><span class="o">::</span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Permute1D</span><span class="p">(</span><span class="n">reverse_rcm_reorder</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_rcm_reordered_result</span><span class="p">,</span><span class="w"> </span><span class="n">contexts</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="c1">// Safely cast the pointer at the parent `FormatOrderOne` to `Array`</span>
+<span class="n">Array</span><span class="o">&lt;</span><span class="n">value_type</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">arr_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">foo_result</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">Array</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Since <code class="docutils literal notranslate"><span class="pre">Permute1D</span></code> is only implemented on <code class="docutils literal notranslate"><span class="pre">Array</span></code> format types, the call to <code class="docutils literal notranslate"><span class="pre">Permute1D</span></code> above will convert the <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code> input to an <code class="docutils literal notranslate"><span class="pre">Array</span></code>, permute it, and return an <code class="docutils literal notranslate"><span class="pre">Array</span></code> with the result.</p>
+</section>
+<section id="compile-and-run-the-code">
+<h3>7. Compile and run the code<a class="headerlink" href="#compile-and-run-the-code" title="Permalink to this headline"></a></h3>
+<p>While in the directory <code class="docutils literal notranslate"><span class="pre">tutorials/004_cuda_spmv/start_here</span></code>, download the matrix file and extract it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget https://suitesparse-collection-website.herokuapp.com/MM/POLYFLOW/mixtank_new.tar.gz
+tar -xvf mixtank_new.tar.gz
+</pre></div>
+</div>
+<p>Then, compile and execute the code with the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nvcc -std<span class="o">=</span>c++17 tutorial_004.cu -lsparsebase -lgomp -std<span class="o">=</span>c++17 -o spmv.out
+./spmv.out mixtank_new/mixtank_new.mtx 
+</pre></div>
+</div>
+<p>You should see output similar to the following, but with different timings:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">11</span><span class="o">/</span><span class="mi">24</span><span class="o">/</span><span class="mi">22</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">10</span><span class="o">:</span><span class="mi">12</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">WARNING</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">COO</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="p">]</span><span class="w"> </span><span class="n">COO</span><span class="w"> </span><span class="n">arrays</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">sorted</span><span class="p">.</span><span class="w"> </span><span class="n">Sorting</span><span class="p">...</span><span class="w"></span>
+<span class="n">Matrix</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="mi">29957</span><span class="w"> </span><span class="n">rows</span><span class="p">,</span><span class="w"> </span><span class="mi">29957</span><span class="w"> </span><span class="n">columns</span><span class="p">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="mi">1995041</span><span class="w"> </span><span class="n">non</span><span class="o">-</span><span class="n">zeros</span><span class="w"></span>
+<span class="n">Vector</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="mi">29957</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span>
+<span class="n">SpMV</span><span class="w"> </span><span class="n">without</span><span class="w"> </span><span class="n">reordering</span><span class="w"> </span><span class="n">takes</span><span class="o">:</span><span class="w"> </span><span class="mf">0.00015609</span><span class="w"> </span><span class="n">seconds</span><span class="w"></span>
+<span class="p">[</span><span class="mi">11</span><span class="o">/</span><span class="mi">24</span><span class="o">/</span><span class="mi">22</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">10</span><span class="o">:</span><span class="mi">17</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">WARNING</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="p">]</span><span class="w"> </span><span class="n">CSR</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">sorted</span><span class="p">.</span><span class="w"> </span><span class="n">Sorting</span><span class="p">...</span><span class="w"></span>
+<span class="n">SpMV</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">Gray</span><span class="w"> </span><span class="n">reordering</span><span class="w"> </span><span class="n">takes</span><span class="o">:</span><span class="w"> </span><span class="mf">0.000170223</span><span class="w"> </span><span class="n">seconds</span><span class="w"></span>
+<span class="p">[</span><span class="mi">11</span><span class="o">/</span><span class="mi">24</span><span class="o">/</span><span class="mi">22</span><span class="w"> </span><span class="mi">14</span><span class="o">:</span><span class="mi">10</span><span class="o">:</span><span class="mi">17</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">WARNING</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">sparsebase</span><span class="o">::</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="o">&gt;</span><span class="p">]</span><span class="w"> </span><span class="n">CSR</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">sorted</span><span class="p">.</span><span class="w"> </span><span class="n">Sorting</span><span class="p">...</span><span class="w"></span>
+<span class="n">SpMV</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">RCM</span><span class="w"> </span><span class="n">reordering</span><span class="w"> </span><span class="n">takes</span><span class="o">:</span><span class="w"> </span><span class="mf">0.000148531</span><span class="w"> </span><span class="n">seconds</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="003_experiment.html" class="btn btn-neutral float-left" title="Creating an SPMV Experiment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../explanations/index.html" class="btn btn-neutral float-right" title="Explanations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

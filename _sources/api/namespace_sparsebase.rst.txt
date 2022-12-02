@@ -17,14 +17,28 @@ Namespaces
 ----------
 
 
+- :ref:`namespace_sparsebase__bases`
+
 - :ref:`namespace_sparsebase__context`
+
+- :ref:`namespace_sparsebase__converter`
+
+- :ref:`namespace_sparsebase__experiment`
 
 - :ref:`namespace_sparsebase__feature`
 
 - :ref:`namespace_sparsebase__format`
 
+- :ref:`namespace_sparsebase__io`
+
+- :ref:`namespace_sparsebase__metis`
+
 - :ref:`namespace_sparsebase__object`
 
-- :ref:`namespace_sparsebase__preprocess`
+- :ref:`namespace_sparsebase__partition`
+
+- :ref:`namespace_sparsebase__permute`
+
+- :ref:`namespace_sparsebase__reorder`
 
 - :ref:`namespace_sparsebase__utils`

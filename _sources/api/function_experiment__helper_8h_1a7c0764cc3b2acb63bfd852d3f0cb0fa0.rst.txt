@@ -1,0 +1,13 @@
+.. _exhale_function_experiment__helper_8h_1a7c0764cc3b2acb63bfd852d3f0cb0fa0:
+
+Template Function sparsebase::experiment::Reorder
+=================================================
+
+- Defined in :ref:`file_src_sparsebase_experiment_experiment_helper.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::experiment::Reorder(std::unordered_map<std::string, format::Format *>&, std::any, std::any)

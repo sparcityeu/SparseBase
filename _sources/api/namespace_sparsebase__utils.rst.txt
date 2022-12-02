@@ -13,37 +13,102 @@ Namespace sparsebase::utils
 
 
 
-Namespaces
-----------
-
-
-- :ref:`namespace_sparsebase__utils__converter`
-
-- :ref:`namespace_sparsebase__utils__io`
-
-
 Classes
 -------
 
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1CUDADeleter`
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1Implementation`
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1Parameters`
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1TypeIndexVectorHash`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1AllocationException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1AttemptToReset`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ClassMatcherMixin`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1CUDADeviceException`
 
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1DemangleException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1DirectExecutionNotAvailableException`
+
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1Exception`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Extractable`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureParamsException`
 
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`
+
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionNotFoundException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Identifiable`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1InvalidDataMember`
 
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Logger`
+
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1NoConverterException`
 
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1OnceSettable`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Parameterizable`
+
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1ReaderException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ReorderException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1TypeException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1WriterException`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_utils_8h_1a47671e3e65bf3f49be1d5c62d380bbbc`
+
+- :ref:`exhale_function_utils_8h_1aa9c32f90fc68e812c31e29e931156186`
+
+- :ref:`exhale_function_utils_8cc_1ac19467f3576914cbf58bc63759354c29`
+
+- :ref:`exhale_function_utils_8cc_1a7099d4763bd70cf9909f5151f7a193cf`
+
+- :ref:`exhale_function_utils_8h_1a9cdfe685573f3ff5732bad032e131139`
+
+- :ref:`exhale_function_exception_8h_1aa0beb3b2d7aadd170b0d49830a207205`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_utils_8h_1a3b3a534553ecce4a82fe2347244a9495`
+
+- :ref:`exhale_typedef_function__matcher__mixin_8h_1a94142a17f2d3a290678cc1a54d0d7c3e`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_utils_8h_1ab42e65c44f9456748d1bc3fcc256326e`

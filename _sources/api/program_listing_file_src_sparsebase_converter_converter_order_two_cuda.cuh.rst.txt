@@ -1,0 +1,37 @@
+
+.. _program_listing_file_src_sparsebase_converter_converter_order_two_cuda.cuh:
+
+Program Listing for File converter_order_two_cuda.cuh
+=====================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_converter_converter_order_two_cuda.cuh>` (``src/sparsebase/converter/converter_order_two_cuda.cuh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_CONVERTER_ORDER_TWO_CUDA_CUH
+   #define SPARSEBASE_PROJECT_CONVERTER_ORDER_TWO_CUDA_CUH
+   
+   #include "converter.h"
+   #include "converter_cuda.cuh"
+   #include "sparsebase/config.h"
+   namespace sparsebase::converter {
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   sparsebase::format::Format *CsrCUDACsrConditionalFunction(
+       sparsebase::format::Format *source, sparsebase::context::Context *context);
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   sparsebase::format::Format *CUDACsrCsrConditionalFunction(
+       sparsebase::format::Format *source, sparsebase::context::Context *context);
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   sparsebase::format::Format *CUDACsrCUDACsrConditionalFunction(
+       sparsebase::format::Format *source, sparsebase::context::Context *context);
+   
+   }  // namespace sparsebase::converter
+   #ifdef _HEADER_ONLY
+   #include "converter_order_two_cuda.cu"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_CONVERTER_ORDER_TWO_CUDA_CUH

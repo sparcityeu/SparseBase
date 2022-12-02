@@ -1,0 +1,56 @@
+
+.. _file_src_sparsebase_partition_metis_partition.cc:
+
+File metis_partition.cc
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_partition>` (``src/sparsebase/partition``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/partition/metis_partition.cc``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_partition_metis_partition.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/metis_partition.inc``
+
+- ``metis.h``
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/partition/metis_partition.h`` (:ref:`file_src_sparsebase_partition_metis_partition.h`)
+
+- ``sparsebase/partition/partitioner.h`` (:ref:`file_src_sparsebase_partition_partitioner.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__metis`
+
+- :ref:`namespace_sparsebase__partition`
+

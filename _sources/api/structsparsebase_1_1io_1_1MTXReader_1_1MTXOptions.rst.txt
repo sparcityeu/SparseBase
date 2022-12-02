@@ -1,0 +1,22 @@
+.. _exhale_struct_structsparsebase_1_1io_1_1MTXReader_1_1MTXOptions:
+
+Struct MTXReader::MTXOptions
+============================
+
+- Defined in :ref:`file_src_sparsebase_io_mtx_reader.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classsparsebase_1_1io_1_1MTXReader`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::io::MTXReader::MTXOptions
+   :members:
+   :protected-members:
+   :undoc-members:

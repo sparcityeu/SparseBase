@@ -3,7 +3,7 @@
 Template Class COO
 ==================
 
-- Defined in :ref:`file_src_sparsebase_format_format.h`
+- Defined in :ref:`file_src_sparsebase_format_coo.h`
 
 
 Inheritance Relationships
@@ -12,7 +12,7 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public sparsebase::format::FormatImplementation< COO< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+- ``public sparsebase::utils::IdentifiableImplementation< COO< IDType, NNZType, ValueType >, FormatOrderTwo< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`)
 
 
 Class Documentation

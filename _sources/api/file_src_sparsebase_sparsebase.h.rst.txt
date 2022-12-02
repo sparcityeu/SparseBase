@@ -29,23 +29,115 @@ Includes
 --------
 
 
+- ``sparsebase/bases/graph_feature_base.h`` (:ref:`file_src_sparsebase_bases_graph_feature_base.h`)
+
+- ``sparsebase/bases/iobase.h`` (:ref:`file_src_sparsebase_bases_iobase.h`)
+
+- ``sparsebase/bases/reorder_base.h`` (:ref:`file_src_sparsebase_bases_reorder_base.h`)
+
 - ``sparsebase/config.h``
 
 - ``sparsebase/context/context.h`` (:ref:`file_src_sparsebase_context_context.h`)
 
+- ``sparsebase/context/cpu_context.h`` (:ref:`file_src_sparsebase_context_cpu_context.h`)
+
+- ``sparsebase/context/cuda_context_cuda.cuh`` (:ref:`file_src_sparsebase_context_cuda_context_cuda.cuh`)
+
+- ``sparsebase/converter/converter.h`` (:ref:`file_src_sparsebase_converter_converter.h`)
+
+- ``sparsebase/converter/converter_order_one.h`` (:ref:`file_src_sparsebase_converter_converter_order_one.h`)
+
+- ``sparsebase/converter/converter_order_two.h`` (:ref:`file_src_sparsebase_converter_converter_order_two.h`)
+
+- ``sparsebase/converter/converter_store.h`` (:ref:`file_src_sparsebase_converter_converter_store.h`)
+
+- ``sparsebase/experiment/concrete_experiment.h`` (:ref:`file_src_sparsebase_experiment_concrete_experiment.h`)
+
+- ``sparsebase/experiment/experiment_helper.h`` (:ref:`file_src_sparsebase_experiment_experiment_helper.h`)
+
+- ``sparsebase/experiment/experiment_type.h`` (:ref:`file_src_sparsebase_experiment_experiment_type.h`)
+
+- ``sparsebase/format/array.h`` (:ref:`file_src_sparsebase_format_array.h`)
+
+- ``sparsebase/format/coo.h`` (:ref:`file_src_sparsebase_format_coo.h`)
+
+- ``sparsebase/format/csc.h`` (:ref:`file_src_sparsebase_format_csc.h`)
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/format/cuda_array_cuda.cuh`` (:ref:`file_src_sparsebase_format_cuda_array_cuda.cuh`)
+
+- ``sparsebase/format/cuda_csr_cuda.cuh`` (:ref:`file_src_sparsebase_format_cuda_csr_cuda.cuh`)
+
 - ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/format/format_implementation.h`` (:ref:`file_src_sparsebase_format_format_implementation.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/io/binary_reader_order_one.h`` (:ref:`file_src_sparsebase_io_binary_reader_order_one.h`)
+
+- ``sparsebase/io/binary_reader_order_two.h`` (:ref:`file_src_sparsebase_io_binary_reader_order_two.h`)
+
+- ``sparsebase/io/binary_writer_order_one.h`` (:ref:`file_src_sparsebase_io_binary_writer_order_one.h`)
+
+- ``sparsebase/io/binary_writer_order_two.h`` (:ref:`file_src_sparsebase_io_binary_writer_order_two.h`)
+
+- ``sparsebase/io/edge_list_reader.h`` (:ref:`file_src_sparsebase_io_edge_list_reader.h`)
+
+- ``sparsebase/io/mtx_reader.h`` (:ref:`file_src_sparsebase_io_mtx_reader.h`)
+
+- ``sparsebase/io/pigo_edge_list_reader.h`` (:ref:`file_src_sparsebase_io_pigo_edge_list_reader.h`)
+
+- ``sparsebase/io/pigo_mtx_reader.h`` (:ref:`file_src_sparsebase_io_pigo_mtx_reader.h`)
+
+- ``sparsebase/io/reader.h`` (:ref:`file_src_sparsebase_io_reader.h`)
+
+- ``sparsebase/io/sparse_file_format.h`` (:ref:`file_src_sparsebase_io_sparse_file_format.h`)
+
+- ``sparsebase/io/writer.h`` (:ref:`file_src_sparsebase_io_writer.h`)
 
 - ``sparsebase/object/object.h`` (:ref:`file_src_sparsebase_object_object.h`)
 
-- ``sparsebase/preprocess/preprocess.h`` (:ref:`file_src_sparsebase_preprocess_preprocess.h`)
+- ``sparsebase/partition/metis_partition.h`` (:ref:`file_src_sparsebase_partition_metis_partition.h`)
 
-- ``sparsebase/utils/converter/converter.h`` (:ref:`file_src_sparsebase_utils_converter_converter.h`)
+- ``sparsebase/partition/partitioner.h`` (:ref:`file_src_sparsebase_partition_partitioner.h`)
+
+- ``sparsebase/partition/patoh_partition.h`` (:ref:`file_src_sparsebase_partition_patoh_partition.h`)
+
+- ``sparsebase/partition/pulp_partition.h`` (:ref:`file_src_sparsebase_partition_pulp_partition.h`)
+
+- ``sparsebase/permute/permute_order_one.h`` (:ref:`file_src_sparsebase_permute_permute_order_one.h`)
+
+- ``sparsebase/permute/permute_order_two.h`` (:ref:`file_src_sparsebase_permute_permute_order_two.h`)
+
+- ``sparsebase/permute/permuter.h`` (:ref:`file_src_sparsebase_permute_permuter.h`)
+
+- ``sparsebase/reorder/amd_reorder.h`` (:ref:`file_src_sparsebase_reorder_amd_reorder.h`)
+
+- ``sparsebase/reorder/degree_reorder.h`` (:ref:`file_src_sparsebase_reorder_degree_reorder.h`)
+
+- ``sparsebase/reorder/gray_reorder.h`` (:ref:`file_src_sparsebase_reorder_gray_reorder.h`)
+
+- ``sparsebase/reorder/metis_reorder.h`` (:ref:`file_src_sparsebase_reorder_metis_reorder.h`)
+
+- ``sparsebase/reorder/rabbit_reorder.h`` (:ref:`file_src_sparsebase_reorder_rabbit_reorder.h`)
+
+- ``sparsebase/reorder/rcm_reorder.h`` (:ref:`file_src_sparsebase_reorder_rcm_reorder.h`)
+
+- ``sparsebase/reorder/reorder_heatmap.h`` (:ref:`file_src_sparsebase_reorder_reorder_heatmap.h`)
+
+- ``sparsebase/reorder/reorderer.h`` (:ref:`file_src_sparsebase_reorder_reorderer.h`)
 
 - ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
 
-- ``sparsebase/utils/io/reader.h`` (:ref:`file_src_sparsebase_utils_io_reader.h`)
+- ``sparsebase/utils/logger.h`` (:ref:`file_src_sparsebase_utils_logger.h`)
 
-- ``sparsebase/utils/io/writer.h`` (:ref:`file_src_sparsebase_utils_io_writer.h`)
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+- ``sparsebase/utils/utils_cuda.cuh`` (:ref:`file_src_sparsebase_utils_utils_cuda.cuh`)
 
 
 

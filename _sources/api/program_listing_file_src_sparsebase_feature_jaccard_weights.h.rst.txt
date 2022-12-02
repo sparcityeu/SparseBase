@@ -1,0 +1,55 @@
+
+.. _program_listing_file_src_sparsebase_feature_jaccard_weights.h:
+
+Program Listing for File jaccard_weights.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_feature_jaccard_weights.h>` (``src/sparsebase/feature/jaccard_weights.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <vector>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/format/csr.h"
+   #include "sparsebase/utils/function_matcher_mixin.h"
+   #include "sparsebase/utils/parameterizable.h"
+   
+   #ifndef SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
+   #define SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H
+   namespace sparsebase::feature {
+   struct JaccardWeightsParams : utils::Parameters {};
+   template <typename IDType, typename NNZType, typename ValueType,
+             typename FeatureType>
+   class JaccardWeights : public utils::FunctionMatcherMixin<format::Format *> {
+    public:
+     typedef JaccardWeightsParams ParamsType;
+     JaccardWeights();
+     JaccardWeights(ParamsType);
+   
+     format::Format *GetJaccardWeights(format::Format *format,
+                                       std::vector<context::Context *>,
+                                       bool convert_input);
+   #ifdef USE_CUDA
+   
+     static format::Format *GetJaccardWeightCUDACSR(
+         std::vector<format::Format *> formats, utils::Parameters *params);
+   #endif
+     ~JaccardWeights();
+   };
+   
+   }  // namespace sparsebase::feature
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/feature/jaccard_weights.cc"
+   #endif
+   
+   #ifdef USE_CUDA
+   #include "sparsebase/feature/jaccard_weights_cuda.cuh"
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/feature/jaccard_weights_cuda.cu"
+   #endif
+   #endif
+   
+   #endif  // SPARSEBASE_PROJECT_JACCARD_WEIGHTS_H

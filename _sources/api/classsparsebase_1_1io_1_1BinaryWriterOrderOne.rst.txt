@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1io_1_1BinaryWriterOrderOne:
+
+Template Class BinaryWriterOrderOne
+===================================
+
+- Defined in :ref:`file_src_sparsebase_io_binary_writer_order_one.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public sparsebase::io::Writer`` (:ref:`exhale_class_classsparsebase_1_1io_1_1Writer`)
+- ``public sparsebase::io::WritesArray< T >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1WritesArray`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::io::BinaryWriterOrderOne
+   :members:
+   :protected-members:
+   :undoc-members:

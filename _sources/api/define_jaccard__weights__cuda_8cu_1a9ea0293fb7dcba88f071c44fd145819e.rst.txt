@@ -1,0 +1,13 @@
+.. _exhale_define_jaccard__weights__cuda_8cu_1a9ea0293fb7dcba88f071c44fd145819e:
+
+Define WARP_SIZE
+================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cu`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: WARP_SIZE

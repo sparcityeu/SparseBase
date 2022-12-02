@@ -1,0 +1,22 @@
+.. _exhale_struct_structsparsebase_1_1format_1_1FormatOrderOne_1_1TypeConverter:
+
+Template Struct FormatOrderOne::TypeConverter
+=============================================
+
+- Defined in :ref:`file_src_sparsebase_format_format_order_one.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classsparsebase_1_1format_1_1FormatOrderOne`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::format::FormatOrderOne::TypeConverter
+   :members:
+   :protected-members:
+   :undoc-members:

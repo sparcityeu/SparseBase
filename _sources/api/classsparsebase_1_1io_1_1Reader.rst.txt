@@ -1,0 +1,30 @@
+.. _exhale_class_classsparsebase_1_1io_1_1Reader:
+
+Class Reader
+============
+
+- Defined in :ref:`file_src_sparsebase_io_reader.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::io::BinaryReaderOrderOne< T >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1BinaryReaderOrderOne`)
+- ``public sparsebase::io::BinaryReaderOrderTwo< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1BinaryReaderOrderTwo`)
+- ``public sparsebase::io::EdgeListReader< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1EdgeListReader`)
+- ``public sparsebase::io::MTXReader< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1MTXReader`)
+- ``public sparsebase::io::PigoEdgeListReader< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1PigoEdgeListReader`)
+- ``public sparsebase::io::PigoMTXReader< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1PigoMTXReader`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::io::Reader
+   :members:
+   :protected-members:
+   :undoc-members:

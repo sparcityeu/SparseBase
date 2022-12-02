@@ -1,0 +1,86 @@
+
+.. _file_src_sparsebase_reorder_rabbit_reorder.h:
+
+File rabbit_reorder.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_reorder>` (``src/sparsebase/reorder``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/reorder/rabbit_reorder.h``)
+--------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_reorder_rabbit_reorder.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/reorder/reorderer.h`` (:ref:`file_src_sparsebase_reorder_reorderer.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``utility``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+- :ref:`file_src_sparsebase_reorder_rabbit_reorder.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__reorder`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1RabbitReorderParams`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1RabbitReorder`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_rabbit__reorder_8h_1aefd119ebe4b4ca915e05823ace6039e2`
+
+- :ref:`exhale_define_rabbit__reorder_8h_1a18437b757734c3ebce37525aeedd1afc`
+
+- :ref:`exhale_define_rabbit__reorder_8h_1a2d84f350b1fc49b649f20ad816f73fea`
+

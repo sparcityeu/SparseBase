@@ -1,0 +1,140 @@
+
+.. _file_src_sparsebase_converter_converter.h:
+
+File converter.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_converter>` (``src/sparsebase/converter``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/converter/converter.h``)
+-----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_converter_converter.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``converter_cuda.cuh`` (:ref:`file_src_sparsebase_converter_converter_cuda.cuh`)
+
+- ``cstring``
+
+- ``fstream``
+
+- ``functional``
+
+- ``memory``
+
+- ``optional``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+- ``tuple``
+
+- ``typeindex``
+
+- ``typeinfo``
+
+- ``unordered_map``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_converter_converter.cc`
+
+- :ref:`file_src_sparsebase_converter_converter_cuda.cu`
+
+- :ref:`file_src_sparsebase_converter_converter_cuda.cuh`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one.cc`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one.h`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one_cuda.cu`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one_cuda.cuh`
+
+- :ref:`file_src_sparsebase_converter_converter_order_two.cc`
+
+- :ref:`file_src_sparsebase_converter_converter_order_two.h`
+
+- :ref:`file_src_sparsebase_converter_converter_order_two_cuda.cu`
+
+- :ref:`file_src_sparsebase_converter_converter_order_two_cuda.cuh`
+
+- :ref:`file_src_sparsebase_converter_converter_store.h`
+
+- :ref:`file_src_sparsebase_partition_partitioner.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_function_matcher_mixin.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__context`
+
+- :ref:`namespace_sparsebase__converter`
+
+- :ref:`namespace_sparsebase__format`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1converter_1_1Converter`
+
+- :ref:`exhale_class_classsparsebase_1_1converter_1_1ConverterImpl`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_converter_8h_1a9b0d2c12b7d32d8c3af9a868add8cdbf`
+
+- :ref:`exhale_typedef_converter_8h_1a51eb17e5f73f5d9d81f34762ead418c4`
+
+- :ref:`exhale_typedef_converter_8h_1afb8b3fcf279c8cd4ccd46e2bdb3fec1f`
+
+- :ref:`exhale_typedef_converter_8h_1afd5e0ed34794b83ced3b5d62ce1f5169`
+
+- :ref:`exhale_typedef_converter_8h_1ad16ee03b899d1545543dca8f14ada786`
+
+- :ref:`exhale_typedef_converter_8h_1afc550beaaa3ab6b96b5ea27a076dbe2f`
+

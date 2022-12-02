@@ -1,0 +1,22 @@
+
+.. _namespace_sparsebase__partition__patoh:
+
+Namespace sparsebase::partition::patoh
+======================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_patoh__partition_8h_1a4a2ba804a22b9bfee7debedbdcf04979`
+
+- :ref:`exhale_enum_patoh__partition_8h_1aa88bca7e7117ba82e769d3051257f8ce`

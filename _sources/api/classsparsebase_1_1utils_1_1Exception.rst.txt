@@ -12,20 +12,25 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public exception``
+- ``public std::exception``
 
 
 Derived Types
 *************
 
-- ``public sparsebase::utils::ConversionException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`)
+- ``public sparsebase::utils::AllocationException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1AllocationException`)
+- ``public sparsebase::utils::AttemptToReset< T >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1AttemptToReset`)
 - ``public sparsebase::utils::CUDADeviceException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1CUDADeviceException`)
+- ``public sparsebase::utils::ConversionException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`)
+- ``public sparsebase::utils::DemangleException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1DemangleException`)
+- ``public sparsebase::utils::DirectExecutionNotAvailableException< KeyType >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1DirectExecutionNotAvailableException`)
 - ``public sparsebase::utils::FeatureException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureException`)
 - ``public sparsebase::utils::FeatureParamsException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FeatureParamsException`)
 - ``public sparsebase::utils::FunctionNotFoundException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionNotFoundException`)
 - ``public sparsebase::utils::InvalidDataMember`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1InvalidDataMember`)
 - ``public sparsebase::utils::NoConverterException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1NoConverterException`)
 - ``public sparsebase::utils::ReaderException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ReaderException`)
+- ``public sparsebase::utils::ReorderException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ReorderException`)
 - ``public sparsebase::utils::TypeException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1TypeException`)
 - ``public sparsebase::utils::WriterException`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1WriterException`)
 

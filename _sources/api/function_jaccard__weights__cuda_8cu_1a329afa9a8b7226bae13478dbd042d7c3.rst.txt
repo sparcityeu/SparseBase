@@ -1,0 +1,13 @@
+.. _exhale_function_jaccard__weights__cuda_8cu_1a329afa9a8b7226bae13478dbd042d7c3:
+
+Template Function sparsebase::feature::jac_binning_gpu_u_per_grid_bst_kernel
+============================================================================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cu`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::feature::jac_binning_gpu_u_per_grid_bst_kernel(const NNZType *, const IDType *, NNZType, FeatureType *, IDType)

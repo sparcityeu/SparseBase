@@ -1,0 +1,69 @@
+
+.. _file_src_sparsebase_io_pigo_mtx_reader.h:
+
+File pigo_mtx_reader.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_io>` (``src/sparsebase/io``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/io/pigo_mtx_reader.h``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_io_pigo_mtx_reader.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``fstream``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/io/reader.h`` (:ref:`file_src_sparsebase_io_reader.h`)
+
+- ``string``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_bases_iobase.h`
+
+- :ref:`file_src_sparsebase_io_pigo_mtx_reader.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__io`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1io_1_1PigoMTXReader`
+

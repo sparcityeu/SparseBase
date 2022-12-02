@@ -1,0 +1,123 @@
+
+.. _file_src_sparsebase_reorder_reorderer.h:
+
+File reorderer.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_reorder>` (``src/sparsebase/reorder``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/reorder/reorderer.h``)
+---------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_reorder_reorderer.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``any``
+
+- ``cmath``
+
+- ``iostream``
+
+- ``memory``
+
+- ``metis.h``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/context/cpu_context.h`` (:ref:`file_src_sparsebase_context_cpu_context.h`)
+
+- ``sparsebase/converter/converter.h`` (:ref:`file_src_sparsebase_converter_converter.h`)
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/utils/extractable.h`` (:ref:`file_src_sparsebase_utils_extractable.h`)
+
+- ``sparsebase/utils/function_matcher_mixin.h`` (:ref:`file_src_sparsebase_utils_function_matcher_mixin.h`)
+
+- ``typeindex``
+
+- ``typeinfo``
+
+- ``unordered_map``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+- :ref:`file_src_sparsebase_reorder_amd_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_degree_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_generic_reorder.cc`
+
+- :ref:`file_src_sparsebase_reorder_generic_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_gray_reorder.cc`
+
+- :ref:`file_src_sparsebase_reorder_gray_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_metis_reorder.cc`
+
+- :ref:`file_src_sparsebase_reorder_metis_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_rabbit_reorder.cc`
+
+- :ref:`file_src_sparsebase_reorder_rabbit_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_rcm_reorder.h`
+
+- :ref:`file_src_sparsebase_reorder_reorder_heatmap.cc`
+
+- :ref:`file_src_sparsebase_reorder_reorder_heatmap.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__metis`
+
+- :ref:`namespace_sparsebase__reorder`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1Reorderer`
+

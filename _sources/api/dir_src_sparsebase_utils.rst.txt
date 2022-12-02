@@ -11,16 +11,19 @@ Directory utils
 
 *Directory path:* ``src/sparsebase/utils``
 
-Subdirectories
---------------
-
-- :ref:`dir_src_sparsebase_utils_converter`
-- :ref:`dir_src_sparsebase_utils_io`
-
 
 Files
 -----
 
+- :ref:`file_src_sparsebase_utils_class_matcher_mixin.h`
 - :ref:`file_src_sparsebase_utils_exception.h`
+- :ref:`file_src_sparsebase_utils_extractable.h`
+- :ref:`file_src_sparsebase_utils_function_matcher_mixin.h`
+- :ref:`file_src_sparsebase_utils_logger.cc`
+- :ref:`file_src_sparsebase_utils_logger.h`
+- :ref:`file_src_sparsebase_utils_parameterizable.h`
+- :ref:`file_src_sparsebase_utils_utils.cc`
+- :ref:`file_src_sparsebase_utils_utils.h`
+- :ref:`file_src_sparsebase_utils_utils_cuda.cuh`
 
 

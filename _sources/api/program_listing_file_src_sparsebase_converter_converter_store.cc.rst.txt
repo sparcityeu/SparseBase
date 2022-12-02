@@ -1,0 +1,19 @@
+
+.. _program_listing_file_src_sparsebase_converter_converter_store.cc:
+
+Program Listing for File converter_store.cc
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_converter_converter_store.cc>` (``src/sparsebase/converter/converter_store.cc``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include "converter_store.h"
+   
+   #include <mutex>
+   namespace sparsebase::converter {
+   ConverterStore* ConverterStore::store_ = nullptr;
+   std::mutex ConverterStore::lock_;
+   }  // namespace sparsebase::converter

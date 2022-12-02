@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1utils_1_1TypeIndexVectorHash:
+
+Struct TypeIndexVectorHash
+==========================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::utils::TypeIndexVectorHash
+   :members:
+   :protected-members:
+   :undoc-members:

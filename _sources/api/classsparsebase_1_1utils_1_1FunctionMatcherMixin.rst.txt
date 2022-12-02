@@ -1,0 +1,35 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin:
+
+Template Class FunctionMatcherMixin
+===================================
+
+- Defined in :ref:`file_src_sparsebase_utils_function_matcher_mixin.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::Parameterizable`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1Parameterizable`)
+
+
+Derived Types
+*************
+
+- ``public sparsebase::feature::FeaturePreprocessType< IDType * >`` (:ref:`exhale_class_classsparsebase_1_1feature_1_1FeaturePreprocessType`)
+- ``public sparsebase::feature::FeaturePreprocessType< std::unordered_map< std::type_index, std::any > >`` (:ref:`exhale_class_classsparsebase_1_1feature_1_1FeaturePreprocessType`)
+- ``public sparsebase::feature::FeaturePreprocessType< FeatureType * >`` (:ref:`exhale_class_classsparsebase_1_1feature_1_1FeaturePreprocessType`)
+- ``public sparsebase::permute::Permuter< format::FormatOrderOne< ValueType >, format::FormatOrderOne< ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1permute_1_1Permuter`)
+- ``public sparsebase::permute::Permuter< format::FormatOrderTwo< IDType, NNZType, ValueType >, format::FormatOrderTwo< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1permute_1_1Permuter`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::FunctionMatcherMixin
+   :members:
+   :protected-members:
+   :undoc-members:

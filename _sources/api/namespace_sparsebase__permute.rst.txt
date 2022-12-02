@@ -1,0 +1,28 @@
+
+.. _namespace_sparsebase__permute:
+
+Namespace sparsebase::permute
+=============================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1permute_1_1PermuteOrderOneParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1permute_1_1PermuteOrderTwoParams`
+
+- :ref:`exhale_class_classsparsebase_1_1permute_1_1PermuteOrderOne`
+
+- :ref:`exhale_class_classsparsebase_1_1permute_1_1PermuteOrderTwo`
+
+- :ref:`exhale_class_classsparsebase_1_1permute_1_1Permuter`

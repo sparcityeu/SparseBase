@@ -1,0 +1,57 @@
+
+.. _program_listing_file_src_sparsebase_reorder_amd_reorder.h:
+
+Program Listing for File amd_reorder.h
+======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_reorder_amd_reorder.h>` (``src/sparsebase/reorder/amd_reorder.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <vector>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/format/csr.h"
+   #include "sparsebase/reorder/reorderer.h"
+   #include "sparsebase/utils/parameterizable.h"
+   
+   #ifndef SPARSEBASE_PROJECT_AMD_REORDER_H
+   #define SPARSEBASE_PROJECT_AMD_REORDER_H
+   namespace sparsebase::reorder {
+   
+   #ifdef USE_AMD_ORDER
+   #ifdef __cplusplus
+   extern "C" {
+   #endif
+   #include <amd.h>
+   #ifdef __cplusplus
+   }
+   #endif
+   
+   
+   struct AMDReorderParams : utils::Parameters {
+     double dense = AMD_DEFAULT_DENSE;
+     double aggressive = AMD_DEFAULT_AGGRESSIVE;
+   };
+   
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   class AMDReorder : public Reorderer<IDType> {
+    public:
+     typedef AMDReorderParams ParamsType;
+     AMDReorder(ParamsType);
+     AMDReorder();
+   
+    protected:
+     static IDType* AMDReorderCSR(std::vector<format::Format*>,
+                                  utils::Parameters*);
+   };
+   #endif
+   }  // namespace sparsebase::reorder
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/reorder/amd_reorder.cc"
+   #endif
+   
+   #endif  // SPARSEBASE_PROJECT_AMD_REORDER_H

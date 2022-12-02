@@ -1,0 +1,13 @@
+.. _exhale_variable_utils_8h_1ab42e65c44f9456748d1bc3fcc256326e:
+
+Variable sparsebase::utils::always_false
+========================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: sparsebase::utils::always_false

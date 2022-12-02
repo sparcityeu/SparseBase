@@ -1,0 +1,33 @@
+.. _exhale_class_classsparsebase_1_1partition_1_1Partitioner:
+
+Template Class Partitioner
+==========================
+
+- Defined in :ref:`file_src_sparsebase_partition_partitioner.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::FunctionMatcherMixin< IDType * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+
+
+Derived Types
+*************
+
+- ``public sparsebase::partition::MetisPartition< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1partition_1_1MetisPartition`)
+- ``public sparsebase::partition::PatohPartition< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1partition_1_1PatohPartition`)
+- ``public sparsebase::partition::PulpPartition< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1partition_1_1PulpPartition`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::partition::Partitioner
+   :members:
+   :protected-members:
+   :undoc-members:

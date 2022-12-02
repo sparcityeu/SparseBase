@@ -1,0 +1,33 @@
+
+.. _program_listing_file_src_sparsebase_converter_converter_order_one_cuda.cuh:
+
+Program Listing for File converter_order_one_cuda.cuh
+=====================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_converter_converter_order_one_cuda.cuh>` (``src/sparsebase/converter/converter_order_one_cuda.cuh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_CONVERTER_ORDER_ONE_CUDA_CUH
+   #define SPARSEBASE_PROJECT_CONVERTER_ORDER_ONE_CUDA_CUH
+   #include "converter.h"
+   #include "sparsebase/config.h"
+   #include "sparsebase/format/cuda_csr_cuda.cuh"
+   #include "sparsebase/format/format.h"
+   #include "sparsebase/format/format_order_one.h"
+   #include "sparsebase/format/format_order_two.h"
+   namespace sparsebase::converter {
+   
+   template <typename ValueType>
+   format::Format *CUDAArrayArrayConditionalFunction(format::Format *source,
+                                                     context::Context *context);
+   template <typename ValueType>
+   format::Format *ArrayCUDAArrayConditionalFunction(format::Format *source,
+                                                     context::Context *context);
+   }  // namespace sparsebase::converter
+   #ifdef _HEADER_ONLY
+   #include "converter_order_one_cuda.cu"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_CONVERTER_ORDER_ONE_CUDA_CUH

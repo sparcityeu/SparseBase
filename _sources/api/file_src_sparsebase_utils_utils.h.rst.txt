@@ -1,0 +1,142 @@
+
+.. _file_src_sparsebase_utils_utils.h:
+
+File utils.h
+============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/utils.h``)
+---------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_utils.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``any``
+
+- ``cstdint``
+
+- ``exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``fstream``
+
+- ``limits``
+
+- ``string``
+
+- ``typeindex``
+
+- ``typeinfo``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_context_context.h`
+
+- :ref:`file_src_sparsebase_context_cpu_context.h`
+
+- :ref:`file_src_sparsebase_converter_converter.cc`
+
+- :ref:`file_src_sparsebase_converter_converter.h`
+
+- :ref:`file_src_sparsebase_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_feature_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_format_array.h`
+
+- :ref:`file_src_sparsebase_format_coo.h`
+
+- :ref:`file_src_sparsebase_format_csc.h`
+
+- :ref:`file_src_sparsebase_format_csr.h`
+
+- :ref:`file_src_sparsebase_format_cuda_csr_cuda.cuh`
+
+- :ref:`file_src_sparsebase_format_format.h`
+
+- :ref:`file_src_sparsebase_format_format_order_one.h`
+
+- :ref:`file_src_sparsebase_format_format_order_two.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_class_matcher_mixin.h`
+
+- :ref:`file_src_sparsebase_utils_function_matcher_mixin.h`
+
+- :ref:`file_src_sparsebase_utils_logger.cc`
+
+- :ref:`file_src_sparsebase_utils_utils.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1Implementation`
+
+- :ref:`exhale_struct_structsparsebase_1_1utils_1_1TypeIndexVectorHash`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Identifiable`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1OnceSettable`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_utils_8h_1a47671e3e65bf3f49be1d5c62d380bbbc`
+
+- :ref:`exhale_function_utils_8h_1aa9c32f90fc68e812c31e29e931156186`
+
+- :ref:`exhale_function_utils_8h_1a9cdfe685573f3ff5732bad032e131139`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_utils_8h_1a3b3a534553ecce4a82fe2347244a9495`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_utils_8h_1ab42e65c44f9456748d1bc3fcc256326e`
+

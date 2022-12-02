@@ -1,0 +1,13 @@
+.. _exhale_define_jaccard__weights__cuda_8cu_1af806319afa17462302e51a7613237ded:
+
+Define MAX_GRID_DIM
+===================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cu`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: MAX_GRID_DIM

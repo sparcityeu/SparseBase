@@ -1,0 +1,13 @@
+.. _exhale_function_utils_8h_1a9cdfe685573f3ff5732bad032e131139:
+
+Template Function sparsebase::utils::isTypeConversionSafe
+=========================================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::utils::isTypeConversionSafe(FromType, ToType)

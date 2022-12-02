@@ -1,0 +1,32 @@
+
+.. _program_listing_file_src_sparsebase_utils_parameterizable.h:
+
+Program Listing for File parameterizable.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_utils_parameterizable.h>` (``src/sparsebase/utils/parameterizable.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   //
+   // Created by Amro on 11/5/2022.
+   //
+   
+   #ifndef SPARSEBASE_PROJECT_PARAMETERIZABLE_H
+   #define SPARSEBASE_PROJECT_PARAMETERIZABLE_H
+   #include <memory>
+   
+   namespace sparsebase::utils {
+   struct Parameters {};
+   
+   class Parameterizable {
+     typedef Parameters ParamsType;
+   
+    protected:
+     std::unique_ptr<Parameters> params_;
+   };
+   }  // namespace sparsebase::utils
+   
+   #endif  // SPARSEBASE_PROJECT_PARAMETERIZABLE_H

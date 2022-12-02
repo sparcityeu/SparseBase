@@ -3,7 +3,7 @@
 Template Class FeatureExtractor
 ===============================
 
-- Defined in :ref:`file_src_sparsebase_feature_feature.h`
+- Defined in :ref:`file_src_sparsebase_feature_feature_extractor.h`
 
 
 Inheritance Relationships

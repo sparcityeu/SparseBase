@@ -13,6 +13,13 @@ Namespace sparsebase::format
 
 
 
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase__format__format`
+
+
 Classes
 -------
 
@@ -23,15 +30,29 @@ Classes
 
 - :ref:`exhale_struct_structsparsebase_1_1format_1_1Deleter2D`
 
+- :ref:`exhale_struct_structsparsebase_1_1format_1_1FormatOrderOne_1_1TypeConverter`
+
+- :ref:`exhale_struct_structsparsebase_1_1format_1_1FormatOrderTwo_1_1TypeConverter`
+
 - :ref:`exhale_class_classsparsebase_1_1format_1_1Array`
 
 - :ref:`exhale_class_classsparsebase_1_1format_1_1COO`
 
+- :ref:`exhale_class_classsparsebase_1_1format_1_1CSC`
+
 - :ref:`exhale_class_classsparsebase_1_1format_1_1CSR`
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1CUDAArray`
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1CUDACSR`
 
 - :ref:`exhale_class_classsparsebase_1_1format_1_1Format`
 
 - :ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1FormatOrderOne`
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1FormatOrderTwo`
 
 
 Enums

@@ -33,6 +33,8 @@ Includes
 
 - ``cstring``
 
+- ``cxxabi.h``
+
 - ``fstream``
 
 - ``functional``
@@ -44,6 +46,8 @@ Includes
 - ``sparsebase/context/context.h`` (:ref:`file_src_sparsebase_context_context.h`)
 
 - ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
 
 - ``typeindex``
 
@@ -57,29 +61,53 @@ Included By
 -----------
 
 
-- :ref:`file_src_sparsebase_feature_feature.h`
+- :ref:`file_src_sparsebase_bases_iobase.h`
 
-- :ref:`file_src_sparsebase_format_format.cc`
+- :ref:`file_src_sparsebase_converter_converter.cc`
 
-- :ref:`file_src_sparsebase_object_object.h`
+- :ref:`file_src_sparsebase_converter_converter_cuda.cu`
+
+- :ref:`file_src_sparsebase_converter_converter_cuda.cuh`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one.cc`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one_cuda.cu`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one_cuda.cuh`
+
+- :ref:`file_src_sparsebase_converter_converter_order_two_cuda.cu`
+
+- :ref:`file_src_sparsebase_experiment_experiment_helper.h`
+
+- :ref:`file_src_sparsebase_experiment_experiment_type.h`
+
+- :ref:`file_src_sparsebase_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_feature_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_format_cuda_csr_cuda.cu`
+
+- :ref:`file_src_sparsebase_format_format_implementation.h`
+
+- :ref:`file_src_sparsebase_io_writer.h`
 
 - :ref:`file_src_sparsebase_object_object.cc`
 
-- :ref:`file_src_sparsebase_preprocess_preprocess.h`
+- :ref:`file_src_sparsebase_object_object.h`
 
-- :ref:`file_src_sparsebase_preprocess_preprocess.cc`
+- :ref:`file_src_sparsebase_partition_partitioner.cc`
+
+- :ref:`file_src_sparsebase_partition_partitioner.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.cc`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.h`
 
 - :ref:`file_src_sparsebase_sparsebase.h`
 
-- :ref:`file_src_sparsebase_utils_converter_converter.cc`
-
-- :ref:`file_src_sparsebase_utils_converter_converter.h`
-
-- :ref:`file_src_sparsebase_utils_io_reader.cc`
-
-- :ref:`file_src_sparsebase_utils_io_reader.h`
-
-- :ref:`file_src_sparsebase_utils_io_writer.h`
+- :ref:`file_src_sparsebase_utils_extractable.h`
 
 
 
@@ -89,6 +117,8 @@ Namespaces
 
 
 - :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__converter`
 
 - :ref:`namespace_sparsebase__format`
 
@@ -103,15 +133,7 @@ Classes
 
 - :ref:`exhale_struct_structsparsebase_1_1format_1_1Deleter2D`
 
-- :ref:`exhale_class_classsparsebase_1_1format_1_1Array`
-
-- :ref:`exhale_class_classsparsebase_1_1format_1_1COO`
-
-- :ref:`exhale_class_classsparsebase_1_1format_1_1CSR`
-
 - :ref:`exhale_class_classsparsebase_1_1format_1_1Format`
-
-- :ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`
 
 
 Enums

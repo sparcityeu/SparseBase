@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adding New Dependencies &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Documentation Guide" href="documentation_guide.html" />
+    <link rel="prev" title="Contributing" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Contributing</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Adding New Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-dependencies">Required Dependencies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#header-only-dependencies">Header Only Dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#calling-python-and-unix-tools">Calling Python and UNIX Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-dependencies">Optional Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="documentation_guide.html">Documentation Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="github_guide.html">Making Contributions to the Repo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instantiations.html">Instantiating Classes in SparseBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing_guide.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing_guide.html#running-tests">Running tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Contributing</a> &raquo;</li>
+      <li>Adding New Dependencies</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/contributing/dependencies.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="adding-new-dependencies">
+<h1>Adding New Dependencies<a class="headerlink" href="#adding-new-dependencies" title="Permalink to this headline"></a></h1>
+<p>SparseBase contains two different types of dependencies:</p>
+<ul class="simple">
+<li><p>Required dependencies.</p></li>
+<li><p>Optional dependencies.</p></li>
+</ul>
+<section id="required-dependencies">
+<h2>Required Dependencies<a class="headerlink" href="#required-dependencies" title="Permalink to this headline"></a></h2>
+<p>A dependency is required if the library loses a substantial amount of functionality without it.
+To keep the library simple and cross-platform, we currently avoid all required non-header-only dependencies.</p>
+<p>Currently, for choosing required dependencies we suggest the following options in order of preference:</p>
+<ol class="arabic simple">
+<li><p>Look for header-only libraries</p></li>
+<li><p>Check if it can be achieved by calling a Python script (we already depend on Python in our build system)</p></li>
+<li><p>Look for UNIX commandline tools</p></li>
+<li><p>Open a <a class="reference external" href="https://github.com/sparcityeu/sparsebase">Github</a> issue for discussion</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SparseBase is designed as an HPC library, so you shouldn’t be forced to use a header-only solution
+if it lacks the performance necessary. If this is the case please open an issue on
+<a class="reference external" href="https://github.com/sparcityeu/sparsebase">Github</a> so that we can discuss.</p>
+</div>
+<section id="header-only-dependencies">
+<h3>Header Only Dependencies<a class="headerlink" href="#header-only-dependencies" title="Permalink to this headline"></a></h3>
+<p>All header-only dependencies must be located in their own directory located at <code class="docutils literal notranslate"><span class="pre">src/sparsebase/external</span></code>
+This directory should contain the header files to be included as well as a LICENSE file containing
+the license for the dependency.</p>
+<p>When choosing a header-only dependency please make sure it uses a permissive license (like MIT,Apache,BSD).
+Copy-left licences (like GPL) can cause legal issues since the SparseBase itself uses a permissive license.
+If you are not sure, please open an issue on <a class="reference external" href="https://github.com/sparcityeu/sparsebase">Github</a>.</p>
+</section>
+<section id="calling-python-and-unix-tools">
+<h3>Calling Python and UNIX Tools<a class="headerlink" href="#calling-python-and-unix-tools" title="Permalink to this headline"></a></h3>
+<p>This can be achieved easily by using <a class="reference external" href="https://en.cppreference.com/w/cpp/utility/program/system">std::system</a></p>
+</section>
+</section>
+<section id="optional-dependencies">
+<h2>Optional Dependencies<a class="headerlink" href="#optional-dependencies" title="Permalink to this headline"></a></h2>
+<p>Optional dependencies in the context of SparseBase are libraries that for one reason or
+another can not be directly bundled with SparseBase. Some examples:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/KarypisLab/METIS">METIS</a> (Has some compilation options that are best chosen by the user)</p></li>
+<li><p><a class="reference external" href="https://faculty.cc.gatech.edu/~umit/software.html">PATOH</a> (Not open-source)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the dependency is header-only we suggest treating it as a required dependency
+even if it doesn’t have substantial effect on the library.</p>
+</div>
+<p>Optional dependencies must be build separately by users.</p>
+<p>Here are the steps to add an optional dependency:</p>
+<ol class="arabic">
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">src/CMakeLists.txt</span></code> file add a new option in the form <code class="docutils literal notranslate"><span class="pre">USE_&lt;dependency&gt;</span></code>.
+This will be set by the user to turn the dependency ON or OFF. It should always default to OFF.</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">option</span><span class="p">(</span><span class="s">USE_METIS</span><span class="w"> </span><span class="s2">&quot;Enable METIS integration&quot;</span><span class="w"> </span><span class="s">OFF</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>In the same file call the <code class="docutils literal notranslate"><span class="pre">add_opt_library</span></code> macro with the name of the library if it is ON.
+This name should match the library’s built file (ie, <code class="docutils literal notranslate"><span class="pre">lib&lt;name&gt;.so</span></code> or <code class="docutils literal notranslate"><span class="pre">lib&lt;name&gt;.a</span></code> etc.)</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">if</span><span class="p">(</span><span class="s">USE_METIS</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">add_opt_library</span><span class="p">(</span><span class="s2">&quot;metis&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">src/config.h.in</span></code> file add <code class="docutils literal notranslate"><span class="pre">#cmakedefine</span> <span class="pre">USE_&lt;dependency&gt;</span></code></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#cmakedefine USE_METIS</span>
+</pre></div>
+</div>
+</li>
+<li><p>Now the dependency should be accessible. The included files will be in <code class="docutils literal notranslate"><span class="pre">sparsebase/external/&lt;dependency&gt;</span></code>.
+You should surround every usage with <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">USE_&lt;dependency&gt;</span> <span class="pre">...</span> <span class="pre">#endif</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifdef USE_METIS</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/external/metis/metis.h&quot;</span><span class="cp"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">MetisPartition</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">MetisPartition</span><span class="p">(){...}</span><span class="w"></span>
+
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Contributing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="documentation_guide.html" class="btn btn-neutral float-right" title="Documentation Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

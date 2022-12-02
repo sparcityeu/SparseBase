@@ -1,0 +1,61 @@
+
+.. _program_listing_file_src_sparsebase_utils_extractable.h:
+
+Program Listing for File extractable.h
+======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_utils_extractable.h>` (``src/sparsebase/utils/extractable.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   /*******************************************************
+    * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+    *Sener All rights reserved.
+    *
+    * This file is distributed under MIT license.
+    * The complete license agreement can be obtained at:
+    * https://sparcityeu.github.io/sparsebase/pages/license.html
+    ********************************************************/
+   #include <sparsebase/context/context.h>
+   
+   #include <memory>
+   #include <unordered_map>
+   
+   #include "sparsebase/format/format.h"
+   #include "sparsebase/utils/parameterizable.h"
+   #ifndef SPARSEBASE_SPARSEBASE_UTILS_EXTRACTABLE_H_
+   #define SPARSEBASE_SPARSEBASE_UTILS_EXTRACTABLE_H_
+   
+   namespace sparsebase::utils {
+   
+   
+   class Extractable {
+    public:
+   
+     virtual std::unordered_map<std::type_index, std::any> Extract(
+         format::Format *format, std::vector<context::Context *> contexts,
+         bool convert_input) = 0;
+     virtual std::type_index get_id() = 0;
+   
+     virtual std::vector<std::type_index> get_sub_ids() = 0;
+   
+     virtual std::vector<Extractable *> get_subs() = 0;
+   
+     virtual std::shared_ptr<utils::Parameters> get_params() = 0;
+   
+     virtual std::shared_ptr<utils::Parameters> get_params(
+         std::type_index feature_extractor) = 0;
+   
+     virtual void set_params(std::type_index feature_extractor,
+                             std::shared_ptr<utils::Parameters> params) = 0;
+     virtual ~Extractable() = default;
+   
+    protected:
+     std::shared_ptr<utils::Parameters> params_;
+     std::unordered_map<std::type_index, std::shared_ptr<utils::Parameters>> pmap_;
+   };
+   
+   }  // namespace sparsebase::utils
+   #endif

@@ -35,23 +35,43 @@ Includes
 
 - ``sparsebase/config.h``
 
+- ``typeindex``
+
+- ``vector``
+
 
 
 Included By
 -----------
 
 
-- :ref:`file_src_sparsebase_feature_feature.cc`
+- :ref:`file_src_sparsebase_context_cuda_context_cuda.cu`
 
-- :ref:`file_src_sparsebase_format_format.cc`
+- :ref:`file_src_sparsebase_converter_converter.cc`
+
+- :ref:`file_src_sparsebase_feature_extractor.cc`
+
+- :ref:`file_src_sparsebase_format_array.h`
+
+- :ref:`file_src_sparsebase_format_coo.h`
+
+- :ref:`file_src_sparsebase_format_csc.h`
+
+- :ref:`file_src_sparsebase_format_csr.h`
+
+- :ref:`file_src_sparsebase_format_cuda_csr_cuda.cu`
 
 - :ref:`file_src_sparsebase_format_format.h`
 
+- :ref:`file_src_sparsebase_format_format_order_one.h`
+
+- :ref:`file_src_sparsebase_format_format_order_two.h`
+
 - :ref:`file_src_sparsebase_sparsebase.h`
 
-- :ref:`file_src_sparsebase_utils_io_reader.cc`
+- :ref:`file_src_sparsebase_utils_utils.cc`
 
-- :ref:`file_src_sparsebase_utils_io_writer.cc`
+- :ref:`file_src_sparsebase_utils_utils.h`
 
 
 
@@ -69,9 +89,17 @@ Classes
 -------
 
 
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1AllocationException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1AttemptToReset`
+
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1ConversionException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1CUDADeviceException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1DemangleException`
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1DirectExecutionNotAvailableException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1Exception`
 
@@ -87,7 +115,16 @@ Classes
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1ReaderException`
 
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ReorderException`
+
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1TypeException`
 
 - :ref:`exhale_class_classsparsebase_1_1utils_1_1WriterException`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_exception_8h_1aa0beb3b2d7aadd170b0d49830a207205`
 

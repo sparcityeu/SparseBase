@@ -3,7 +3,7 @@
 Class Extractor
 ===============
 
-- Defined in :ref:`file_src_sparsebase_feature_feature.h`
+- Defined in :ref:`file_src_sparsebase_feature_extractor.h`
 
 
 Inheritance Relationships
@@ -12,7 +12,7 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public sparsebase::feature::ClassMatcherMixin< preprocess::ExtractableType * >`` (:ref:`exhale_class_classsparsebase_1_1feature_1_1ClassMatcherMixin`)
+- ``public sparsebase::utils::ClassMatcherMixin< utils::Extractable * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1ClassMatcherMixin`)
 
 
 Derived Type

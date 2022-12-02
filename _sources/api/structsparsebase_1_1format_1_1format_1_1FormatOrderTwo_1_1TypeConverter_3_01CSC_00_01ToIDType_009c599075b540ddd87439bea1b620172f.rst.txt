@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1format_1_1format_1_1FormatOrderTwo_1_1TypeConverter_3_01CSC_00_01ToIDType_009c599075b540ddd87439bea1b620172f:
+
+Template Struct TypeConverter< CSC, ToIDType, ToNNZType, ToValueType >
+======================================================================
+
+- Defined in :ref:`file_src_sparsebase_format_csc.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::format::format::FormatOrderTwo::TypeConverter< CSC, ToIDType, ToNNZType, ToValueType >
+   :members:
+   :protected-members:
+   :undoc-members:

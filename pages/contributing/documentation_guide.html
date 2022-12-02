@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Documentation Guide &mdash; SparseBase v0.2.3 documentation</title>
+  <title>Documentation Guide &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Making Contributions to the Repo" href="github_guide.html" />
-    <link rel="prev" title="Contributing" href="index.html" /> 
+    <link rel="prev" title="Adding New Dependencies" href="dependencies.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,12 +41,13 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Contributing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html">Adding New Dependencies</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Documentation Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#using-sphinx-and-exhale">Using Sphinx and Exhale</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#installation">Installation</a></li>
@@ -63,6 +64,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="github_guide.html">Making Contributions to the Repo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instantiations.html">Instantiating Classes in SparseBase</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing_guide.html">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing_guide.html#running-tests">Running tests</a></li>
 </ul>
@@ -144,7 +146,7 @@ and you can view the documentation by opening the <code class="docutils literal 
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/*!</span>
 <span class="cm"> * ... text ...</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
 <span class="c1">//!</span>
 <span class="c1">//!... text ...</span>
@@ -164,8 +166,8 @@ and you can view the documentation by opening the <code class="docutils literal 
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//!  A test class. </span>
 <span class="cm">/*!</span>
 <span class="cm">  A more elaborate class description.</span>
-<span class="cm">*/</span>
-<span class="k">class</span> <span class="nc">TestClass</span> <span class="p">{};</span>
+<span class="cm">*/</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestClass</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -175,14 +177,14 @@ and you can view the documentation by opening the <code class="docutils literal 
 <li><p>Data members inside classes are commented using a brief description and a detailed description.</p></li>
 <li><p>Same pattern as classes</p></li>
 </ul>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TestClass</span> <span class="p">{</span>
-  <span class="k">protected</span><span class="o">:</span>
-    <span class="c1">//!  A brief description.</span>
-    <span class="cm">/*!</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TestClass</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">protected</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">//!  A brief description.</span>
+<span class="w">    </span><span class="cm">/*!</span>
 <span class="cm">      More detailed description.</span>
-<span class="cm">    */</span>
-    <span class="kt">int</span> <span class="n">p</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="cm">    */</span><span class="w"></span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -192,11 +194,11 @@ and you can view the documentation by opening the <code class="docutils literal 
 <li><p>Each value and the whole enum must be given a short description as show below.</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//! Enum Description</span>
-<span class="k">enum</span> <span class="n">TEnum</span> <span class="p">{</span> 
- <span class="n">TVal1</span><span class="p">,</span> <span class="cm">/*! Brief Description of TVal1 */</span>
- <span class="n">TVal2</span><span class="p">,</span> <span class="cm">/*! Brief Description TVal2 */</span>
- <span class="n">TVal3</span>  <span class="cm">/*! Brief Description TVal3 */</span>
-<span class="p">};</span>
+<span class="k">enum</span><span class="w"> </span><span class="nc">TEnum</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w"> </span><span class="n">TVal1</span><span class="p">,</span><span class="w"> </span><span class="cm">/*! Brief Description of TVal1 */</span><span class="w"></span>
+<span class="w"> </span><span class="n">TVal2</span><span class="p">,</span><span class="w"> </span><span class="cm">/*! Brief Description TVal2 */</span><span class="w"></span>
+<span class="w"> </span><span class="n">TVal3</span><span class="w">  </span><span class="cm">/*! Brief Description TVal3 */</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -208,20 +210,20 @@ and you can view the documentation by opening the <code class="docutils literal 
 <ul class="simple">
 <li><p>The line comment is a brief description of the function. For example, these will be used when viewing all the methods of a class. This should not exceed a single line (~80 chars max).</p></li>
 <li><p>First part of the block comment is a more detailed description of the function and can be as long as you wish.</p></li>
-<li><p>“\param” is used to describe parameters a function takes. It should be followed by the name of the parameter and a short description of it.</p></li>
-<li><p>“\tparam” is used to describe templated parameters of a function. It should be followed by the name of the templated parameter and a short description of it.</p></li>
-<li><p>“\return” is used to describe the return value of the function.</p></li>
+<li><p>“&#64;param” is used to describe parameters a function takes. It should be followed by the name of the parameter and a short description of it.</p></li>
+<li><p>“&#64;tparam” is used to describe templated parameters of a function. It should be followed by the name of the templated parameter and a short description of it.</p></li>
+<li><p>“&#64;return” is used to describe the return value of the function.</p></li>
 </ul>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">//! Brief Description.</span>
 <span class="cm">/*!</span>
 <span class="cm">  Detailed Description.</span>
-<span class="cm">  \param a an integer argument.</span>
-<span class="cm">  \param s a constant character pointer.</span>
-<span class="cm">  \tparam T a templated argument</span>
-<span class="cm">  \return The test results</span>
-<span class="cm">*/</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-<span class="kt">int</span> <span class="n">testMe</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">){}</span>
+<span class="cm">  @param a an integer argument.</span>
+<span class="cm">  @param s a constant character pointer.</span>
+<span class="cm">  @tparam T a templated argument</span>
+<span class="cm">  @return The test results</span>
+<span class="cm">*/</span><span class="w"></span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="n">testMe</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">){}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -232,7 +234,7 @@ and you can view the documentation by opening the <code class="docutils literal 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Contributing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dependencies.html" class="btn btn-neutral float-left" title="Adding New Dependencies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="github_guide.html" class="btn btn-neutral float-right" title="Making Contributions to the Repo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

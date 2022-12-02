@@ -1,0 +1,50 @@
+
+.. _file_src_sparsebase_context_cuda_context_cuda.cu:
+
+File cuda_context_cuda.cu
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_context>` (``src/sparsebase/context``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/context/cuda_context_cuda.cu``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_context_cuda_context_cuda.cu.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cuda_context_cuda.cuh`` (:ref:`file_src_sparsebase_context_cuda_context_cuda.cuh`)
+
+- ``sparsebase/context/context.h`` (:ref:`file_src_sparsebase_context_context.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__context`
+

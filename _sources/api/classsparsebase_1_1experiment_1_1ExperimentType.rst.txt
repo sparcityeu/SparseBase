@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1experiment_1_1ExperimentType:
+
+Class ExperimentType
+====================
+
+- Defined in :ref:`file_src_sparsebase_experiment_experiment_type.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Type
+************
+
+- ``public sparsebase::experiment::ConcreteExperiment`` (:ref:`exhale_class_classsparsebase_1_1experiment_1_1ConcreteExperiment`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::experiment::ExperimentType
+   :members:
+   :protected-members:
+   :undoc-members:

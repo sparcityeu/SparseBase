@@ -1,0 +1,49 @@
+
+.. _program_listing_file_src_sparsebase_permute_permute_order_one.h:
+
+Program Listing for File permute_order_one.h
+============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_permute_permute_order_one.h>` (``src/sparsebase/permute/permute_order_one.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <vector>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/format/array.h"
+   #include "sparsebase/permute/permuter.h"
+   #include "sparsebase/utils/parameterizable.h"
+   
+   #ifndef SPARSEBASE_PROJECT_PERMUTE_ORDER_ONE_H
+   #define SPARSEBASE_PROJECT_PERMUTE_ORDER_ONE_H
+   namespace sparsebase::permute {
+   
+   
+   template <typename IDType>
+   struct PermuteOrderOneParams : utils::Parameters {
+     IDType *order;
+     explicit PermuteOrderOneParams(IDType *order) : order(order){};
+   };
+   template <typename IDType, typename ValueType>
+   class PermuteOrderOne : public Permuter<format::FormatOrderOne<ValueType>,
+                                           format::FormatOrderOne<ValueType>> {
+    public:
+     PermuteOrderOne(IDType *);
+     typedef PermuteOrderOneParams<IDType> ParamsType;
+     explicit PermuteOrderOne(ParamsType);
+   
+    protected:
+   
+     static format::FormatOrderOne<ValueType> *PermuteArray(
+         std::vector<format::Format *> formats, utils::Parameters *);
+   };
+   
+   }  // namespace sparsebase::permute
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/permute/permute_order_one.cc"
+   #endif
+   
+   #endif  // SPARSEBASE_PROJECT_PERMUTE_ORDER_ONE_H

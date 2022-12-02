@@ -14,11 +14,17 @@ Directory sparsebase
 Subdirectories
 --------------
 
+- :ref:`dir_src_sparsebase_bases`
 - :ref:`dir_src_sparsebase_context`
+- :ref:`dir_src_sparsebase_converter`
+- :ref:`dir_src_sparsebase_experiment`
 - :ref:`dir_src_sparsebase_feature`
 - :ref:`dir_src_sparsebase_format`
+- :ref:`dir_src_sparsebase_io`
 - :ref:`dir_src_sparsebase_object`
-- :ref:`dir_src_sparsebase_preprocess`
+- :ref:`dir_src_sparsebase_partition`
+- :ref:`dir_src_sparsebase_permute`
+- :ref:`dir_src_sparsebase_reorder`
 - :ref:`dir_src_sparsebase_utils`
 
 

@@ -1,0 +1,82 @@
+
+.. _file_src_sparsebase_partition_patoh_partition.h:
+
+File patoh_partition.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_partition>` (``src/sparsebase/partition``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/partition/patoh_partition.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_partition_patoh_partition.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/partition/partitioner.h`` (:ref:`file_src_sparsebase_partition_partitioner.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_partition_patoh_partition.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__partition`
+
+- :ref:`namespace_sparsebase__partition__patoh`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1partition_1_1PatohPartitionParams`
+
+- :ref:`exhale_class_classsparsebase_1_1partition_1_1PatohPartition`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_patoh__partition_8h_1a4a2ba804a22b9bfee7debedbdcf04979`
+
+- :ref:`exhale_enum_patoh__partition_8h_1aa88bca7e7117ba82e769d3051257f8ce`
+

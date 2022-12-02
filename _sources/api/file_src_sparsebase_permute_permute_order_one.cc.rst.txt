@@ -1,0 +1,50 @@
+
+.. _file_src_sparsebase_permute_permute_order_one.cc:
+
+File permute_order_one.cc
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_permute>` (``src/sparsebase/permute``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/permute/permute_order_one.cc``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_permute_permute_order_one.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/permute_order_one.inc``
+
+- ``sparsebase/format/array.h`` (:ref:`file_src_sparsebase_format_array.h`)
+
+- ``sparsebase/permute/permute_order_one.h`` (:ref:`file_src_sparsebase_permute_permute_order_one.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__permute`
+

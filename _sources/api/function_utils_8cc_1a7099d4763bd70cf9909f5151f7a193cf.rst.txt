@@ -1,0 +1,13 @@
+.. _exhale_function_utils_8cc_1a7099d4763bd70cf9909f5151f7a193cf:
+
+Function sparsebase::utils::demangle(std::type_index)
+=====================================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.cc`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::utils::demangle(std::type_index)

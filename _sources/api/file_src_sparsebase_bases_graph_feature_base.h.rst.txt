@@ -1,0 +1,83 @@
+
+.. _file_src_sparsebase_bases_graph_feature_base.h:
+
+File graph_feature_base.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_bases>` (``src/sparsebase/bases``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/bases/graph_feature_base.h``)
+----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_bases_graph_feature_base.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``iostream``
+
+- ``limits``
+
+- ``map`` (:ref:`file_src_sparsebase_reorder_reorder_heatmap.cc`)
+
+- ``memory``
+
+- ``queue``
+
+- ``set``
+
+- ``sparsebase/feature/degree_distribution.h`` (:ref:`file_src_sparsebase_feature_degree_distribution.h`)
+
+- ``sparsebase/feature/degrees.h`` (:ref:`file_src_sparsebase_feature_degrees.h`)
+
+- ``tuple``
+
+- ``unordered_map``
+
+- ``utility``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__bases`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1bases_1_1GraphFeatureBase`
+

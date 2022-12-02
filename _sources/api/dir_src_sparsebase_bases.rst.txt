@@ -1,0 +1,22 @@
+.. _dir_src_sparsebase_bases:
+
+
+Directory bases
+===============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase>` (``src/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase/bases``
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_bases_graph_feature_base.h`
+- :ref:`file_src_sparsebase_bases_iobase.h`
+- :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+

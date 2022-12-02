@@ -1,0 +1,13 @@
+.. _exhale_typedef_experiment__type_8h_1a8ac0de1148297df9a88a19d7449d9424:
+
+Typedef sparsebase::experiment::LoadDataFunction
+================================================
+
+- Defined in :ref:`file_src_sparsebase_experiment_experiment_type.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::experiment::LoadDataFunction

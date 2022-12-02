@@ -1,0 +1,13 @@
+.. _exhale_function_jaccard__weights__cuda_8cu_1a49d8bbd15b500cacdc763d69665396c1:
+
+Function sparsebase::feature::warpReduce
+========================================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cu`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::feature::warpReduce(int, unsigned int, unsigned)

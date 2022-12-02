@@ -1,0 +1,95 @@
+
+.. _file_src_sparsebase_format_array.h:
+
+File array.h
+============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_format>` (``src/sparsebase/format``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/format/array.h``)
+----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_format_array.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/context/cpu_context.h`` (:ref:`file_src_sparsebase_context_cpu_context.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_converter_converter_order_one.cc`
+
+- :ref:`file_src_sparsebase_converter_converter_order_one_cuda.cu`
+
+- :ref:`file_src_sparsebase_format_array.cc`
+
+- :ref:`file_src_sparsebase_io_reader.h`
+
+- :ref:`file_src_sparsebase_io_writer.h`
+
+- :ref:`file_src_sparsebase_partition_partitioner.cc`
+
+- :ref:`file_src_sparsebase_permute_permute_order_one.cc`
+
+- :ref:`file_src_sparsebase_permute_permute_order_one.h`
+
+- :ref:`file_src_sparsebase_permute_permute_order_two.cc`
+
+- :ref:`file_src_sparsebase_permute_permute_order_two.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.cc`
+
+- :ref:`file_src_sparsebase_reorder_reorder_heatmap.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__format`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1format_1_1FormatOrderOne_1_1TypeConverter_3_01format_1_1Array_00_01ToValueType_01_4`
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1Array`
+

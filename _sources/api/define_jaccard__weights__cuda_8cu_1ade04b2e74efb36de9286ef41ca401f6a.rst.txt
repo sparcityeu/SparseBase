@@ -1,0 +1,13 @@
+.. _exhale_define_jaccard__weights__cuda_8cu_1ade04b2e74efb36de9286ef41ca401f6a:
+
+Define FULL_MASK
+================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cu`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: FULL_MASK

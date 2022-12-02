@@ -3,7 +3,7 @@
 Struct CPUContext
 =================
 
-- Defined in :ref:`file_src_sparsebase_context_context.h`
+- Defined in :ref:`file_src_sparsebase_context_cpu_context.h`
 
 
 Inheritance Relationships
@@ -12,7 +12,7 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public sparsebase::context::ContextImplementation< CPUContext >`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`)
+- ``public sparsebase::utils::IdentifiableImplementation< CPUContext, Context >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`)
 
 
 Struct Documentation

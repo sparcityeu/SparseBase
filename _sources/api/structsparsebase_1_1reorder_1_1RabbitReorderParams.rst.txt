@@ -1,0 +1,25 @@
+.. _exhale_struct_structsparsebase_1_1reorder_1_1RabbitReorderParams:
+
+Struct RabbitReorderParams
+==========================
+
+- Defined in :ref:`file_src_sparsebase_reorder_rabbit_reorder.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::Parameters`` (:ref:`exhale_struct_structsparsebase_1_1utils_1_1Parameters`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::reorder::RabbitReorderParams
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,13 @@
+.. _exhale_typedef_experiment__type_8h_1aa3795124c7230683e26cac5973685113:
+
+Typedef sparsebase::experiment::PreprocessFunction
+==================================================
+
+- Defined in :ref:`file_src_sparsebase_experiment_experiment_type.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::experiment::PreprocessFunction

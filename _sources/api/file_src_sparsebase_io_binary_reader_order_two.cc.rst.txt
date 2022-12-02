@@ -1,0 +1,54 @@
+
+.. _file_src_sparsebase_io_binary_reader_order_two.cc:
+
+File binary_reader_order_two.cc
+===============================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_io>` (``src/sparsebase/io``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/io/binary_reader_order_two.cc``)
+-------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_io_binary_reader_order_two.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/binary_reader_order_two.inc``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/io/binary_reader_order_two.h`` (:ref:`file_src_sparsebase_io_binary_reader_order_two.h`)
+
+- ``sparsebase/io/reader.h`` (:ref:`file_src_sparsebase_io_reader.h`)
+
+- ``sparsebase/io/sparse_file_format.h`` (:ref:`file_src_sparsebase_io_sparse_file_format.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__io`
+

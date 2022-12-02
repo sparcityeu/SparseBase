@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1utils_1_1Implementation:
+
+Template Struct Implementation
+==============================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::utils::Implementation
+   :members:
+   :protected-members:
+   :undoc-members:

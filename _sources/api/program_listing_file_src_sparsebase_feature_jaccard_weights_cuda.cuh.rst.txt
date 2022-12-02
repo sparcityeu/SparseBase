@@ -1,0 +1,27 @@
+
+.. _program_listing_file_src_sparsebase_feature_jaccard_weights_cuda.cuh:
+
+Program Listing for File jaccard_weights_cuda.cuh
+=================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_feature_jaccard_weights_cuda.cuh>` (``src/sparsebase/feature/jaccard_weights_cuda.cuh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include "sparsebase/format/cuda_array_cuda.cuh"
+   #include "sparsebase/format/cuda_csr_cuda.cuh"
+   
+   #ifndef SPARSEBASE_PROJECT_JACCARD_WEIGHTS_CUDA_CUH
+   #define SPARSEBASE_PROJECT_JACCARD_WEIGHTS_CUDA_CUH
+   
+   namespace sparsebase::feature {
+   
+   template <typename IDType, typename NNZType, typename ValueType,
+             typename FeatureType>
+   format::CUDAArray<FeatureType> *RunJaccardKernel(
+       format::CUDACSR<IDType, NNZType, ValueType> *cuda_csr);
+   }
+   
+   #endif  // SPARSEBASE_PROJECT_JACCARD_WEIGHTS_CUDA_CUH

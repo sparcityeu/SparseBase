@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1permute_1_1PermuteOrderOne:
+
+Template Class PermuteOrderOne
+==============================
+
+- Defined in :ref:`file_src_sparsebase_permute_permute_order_one.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::permute::Permuter< format::FormatOrderOne< ValueType >, format::FormatOrderOne< ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1permute_1_1Permuter`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::permute::PermuteOrderOne
+   :members:
+   :protected-members:
+   :undoc-members:

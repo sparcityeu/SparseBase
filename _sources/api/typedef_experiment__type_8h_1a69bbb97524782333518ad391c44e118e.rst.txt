@@ -1,0 +1,13 @@
+.. _exhale_typedef_experiment__type_8h_1a69bbb97524782333518ad391c44e118e:
+
+Typedef sparsebase::experiment::KernelFunction
+==============================================
+
+- Defined in :ref:`file_src_sparsebase_experiment_experiment_type.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::experiment::KernelFunction

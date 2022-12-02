@@ -1,0 +1,13 @@
+.. _exhale_function_utils_8h_1a47671e3e65bf3f49be1d5c62d380bbbc:
+
+Template Function sparsebase::utils::CanTypeFitValue
+====================================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::utils::CanTypeFitValue(const U)

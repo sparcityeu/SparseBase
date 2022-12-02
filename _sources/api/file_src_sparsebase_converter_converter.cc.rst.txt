@@ -1,0 +1,68 @@
+
+.. _file_src_sparsebase_converter_converter.cc:
+
+File converter.cc
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_converter>` (``src/sparsebase/converter``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/converter/converter.cc``)
+------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_converter_converter.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``converter.h`` (:ref:`file_src_sparsebase_converter_converter.h`)
+
+- ``deque``
+
+- ``sparsebase/converter/converter_cuda.cuh`` (:ref:`file_src_sparsebase_converter_converter_cuda.cuh`)
+
+- ``sparsebase/format/cuda_csr_cuda.cuh`` (:ref:`file_src_sparsebase_format_cuda_csr_cuda.cuh`)
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sparsebase/utils/logger.h`` (:ref:`file_src_sparsebase_utils_logger.h`)
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+- ``unordered_set``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__converter`
+

@@ -1,0 +1,71 @@
+
+.. _file_src_sparsebase_feature_jaccard_weights.h:
+
+File jaccard_weights.h
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_feature>` (``src/sparsebase/feature``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/feature/jaccard_weights.h``)
+---------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_feature_jaccard_weights.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/feature/jaccard_weights_cuda.cuh`` (:ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cuh`)
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/utils/function_matcher_mixin.h`` (:ref:`file_src_sparsebase_utils_function_matcher_mixin.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_feature_jaccard_weights.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__feature`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1feature_1_1JaccardWeightsParams`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1JaccardWeights`
+

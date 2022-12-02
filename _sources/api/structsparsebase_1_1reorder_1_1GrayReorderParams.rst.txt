@@ -1,0 +1,25 @@
+.. _exhale_struct_structsparsebase_1_1reorder_1_1GrayReorderParams:
+
+Struct GrayReorderParams
+========================
+
+- Defined in :ref:`file_src_sparsebase_reorder_gray_reorder.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::Parameters`` (:ref:`exhale_struct_structsparsebase_1_1utils_1_1Parameters`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::reorder::GrayReorderParams
+   :members:
+   :protected-members:
+   :undoc-members:

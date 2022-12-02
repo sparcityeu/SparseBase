@@ -1,0 +1,63 @@
+
+.. _file_src_sparsebase_format_format_implementation.h:
+
+File format_implementation.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_format>` (``src/sparsebase/format``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/format/format_implementation.h``)
+--------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_format_format_implementation.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_format_format_order_one.h`
+
+- :ref:`file_src_sparsebase_format_format_order_two.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__format`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`
+

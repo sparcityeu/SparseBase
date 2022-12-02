@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1bases_1_1ReorderBase:
+
+Class ReorderBase
+=================
+
+- Defined in :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::bases::ReorderBase
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -9,13 +9,16 @@ Class Format
 Inheritance Relationships
 -------------------------
 
-Derived Types
-*************
+Base Type
+*********
 
-- ``public sparsebase::format::FormatImplementation< Array< ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
-- ``public sparsebase::format::FormatImplementation< COO< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
-- ``public sparsebase::format::FormatImplementation< CSR< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
-- ``public sparsebase::format::FormatImplementation< FormatType >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+- ``public sparsebase::utils::Identifiable`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1Identifiable`)
+
+
+Derived Type
+************
+
+- ``public sparsebase::format::FormatImplementation`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
 
 
 Class Documentation

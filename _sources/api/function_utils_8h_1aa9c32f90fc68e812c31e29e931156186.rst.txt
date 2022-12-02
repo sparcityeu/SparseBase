@@ -1,0 +1,13 @@
+.. _exhale_function_utils_8h_1aa9c32f90fc68e812c31e29e931156186:
+
+Template Function sparsebase::utils::ConvertArrayType
+=====================================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::utils::ConvertArrayType(FromType *, SizeType)

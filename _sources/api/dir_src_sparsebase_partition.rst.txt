@@ -1,0 +1,27 @@
+.. _dir_src_sparsebase_partition:
+
+
+Directory partition
+===================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase>` (``src/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase/partition``
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_partition_metis_partition.cc`
+- :ref:`file_src_sparsebase_partition_metis_partition.h`
+- :ref:`file_src_sparsebase_partition_partitioner.cc`
+- :ref:`file_src_sparsebase_partition_partitioner.h`
+- :ref:`file_src_sparsebase_partition_patoh_partition.cc`
+- :ref:`file_src_sparsebase_partition_patoh_partition.h`
+- :ref:`file_src_sparsebase_partition_pulp_partition.cc`
+- :ref:`file_src_sparsebase_partition_pulp_partition.h`
+
+

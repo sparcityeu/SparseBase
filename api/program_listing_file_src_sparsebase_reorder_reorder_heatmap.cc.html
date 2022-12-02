@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File reorder_heatmap.cc &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File reorder_heatmap.cc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_src_sparsebase_reorder_reorder_heatmap.cc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-reorder-heatmap-cc">
+<span id="program-listing-file-src-sparsebase-reorder-reorder-heatmap-cc"></span><h1>Program Listing for File reorder_heatmap.cc<a class="headerlink" href="#program-listing-for-file-reorder-heatmap-cc" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_src_sparsebase_reorder_reorder_heatmap.cc.html#file-src-sparsebase-reorder-reorder-heatmap-cc"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/sparsebase/reorder/reorder_heatmap.cc</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/reorder_heatmap.h&quot;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/reorderer.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/utils/logger.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="k">typename</span><span class="w"> </span><span class="nc">FloatType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">ReorderHeatmap</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="p">,</span><span class="w"> </span><span class="n">FloatType</span><span class="o">&gt;::</span><span class="n">ReorderHeatmap</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">ReorderHeatmapParams</span><span class="o">&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_id_static</span><span class="p">(),</span><span class="w"></span>
+<span class="w">       </span><span class="n">format</span><span class="o">::</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;::</span><span class="n">get_id_static</span><span class="p">(),</span><span class="w"></span>
+<span class="w">       </span><span class="n">format</span><span class="o">::</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;::</span><span class="n">get_id_static</span><span class="p">()},</span><span class="w"></span>
+<span class="w">      </span><span class="n">ReorderHeatmapCSRArrayArray</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="k">typename</span><span class="w"> </span><span class="nc">FloatType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">ReorderHeatmap</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="p">,</span><span class="w"> </span><span class="n">FloatType</span><span class="o">&gt;::</span><span class="n">ReorderHeatmap</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">ReorderHeatmapParams</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ReorderHeatmap</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">ReorderHeatmapParams</span><span class="o">&gt;</span><span class="p">(</span><span class="n">params</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="k">typename</span><span class="w"> </span><span class="nc">FloatType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">format</span><span class="o">::</span><span class="n">FormatOrderOne</span><span class="o">&lt;</span><span class="n">FloatType</span><span class="o">&gt;*</span><span class="w"></span>
+<span class="n">ReorderHeatmap</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="p">,</span><span class="w"> </span><span class="n">FloatType</span><span class="o">&gt;::</span><span class="n">Get</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">format</span><span class="o">::</span><span class="n">FormatOrderTwo</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">format</span><span class="o">::</span><span class="n">FormatOrderOne</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">permutation_r</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">format</span><span class="o">::</span><span class="n">FormatOrderOne</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">permutation_c</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">contexts</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">convert_input</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">Execute</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span><span class="w"> </span><span class="n">contexts</span><span class="p">,</span><span class="w"> </span><span class="n">convert_input</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*</span><span class="p">)</span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*</span><span class="p">)</span><span class="n">permutation_r</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*</span><span class="p">)</span><span class="n">permutation_c</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="k">typename</span><span class="w"> </span><span class="nc">FloatType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">format</span><span class="o">::</span><span class="n">FormatOrderOne</span><span class="o">&lt;</span><span class="n">FloatType</span><span class="o">&gt;*</span><span class="w"></span>
+<span class="n">ReorderHeatmap</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="p">,</span><span class="w"> </span><span class="n">FloatType</span><span class="o">&gt;::</span><span class="w"></span>
+<span class="w">    </span><span class="n">ReorderHeatmapCSRArrayArray</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">formats</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="o">*</span><span class="w"> </span><span class="n">poly_params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">formats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">AsAbsolute</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">order_r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">formats</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">AsAbsolute</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">order_c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">formats</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">AsAbsolute</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;&gt;</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">get_vals</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ReorderHeatmapParams</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">num_parts</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">ReorderException</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="s">&quot;Cannot generate heatmap for matrix when num_parts &gt; number of rows or &quot;</span><span class="w"></span>
+<span class="w">        </span><span class="s">&quot;columns&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_dimensions</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">row_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_row_ptr</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">adj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_col</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">IDType</span><span class="w"> </span><span class="n">max_bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">FloatType</span><span class="w"> </span><span class="n">mean_bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">IDType</span><span class="w"> </span><span class="n">bsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// matrix of size num_parts x num_parts with number of edges in each square</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">density</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NNZType</span><span class="o">*</span><span class="p">[</span><span class="n">b</span><span class="p">];</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">NNZType</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">density</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NNZType</span><span class="p">[</span><span class="n">b</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="n">memset</span><span class="p">(</span><span class="n">density</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">NNZType</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">IDType</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">IDType</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order_r</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="n">IDType</span><span class="w"> </span><span class="n">bu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">bsize</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bu</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="n">bu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">NNZType</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">row_ptr</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span><span class="w"> </span><span class="n">ptr</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">IDType</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order_c</span><span class="p">[</span><span class="n">adj</span><span class="p">[</span><span class="n">ptr</span><span class="p">]];</span><span class="w"></span>
+<span class="w">      </span><span class="n">IDType</span><span class="w"> </span><span class="n">bw</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">          </span><span class="n">abs</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_signed_t</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_signed_t</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">v</span><span class="p">));</span><span class="w"></span>
+<span class="w">      </span><span class="n">max_bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">max_bw</span><span class="p">,</span><span class="w"> </span><span class="n">bw</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">mean_bw</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">bw</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">      </span><span class="n">IDType</span><span class="w"> </span><span class="n">bv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">bsize</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bv</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="n">bv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">density</span><span class="p">[</span><span class="n">bu</span><span class="p">][</span><span class="n">bv</span><span class="p">]</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">mean_bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">mean_bw</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">row_ptr</span><span class="p">[</span><span class="n">n</span><span class="p">];</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// utils::Logger logger;</span>
+<span class="w">  </span><span class="c1">// logger.Log(&quot;BW stats -- Mean bw: &quot;+std::to_string(mean_bw) + &quot;Max bw: &quot; +</span>
+<span class="w">  </span><span class="c1">// std::to_string(max_bw), utils::LOG_LVL_INFO);</span>
+
+<span class="w">  </span><span class="n">FloatType</span><span class="w"> </span><span class="n">para_mean_bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">mean_bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">fblocks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// logger.Log(&quot;Printing blocks</span>
+<span class="w">  </span><span class="c1">// \n----------------------------------------------&quot; &lt;&lt; endl;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="c1">//     cout &lt;&lt; std::setprecision(2) &lt;&lt; density[i][j] / (row_ptr[n] + .0f)</span>
+<span class="w">      </span><span class="c1">//     &lt;&lt; &quot;\t&quot;;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">density</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">fblocks</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">bw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">j</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">mean_bw</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">bw</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">density</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="c1">//   cout &lt;&lt; endl;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// cout &lt;&lt; &quot;---------------------------------------------------------------&quot;</span>
+<span class="w">  </span><span class="c1">// &lt;&lt; endl; cout &lt;&lt; &quot;Block BW stats -- No full blocks: &quot; &lt;&lt; fblocks &lt;&lt; &quot; Block</span>
+<span class="w">  </span><span class="c1">// BW: &quot; &lt;&lt; (mean_bw + 0.0f) / row_ptr[n] &lt;&lt; endl; cout &lt;&lt;</span>
+<span class="w">  </span><span class="c1">// &quot;---------------------------------------------------------------&quot; &lt;&lt; endl;</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">heat_values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FloatType</span><span class="p">[</span><span class="n">b</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">];</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">heat_values</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">density</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">row_ptr</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">.0f</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">format</span><span class="o">::</span><span class="n">Array</span><span class="o">&lt;</span><span class="n">FloatType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">heat_values</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="o">::</span><span class="n">kOwned</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="cp">#if !defined(_HEADER_ONLY)</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;init/reorder_heatmap.inc&quot;</span><span class="cp"></span>
+<span class="cp">#endif</span>
+<span class="p">}</span><span class="w">  </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

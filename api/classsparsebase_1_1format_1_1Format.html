@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class Format &mdash; SparseBase v0.2.3 documentation</title>
+  <title>Class Format &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Template Class FormatImplementation" href="classsparsebase_1_1format_1_1FormatImplementation.html" />
-    <link rel="prev" title="Template Class CSR" href="classsparsebase_1_1format_1_1CSR.html" /> 
+    <link rel="next" title="Class FormatImplementation" href="classsparsebase_1_1format_1_1FormatImplementation.html" />
+    <link rel="prev" title="Template Class CUDACSR" href="classsparsebase_1_1format_1_1CUDACSR.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +41,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
@@ -82,13 +82,16 @@
 </ul>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
-<section id="derived-types">
-<h3>Derived Types<a class="headerlink" href="#derived-types" title="Permalink to this headline"></a></h3>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::format::FormatImplementation&lt;</span> <span class="pre">Array&lt;</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#exhale-class-classsparsebase-1-1format-1-1formatimplementation"><span class="std std-ref">Template Class FormatImplementation</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::format::FormatImplementation&lt;</span> <span class="pre">COO&lt;</span> <span class="pre">IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#exhale-class-classsparsebase-1-1format-1-1formatimplementation"><span class="std std-ref">Template Class FormatImplementation</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::format::FormatImplementation&lt;</span> <span class="pre">CSR&lt;</span> <span class="pre">IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#exhale-class-classsparsebase-1-1format-1-1formatimplementation"><span class="std std-ref">Template Class FormatImplementation</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::format::FormatImplementation&lt;</span> <span class="pre">FormatType</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#exhale-class-classsparsebase-1-1format-1-1formatimplementation"><span class="std std-ref">Template Class FormatImplementation</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::utils::Identifiable</span></code> (<a class="reference internal" href="classsparsebase_1_1utils_1_1Identifiable.html#exhale-class-classsparsebase-1-1utils-1-1identifiable"><span class="std std-ref">Class Identifiable</span></a>)</p></li>
+</ul>
+</section>
+<section id="derived-type">
+<h3>Derived Type<a class="headerlink" href="#derived-type" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::format::FormatImplementation</span></code> (<a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#exhale-class-classsparsebase-1-1format-1-1formatimplementation"><span class="std std-ref">Class FormatImplementation</span></a>)</p></li>
 </ul>
 </section>
 </section>
@@ -96,15 +99,15 @@
 <h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format6FormatE">
-<span id="_CPPv3N10sparsebase6format6FormatE"></span><span id="_CPPv2N10sparsebase6format6FormatE"></span><span id="sparsebase::format::Format"></span><span class="target" id="classsparsebase_1_1format_1_1Format"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Format</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format6FormatE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N10sparsebase6format6FormatE"></span><span id="_CPPv2N10sparsebase6format6FormatE"></span><span id="sparsebase::format::Format"></span><span class="target" id="classsparsebase_1_1format_1_1Format"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Format</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1utils_1_1Identifiable.html#_CPPv4N10sparsebase5utils12IdentifiableE" title="sparsebase::utils::Identifiable"><span class="n"><span class="pre">Identifiable</span></span></a><a class="headerlink" href="#_CPPv4N10sparsebase6format6FormatE" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Base class representing a Sparse Data <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> (like <a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#classsparsebase_1_1format_1_1CSR"><span class="std std-ref">CSR</span></a>, <a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#classsparsebase_1_1format_1_1COO"><span class="std std-ref">COO</span></a> etc.) </p>
-<p><a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> is base class representing a Sparse Data <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a>. All Sparse Data <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> Objects (like <a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#classsparsebase_1_1format_1_1CSR"><span class="std std-ref">CSR</span></a> and <a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#classsparsebase_1_1format_1_1COO"><span class="std std-ref">COO</span></a>) are derived from <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a>. Most of the library uses <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> pointers as input and output. By itself <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> has very little functionality besides giving size information. Often a user will have to use the <a class="reference internal" href="#classsparsebase_1_1format_1_1Format_1ad15aa92a5993c2980474aa3f4bcf1f9f"><span class="std std-ref">As()</span></a> function to convert it to a concrete format. </p>
-<p>Subclassed by <a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#classsparsebase_1_1format_1_1FormatImplementation"><span class="std std-ref">sparsebase::format::FormatImplementation&lt; Array&lt; ValueType &gt; &gt;</span></a>, <a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#classsparsebase_1_1format_1_1FormatImplementation"><span class="std std-ref">sparsebase::format::FormatImplementation&lt; COO&lt; IDType, NNZType, ValueType &gt; &gt;</span></a>, <a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#classsparsebase_1_1format_1_1FormatImplementation"><span class="std std-ref">sparsebase::format::FormatImplementation&lt; CSR&lt; IDType, NNZType, ValueType &gt; &gt;</span></a>, <a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#classsparsebase_1_1format_1_1FormatImplementation"><span class="std std-ref">sparsebase::format::FormatImplementation&lt; FormatType &gt;</span></a></p>
+<p><a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> is base class representing a Sparse Data <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a>. All Sparse Data <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> Objects (like <a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#classsparsebase_1_1format_1_1CSR"><span class="std std-ref">CSR</span></a> and <a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#classsparsebase_1_1format_1_1COO"><span class="std std-ref">COO</span></a>) are derived from <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a>. Most of the library uses <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> pointers as input and output. By itself <a class="reference internal" href="#classsparsebase_1_1format_1_1Format"><span class="std std-ref">Format</span></a> has very little functionality besides giving size information. Often a user will have to use the <a class="reference internal" href="#classsparsebase_1_1format_1_1Format_1a5f295c19ceb78db6539fd1e8bebcbc65"><span class="std std-ref">AsAbsolute()</span></a> function to convert it to a concrete format. </p>
+<p>Subclassed by <a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#classsparsebase_1_1format_1_1FormatImplementation"><span class="std std-ref">sparsebase::format::FormatImplementation</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format6Format13get_format_idEv">
-<span id="_CPPv3N10sparsebase6format6Format13get_format_idEv"></span><span id="_CPPv2N10sparsebase6format6Format13get_format_idEv"></span><span id="sparsebase::format::Format::get_format_id"></span><span class="target" id="classsparsebase_1_1format_1_1Format_1ad52e27d04cbf96304f3970bc89eef8fa"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_format_id</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format6Format13get_format_idEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format6FormatD0Ev">
+<span id="_CPPv3N10sparsebase6format6FormatD0Ev"></span><span id="_CPPv2N10sparsebase6format6FormatD0Ev"></span><span id="sparsebase::format::Format::~Format"></span><span class="target" id="classsparsebase_1_1format_1_1Format_1adb1895ac1d8d33e3e38d0994c6faac07"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Format</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format6FormatD0Ev" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns a type identifier for the concrete format class. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -112,11 +115,6 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase6format6FormatD0Ev">
-<span id="_CPPv3N10sparsebase6format6FormatD0Ev"></span><span id="_CPPv2N10sparsebase6format6FormatD0Ev"></span><span id="sparsebase::format::Format::~Format"></span><span class="target" id="classsparsebase_1_1format_1_1Format_1adb1895ac1d8d33e3e38d0994c6faac07"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Format</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N10sparsebase6format6FormatD0Ev" title="Permalink to this definition"></a><br /></dt>
-<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase6format6Format5CloneEv">
@@ -149,21 +147,47 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase6format6Format16get_context_typeEv">
-<span id="_CPPv3NK10sparsebase6format6Format16get_context_typeEv"></span><span id="_CPPv2NK10sparsebase6format6Format16get_context_typeEv"></span><span id="sparsebase::format::Format::get_context_typeC"></span><span class="target" id="classsparsebase_1_1format_1_1Format_1ac809090ee4e167b14265ba6e98ab9387"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_context_type</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase6format6Format16get_context_typeEv" title="Permalink to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase6format6Format6get_idEv">
+<span id="_CPPv3NK10sparsebase6format6Format6get_idEv"></span><span id="_CPPv2NK10sparsebase6format6Format6get_idEv"></span><span id="sparsebase::format::Format::get_idC"></span><span class="target" id="classsparsebase_1_1format_1_1Format_1afd377e761bfc21326275942d52983e02"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_id</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase6format6Format6get_idEv" title="Permalink to this definition"></a><br /></dt>
 <dd><p>Returns the type_index for the context for the format instance. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase6format6Format2AsEP1Tv">
-<span id="_CPPv3I0EN10sparsebase6format6Format2AsEv"></span><span id="_CPPv2I0EN10sparsebase6format6Format2AsEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1format_1_1Format_1ad15aa92a5993c2980474aa3f4bcf1f9f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format6Format2AsEP1Tv" title="sparsebase::format::Format::As::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">As</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN10sparsebase6format6Format2AsEP1Tv" title="Permalink to this definition"></a><br /></dt>
-<dd><p>Templated function that can be used to cast to a concrete format class. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase6format6Format13get_converterEv">
+<span id="_CPPv3NK10sparsebase6format6Format13get_converterEv"></span><span id="_CPPv2NK10sparsebase6format6Format13get_converterEv"></span><span id="sparsebase::format::Format::get_converterC"></span><span class="target" id="classsparsebase_1_1format_1_1Format_1afbd14e2669bef42f67afe49c6d4f9ff2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">converter</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1converter_1_1Converter.html#_CPPv4N10sparsebase9converter9ConverterE" title="sparsebase::converter::Converter"><span class="n"><span class="pre">Converter</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_converter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase6format6Format13get_converterEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns a pointer at the converter of this format instance. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase6format6Format10AsAbsoluteEPNSt14remove_pointerI1TE4typeEv">
+<span id="_CPPv3I0EN10sparsebase6format6Format10AsAbsoluteEv"></span><span id="_CPPv2I0EN10sparsebase6format6Format10AsAbsoluteEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1format_1_1Format_1a5f295c19ceb78db6539fd1e8bebcbc65"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">remove_pointer</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase6format6Format10AsAbsoluteEPNSt14remove_pointerI1TE4typeEv" title="sparsebase::format::Format::AsAbsolute::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">AsAbsolute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN10sparsebase6format6Format10AsAbsoluteEPNSt14remove_pointerI1TE4typeEv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Sets a new converter for this format instance. </p>
+<p>Templated function that can be used to cast to a concrete format class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Template Parameters</dt>
 <dd class="field-odd"><p><strong>T</strong> – a concrete format class (for example: CSR&lt;int,int,int&gt;) </p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A concrete format pointer to this object (for example: CSR&lt;int,int,int&gt;*) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IIDpE0EN10sparsebase6format6Format10AsAbsoluteEPvv">
+<span id="_CPPv3IIDpE0EN10sparsebase6format6Format10AsAbsoluteEv"></span><span id="_CPPv2IIDpE0EN10sparsebase6format6Format10AsAbsoluteEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1format_1_1Format_1a377bd7742387d4112c8394a23aaeeb4f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">AsAbsolute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IIDpE0EN10sparsebase6format6Format10AsAbsoluteEPvv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase6format6Format10IsAbsoluteEbv">
+<span id="_CPPv3I0EN10sparsebase6format6Format10IsAbsoluteEv"></span><span id="_CPPv2I0EN10sparsebase6format6Format10IsAbsoluteEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1format_1_1Format_1ae240ffc089984c46af2f2b905519c8c6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAbsolute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN10sparsebase6format6Format10IsAbsoluteEbv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Templated function that can be used to check the concrete type of this object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>T</strong> – a concrete format class (for example: CSR&lt;int,int,int&gt;) </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true if the type of this object is T </p>
 </dd>
 </dl>
 </dd></dl>
@@ -178,8 +202,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="classsparsebase_1_1format_1_1CSR.html" class="btn btn-neutral float-left" title="Template Class CSR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="classsparsebase_1_1format_1_1FormatImplementation.html" class="btn btn-neutral float-right" title="Template Class FormatImplementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="classsparsebase_1_1format_1_1CUDACSR.html" class="btn btn-neutral float-left" title="Template Class CUDACSR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1format_1_1FormatImplementation.html" class="btn btn-neutral float-right" title="Class FormatImplementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

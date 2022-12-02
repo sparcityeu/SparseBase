@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to: add a new reordering algorithm &mdash; SparseBase v0.2.3 documentation</title>
+  <title>How to: add a new reordering algorithm &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -41,7 +41,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">How To Guides</a><ul class="current">
@@ -51,11 +51,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#steps">Steps</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#create-a-new-class-for-the-ordering">1. Create a new class for the ordering</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#create-a-struct-containing-the-hyperparameters-you-need-and-initialize-them-in-the-constructor">2. Create a struct containing the hyperparameters you need, and initialize them in the constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-struct-containing-the-hyperparameters-you-need">2. Create a struct containing the hyperparameters you need</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#add-implementation-functions">3. Add implementation functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#register-the-implementations-you-wrote-to-the-correct-formats">4. Register the implementations you wrote to the correct formats</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#set-the-converter-of-the-class-to-the-correct-type">5. Set the converter of the class to the correct type.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#add-explicit-template-instantiations">6. Add explicit template instantiations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-constructor-for-your-reordering-class">4. Create a constructor for your reordering class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add-explicit-template-instantiations">5. Add explicit template instantiations</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
@@ -101,249 +100,372 @@
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
-<p>Adding new reordering algorithms to SparseBase is very simple. It consists of five steps:</p>
+<p>Adding new reordering algorithms to SparseBase consists of five steps:</p>
 <ol class="arabic simple">
-<li><p>create a new class for your ordering. It must inherit from the base <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code> class.</p></li>
-<li><p>Inside the class, create a new struct that will contain the hyperparameters needed by your ordering, and initialize it in the constructor. Note: This step is only needed if your reordering requires hyperparameters.</p></li>
+<li><p>Create a class for your ordering.</p></li>
+<li><p>Create a struct that will contain the hyperparameters needed by your ordering.</p></li>
 <li><p>Add implementation functions that will carry out the reordering.</p></li>
-<li><p>Register the implementation functions in the constructor.</p></li>
-<li><p>Add explicit template instantiations of your class.</p></li>
+<li><p>Add a constructor to your reordering class.</p></li>
+<li><p>Add explicit template instantiations for your class.</p></li>
 </ol>
 </section>
 <section id="steps">
 <h2>Steps<a class="headerlink" href="#steps" title="Permalink to this headline"></a></h2>
 <p>In this guide, we will create a new reordering <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code>. This reordering has the following properties:</p>
 <ul class="simple">
-<li><p>This reordering requires two float hyperparameters for execution, <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code>.</p></li>
+<li><p>It requires two floating number hyperparameters for execution, <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code>.</p></li>
 <li><p>It has two implementations. One that operates on a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> format, and another that operates on a <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code> format, i.e., a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> that is stored on a <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> GPU.</p></li>
 </ul>
 <section id="create-a-new-class-for-the-ordering">
 <h3>1. Create a new class for the ordering<a class="headerlink" href="#create-a-new-class-for-the-ordering" title="Permalink to this headline"></a></h3>
-<p>In the header file <code class="docutils literal notranslate"><span class="pre">src/sparsebase/preprocess/preprocess.h</span></code>, add the definition of your class. You should add your class under the namespace <code class="docutils literal notranslate"><span class="pre">sparsebase::preprocess</span></code>. It must be templated on three types <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>, and <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> which define the data types of the <code class="docutils literal notranslate"><span class="pre">Format</span></code> objects it will reorder. Also, it must inherit from the class <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
+<p>The class will be split into a header file and an implementation file. Both files will be stored in the directory <code class="docutils literal notranslate"><span class="pre">src/sparsebase/reorder</span></code> and will have the same name as the class but in <a class="reference external" href="https://en.wikipedia.org/wiki/Snake_case">snake case</a>. For <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code>, the files will be <code class="docutils literal notranslate"><span class="pre">optimal_reorder.h</span></code> and <code class="docutils literal notranslate"><span class="pre">optimal_reorder.cc</span></code>. At the top of the header file, include the following headers:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Flags containing compilation flags, e.g. USE_CUDA</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
+<span class="c1">// Definition of base reordering class</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/reorderer.h&quot;</span><span class="cp"></span>
+<span class="c1">// Definition of parameters struct</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/utils/parameterizable.h&quot;</span><span class="cp"></span>
 </pre></div>
 </div>
+<p>And at the top of the implementation file, include the created header.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparasebase/reorder/optimal_reorder.h&quot;</span><span class="cp"></span>
+</pre></div>
+</div>
+<p>Next, add the decleration of your class to the header file. You should add your class under the namespace <code class="docutils literal notranslate"><span class="pre">sparsebase::reorder</span></code>. It must be templated on the three types <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>, and <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> which define the data types of the <code class="docutils literal notranslate"><span class="pre">Format</span></code> objects it will reorder. Also, it must inherit from the class <code class="docutils literal notranslate"><span class="pre">Reorderer&lt;IDType&gt;</span></code> which defines the common API of all reordering classes.</p>
+<p>Here is the decleration of <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> in the header file:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimalReorder</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Reorderer</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
+<p>For now, the definition file will be empty.</p>
+<p>Finally, we must include the definition file inside the header file to enable header-only usage of the class. We make this inclusion conditional on the preprocessor directive <code class="docutils literal notranslate"><span class="pre">_HEADER_ONLY</span></code>. We make this addition to <code class="docutils literal notranslate"><span class="pre">optimal_reorder.h</span></code> as follows:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimalReorder</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Reorderer</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+
+<span class="cp">#ifdef _HEADER_ONLY</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/optimal_reorder.cc&quot;</span><span class="cp"></span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<p>Notice that the include is added <em>outside</em> the <code class="docutils literal notranslate"><span class="pre">sparsebase::reorder</span></code> namespace.</p>
+<blockquote>
+<div><p><strong>Compiled vs. header-only</strong>. In header-only mode, the user includes the code they want to use in their own code and compiles it as needed. In the compiled mode, the library classes and functions are precompiled into a static library and the user links to them at compile-time.</p>
+</div></blockquote>
 </section>
-<section id="create-a-struct-containing-the-hyperparameters-you-need-and-initialize-them-in-the-constructor">
-<h3>2. Create a struct containing the hyperparameters you need, and initialize them in the constructor<a class="headerlink" href="#create-a-struct-containing-the-hyperparameters-you-need-and-initialize-them-in-the-constructor" title="Permalink to this headline"></a></h3>
-<p>Inside the class, create a new struct inheriting from <code class="docutils literal notranslate"><span class="pre">PreprocessParams</span></code>. Its members will be whichever hyperparameters that your reordering will require. We will call this struct <code class="docutils literal notranslate"><span class="pre">OptimalReorderParams</span></code>. We add <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> to it.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="k">struct</span> <span class="nl">OptimalReorderParams</span> <span class="p">:</span> <span class="n">PreprocessParams</span> <span class="p">{</span>
-    <span class="kt">float</span> <span class="n">alpha</span><span class="p">;</span>
-    <span class="kt">float</span> <span class="n">beta</span><span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
+<section id="create-a-struct-containing-the-hyperparameters-you-need">
+<h3>2. Create a struct containing the hyperparameters you need<a class="headerlink" href="#create-a-struct-containing-the-hyperparameters-you-need" title="Permalink to this headline"></a></h3>
+<p>In the header file created in step 1, create a new struct inheriting from <code class="docutils literal notranslate"><span class="pre">utils::Parameters</span></code>. Its members will be whichever hyperparameters your reordering will require. The naming convention for these structs is the name of the reordering class suffixed with <code class="docutils literal notranslate"><span class="pre">Params</span></code>. For our class, that would be <code class="docutils literal notranslate"><span class="pre">OptimalReorderParams</span></code>. We add <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">beta</span></code> to it. You may also add custom constructors for your parameter struct.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">OptimalReorderParams</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">alpha</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">beta</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">OptimalReorderParams</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="n">beta</span><span class="p">(</span><span class="n">b</span><span class="p">){}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
 </pre></div>
 </div>
-<p>Inside the constructor of the class, you will take the hyperparameters from the user, add them to an instance of the struct you just created, and set the data member <code class="docutils literal notranslate"><span class="pre">params_</span></code>, which your class inherited from <code class="docutils literal notranslate"><span class="pre">ReorderPreprocessType</span></code>, to the newly added struct.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="c1">// ...</span>
-  <span class="n">OptimalReorder</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span> <span class="o">=</span>
-        <span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">OptimalReorderParams</span><span class="p">{</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">});</span>
-  <span class="p">}</span>
-  <span class="c1">// ...</span>
-<span class="p">};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
+<p>Note: you still need to create such a struct even if your reordering class does not require any hyperparameters. However, you may leave it as an empty struct.</p>
+<p>Additionally, create a <code class="docutils literal notranslate"><span class="pre">typedef</span></code> for your struct as <code class="docutils literal notranslate"><span class="pre">ParamsType</span></code> inside the reordering class you created. This is needed by the <code class="docutils literal notranslate"><span class="pre">Reorder</span></code> function in <code class="docutils literal notranslate"><span class="pre">ReorderBase</span></code>, which is the interface most users will be using to access reordering classes.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimalReorder</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Reorderer</span><span class="o">&lt;</span><span class="n">ValueType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="k">typedef</span><span class="w"> </span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="n">ParamsType</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">};</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
 </pre></div>
 </div>
 </section>
 <section id="add-implementation-functions">
 <h3>3. Add implementation functions<a class="headerlink" href="#add-implementation-functions" title="Permalink to this headline"></a></h3>
 <p>Add to the class the implementation functions that will carry out the reordering. Each function will be specific for an input <code class="docutils literal notranslate"><span class="pre">Format</span></code> format type. These functions should match the following signature:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span> <span class="n">IDType</span><span class="o">*</span> <span class="n">FunctionName</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="p">,</span> <span class="n">PreprocessParams</span><span class="o">*</span><span class="p">)</span> 
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="n">IDType</span><span class="o">*</span><span class="w"> </span><span class="n">FunctionName</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="o">*</span><span class="p">)</span><span class="w"> </span>
 </pre></div>
 </div>
-<p>Not that the functions must also be <em>static</em>. This is required to enable the mechanism of choosing the correct implementation function for the input <code class="docutils literal notranslate"><span class="pre">Format</span></code>’s format type.</p>
+<p>The functions must be <em>static</em>. This is required to enable the mechanism of choosing the correct implementation function for the input <code class="docutils literal notranslate"><span class="pre">Format</span></code>’s format type.</p>
 <p>The parameters that your function will take are:</p>
 <ol class="arabic simple">
 <li><p>A vector of pointers at <code class="docutils literal notranslate"><span class="pre">Format</span></code> objects.</p></li>
-<li><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">PreprocessParams</span></code> struct. This pointer is polymorphic, and will be pointing at an instance of the parameters structs created for your ordering. In our case, that would be an <code class="docutils literal notranslate"><span class="pre">OptimalReorderParams</span></code> object.</p></li>
+<li><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">utils::Parameters</span></code> struct. This pointer is polymorphic, and when this function is called, it will be pointing at an instance of the parameters struct created for your ordering. In our case, that would be an <code class="docutils literal notranslate"><span class="pre">OptimalReorderParams</span></code> object.</p></li>
 </ol>
 <p>Generally, all implementation functions will start with the same three steps:</p>
 <ol class="arabic simple">
 <li><p>Cast the input <code class="docutils literal notranslate"><span class="pre">Format</span></code> objects to the correct concrete type.</p></li>
-<li><p>Cast the input <code class="docutils literal notranslate"><span class="pre">PreprocessParams</span></code> to the params struct created for this class.</p></li>
+<li><p>Cast the input <code class="docutils literal notranslate"><span class="pre">utils::Parameters</span></code> to the params struct created for this class.</p></li>
 <li><p>Fetch the <code class="docutils literal notranslate"><span class="pre">Context</span></code> of the input <code class="docutils literal notranslate"><span class="pre">Format</span></code> object (this step is not needed for reordering on the CPU, but is necessary when using other architectures, e.g. <code class="docutils literal notranslate"><span class="pre">CUDA</span></code>).</p></li>
 </ol>
 <p>For our example, <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> will have two implementation functions, <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCSR()</span></code> and <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSR()</span></code>. The former will reorder <code class="docutils literal notranslate"><span class="pre">CSR</span></code> objects on the CPU, and the latter will reorder <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code> objects, i.e., <code class="docutils literal notranslate"><span class="pre">CSR</span></code> objects stored on a <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> GPU.</p>
-<section id="a-adding-cpu-function-implementations">
-<h4>3.a Adding CPU function implementations<a class="headerlink" href="#a-adding-cpu-function-implementations" title="Permalink to this headline"></a></h4>
-<p>We simply add the function according to the aforementiond signature and follow the steps mentioned above, namely casting the format and param objects, and fetching the context of the input.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="c1">//.......</span>
-  <span class="k">static</span> <span class="n">IDType</span> <span class="o">*</span><span class="n">OptimallyOrderCSR</span><span class="p">(</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">*&gt;</span> <span class="n">input_sf</span><span class="p">,</span>
-      <span class="n">PreprocessParams</span> <span class="o">*</span><span class="n">poly_params</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">auto</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span>
-    <span class="n">OptimalReorderParams</span> <span class="o">*</span><span class="n">params</span> <span class="o">=</span>
-        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span>
-    <span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span> <span class="o">*</span><span class="n">cpu_context</span> <span class="o">=</span>
-        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">());</span>
-    <span class="c1">// ... carry out the ordering logic</span>
-    <span class="k">return</span> <span class="n">order</span><span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
+<section id="adding-cpu-function-implementations">
+<h4>3.1 Adding CPU function implementations<a class="headerlink" href="#adding-cpu-function-implementations" title="Permalink to this headline"></a></h4>
+<p>You must add the implementation function according to the aforementioned signature and follow the steps mentioned above, namely casting the format and param objects, and fetching the context of the input.</p>
+<p>First, add the decleration of the function to the header file.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimalReorder</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Reorderer</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">//.......</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="nf">OptimallyOrderCSR</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">input_sf</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="w"> </span><span class="o">*</span><span class="n">poly_params</span><span class="p">);</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
+<p>Then add the definition of the function to the <code class="docutils literal notranslate"><span class="pre">.cc</span></code> file. Don’t forget to include the header of the format for which you are writing the implementation. In this case, that would be <code class="docutils literal notranslate"><span class="pre">csr.h</span></code></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.cc</span>
+
+<span class="c1">// Header of OptimalReorder</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparasebase/reorder/optimal_reorder.h&quot;</span><span class="cp"></span>
+<span class="c1">// The header of the CSR class</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/format/csr.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="n">OptimalReorder</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">OptimallyOrderCSR</span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">input_sf</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="w"> </span><span class="o">*</span><span class="n">poly_params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// safely cast the Format pointer to a CSR pointer</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">csr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">AsAbsolute</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">        </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span><span class="w"> </span><span class="o">*</span><span class="n">cpu_context</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">        </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">csr</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">());</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ... carry out the ordering logic</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">order</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
 </pre></div>
 </div>
 </section>
 <section id="b-adding-cuda-gpu-function-implementations">
 <h4>3.b Adding <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> GPU function implementations<a class="headerlink" href="#b-adding-cuda-gpu-function-implementations" title="Permalink to this headline"></a></h4>
-<p>Adding the implementation for <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSR()</span></code> follows the same process as <code class="docutils literal notranslate"><span class="pre">OptimallyReorderCSR()</span></code> except for a major difference: it will use a <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernel during its execution. This poses a problem since <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernels need to be compiled by <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>, not by a pure C++ compiler. The solution to this issue is to add <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernels to a seperate <code class="docutils literal notranslate"><span class="pre">.cu</span></code> file, and to use a non-<code class="docutils literal notranslate"><span class="pre">CUDA</span></code> dependent driver functions to interface with them.</p>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> functions related to reordering and preprocessing in general should be added to the file <code class="docutils literal notranslate"><span class="pre">src/preprocess/cuda/preprocess.cc</span></code>.</p>
-<p>For our example, we will add the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernel <code class="docutils literal notranslate"><span class="pre">OptimalReorderCSROnCUDAGPU()</span></code> to the file <code class="docutils literal notranslate"><span class="pre">src/preprocess/cuda/preprocess.cc</span></code> under the namespace <code class="docutils literal notranslate"><span class="pre">sparsebase::preprocess::cuda</span></code>. This function carries out the reordering on the GPU. In addition, we add a driver function that dispatches this kernel under the same namespace.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/cuda/preprocess.cc</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span><span class="o">::</span><span class="n">cuda</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="o">&gt;</span>
-<span class="n">__global__</span> <span class="kt">void</span> <span class="n">OptimalReorderCSROnCUDAGPU</span><span class="p">(</span><span class="n">IDType</span> <span class="o">*</span><span class="n">order</span><span class="p">,</span> <span class="n">IDType</span> <span class="o">*</span><span class="n">row_ptr</span><span class="p">,</span>
-                                           <span class="n">NNZType</span> <span class="o">*</span><span class="n">col</span><span class="p">,</span> <span class="n">IDType</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// ... carry out ordering</span>
-<span class="p">}</span>
+<p>Adding the implementation for <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSR()</span></code> follows the same process as <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCSR()</span></code> except for a major difference: it will use a <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernel during its execution. This poses a problem since <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernels need to be compiled by <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>, not by a pure C++ compiler. The solution to this issue is to add <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernels to a separate <code class="docutils literal notranslate"><span class="pre">.cu</span></code> file, and to use driver functions to interface with them. The kernel and driver functions will be compiled using <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>, but the driver function’s signature will not have any <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> special syntax and will be included in the non-<code class="docutils literal notranslate"><span class="pre">CUDA</span></code> file. This way, the pure <code class="docutils literal notranslate"><span class="pre">C++</span></code> code can make calls to the driver function, and the driver function will be able to call the GPU kernel since it is compiled with <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>. The process for <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> is shown in the following image:
+<img alt="optimal_reorder_cudacsr" src="../../_images/optimal_reorder_cudacsr.png" />
+In the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> file <code class="docutils literal notranslate"><span class="pre">src/sparsebase/reorder/optimal_reorder_cuda.cu</span></code>, we define the GPU kernel <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSRKernel()</span></code> (shown in red) and the driver function <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSRDriver()</span></code> (shown in blue). We add the signature of the driver function to a header file <code class="docutils literal notranslate"><span class="pre">src/sparsebase/reorder/optimal_reorder_cuda.cuh</span></code>. Now, in the pure <code class="docutils literal notranslate"><span class="pre">C++</span></code> file, <code class="docutils literal notranslate"><span class="pre">src/sparsebase/reorder/optimal_reorder.cc</span></code>, we include the header file <code class="docutils literal notranslate"><span class="pre">sparsebase/reorder/optimal_reorder_cuda.cuh</span></code>. This way we can call it inside the implementation function <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSR()</span></code> (shown in green).</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> functions related to reordering and processing in general should be added to a file with the same name as the processing file, with the suffix <code class="docutils literal notranslate"><span class="pre">_cuda</span></code>.</p>
+<p>Let’s add these functions to our code. Add the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernel <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSRKernel()</span></code> to the file <code class="docutils literal notranslate"><span class="pre">sparsebase/reorder/optimal_reorder_cuda.cu</span></code> under the namespace <code class="docutils literal notranslate"><span class="pre">sparsebase::reorder</span></code>. This function carries out the reordering on the GPU. In the same file and under the same namespace, add the driver function <code class="docutils literal notranslate"><span class="pre">OptimallyOrderCUDACSRDriver()</span></code> that dispatches the kernel.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: sparsebase/reorder/optimal_reorder_cuda.cu</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">OptimallyOrderCUDACSRKernel</span><span class="p">(</span><span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="n">row_ptr</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="n">NNZType</span><span class="w"> </span><span class="o">*</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">IDType</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// ... carry out ordering</span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="n">IDType</span> <span class="o">*</span>
-<span class="n">OptimalOrderCSRonCUDAGPUDriver</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">csr</span><span class="p">,</span>
-                               <span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// set up context and get pointers from format</span>
-  <span class="n">OptimalReorderCSROnCUDAGPU</span><span class="o">&lt;&lt;&lt;</span><span class="p">...</span><span class="o">&gt;&gt;&gt;</span><span class="p">(...);</span>
-  <span class="c1">// fetch output from GPU</span>
-  <span class="k">return</span> <span class="n">order</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess::cuda</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
+<span class="n">OptimallyOrderCUDACSRDriver</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">csr</span><span class="p">,</span><span class="w"></span>
+<span class="w">                               </span><span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// set up context and get pointers from format</span>
+<span class="w">  </span><span class="n">OptimallyOrderCUDACSRKernel</span><span class="o">&lt;&lt;&lt;</span><span class="p">...</span><span class="o">&gt;&gt;&gt;</span><span class="p">(...);</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// fetch output from GPU</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">order</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
 </pre></div>
 </div>
-<p>Importantly, we must add the signature of the driver function to the file <code class="docutils literal notranslate"><span class="pre">src/preprocess/cuda/preprocess.h</span></code> in order for the implementation function to be able to use it.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/cuda/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span><span class="o">::</span><span class="n">cuda</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="n">IDType</span> <span class="o">*</span>
-<span class="n">OptimalOrderCSRonCUDAGPUDriver</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">*</span><span class="n">csr</span><span class="p">,</span>
-                               <span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span> <span class="n">context</span><span class="p">);</span>
-<span class="p">}</span>
+<p>Next, add the signature of the driver function to the file <code class="docutils literal notranslate"><span class="pre">sparsebase/reorder/optimal_reorder_cuda.cuh</span></code> in order for the implementation function to be able to use it.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder_cuda.cuh</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
+<span class="n">OptimallyOrderCUDACSRDriver</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">csr</span><span class="p">,</span><span class="w"></span>
+<span class="w">                               </span><span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span><span class="w"> </span><span class="n">context</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>Finally, we add the function <code class="docutils literal notranslate"><span class="pre">OptimallyReorderCUDACSR()</span></code> as an implementation inside the <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> class. Note that the function is enclosed in an <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">CUDA</span></code> preprocessor block. This will guarantee that it does not get compiled unless compilation of the library with <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> is enabled.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
+<p>Finally, add the function <code class="docutils literal notranslate"><span class="pre">OptimallyReorderCUDACSR()</span></code> as an implementation inside the <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> class. Note that the function decleration and definition are enclosed in an <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">USE_CUDA</span></code> preprocessor block. This will guarantee that the function is not compiled unless compilation of the library with <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> is enabled.</p>
+<p>First, add the function decleration to the header file:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimalReorder</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Reorderer</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="c1">// We do not want the function to be compiled if CUDA isn&#39;t enabled</span>
-<span class="cp">#ifdef CUDA</span>
-  <span class="k">static</span> <span class="n">IDType</span> <span class="o">*</span><span class="n">OptimallyOrderCUDACSR</span><span class="p">(</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="o">*&gt;</span> <span class="n">input_sf</span><span class="p">,</span>
-      <span class="n">PreprocessParams</span> <span class="o">*</span><span class="n">poly_params</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">auto</span> <span class="n">cuda_csr</span> <span class="o">=</span>
-        <span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">As</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span>
-    <span class="n">OptimalReorderParams</span> <span class="o">*</span><span class="n">params</span> <span class="o">=</span>
-        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span>
-    <span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span> <span class="o">*</span><span class="n">cuda_context</span> <span class="o">=</span>
-        <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">cuda_csr</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">());</span>
-    <span class="c1">// ...</span>
-    <span class="c1">// use the driver to call the CUDA kernel</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="n">OptimalOrderCSRonCUDAGPUDriver</span><span class="p">(</span><span class="n">cuda_csr</span><span class="p">,</span> <span class="o">*</span><span class="n">cuda_context</span><span class="p">);</span>
-    <span class="c1">// ...</span>
-    <span class="k">return</span> <span class="n">order</span><span class="p">;</span>
-  <span class="p">}</span>
+<span class="cp">#ifdef USE_CUDA</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="nf">OptimallyOrderCUDACSR</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">input_sf</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="w"> </span><span class="o">*</span><span class="n">poly_params</span><span class="p">);</span><span class="w"></span>
 <span class="cp">#endif</span>
-  <span class="c1">// .......</span>
-<span class="p">};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
+<span class="w">  </span><span class="c1">// .......</span>
+<span class="p">};</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
+<p>Then define it in the implementation file. Don’t forget to include the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> header with the driver decleration we created earlier:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="c1">//...</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sparsebase/reorder/optimal_reorder_cuda.cuh&quot;</span>
+<span class="cpf">//...</span>
+<span class="cpf">namespace sparsebase::reorder {</span>
+<span class="cpf">// ...</span>
+<span class="cpf">#ifdef USE_CUDA</span>
+<span class="cpf">template &lt;typename IDType, typename NNZType, typename ValueType&gt;</span><span class="cp"></span>
+<span class="n">IDType</span><span class="w"> </span><span class="o">*</span><span class="nf">OptimallyOrderCUDACSR</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">input_sf</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">utils</span><span class="o">::</span><span class="n">Parameters</span><span class="w"> </span><span class="o">*</span><span class="n">poly_params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">cuda_csr</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="n">input_sf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">AsAbsolute</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;&gt;</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="o">*</span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">poly_params</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">context</span><span class="o">::</span><span class="n">CPUContext</span><span class="w"> </span><span class="o">*</span><span class="n">cuda_context</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">CUDAContext</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">cuda_csr</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">());</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="c1">// use the driver to call the CUDA kernel</span>
+<span class="w">  </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OptimallyOrderCUDACSRDriver</span><span class="p">(</span><span class="n">cuda_csr</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">cuda_context</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">order</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="cp">#endif</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="create-a-constructor-for-your-reordering-class">
+<h3>4. Create a constructor for your reordering class<a class="headerlink" href="#create-a-constructor-for-your-reordering-class" title="Permalink to this headline"></a></h3>
+<p>The constructor of a reordering class (and, in general, of any processing class) does two things:</p>
+<ol class="arabic simple">
+<li><p>set the hyperparameters of class instance created,</p></li>
+<li><p>register implementation functions to the right format types.</p></li>
+</ol>
+<p>Reordering classes can have as many constructors as the developer needs. However, at least one of them is required to have the following signature:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ReorderingClass</span><span class="p">(</span><span class="n">ReorderingClassParams</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">ReorderingClassParams</span></code> is the struct representing the hyperparameters of the reordering (the one we created in step 2).</p>
+<p>We add the constructor decleration to the header file:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.h</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimalReorder</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Reorderer</span><span class="o">&lt;</span><span class="n">IDType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">OptimalReorder</span><span class="p">(</span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="n">params</span><span class="p">);</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
+<p>And we add the definition to the implementation file:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.cc</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">OptimalReorder</span><span class="p">(</span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="n">params</span><span class="p">){</span><span class="w"></span>
+<span class="w">    </span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
+<p>Now, let’s populate this constructor.</p>
+<section id="set-the-hyperparameters-of-instances-of-the-class">
+<h4>4.1 Set the hyperparameters of instances of the class<a class="headerlink" href="#set-the-hyperparameters-of-instances-of-the-class" title="Permalink to this headline"></a></h4>
+<p>Use the hyperparameter argument from the user and set the data member <code class="docutils literal notranslate"><span class="pre">params_</span></code>, which the class inherited from <code class="docutils literal notranslate"><span class="pre">Reorderer</span></code>, by copying the argument passed in the constructor.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.cc</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">OptimalReorder</span><span class="p">(</span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">params_</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">OptimalReorderParams</span><span class="o">&gt;</span><span class="p">(</span><span class="n">params</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
+</pre></div>
+</div>
 </section>
 <section id="register-the-implementations-you-wrote-to-the-correct-formats">
-<h3>4. Register the implementations you wrote to the correct formats<a class="headerlink" href="#register-the-implementations-you-wrote-to-the-correct-formats" title="Permalink to this headline"></a></h3>
-<p>Inside the constructor, register the functions you made to the correct <code class="docutils literal notranslate"><span class="pre">Format</span></code> type. Note that registering the <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code> implementation function is surrounded by an <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">CUDA</span></code> block to prevent it from being registered if the library is not compiled with <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> enabled.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="c1">// ...</span>
-  <span class="n">OptimalReorder</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-    <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">(</span>
-        <span class="p">{</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">()},</span>
-        <span class="n">OptimallyOrderCSR</span><span class="p">);</span>
-<span class="cp">#ifdef CUDA</span>
-    <span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">(</span>
-        <span class="p">{</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_format_id_static</span><span class="p">()},</span>
-        <span class="n">OptimallyOrderCUDACSR</span><span class="p">);</span>
+<h4>4.2 Register the implementations you wrote to the correct formats<a class="headerlink" href="#register-the-implementations-you-wrote-to-the-correct-formats" title="Permalink to this headline"></a></h4>
+<p>Register the implementation functions you made in step 3 to the <code class="docutils literal notranslate"><span class="pre">Format</span></code> type they are made for. This is how the library will be able to associate implementation functions with format types.</p>
+<p>Note that registering the <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code> implementation function is surrounded by an <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">USE_CUDA</span></code> block to prevent it from being registered if the library is not compiled with <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> enabled.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.cc</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">IDType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">NNZType</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">ValueType</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">OptimalReorder</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">beta</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="n">format</span><span class="o">::</span><span class="n">CSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_id_static</span><span class="p">()},</span><span class="w"></span>
+<span class="w">        </span><span class="n">OptimallyOrderCSR</span><span class="p">);</span><span class="w"></span>
+<span class="cp">#ifdef USE_CUDA</span>
+<span class="w">    </span><span class="k">this</span><span class="o">-&gt;</span><span class="n">RegisterFunction</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="n">format</span><span class="o">::</span><span class="n">CUDACSR</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span><span class="w"> </span><span class="n">NNZType</span><span class="p">,</span><span class="w"> </span><span class="n">ValueType</span><span class="o">&gt;::</span><span class="n">get_id_static</span><span class="p">()},</span><span class="w"></span>
+<span class="w">        </span><span class="n">OptimallyOrderCUDACSR</span><span class="p">);</span><span class="w"></span>
 <span class="cp">#endif</span>
-    <span class="c1">// ...</span>
-  <span class="p">}</span>
-  <span class="c1">// ...</span>
-<span class="p">};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace sparsebase::reorder</span>
 </pre></div>
 </div>
 </section>
-<section id="set-the-converter-of-the-class-to-the-correct-type">
-<h3>5. Set the converter of the class to the correct type.<a class="headerlink" href="#set-the-converter-of-the-class-to-the-correct-type" title="Permalink to this headline"></a></h3>
-<p>While reordering, your class might need to carry out <code class="docutils literal notranslate"><span class="pre">Format</span></code> conversions. For example, if the user tries to use <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> to reorder a <code class="docutils literal notranslate"><span class="pre">COO</span></code>, it needs to be converted to a <code class="docutils literal notranslate"><span class="pre">CSR</span></code> before it can be reordered.</p>
-<p>Each preprocessing class must have an associated converter. The type of the converter depends on the order of the input <code class="docutils literal notranslate"><span class="pre">Format</span></code> objects. In the case of reordering, all the inputs are matrices, therefore, you need to set the converter of your class to the <code class="docutils literal notranslate"><span class="pre">ConverterOrderTwo</span></code> type.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/preprocess/preprocess.h</span>
-<span class="k">namespace</span> <span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span> <span class="p">{</span>
-<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">IDType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">NNZType</span><span class="p">,</span> <span class="k">typename</span> <span class="n">ValueType</span><span class="o">&gt;</span>
-<span class="k">class</span> <span class="nc">OptimalReorder</span> <span class="o">:</span> <span class="n">ReorderPreprocessType</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="c1">// ...</span>
-  <span class="n">OptimalReorder</span><span class="p">(</span><span class="kt">float</span> <span class="n">alpha</span><span class="p">,</span> <span class="kt">float</span> <span class="n">beta</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-    <span class="k">this</span><span class="o">-&gt;</span><span class="n">SetConverter</span><span class="p">(</span>
-        <span class="n">utils</span><span class="o">::</span><span class="n">converter</span><span class="o">::</span><span class="n">ConverterOrderTwo</span><span class="o">&lt;</span><span class="n">IDType</span><span class="p">,</span> <span class="n">NNZType</span><span class="p">,</span> <span class="n">ValueType</span><span class="o">&gt;</span><span class="p">{});</span>
-    <span class="c1">// ...</span>
-  <span class="p">}</span>
-  <span class="c1">// ...</span>
-<span class="p">};</span>
-<span class="p">}</span> <span class="c1">// namespace sparsebase::preprocess</span>
-</pre></div>
-</div>
 </section>
 <section id="add-explicit-template-instantiations">
-<h3>6. Add explicit template instantiations<a class="headerlink" href="#add-explicit-template-instantiations" title="Permalink to this headline"></a></h3>
-<p>The functions we have defined so far (with the exception of the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> kernel and driver functions) have been defined in header files. This means that they will be compiled as they become needed by the user’s code, and not at library build-time. However, the library supports a compiled version in which classes are pre-compiled using certain data types that the user selects. To add your class to the list of pre-compilable classes, you must do the following:</p>
-<ol class="arabic simple">
-<li><p>Move all the implementations from the header file (<code class="docutils literal notranslate"><span class="pre">src/sparsebase/preprocess/preprocess.h</span></code>) to the implementation file (<code class="docutils literal notranslate"><span class="pre">src/sparsebase/preprocess/preprocess.cc</span></code>).</p></li>
-<li><p>Add your class to the list of classes that will be explicitly instantiated by the python script <code class="docutils literal notranslate"><span class="pre">src/generate_explicit_instantiations.ph</span></code>.</p></li>
-</ol>
-<p>Each <code class="docutils literal notranslate"><span class="pre">.cc</span></code> file in the library has a dedicated class inside the python script that handles instantiating its classes. For example, to explicitly instantiate the <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> class, add your class name to the list of classes in the <code class="docutils literal notranslate"><span class="pre">preprocess.h</span></code> file that should be explicitly instantiated. Specifically, in the function <code class="docutils literal notranslate"><span class="pre">run(self)</span></code> inside the class <code class="docutils literal notranslate"><span class="pre">preprocess_init</span></code>, add your class name to the list of classes inside the call to the <code class="docutils literal notranslate"><span class="pre">print_implementation()</span></code> function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">preprocess_init</span><span class="p">(</span><span class="n">explicit_initialization</span><span class="p">):</span>
-  <span class="c1"># ...</span>
-  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c1"># ...</span>
-    <span class="n">print_implementations</span><span class="p">([</span><span class="o">...</span><span class="p">,</span> <span class="s1">&#39;OptimalReorder&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_stream</span><span class="p">)</span>
+<h3>5. Add explicit template instantiations<a class="headerlink" href="#add-explicit-template-instantiations" title="Permalink to this headline"></a></h3>
+<p>As mentioned in step 1, SparseBase supports two modes of usage, a compiled mode and a header-only mode. In the compiled mode, classes are pre-compiled using certain data types that the user selects. To add your class to the list of pre-compilable classes, you must add it to the list of classes that will be explicitly instantiated. This list is kept in the JSON file <code class="docutils literal notranslate"><span class="pre">src/class_instantiation_list.json</span></code>.</p>
+<p>The aforementioned JSON file consists of an object containing a list called <code class="docutils literal notranslate"><span class="pre">classes</span></code>. To this list, add an object pertaining to your ordering. The object will contain the <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code> class definition and the name of the file to which we want the instantiations to be printed. In the case of <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code>, we add the following line to the end of the list:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;template&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;class OptimalReorder&lt;$id_type, $nnz_type, $value_type&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;filename&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optimal_reorder.inc&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;ifdef&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;folder&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;exceptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>As for <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> functions, their explicit instantiations should be added to the <code class="docutils literal notranslate"><span class="pre">run(self)</span></code> function of the class <code class="docutils literal notranslate"><span class="pre">preprocess_cuda_init</span></code>. For the exact format, you may follow the existing code in the function.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&quot;template&quot;</span></code> member is the class declaration. The three variables beginning with <code class="docutils literal notranslate"><span class="pre">$</span></code> in the declaration above are placeholders that will be filled with the <code class="docutils literal notranslate"><span class="pre">IDType</span></code>, <code class="docutils literal notranslate"><span class="pre">NNZType</span></code>, and <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> data types the user selects when compiling the library. If a user compiles the library with three <code class="docutils literal notranslate"><span class="pre">IDType</span></code> data types, two <code class="docutils literal notranslate"><span class="pre">NNZType</span></code> data types, and two <code class="docutils literal notranslate"><span class="pre">ValueType</span></code> data types, then the class will be compiled with 3 * 2 * 2 = 12 different type combinations.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&quot;filename&quot;</span></code> member is the name of the file to which these instantiations will be printed, and it matches the name of the header file in which the class is defined, but with the extension <code class="docutils literal notranslate"><span class="pre">inc</span></code>.</p>
+<p>For details about the last three parameters, please check the python script <code class="docutils literal notranslate"><span class="pre">src/generate_explicit_instantiaions.py</span></code> which processes the instantiation JSON.</p>
+<p>Finally, in the implementation file (<code class="docutils literal notranslate"><span class="pre">optimal_reorder.cc</span></code>), you must include the file which will contain your explicit instantiations. That file will be located in a directory <code class="docutils literal notranslate"><span class="pre">init</span></code> and will have the name given to the JSON object as <code class="docutils literal notranslate"><span class="pre">filename</span></code>. Notice that we only want to use explicit instantiations if the library is not in header-only mode. That is why we must make this <code class="docutils literal notranslate"><span class="pre">include</span></code> statement contingent on <code class="docutils literal notranslate"><span class="pre">_HEADER_ONLY</span></code> not being defined.
+For <code class="docutils literal notranslate"><span class="pre">OptimalReorder</span></code>, we add the following lines:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// File: src/sparsebase/reorder/optimal_reorder.cc</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">reorder</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span><span class="w"></span>
+<span class="cp">#ifndef _HEADER_ONLY</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;init/optimal_reorder.inc&quot;</span><span class="cp"></span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h2>
 <p>Now, you can easily use your reordering as shown in the following example:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/preprocess/preprocess.h&quot;</span><span class="cp"></span>
-
-<span class="kt">float</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
-<span class="n">sparsebase</span><span class="o">::</span><span class="n">preprocess</span><span class="o">::</span><span class="n">OptimalReorder</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span><span class="o">&gt;</span>
-    <span class="n">reorder</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">);</span>
-<span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">order</span> <span class="o">=</span> <span class="n">reorder</span><span class="p">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">some_format_object</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/optimal_reorder.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/bases/reorder_base.h&quot;</span><span class="cp"></span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">OptimalReorderParams</span><span class="w"> </span><span class="nf">params</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Reorder</span><span class="o">&lt;</span><span class="n">OptimalReorder</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">            </span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">some_format_object</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>If the format type of <code class="docutils literal notranslate"><span class="pre">some_sparseformat_object</span></code> is <code class="docutils literal notranslate"><span class="pre">CSR</span></code>, <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code>, or any other format that is convertible to the two aforementioned formats, then an order will be calculated for it.</p>
+<p>Or, you could create the parameters object and make the call to <code class="docutils literal notranslate"><span class="pre">Reorder</span></code> in one line by utilizing bracket initialization:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/optimal_reorder.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/bases/reorder_base.h&quot;</span><span class="cp"></span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ReorderBase</span><span class="o">::</span><span class="n">Reorder</span><span class="o">&lt;</span><span class="n">OptimalReorder</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">            </span><span class="p">({</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="p">},</span><span class="w"> </span><span class="n">some_format_object</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Alternatively, you can use the class directly as shown:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/reorder/optimal_reorder.h&quot;</span><span class="cp"></span>
+
+<span class="kt">float</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span><span class="w"></span>
+<span class="n">sparsebase</span><span class="o">::</span><span class="n">reorder</span><span class="o">::</span><span class="n">OptimalReorder</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="n">reorder</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">beta</span><span class="p">);</span><span class="w"></span>
+<span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reorder</span><span class="p">.</span><span class="n">GetOrder</span><span class="p">(</span><span class="n">some_format_object</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="o">&amp;</span><span class="n">cpu</span><span class="p">},</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>In all the previous examples, if the format type of <code class="docutils literal notranslate"><span class="pre">some_sparseformat_object</span></code> is <code class="docutils literal notranslate"><span class="pre">CSR</span></code>, <code class="docutils literal notranslate"><span class="pre">CUDACSR</span></code>, or any other format that is convertible to either of the two aforementioned formats, then an order will be calculated for it.</p>
 </section>
 </section>
 

@@ -9,11 +9,10 @@ Struct Context
 Inheritance Relationships
 -------------------------
 
-Derived Types
-*************
+Base Type
+*********
 
-- ``public sparsebase::context::ContextImplementation< CPUContext >`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`)
-- ``public sparsebase::context::ContextImplementation< ContextType >`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`)
+- ``public sparsebase::utils::Identifiable`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1Identifiable`)
 
 
 Struct Documentation

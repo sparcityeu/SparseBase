@@ -1,0 +1,13 @@
+.. _exhale_define_rabbit__reorder_8h_1a18437b757734c3ebce37525aeedd1afc:
+
+Define BOOST_ATOMIC_DETAIL_NO_HAS_UNIQUE_OBJECT_REPRESENTATIONS
+===============================================================
+
+- Defined in :ref:`file_src_sparsebase_reorder_rabbit_reorder.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: BOOST_ATOMIC_DETAIL_NO_HAS_UNIQUE_OBJECT_REPRESENTATIONS

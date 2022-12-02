@@ -1,0 +1,34 @@
+
+.. _program_listing_file_src_sparsebase_converter_converter_order_two.h:
+
+Program Listing for File converter_order_two.h
+==============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_converter_converter_order_two.h>` (``src/sparsebase/converter/converter_order_two.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_CONVERTER_ORDER_TWO_H
+   #define SPARSEBASE_PROJECT_CONVERTER_ORDER_TWO_H
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/converter/converter.h"
+   
+   namespace sparsebase::converter {
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   class ConverterOrderTwo
+       : public ConverterImpl<ConverterOrderTwo<IDType, NNZType, ValueType>> {
+    public:
+     ConverterOrderTwo();
+     virtual Converter *Clone() const;
+     void ResetConverterOrderTwo();
+     virtual void Reset();
+   };
+   }  // namespace sparsebase::converter
+   #ifdef _HEADER_ONLY
+   #include "converter_order_two.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_CONVERTER_ORDER_TWO_H

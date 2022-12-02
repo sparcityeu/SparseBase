@@ -1,0 +1,48 @@
+
+.. _program_listing_file_src_sparsebase_io_edge_list_reader.h:
+
+Program Listing for File edge_list_reader.h
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_io_edge_list_reader.h>` (``src/sparsebase/io/edge_list_reader.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_EDGE_LIST__READER_H
+   #define SPARSEBASE_PROJECT_EDGE_LIST__READER_H
+   #include <string>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/io/reader.h"
+   
+   namespace sparsebase::io {
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   class EdgeListReader : public Reader,
+                          public ReadsCSR<IDType, NNZType, ValueType>,
+                          public ReadsCOO<IDType, NNZType, ValueType> {
+    public:
+     explicit EdgeListReader(std::string filename, bool weighted = false,
+                             bool remove_duplicates = false,
+                             bool remove_self_edges = false,
+                             bool read_undirected_ = true, bool square = false);
+     format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+     format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
+     ~EdgeListReader() override;
+   
+    private:
+     std::string filename_;
+     bool weighted_;
+     bool remove_duplicates_;
+     bool remove_self_edges_;
+     bool read_undirected_;
+     bool square_;
+   };
+   
+   }  // namespace sparsebase::io
+   #ifdef _HEADER_ONLY
+   #include "edge_list_reader.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_EDGE_LIST__READER_H

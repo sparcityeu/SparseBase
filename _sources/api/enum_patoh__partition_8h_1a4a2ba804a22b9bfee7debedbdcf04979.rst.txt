@@ -1,0 +1,13 @@
+.. _exhale_enum_patoh__partition_8h_1a4a2ba804a22b9bfee7debedbdcf04979:
+
+Enum Objective
+==============
+
+- Defined in :ref:`file_src_sparsebase_partition_patoh_partition.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: sparsebase::partition::patoh::Objective

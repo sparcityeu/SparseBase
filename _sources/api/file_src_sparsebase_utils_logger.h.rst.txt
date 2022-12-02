@@ -1,0 +1,86 @@
+
+.. _file_src_sparsebase_utils_logger.h:
+
+File logger.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/logger.h``)
+----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_logger.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``fstream``
+
+- ``string``
+
+- ``typeindex``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_converter_converter.cc`
+
+- :ref:`file_src_sparsebase_format_array.cc`
+
+- :ref:`file_src_sparsebase_format_coo.cc`
+
+- :ref:`file_src_sparsebase_format_csc.cc`
+
+- :ref:`file_src_sparsebase_format_csr.cc`
+
+- :ref:`file_src_sparsebase_reorder_gray_reorder.cc`
+
+- :ref:`file_src_sparsebase_reorder_reorder_heatmap.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_logger.cc`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Logger`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b`
+

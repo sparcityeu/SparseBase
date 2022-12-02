@@ -1,0 +1,38 @@
+.. _exhale_class_classsparsebase_1_1io_1_1MTXReader:
+
+Template Class MTXReader
+========================
+
+- Defined in :ref:`file_src_sparsebase_io_mtx_reader.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structsparsebase_1_1io_1_1MTXReader_1_1MTXOptions`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public sparsebase::io::Reader`` (:ref:`exhale_class_classsparsebase_1_1io_1_1Reader`)
+- ``public sparsebase::io::ReadsCSR< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1ReadsCSR`)
+- ``public sparsebase::io::ReadsCOO< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1ReadsCOO`)
+- ``public sparsebase::io::ReadsArray< ValueType >`` (:ref:`exhale_class_classsparsebase_1_1io_1_1ReadsArray`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::io::MTXReader
+   :members:
+   :protected-members:
+   :undoc-members:

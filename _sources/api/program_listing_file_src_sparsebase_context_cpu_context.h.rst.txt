@@ -1,0 +1,34 @@
+
+.. _program_listing_file_src_sparsebase_context_cpu_context.h:
+
+Program Listing for File cpu_context.h
+======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_context_cpu_context.h>` (``src/sparsebase/context/cpu_context.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <typeindex>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/context/context.h"
+   #include "sparsebase/utils/utils.h"
+   
+   #ifndef SPARSEBASE_PROJECT_CPU_CONTEXT_H
+   #define SPARSEBASE_PROJECT_CPU_CONTEXT_H
+   
+   namespace sparsebase::context {
+   
+   struct CPUContext : utils::IdentifiableImplementation<CPUContext, Context> {
+     virtual bool IsEquivalent(Context *) const;
+   };
+   
+   }  // namespace sparsebase::context
+   
+   #ifdef _HEADER_ONLY
+   #include "cpu_context.cc"
+   #endif
+   
+   #endif  // SPARSEBASE_PROJECT_CPU_CONTEXT_H

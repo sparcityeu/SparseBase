@@ -1,0 +1,65 @@
+
+.. _program_listing_file_src_sparsebase_feature_extractor.h:
+
+Program Listing for File extractor.h
+====================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_feature_extractor.h>` (``src/sparsebase/feature/extractor.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <any>
+   #include <set>
+   #include <tuple>
+   #include <unordered_map>
+   #include <vector>
+   
+   #include "sparsebase/format/format.h"
+   #include "sparsebase/format/format_order_one.h"
+   #include "sparsebase/format/format_order_two.h"
+   #include "sparsebase/utils/class_matcher_mixin.h"
+   #include "sparsebase/utils/extractable.h"
+   #include "sparsebase/utils/utils.h"
+   #ifndef SPARSEBASE_PROJECT_EXTRACTOR_H
+   #define SPARSEBASE_PROJECT_EXTRACTOR_H
+   namespace sparsebase::feature {
+   using Feature = utils::Implementation<utils::Extractable>;
+   
+   
+   class Extractor : public utils::ClassMatcherMixin<utils::Extractable *> {
+    public:
+     ~Extractor();
+   
+     static std::unordered_map<std::type_index, std::any> Extract(
+         std::vector<Feature> &features, format::Format *format,
+         const std::vector<context::Context *> &, bool convert_input);
+     std::
+         unordered_map<std::type_index, std::any>
+   
+         Extract(format::Format *format,
+                 const std::vector<context::Context *> &con, bool convert_input);
+   
+     void Add(Feature f);
+   
+     void Subtract(Feature f);
+   
+     std::vector<std::type_index> GetList();
+   
+     void PrintFuncList();
+     std::vector<utils::Extractable *> GetFuncList();
+   
+    protected:
+     Extractor() noexcept = default;
+   
+    private:
+   
+     std::unordered_map<std::type_index, utils::Extractable *> in_;
+   };
+   }  // namespace sparsebase::feature
+   
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/feature/extractor.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_EXTRACTOR_H

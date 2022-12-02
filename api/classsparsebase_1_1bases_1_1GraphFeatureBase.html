@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class GraphFeatureBase &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class IOBase" href="classsparsebase_1_1bases_1_1IOBase.html" />
+    <link rel="prev" title="Struct TypeIndexVectorHash" href="structsparsebase_1_1utils_1_1TypeIndexVectorHash.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Class GraphFeatureBase</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1bases_1_1GraphFeatureBase.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-graphfeaturebase">
+<span id="exhale-class-classsparsebase-1-1bases-1-1graphfeaturebase"></span><h1>Class GraphFeatureBase<a class="headerlink" href="#class-graphfeaturebase" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_bases_graph_feature_base.h.html#file-src-sparsebase-bases-graph-feature-base-h"><span class="std std-ref">File graph_feature_base.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5bases16GraphFeatureBaseE">
+<span id="_CPPv3N10sparsebase5bases16GraphFeatureBaseE"></span><span id="_CPPv2N10sparsebase5bases16GraphFeatureBaseE"></span><span id="sparsebase::bases::GraphFeatureBase"></span><span class="target" id="classsparsebase_1_1bases_1_1GraphFeatureBase"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">bases</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">GraphFeatureBase</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase5bases16GraphFeatureBaseE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FeatureType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoIDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoNNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1GraphFeatureBase_1a6af35c11a2f3f084b017cb243884e456"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistribution::FeatureType"><span class="n"><span class="pre">FeatureType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetDegreeDistribution</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistribution::format"><span class="n"><span class="pre">format</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FormatOrderTwo</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistribution::AutoIDType"><span class="n"><span class="pre">AutoIDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistribution::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistribution::AutoValueType"><span class="n"><span class="pre">AutoValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">format</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">contexts</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase21GetDegreeDistributionEP11FeatureTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Calculates the degree distribution of every vertex represented by the FormerOrderTwo object <code class="docutils literal notranslate"><span class="pre">format</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>FeatureType</strong> – data type used for storing degree distribution values. </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>format</strong> – FormatOrderTwo object representing a graph. </p></li>
+<li><p><strong>contexts</strong> – vector of contexts that can be used for permutation. </p></li>
+<li><p><strong>convert_input</strong> – whether or not to convert the input format if that is needed. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>an array of type <code class="docutils literal notranslate"><span class="pre">FeatureType*</span></code> size format-&gt;get_dimensions()[0] with the degree distribution of each vertex. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE">
+<span id="_CPPv3I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE"></span><span id="_CPPv2I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FeatureType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoIDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoNNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1GraphFeatureBase_1af054b09d4f34b06fff8b186ef3f7d01a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::format"><span class="n"><span class="pre">format</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FormatOrderTwo</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::AutoIDType"><span class="n"><span class="pre">AutoIDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::AutoValueType"><span class="n"><span class="pre">AutoValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::FeatureType"><span class="n"><span class="pre">FeatureType</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDegreeDistributionCached</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::format"><span class="n"><span class="pre">format</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FormatOrderTwo</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::AutoIDType"><span class="n"><span class="pre">AutoIDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreeDistributionCached::AutoValueType"><span class="n"><span class="pre">AutoValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">format</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">contexts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0000EN10sparsebase5bases16GraphFeatureBase27GetDegreeDistributionCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11FeatureTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Calculates the degree distribution of every vertex represented by the FormerOrderTwo object <code class="docutils literal notranslate"><span class="pre">format</span></code> with cached output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>FeatureType</strong> – data type used for storing degree distribution values. </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>format</strong> – FormatOrderTwo object representing a graph. </p></li>
+<li><p><strong>contexts</strong> – vector of contexts that can be used for permutation. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An std::pair with the second element being an array of type <code class="docutils literal notranslate"><span class="pre">FeatureType*</span></code> size format-&gt;get_dimensions()[0] with the degree distribution of each vertex, and the first being a vector of all the formats generated by converting the input (if such conversions were needed to execute the permutation). </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoIDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoNNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1GraphFeatureBase_1a8d95dd6c89d4ee365937d7043493a6ba"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegrees::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetDegrees</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegrees::format"><span class="n"><span class="pre">format</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FormatOrderTwo</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegrees::AutoIDType"><span class="n"><span class="pre">AutoIDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegrees::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="sparsebase::bases::GraphFeatureBase::GetDegrees::AutoValueType"><span class="n"><span class="pre">AutoValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">format</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">contexts</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase10GetDegreesEP11AutoNNZTypePN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Calculates the degree count of every vertex represented by the FormerOrderTwo object <code class="docutils literal notranslate"><span class="pre">format</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> – FormatOrderTwo object representing a graph. </p></li>
+<li><p><strong>contexts</strong> – vector of contexts that can be used for permutation. </p></li>
+<li><p><strong>convert_input</strong> – whether or not to convert the input format if that is needed. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an array of size format-&gt;get_dimensions()[0] with the degree of each vertex. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE">
+<span id="_CPPv3I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE"></span><span id="_CPPv2I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoIDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoNNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1GraphFeatureBase_1aa942322e0b86a7b471ac98687e6e4850"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::format"><span class="n"><span class="pre">format</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FormatOrderTwo</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoIDType"><span class="n"><span class="pre">AutoIDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoValueType"><span class="n"><span class="pre">AutoValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDegreesCached</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::format"><span class="n"><span class="pre">format</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">FormatOrderTwo</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoIDType"><span class="n"><span class="pre">AutoIDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoNNZType"><span class="n"><span class="pre">AutoNNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="sparsebase::bases::GraphFeatureBase::GetDegreesCached::AutoValueType"><span class="n"><span class="pre">AutoValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">format</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">contexts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases16GraphFeatureBase16GetDegreesCachedENSt4pairINSt6vectorIPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEEEEP11AutoNNZTypeEEPN6format14FormatOrderTwoI10AutoIDType11AutoNNZType13AutoValueTypeEENSt6vectorIPN7context7ContextEEE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Calculates the degree count of every vertex represented by the FormerOrderTwo object <code class="docutils literal notranslate"><span class="pre">format</span></code> with cached output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> – FormatOrderTwo object representing a graph. </p></li>
+<li><p><strong>contexts</strong> – vector of contexts that can be used for permutation. </p></li>
+<li><p><strong>convert_input</strong> – whether or not to convert the input format if that is needed. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An std::pair with the second element being an array of type <code class="docutils literal notranslate"><span class="pre">FeatureType*</span></code> size format-&gt;get_dimensions()[0] with the degree of each vertex, and the first being a vector of all the formats generated by converting the input (if such conversions were needed to execute the permutation). </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="structsparsebase_1_1utils_1_1TypeIndexVectorHash.html" class="btn btn-neutral float-left" title="Struct TypeIndexVectorHash" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1bases_1_1IOBase.html" class="btn btn-neutral float-right" title="Class IOBase" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

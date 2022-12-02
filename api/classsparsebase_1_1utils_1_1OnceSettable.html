@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Class OnceSettable &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class Parameterizable" href="classsparsebase_1_1utils_1_1Parameterizable.html" />
+    <link rel="prev" title="Class NoConverterException" href="classsparsebase_1_1utils_1_1NoConverterException.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Template Class OnceSettable</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1utils_1_1OnceSettable.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="template-class-oncesettable">
+<span id="exhale-class-classsparsebase-1-1utils-1-1oncesettable"></span><h1>Template Class OnceSettable<a class="headerlink" href="#template-class-oncesettable" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_utils_utils.h.html#file-src-sparsebase-utils-utils-h"><span class="std std-ref">File utils.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase5utils12OnceSettableE">
+<span id="_CPPv3I0EN10sparsebase5utils12OnceSettableE"></span><span id="_CPPv2I0EN10sparsebase5utils12OnceSettableE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">OnceSettable</span></span></span><a class="headerlink" href="#_CPPv4I0EN10sparsebase5utils12OnceSettableE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableEv">
+<span id="_CPPv3N10sparsebase5utils12OnceSettable12OnceSettableEv"></span><span id="_CPPv2N10sparsebase5utils12OnceSettable12OnceSettableEv"></span><span id="sparsebase::utils::OnceSettable::OnceSettable"></span><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable_1a37b08d94318eaee2b5f27685ac12cb6a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnceSettable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase5utils12OnceSettablecv1TEv">
+<span id="_CPPv3NK10sparsebase5utils12OnceSettablecv1TEv"></span><span id="_CPPv2NK10sparsebase5utils12OnceSettablecv1TEv"></span><span id="sparsebase::utils::OnceSettable::castto-T-operatorC"></span><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable_1a205c95801e68174a1aabcf816ec58f86"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN10sparsebase5utils12OnceSettableE" title="sparsebase::utils::OnceSettable::T"><span class="n"><span class="pre">T</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase5utils12OnceSettablecv1TEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableERK12OnceSettable">
+<span id="_CPPv3N10sparsebase5utils12OnceSettable12OnceSettableERK12OnceSettable"></span><span id="_CPPv2N10sparsebase5utils12OnceSettable12OnceSettableERK12OnceSettable"></span><span id="sparsebase::utils::OnceSettable::OnceSettable__OnceSettableCR"></span><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable_1a4bd3f390cb50e193321eb164b5880924"></span><span class="sig-name descname"><span class="n"><span class="pre">OnceSettable</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableERK12OnceSettable" title="sparsebase::utils::OnceSettable::OnceSettable"><span class="n"><span class="pre">OnceSettable</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableERK12OnceSettable" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableERR12OnceSettable">
+<span id="_CPPv3N10sparsebase5utils12OnceSettable12OnceSettableERR12OnceSettable"></span><span id="_CPPv2N10sparsebase5utils12OnceSettable12OnceSettableERR12OnceSettable"></span><span id="sparsebase::utils::OnceSettable::OnceSettable__OnceSettableRR"></span><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable_1ac2ac7b1f6c9f869761e46d5a3998c785"></span><span class="sig-name descname"><span class="n"><span class="pre">OnceSettable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableERR12OnceSettable" title="sparsebase::utils::OnceSettable::OnceSettable"><span class="n"><span class="pre">OnceSettable</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N10sparsebase5utils12OnceSettable12OnceSettableERR12OnceSettable" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils12OnceSettableaSERR1T">
+<span id="_CPPv3N10sparsebase5utils12OnceSettableaSERR1T"></span><span id="_CPPv2N10sparsebase5utils12OnceSettableaSERR1T"></span><span id="sparsebase::utils::OnceSettable::assign-operator__TRR"></span><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable_1a57062be0f3353199b834fe63dc355162"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN10sparsebase5utils12OnceSettableE" title="sparsebase::utils::OnceSettable"><span class="n"><span class="pre">OnceSettable</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN10sparsebase5utils12OnceSettableE" title="sparsebase::utils::OnceSettable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils12OnceSettableaSERR1T" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase5utils12OnceSettable3getEv">
+<span id="_CPPv3NK10sparsebase5utils12OnceSettable3getEv"></span><span id="_CPPv2NK10sparsebase5utils12OnceSettable3getEv"></span><span id="sparsebase::utils::OnceSettable::getC"></span><span class="target" id="classsparsebase_1_1utils_1_1OnceSettable_1a913cca73eb32b1dd405372f6ea7c9c7e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN10sparsebase5utils12OnceSettableE" title="sparsebase::utils::OnceSettable::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase5utils12OnceSettable3getEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1utils_1_1NoConverterException.html" class="btn btn-neutral float-left" title="Class NoConverterException" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1utils_1_1Parameterizable.html" class="btn btn-neutral float-right" title="Class Parameterizable" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

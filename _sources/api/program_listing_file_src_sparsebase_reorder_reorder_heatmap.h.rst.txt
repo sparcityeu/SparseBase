@@ -1,0 +1,55 @@
+
+.. _program_listing_file_src_sparsebase_reorder_reorder_heatmap.h:
+
+Program Listing for File reorder_heatmap.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_reorder_reorder_heatmap.h>` (``src/sparsebase/reorder/reorder_heatmap.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <utility>
+   #include <vector>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/format/array.h"
+   #include "sparsebase/format/csr.h"
+   #include "sparsebase/reorder/reorderer.h"
+   #include "sparsebase/utils/parameterizable.h"
+   #ifndef SPARSEBASE_PROJECT_REORDER_HEATMAP_H
+   #define SPARSEBASE_PROJECT_REORDER_HEATMAP_H
+   
+   namespace sparsebase::reorder {
+   
+   struct ReorderHeatmapParams : utils::Parameters {
+     int num_parts = 3;
+     ReorderHeatmapParams(int b) : num_parts(b) {}
+     ReorderHeatmapParams() {}
+   };
+   
+   
+   template <typename IDType, typename NNZType, typename ValueType,
+             typename FloatType>
+   class ReorderHeatmap
+       : public utils::FunctionMatcherMixin<format::FormatOrderOne<FloatType>*> {
+    public:
+     ReorderHeatmap();
+     ReorderHeatmap(ReorderHeatmapParams params);
+     format::FormatOrderOne<FloatType>* Get(
+         format::FormatOrderTwo<IDType, NNZType, ValueType>* format,
+         format::FormatOrderOne<IDType>* permutation_r,
+         format::FormatOrderOne<IDType>* permutation_c,
+         std::vector<context::Context*> contexts, bool convert_input);
+   
+    protected:
+     static format::FormatOrderOne<FloatType>* ReorderHeatmapCSRArrayArray(
+         std::vector<format::Format*> formats, utils::Parameters* poly_params);
+   };
+   
+   }  // namespace sparsebase::reorder
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/reorder/reorder_heatmap.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_REORDER_HEATMAP_H

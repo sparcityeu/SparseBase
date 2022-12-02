@@ -1,0 +1,63 @@
+
+.. _program_listing_file_src_sparsebase_experiment_experiment_type.h:
+
+Program Listing for File experiment_type.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_experiment_experiment_type.h>` (``src/sparsebase/experiment/experiment_type.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_EXPERIMENT_TYPE_H
+   #define SPARSEBASE_PROJECT_EXPERIMENT_TYPE_H
+   
+   #include <any>
+   #include <chrono>
+   #include <map>
+   #include <unordered_map>
+   #include <vector>
+   
+   #include "sparsebase/format/format.h"
+   #include "sparsebase/format/format_order_one.h"
+   #include "sparsebase/format/format_order_two.h"
+   
+   namespace sparsebase::experiment {
+   
+   
+   using LoadDataFunction =
+       std::function<std::unordered_map<std::string, format::Format*>(
+           std::vector<std::string>& file_paths)>;
+   
+   using PreprocessFunction =
+       std::function<void(std::unordered_map<std::string, format::Format*>& data,
+                          std::any& fparams, std::any& params)>;
+   
+   using KernelFunction = std::function<std::any(
+       std::unordered_map<std::string, format::Format*>& data, std::any& fparams,
+       std::any& pparams, std::any& kparams)>;
+   
+   class ExperimentType {
+    public:
+   
+     virtual void Run(unsigned int times, bool store_auxiliary) = 0;
+   
+     virtual void AddDataLoader(
+         LoadDataFunction func,
+         std::vector<std::pair<std::vector<std::string>, std::any>> targets) = 0;
+   
+     virtual void AddPreprocess(std::string id, PreprocessFunction func,
+                                std::any params) = 0;
+   
+     virtual void AddKernel(std::string id, KernelFunction func,
+                            std::any params) = 0;
+   
+     virtual std::map<std::string, std::vector<double>> GetRunTimes() = 0;
+   
+     virtual std::map<std::string, std::vector<std::any>> GetResults() = 0;
+   
+     virtual std::map<std::string, std::any> GetAuxiliary() = 0;
+   };
+   }  // namespace sparsebase::experiment
+   #endif  // SPARSEBASE_PROJECT_EXPERIMENT_TYPE_H

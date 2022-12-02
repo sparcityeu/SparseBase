@@ -1,0 +1,24 @@
+
+.. _namespace_sparsebase__bases:
+
+Namespace sparsebase::bases
+===========================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1bases_1_1GraphFeatureBase`
+
+- :ref:`exhale_class_classsparsebase_1_1bases_1_1IOBase`
+
+- :ref:`exhale_class_classsparsebase_1_1bases_1_1ReorderBase`

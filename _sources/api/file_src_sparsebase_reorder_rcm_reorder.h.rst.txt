@@ -1,0 +1,73 @@
+
+.. _file_src_sparsebase_reorder_rcm_reorder.h:
+
+File rcm_reorder.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_reorder>` (``src/sparsebase/reorder``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/reorder/rcm_reorder.h``)
+-----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_reorder_rcm_reorder.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/reorder/reorderer.h`` (:ref:`file_src_sparsebase_reorder_reorderer.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+- :ref:`file_src_sparsebase_reorder_rcm_reorder.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__reorder`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1RCMReorderParams`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1RCMReorder`
+

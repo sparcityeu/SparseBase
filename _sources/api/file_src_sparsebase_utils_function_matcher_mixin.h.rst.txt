@@ -1,0 +1,82 @@
+
+.. _file_src_sparsebase_utils_function_matcher_mixin.h:
+
+File function_matcher_mixin.h
+=============================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/function_matcher_mixin.h``)
+--------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_function_matcher_mixin.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/converter/converter.h`` (:ref:`file_src_sparsebase_converter_converter.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_feature_feature_preprocess_type.h`
+
+- :ref:`file_src_sparsebase_feature_jaccard_weights.h`
+
+- :ref:`file_src_sparsebase_partition_partitioner.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_function__matcher__mixin_8h_1a94142a17f2d3a290678cc1a54d0d7c3e`
+

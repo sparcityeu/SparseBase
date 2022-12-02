@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Converter &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Template Class ConverterImpl" href="classsparsebase_1_1converter_1_1ConverterImpl.html" />
+    <link rel="prev" title="Class ReorderBase" href="classsparsebase_1_1bases_1_1ReorderBase.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Class Converter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1converter_1_1Converter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-converter">
+<span id="exhale-class-classsparsebase-1-1converter-1-1converter"></span><h1>Class Converter<a class="headerlink" href="#class-converter" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_converter_converter.h.html#file-src-sparsebase-converter-converter-h"><span class="std std-ref">File converter.h</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
+<section id="derived-types">
+<h3>Derived Types<a class="headerlink" href="#derived-types" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::converter::ConverterImpl&lt;</span> <span class="pre">ConverterOrderTwo&lt;</span> <span class="pre">IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1converter_1_1ConverterImpl.html#exhale-class-classsparsebase-1-1converter-1-1converterimpl"><span class="std std-ref">Template Class ConverterImpl</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::converter::ConverterImpl&lt;</span> <span class="pre">ConverterOrderOne&lt;</span> <span class="pre">ValueType</span> <span class="pre">&gt;</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1converter_1_1ConverterImpl.html#exhale-class-classsparsebase-1-1converter-1-1converterimpl"><span class="std std-ref">Template Class ConverterImpl</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::converter::ConverterImpl&lt;</span> <span class="pre">ConverterType</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1converter_1_1ConverterImpl.html#exhale-class-classsparsebase-1-1converter-1-1converterimpl"><span class="std std-ref">Template Class ConverterImpl</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9ConverterE">
+<span id="_CPPv3N10sparsebase9converter9ConverterE"></span><span id="_CPPv2N10sparsebase9converter9ConverterE"></span><span id="sparsebase::converter::Converter"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">converter</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Converter</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9ConverterE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Base class for all the converter classes. </p>
+<p>Subclassed by <a class="reference internal" href="classsparsebase_1_1converter_1_1ConverterImpl.html#classsparsebase_1_1converter_1_1ConverterImpl"><span class="std std-ref">sparsebase::converter::ConverterImpl&lt; ConverterOrderTwo&lt; IDType, NNZType, ValueType &gt; &gt;</span></a>, <a class="reference internal" href="classsparsebase_1_1converter_1_1ConverterImpl.html#classsparsebase_1_1converter_1_1ConverterImpl"><span class="std std-ref">sparsebase::converter::ConverterImpl&lt; ConverterOrderOne&lt; ValueType &gt; &gt;</span></a>, <a class="reference internal" href="classsparsebase_1_1converter_1_1ConverterImpl.html#classsparsebase_1_1converter_1_1ConverterImpl"><span class="std std-ref">sparsebase::converter::ConverterImpl&lt; ConverterType &gt;</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter26RegisterConversionFunctionENSt10type_indexENSt10type_indexE18ConversionFunction19ConversionConditionb">
+<span id="_CPPv3N10sparsebase9converter9Converter26RegisterConversionFunctionENSt10type_indexENSt10type_indexE18ConversionFunction19ConversionConditionb"></span><span id="_CPPv2N10sparsebase9converter9Converter26RegisterConversionFunctionENSt10type_indexENSt10type_indexE18ConversionFunction19ConversionConditionb"></span><span id="sparsebase::converter::Converter::RegisterConversionFunction__std::type_index.std::type_index.ConversionFunction.ConversionCondition.b"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a75787e160d0d37dd1ccec17e909998d0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RegisterConversionFunction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from_type</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <a class="reference internal" href="typedef_converter_8h_1afb8b3fcf279c8cd4ccd46e2bdb3fec1f.html#_CPPv4N10sparsebase9converter18ConversionFunctionE" title="sparsebase::converter::ConversionFunction"><span class="n"><span class="pre">ConversionFunction</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">conv_func</span></span>, <a class="reference internal" href="typedef_converter_8h_1a51eb17e5f73f5d9d81f34762ead418c4.html#_CPPv4N10sparsebase9converter19ConversionConditionE" title="sparsebase::converter::ConversionCondition"><span class="n"><span class="pre">ConversionCondition</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">edge_condition</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter26RegisterConversionFunctionENSt10type_indexENSt10type_indexE18ConversionFunction19ConversionConditionb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Register a conversion function from one type to another. </p>
+<p>Registers a conversion function from one type to another. The conversion will be conditional on <code class="docutils literal notranslate"><span class="pre">edge_condition</span></code> which is a function that returns a boolean based on the source and destination contexts of the conversion. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_type</strong> – std::type_index of the source format </p></li>
+<li><p><strong>to_type</strong> – std::type_index of the destination format </p></li>
+<li><p><strong>conv_func</strong> – a conversion function taking an input Format* and a destination context. </p></li>
+<li><p><strong>edge_condition</strong> – an std::function containing a boolean function with two Context* parameters for the source and destination contexts. Returns true if the conversion should happen based on context inputs. </p></li>
+<li><p><strong>is_move_conversion</strong> – whether this conversion is a move conversion. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexEPN7context7ContextEb">
+<span id="_CPPv3NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexEPN7context7ContextEb"></span><span id="_CPPv2NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexEPN7context7ContextEb"></span><span id="sparsebase::converter::Converter::Convert__format::FormatP.std::type_index.context::ContextP.bC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a8884d3273c7fcaf8e22c0494a36e084a"></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Convert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">to_context</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexEPN7context7ContextEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts a source format to a destination format. </p>
+<p>Converts the source to to_type by automatically selecting and using a registered conversion function </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – a pointer to the source Format instance </p></li>
+<li><p><strong>to_type</strong> – a type_index for the type to convert to (for example: std::typeid(COO&lt;…&gt;) can be used) </p></li>
+<li><p><strong>to_context</strong> – context used for the conversion (see the context namespace for more information) </p></li>
+<li><p><strong>is_move_conversion</strong> – if true the underlying arrays will be moved instead of being copied </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a pointer to the converted Format instance </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexEPN7context7ContextEb">
+<span id="_CPPv3NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexEPN7context7ContextEb"></span><span id="_CPPv2NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexEPN7context7ContextEb"></span><span id="sparsebase::converter::Converter::ConvertCached__format::FormatP.std::type_index.context::ContextP.bC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a04589fd1503ccc39fd631708518a9b47"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertCached</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">to_context</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexEPN7context7ContextEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts a source format to a destination format with cached output. </p>
+<p>Converts the source to to_type and returns all the formats created during the conversion process. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – a pointer to the source Format instance </p></li>
+<li><p><strong>to_type</strong> – a type_index for the type to convert to (for example: std::typeid(COO&lt;…&gt;) can be used) </p></li>
+<li><p><strong>to_context</strong> – context used for the conversion (see the context namespace for more information) </p></li>
+<li><p><strong>is_move_conversion</strong> – if true the underlying arrays will be moved instead of being copied </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a vector of formats, with the last (back) format being the target format, and the ones before it being intermediate ones. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb"></span><span id="sparsebase::converter::Converter::Convert__format::FormatP.std::type_index.std::vector:context::ContextP:.bC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1aa2ce93ffe5cf36f68618ebc6f53f6e0f"></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Convert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_contexts</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts a source format to a destination format. </p>
+<p>Converts the source to to_type by automatically selecting and using a registered conversion function </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – a pointer to the source Format instance </p></li>
+<li><p><strong>to_type</strong> – a type_index for the type to convert to (for example: std::typeid(COO&lt;…&gt;) can be used) </p></li>
+<li><p><strong>to_contexts</strong> – contexts that may be used for the conversion (see the context namespace for more information) </p></li>
+<li><p><strong>is_move_conversion</strong> – if true the underlying arrays will be moved instead of being copied </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a pointer to the converted Format instance </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb"></span><span id="sparsebase::converter::Converter::ConvertCached__format::FormatP.std::type_index.std::vector:context::ContextP:.bC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a6c37a0b76549fe8099925f2ab7a396b5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConvertCached</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_context</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter13ConvertCachedEPN6format6FormatENSt10type_indexENSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts the source to to_type and returns all the formats created during the conversion process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – a pointer to the source Format instance </p></li>
+<li><p><strong>to_type</strong> – a type_index for the type to convert to (for example: std::typeid(COO&lt;…&gt;) can be used) </p></li>
+<li><p><strong>to_contexts</strong> – contexts that may be used for the conversion (see the context namespace for more information)</p></li>
+<li><p><strong>is_move_conversion</strong> – if true the underlying arrays will be moved instead of being copied </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a vector of formats, with the last (back) format being the target format, and the ones before it being intermediate ones. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK10sparsebase9converter9Converter7ConvertEP10FormatTypePN6format6FormatEPN7context7ContextEb">
+<span id="_CPPv3I0ENK10sparsebase9converter9Converter7ConvertEPN6format6FormatEPN7context7ContextEb"></span><span id="_CPPv2I0ENK10sparsebase9converter9Converter7ConvertEPN6format6FormatEPN7context7ContextEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FormatType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a0239fb1602561a31ca67070e3da0f34a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0ENK10sparsebase9converter9Converter7ConvertEP10FormatTypePN6format6FormatEPN7context7ContextEb" title="sparsebase::converter::Converter::Convert::FormatType"><span class="n"><span class="pre">FormatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Convert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">to_context</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK10sparsebase9converter9Converter7ConvertEP10FormatTypePN6format6FormatEPN7context7ContextEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts a format to another format and returns a cast pointer to the destination format.</p>
+<p>An overload of the Convert function where the to_type parameter is provided as a template Usage: Convert&lt;COO&lt;…&gt;&gt;(…) Note that sometimes it might be necessary to use the “template” keyword before the function name in the call. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>FormatType</strong> – the destination format. </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>source</strong> – input format object. </p></li>
+<li><p><strong>to_context</strong> – context to be used for conversion </p></li>
+<li><p><strong>is_move_conversion</strong> – whether this is a move conversion </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pointer at <code class="docutils literal notranslate"><span class="pre">FormatType</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK10sparsebase9converter9Converter7ConvertEP10FormatTypePN6format6FormatENSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3I0ENK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2I0ENK10sparsebase9converter9Converter7ConvertEPN6format6FormatENSt6vectorIPN7context7ContextEEEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FormatType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a3592a0137cec1888fba50816da5a8ccf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0ENK10sparsebase9converter9Converter7ConvertEP10FormatTypePN6format6FormatENSt6vectorIPN7context7ContextEEEb" title="sparsebase::converter::Converter::Convert::FormatType"><span class="n"><span class="pre">FormatType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Convert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_contexts</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK10sparsebase9converter9Converter7ConvertEP10FormatTypePN6format6FormatENSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Converts a format to another format and returns a cast pointer to the destination format.</p>
+<p>An overload of the Convert function where the to_type parameter is provided as a template Usage: Convert&lt;COO&lt;…&gt;&gt;(…) Note that sometimes it might be necessary to use the “template” keyword before the function name in the call. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>FormatType</strong> – the destination format. </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>source</strong> – input format object. </p></li>
+<li><p><strong>to_contexts</strong> – contexts that may be used for the conversion (see the context namespace for more information) </p></li>
+<li><p><strong>is_move_conversion</strong> – whether this is a move conversion </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pointer at <code class="docutils literal notranslate"><span class="pre">FormatType</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter18GetConversionChainENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3NK10sparsebase9converter9Converter18GetConversionChainENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2NK10sparsebase9converter9Converter18GetConversionChainENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb"></span><span id="sparsebase::converter::Converter::GetConversionChain__std::type_index.context::ContextP.std::type_index.std::vector:context::ContextP:CR.bC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1ad67b2d63e1f376b809e732ecbde54dce"></span><a class="reference internal" href="typedef_converter_8h_1a9b0d2c12b7d32d8c3af9a868add8cdbf.html#_CPPv4N10sparsebase9converter15ConversionChainE" title="sparsebase::converter::ConversionChain"><span class="n"><span class="pre">ConversionChain</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetConversionChain</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from_type</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">from_context</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">to_contexts</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter18GetConversionChainENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns a conversion chain needed to convert between two formats. </p>
+<p>Takes a single (format, context) input and returns the chain of conversions needed to convert the input to the type <code class="docutils literal notranslate"><span class="pre">to_type</span></code>. The chain is optional, meaning it could be empty if no conversions exist. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_type</strong> – type of source format </p></li>
+<li><p><strong>from_context</strong> – context of source format </p></li>
+<li><p><strong>to_type</strong> – format type to convert to </p></li>
+<li><p><strong>to_contexts</strong> – contexts available for conversion </p></li>
+<li><p><strong>is_move_conversion</strong> – whether to find move conversions or normal conversions </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an optional chain of conversion. If nothing is returned, then no conversions are available. Otherwise, will return a tuple with its second element being the total conversion cost, and its first element a vector of (ConversionFunction, Context) pairs, where the input must be passed through this chain starting from its front to its back to become <code class="docutils literal notranslate"><span class="pre">to_type</span></code>. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexEPN7context7ContextEb">
+<span id="_CPPv3NK10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexEPN7context7ContextEb"></span><span id="_CPPv2NK10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexEPN7context7ContextEb"></span><span id="sparsebase::converter::Converter::CanConvert__std::type_index.context::ContextP.std::type_index.context::ContextP.bC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a3553387f0c63a1d27d685dee0475f382"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CanConvert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from_type</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">from_context</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">to_context</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexEPN7context7ContextEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns true if a conversion from (from_type, from_context) to (to_type, to_context) is possible</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_type</strong> – source format type_index </p></li>
+<li><p><strong>from_context</strong> – source context </p></li>
+<li><p><strong>to_type</strong> – destination format type_index </p></li>
+<li><p><strong>to_context</strong> – destination context </p></li>
+<li><p><strong>is_move_conversion</strong> – whether it is a move conversion </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a boolean indicating whether a conversion is possible </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb">
+<span id="_CPPv3N10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb"></span><span id="_CPPv2N10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb"></span><span id="sparsebase::converter::Converter::CanConvert__std::type_index.context::ContextP.std::type_index.std::vector:context::ContextP:CR.b"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a3c2b19e09f01760b9556fdd13b241102"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CanConvert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from_type</span></span>, <span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">from_context</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">to_contexts</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter10CanConvertENSt10type_indexEPN7context7ContextENSt10type_indexERKNSt6vectorIPN7context7ContextEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Returns true if a conversion from (from_type, from_context) to (to_type, to_context) is possible</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_type</strong> – source format type_index </p></li>
+<li><p><strong>from_context</strong> – source context </p></li>
+<li><p><strong>to_type</strong> – destination format type_index </p></li>
+<li><p><strong>to_contexts</strong> – contexts available for conversion </p></li>
+<li><p><strong>is_move_conversion</strong> – whether it is a move conversion </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a boolean indicating whether a conversion is possible </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter24ClearConversionFunctionsENSt10type_indexENSt10type_indexEb">
+<span id="_CPPv3N10sparsebase9converter9Converter24ClearConversionFunctionsENSt10type_indexENSt10type_indexEb"></span><span id="_CPPv2N10sparsebase9converter9Converter24ClearConversionFunctionsENSt10type_indexENSt10type_indexEb"></span><span id="sparsebase::converter::Converter::ClearConversionFunctions__std::type_index.std::type_index.b"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a6bcc03027e28981b956ecacd458fac5d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearConversionFunctions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from_type</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">to_type</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter24ClearConversionFunctionsENSt10type_indexENSt10type_indexEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Clears all conversion functions from one format to another. </p>
+<p>Removes conversion functions that convert from <code class="docutils literal notranslate"><span class="pre">from_type</span></code> to <code class="docutils literal notranslate"><span class="pre">to_type</span></code> from the conversion map </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_type</strong> – type_index of the original format type </p></li>
+<li><p><strong>to_type</strong> – type_index of the destination format type </p></li>
+<li><p><strong>move_conversion</strong> – whether the conversions to be removed are move conversions or not </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter24ClearConversionFunctionsEb">
+<span id="_CPPv3N10sparsebase9converter9Converter24ClearConversionFunctionsEb"></span><span id="_CPPv2N10sparsebase9converter9Converter24ClearConversionFunctionsEb"></span><span id="sparsebase::converter::Converter::ClearConversionFunctions__b"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a30741616d00a248def3b39b3edb13652"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearConversionFunctions</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">move_conversion</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter24ClearConversionFunctionsEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Removes all conversion functions from current converter. </p>
+<p><p>Removes all conversion functions from the current converter in all directions.</p>
+<p>Removes all conversion functions from the current converter</p>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>move_conversion</strong> – whether the conversions to be removed are move conversions or not</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter18get_converter_typeEv">
+<span id="_CPPv3NK10sparsebase9converter9Converter18get_converter_typeEv"></span><span id="_CPPv2NK10sparsebase9converter9Converter18get_converter_typeEv"></span><span id="sparsebase::converter::Converter::get_converter_typeC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a50074bd964886b47df713e4b260a9545"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_converter_type</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter18get_converter_typeEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK10sparsebase9converter9Converter5CloneEv">
+<span id="_CPPv3NK10sparsebase9converter9Converter5CloneEv"></span><span id="_CPPv2NK10sparsebase9converter9Converter5CloneEv"></span><span id="sparsebase::converter::Converter::CloneC"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a22da26d01b9ebdb2b828d66a12dc211c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N10sparsebase9converter9ConverterE" title="sparsebase::converter::Converter"><span class="n"><span class="pre">Converter</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Clone</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK10sparsebase9converter9Converter5CloneEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter5ResetEv">
+<span id="_CPPv3N10sparsebase9converter9Converter5ResetEv"></span><span id="_CPPv2N10sparsebase9converter9Converter5ResetEv"></span><span id="sparsebase::converter::Converter::Reset"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a386509ccf89eae0bd6c1ff28dbac613f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter5ResetEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9ConverterD0Ev">
+<span id="_CPPv3N10sparsebase9converter9ConverterD0Ev"></span><span id="_CPPv2N10sparsebase9converter9ConverterD0Ev"></span><span id="sparsebase::converter::Converter::~Converter"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a0b8ce92c8c220c38eecac0711e17d18d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Converter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9ConverterD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter21ApplyConversionSchemaERK16ConversionSchemaRKNSt6vectorIPN6format6FormatEEEb">
+<span id="_CPPv3N10sparsebase9converter9Converter21ApplyConversionSchemaERK16ConversionSchemaRKNSt6vectorIPN6format6FormatEEEb"></span><span id="_CPPv2N10sparsebase9converter9Converter21ApplyConversionSchemaERK16ConversionSchemaRKNSt6vectorIPN6format6FormatEEEb"></span><span id="sparsebase::converter::Converter::ApplyConversionSchema__ConversionSchemaCR.std::vector:format::FormatP:CR.b"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1ac9c4b0d0e3362876d59b495d4ffa32b9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ApplyConversionSchema</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="typedef_converter_8h_1ad16ee03b899d1545543dca8f14ada786.html#_CPPv4N10sparsebase9converter16ConversionSchemaE" title="sparsebase::converter::ConversionSchema"><span class="n"><span class="pre">ConversionSchema</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">packed_sfs</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clear_intermediate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter21ApplyConversionSchemaERK16ConversionSchemaRKNSt6vectorIPN6format6FormatEEEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Applies a conversion schema to convert one format to another. </p>
+<p>Takes a conversion schema to convert all the formats in <code class="docutils literal notranslate"><span class="pre">packed_sfs</span></code>, carries out the conversions, and returns a chain of converted formats for each format. Chain contains original format, all intermediate formats, and last format in the chain. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cs</strong> – ConversionSchema containing the an optional chain of conversion functions for every format in <code class="docutils literal notranslate"><span class="pre">packed_sfs</span></code> </p></li>
+<li><p><strong>packed_sfs</strong> – formats to convert </p></li>
+<li><p><strong>clear_intermediate</strong> – delete intermediate formats between the starting and destination one. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a vector of size <code class="docutils literal notranslate"><span class="pre">packed_sfs.size()</span></code>. Each element is a vector of size &gt;= 1 containing the starting format in the conversion chain, every intermediate format, and the final format. The first format is the original and the last is the output format in each chain. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase9converter9Converter20ApplyConversionChainERK15ConversionChainPN6format6FormatEb">
+<span id="_CPPv3N10sparsebase9converter9Converter20ApplyConversionChainERK15ConversionChainPN6format6FormatEb"></span><span id="_CPPv2N10sparsebase9converter9Converter20ApplyConversionChainERK15ConversionChainPN6format6FormatEb"></span><span id="sparsebase::converter::Converter::ApplyConversionChain__ConversionChainCR.format::FormatP.b"></span><span class="target" id="classsparsebase_1_1converter_1_1Converter_1a758d90b5c6fb73573d623b097afbf430"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ApplyConversionChain</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="typedef_converter_8h_1a9b0d2c12b7d32d8c3af9a868add8cdbf.html#_CPPv4N10sparsebase9converter15ConversionChainE" title="sparsebase::converter::ConversionChain"><span class="n"><span class="pre">ConversionChain</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">chain</span></span>, <span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#_CPPv4N10sparsebase6format6FormatE" title="sparsebase::format::Format"><span class="n"><span class="pre">Format</span></span></a><span class="p"><span class="pre">*</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clear_intermediate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase9converter9Converter20ApplyConversionChainERK15ConversionChainPN6format6FormatEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Takes a conversion chain and a format and applies that chain on the format to produce some output format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chain</strong> – a conversion chain containing conversion functions and contexts to use for each function.</p></li>
+<li><p><strong>clear_intermediate</strong> – delete intermediate formats between the starting and destination one. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a vector of format with the first being the original format, the last being the target format, and the rest being intermediate formats. If a conversion is empty or false, only returns the original format. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1bases_1_1ReorderBase.html" class="btn btn-neutral float-left" title="Class ReorderBase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1converter_1_1ConverterImpl.html" class="btn btn-neutral float-right" title="Template Class ConverterImpl" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

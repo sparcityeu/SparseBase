@@ -1,0 +1,28 @@
+
+.. _program_listing_file_src_sparsebase_format_format_order_one.cc:
+
+Program Listing for File format_order_one.cc
+============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_format_format_order_one.cc>` (``src/sparsebase/format/format_order_one.cc``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include "sparsebase/format/format_order_one.h"
+   
+   #include "sparsebase/converter/converter_order_one.h"
+   #include "sparsebase/converter/converter_store.h"
+   namespace sparsebase::format {
+   
+   template <typename ValueType>
+   FormatOrderOne<ValueType>::FormatOrderOne() {
+     this->set_converter(
+         converter::ConverterStore::GetStore()
+             .get_converter<converter::ConverterOrderOne<ValueType>>());
+   }
+   #ifndef _HEADER_ONLY
+   #include "init/format_order_one.inc"
+   #endif
+   }  // namespace sparsebase::format

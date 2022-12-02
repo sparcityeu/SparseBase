@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1format_1_1CSC:
+
+Template Class CSC
+==================
+
+- Defined in :ref:`file_src_sparsebase_format_csc.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::IdentifiableImplementation< CSC< IDType, NNZType, ValueType >, FormatOrderTwo< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::format::CSC
+   :members:
+   :protected-members:
+   :undoc-members:

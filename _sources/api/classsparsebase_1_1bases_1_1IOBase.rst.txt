@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1bases_1_1IOBase:
+
+Class IOBase
+============
+
+- Defined in :ref:`file_src_sparsebase_bases_iobase.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::bases::IOBase
+   :members:
+   :protected-members:
+   :undoc-members:

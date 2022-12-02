@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1ClassMatcherMixin:
+
+Template Class ClassMatcherMixin
+================================
+
+- Defined in :ref:`file_src_sparsebase_utils_class_matcher_mixin.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::ClassMatcherMixin
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,26 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1Identifiable:
+
+Class Identifiable
+==================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::context::Context`` (:ref:`exhale_struct_structsparsebase_1_1context_1_1Context`)
+- ``public sparsebase::format::Format`` (:ref:`exhale_class_classsparsebase_1_1format_1_1Format`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::Identifiable
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,39 @@
+
+.. _namespace_sparsebase__partition:
+
+Namespace sparsebase::partition
+===============================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase__partition__patoh`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1partition_1_1MetisPartitionParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1partition_1_1PatohPartitionParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1partition_1_1PulpPartitionParams`
+
+- :ref:`exhale_class_classsparsebase_1_1partition_1_1MetisPartition`
+
+- :ref:`exhale_class_classsparsebase_1_1partition_1_1Partitioner`
+
+- :ref:`exhale_class_classsparsebase_1_1partition_1_1PatohPartition`
+
+- :ref:`exhale_class_classsparsebase_1_1partition_1_1PulpPartition`

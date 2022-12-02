@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1reorder_1_1AMDReorder:
+
+Template Class AMDReorder
+=========================
+
+- Defined in :ref:`file_src_sparsebase_reorder_amd_reorder.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::reorder::Reorderer< IDType >`` (:ref:`exhale_class_classsparsebase_1_1reorder_1_1Reorderer`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::reorder::AMDReorder
+   :members:
+   :protected-members:
+   :undoc-members:

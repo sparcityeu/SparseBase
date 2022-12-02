@@ -1,0 +1,35 @@
+.. _exhale_class_classsparsebase_1_1format_1_1FormatOrderOne:
+
+Template Class FormatOrderOne
+=============================
+
+- Defined in :ref:`file_src_sparsebase_format_format_order_one.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structsparsebase_1_1format_1_1FormatOrderOne_1_1TypeConverter`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::format::FormatImplementation`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatImplementation`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::format::FormatOrderOne
+   :members:
+   :protected-members:
+   :undoc-members:

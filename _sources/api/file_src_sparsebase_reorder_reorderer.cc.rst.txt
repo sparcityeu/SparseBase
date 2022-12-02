@@ -1,0 +1,70 @@
+
+.. _file_src_sparsebase_reorder_reorderer.cc:
+
+File reorderer.cc
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_reorder>` (``src/sparsebase/reorder``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/reorder/reorderer.cc``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_reorder_reorderer.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/reorderer.inc``
+
+- ``sparsebase/format/array.h`` (:ref:`file_src_sparsebase_format_array.h`)
+
+- ``sparsebase/format/coo.h`` (:ref:`file_src_sparsebase_format_coo.h`)
+
+- ``sparsebase/format/csc.h`` (:ref:`file_src_sparsebase_format_csc.h`)
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/reorder/reorderer.h`` (:ref:`file_src_sparsebase_reorder_reorderer.h`)
+
+- ``sparsebase/utils/extractable.h`` (:ref:`file_src_sparsebase_utils_extractable.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``tuple``
+
+- ``vector``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__reorder`
+

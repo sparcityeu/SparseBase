@@ -19,6 +19,6 @@ Classes
 
 - :ref:`exhale_struct_structsparsebase_1_1context_1_1Context`
 
-- :ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`
-
 - :ref:`exhale_struct_structsparsebase_1_1context_1_1CPUContext`
+
+- :ref:`exhale_struct_structsparsebase_1_1context_1_1CUDAContext`

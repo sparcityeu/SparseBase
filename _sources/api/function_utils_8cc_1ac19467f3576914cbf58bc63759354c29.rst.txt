@@ -1,0 +1,13 @@
+.. _exhale_function_utils_8cc_1ac19467f3576914cbf58bc63759354c29:
+
+Function sparsebase::utils::demangle(const std::string&)
+========================================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.cc`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::utils::demangle(const std::string&)

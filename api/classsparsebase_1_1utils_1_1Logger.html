@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Logger &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class NoConverterException" href="classsparsebase_1_1utils_1_1NoConverterException.html" />
+    <link rel="prev" title="Class InvalidDataMember" href="classsparsebase_1_1utils_1_1InvalidDataMember.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Class Logger</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1utils_1_1Logger.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-logger">
+<span id="exhale-class-classsparsebase-1-1utils-1-1logger"></span><h1>Class Logger<a class="headerlink" href="#class-logger" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_utils_logger.h.html#file-src-sparsebase-utils-logger-h"><span class="std std-ref">File logger.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6LoggerE">
+<span id="_CPPv3N10sparsebase5utils6LoggerE"></span><span id="_CPPv2N10sparsebase5utils6LoggerE"></span><span id="sparsebase::utils::Logger"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Logger</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6LoggerE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger6LoggerEv">
+<span id="_CPPv3N10sparsebase5utils6Logger6LoggerEv"></span><span id="_CPPv2N10sparsebase5utils6Logger6LoggerEv"></span><span id="sparsebase::utils::Logger::Logger"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1aad0d0651bd2bfeb8dcaeb2467d254821"></span><span class="sig-name descname"><span class="n"><span class="pre">Logger</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger6LoggerEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger6LoggerENSt10type_indexE">
+<span id="_CPPv3N10sparsebase5utils6Logger6LoggerENSt10type_indexE"></span><span id="_CPPv2N10sparsebase5utils6Logger6LoggerENSt10type_indexE"></span><span id="sparsebase::utils::Logger::Logger__std::type_index"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1a86b80a1a856579fcaa2ebb02dc61e7a7"></span><span class="sig-name descname"><span class="n"><span class="pre">Logger</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type_index</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">root_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger6LoggerENSt10type_indexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6LoggerD0Ev">
+<span id="_CPPv3N10sparsebase5utils6LoggerD0Ev"></span><span id="_CPPv2N10sparsebase5utils6LoggerD0Ev"></span><span id="sparsebase::utils::Logger::~Logger"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1a792ab371fdc7e2a6be69cc1fc7da6c68"></span><span class="sig-name descname"><span class="n"><span class="pre">~Logger</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6LoggerD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger3LogERKNSt6stringE8LogLevel">
+<span id="_CPPv3N10sparsebase5utils6Logger3LogERKNSt6stringE8LogLevel"></span><span id="_CPPv2N10sparsebase5utils6Logger3LogERKNSt6stringE8LogLevel"></span><span id="sparsebase::utils::Logger::Log__ssCR.LogLevel"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1a0910c0f2a3f97a45bef2f718b928cfb4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Log</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">message</span></span>, <a class="reference internal" href="enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b.html#_CPPv4N10sparsebase5utils8LogLevelE" title="sparsebase::utils::LogLevel"><span class="n"><span class="pre">LogLevel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">msg_level</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b.html#_CPPv4N10sparsebase5utils8LogLevel12LOG_LVL_INFOE" title="sparsebase::utils::LOG_LVL_INFO"><span class="n"><span class="pre">LOG_LVL_INFO</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger3LogERKNSt6stringE8LogLevel" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger9set_levelE8LogLevel">
+<span id="_CPPv3N10sparsebase5utils6Logger9set_levelE8LogLevel"></span><span id="_CPPv2N10sparsebase5utils6Logger9set_levelE8LogLevel"></span><span id="sparsebase::utils::Logger::set_level__LogLevel"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1aef0a14f876b92fc2313a2ea2d708c771"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_level</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b.html#_CPPv4N10sparsebase5utils8LogLevelE" title="sparsebase::utils::LogLevel"><span class="n"><span class="pre">LogLevel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger9set_levelE8LogLevel" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger10set_stdoutEb">
+<span id="_CPPv3N10sparsebase5utils6Logger10set_stdoutEb"></span><span id="_CPPv2N10sparsebase5utils6Logger10set_stdoutEb"></span><span id="sparsebase::utils::Logger::set_stdout__b"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1a59b4e9306b031997132a8c26f4e29475"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_stdout</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">use</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger10set_stdoutEb" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger10set_stderrEb">
+<span id="_CPPv3N10sparsebase5utils6Logger10set_stderrEb"></span><span id="_CPPv2N10sparsebase5utils6Logger10set_stderrEb"></span><span id="sparsebase::utils::Logger::set_stderr__b"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1aea18033c00f03973fdf28446c93b1d1a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_stderr</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">use</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger10set_stderrEb" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5utils6Logger8set_fileERKNSt6stringE">
+<span id="_CPPv3N10sparsebase5utils6Logger8set_fileERKNSt6stringE"></span><span id="_CPPv2N10sparsebase5utils6Logger8set_fileERKNSt6stringE"></span><span id="sparsebase::utils::Logger::set_file__ssCR"></span><span class="target" id="classsparsebase_1_1utils_1_1Logger_1a2cb272c4f90292959784321bf0bf2183"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_file</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10sparsebase5utils6Logger8set_fileERKNSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1utils_1_1InvalidDataMember.html" class="btn btn-neutral float-left" title="Class InvalidDataMember" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1utils_1_1NoConverterException.html" class="btn btn-neutral float-right" title="Class NoConverterException" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+.. _exhale_function_converter__order__two_8cc_1a98a00890a8d45fc3a1ed1dcb305b910f:
+
+Template Function sparsebase::converter::CsrCooFunctionConditional
+==================================================================
+
+- Defined in :ref:`file_src_sparsebase_converter_converter_order_two.cc`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::converter::CsrCooFunctionConditional(format::Format *, context::Context *)

@@ -1,0 +1,13 @@
+.. _exhale_define_rabbit__reorder_8h_1a2d84f350b1fc49b649f20ad816f73fea:
+
+Define BOOST_ATOMIC_NO_CLEAR_PADDING
+====================================
+
+- Defined in :ref:`file_src_sparsebase_reorder_rabbit_reorder.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: BOOST_ATOMIC_NO_CLEAR_PADDING

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File converter.cc &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Program Listing for File converter.cc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/program_listing_file_src_sparsebase_converter_converter.cc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-converter-cc">
+<span id="program-listing-file-src-sparsebase-converter-converter-cc"></span><h1>Program Listing for File converter.cc<a class="headerlink" href="#program-listing-for-file-converter-cc" title="Permalink to this headline"></a></h1>
+<p>↰ <a class="reference internal" href="file_src_sparsebase_converter_converter.cc.html#file-src-sparsebase-converter-converter-cc"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/sparsebase/converter/converter.cc</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;converter.h&quot;</span><span class="cp"></span>
+<span class="cp">#ifdef USE_CUDA</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/converter/converter_cuda.cuh&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/format/cuda_csr_cuda.cuh&quot;</span><span class="cp"></span>
+<span class="cp">#endif</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;deque&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unordered_set&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/format/format.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/format/format_order_one.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/format/format_order_two.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/utils/exception.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/utils/logger.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/utils/utils.h&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">sparsebase</span><span class="o">::</span><span class="nn">converter</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+
+<span class="n">ConversionMap</span><span class="w"> </span><span class="o">*</span><span class="nf">Converter::get_conversion_map</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">move_conversion_map_</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">copy_conversion_map_</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">ConversionMap</span><span class="w"> </span><span class="o">*</span><span class="nf">Converter::get_conversion_map</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">move_conversion_map_</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">copy_conversion_map_</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">Converter::RegisterConversionFunction</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">from_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="n">ConversionFunction</span><span class="w"> </span><span class="n">conv_func</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="n">ConversionCondition</span><span class="w"> </span><span class="n">edge_condition</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_conversion_map</span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">(</span><span class="n">from_type</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">map</span><span class="o">-&gt;</span><span class="n">emplace</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">from_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">ConversionCondition</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                  </span><span class="n">ConversionFunction</span><span class="o">&gt;&gt;&gt;</span><span class="p">());</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">count</span><span class="p">(</span><span class="n">to_type</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="o">&lt;</span><span class="n">ConversionCondition</span><span class="p">,</span><span class="w"> </span><span class="n">ConversionFunction</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ConversionCondition</span><span class="o">&gt;</span><span class="p">(</span><span class="n">edge_condition</span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ConversionFunction</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conv_func</span><span class="p">)));</span><span class="w"></span>
+<span class="w">    </span><span class="c1">//(*map)[from_type].emplace(to_type, {make_tuple&lt;EdgeConditional,</span>
+<span class="w">    </span><span class="c1">// ConversionFunction&gt;(std::forward&lt;EdgeConditional&gt;(edge_condition),</span>
+<span class="w">    </span><span class="c1">// std::forward&lt;ConversionFunction&gt;(conv_func))});</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">][</span><span class="n">to_type</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="o">&lt;</span><span class="n">ConversionCondition</span><span class="p">,</span><span class="w"> </span><span class="n">ConversionFunction</span><span class="o">&gt;</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ConversionCondition</span><span class="o">&gt;</span><span class="p">(</span><span class="n">edge_condition</span><span class="p">),</span><span class="w"></span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ConversionFunction</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conv_func</span><span class="p">)));</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="nf">Converter::Convert</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">source</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">outputs</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="n">ConvertCached</span><span class="p">(</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">,</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">outputs</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">outputs</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">outputs</span><span class="p">.</span><span class="n">end</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">outputs</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                   </span><span class="p">[](</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                     </span><span class="k">delete</span><span class="w"> </span><span class="n">f</span><span class="p">;</span><span class="w"></span>
+<span class="w">                     </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span><span class="w"></span>
+<span class="w">                   </span><span class="p">});</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">outputs</span><span class="p">.</span><span class="n">back</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ConvertCached</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">to_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"></span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">to_contexts</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                   </span><span class="p">[</span><span class="o">&amp;</span><span class="n">source</span><span class="p">](</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">from</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                     </span><span class="k">return</span><span class="w"> </span><span class="n">from</span><span class="o">-&gt;</span><span class="n">IsEquivalent</span><span class="p">(</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">());</span><span class="w"></span>
+<span class="w">                   </span><span class="p">})</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="n">source</span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">ConversionChain</span><span class="w"> </span><span class="n">chain</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="n">GetConversionChain</span><span class="p">(</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_id</span><span class="p">(),</span><span class="w"> </span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_context</span><span class="p">(),</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">to_contexts</span><span class="p">,</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">chain</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">utils</span><span class="o">::</span><span class="n">ConversionException</span><span class="p">(</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">get_name</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                     </span><span class="n">utils</span><span class="o">::</span><span class="n">demangle</span><span class="p">(</span><span class="n">to_type</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">outputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ApplyConversionChain</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">(</span><span class="n">outputs</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">outputs</span><span class="p">.</span><span class="n">end</span><span class="p">());</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">Converter</span><span class="o">::</span><span class="n">Convert</span><span class="p">(</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">source</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">to_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                   </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Convert</span><span class="p">(</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">({</span><span class="n">to_context</span><span class="p">}),</span><span class="w"></span>
+<span class="w">                 </span><span class="n">is_move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ConvertCached</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">to_context</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ConvertCached</span><span class="p">(</span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="p">({</span><span class="n">to_context</span><span class="p">}),</span><span class="w"></span>
+<span class="w">                       </span><span class="n">is_move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="cm">/*</span>
+<span class="cm">std::optional&lt;std::tuple&lt;Converter::CostType, context::Context*&gt;&gt;</span>
+<span class="cm">Converter::CanDirectlyConvert(std::type_index from_type, context::Context*</span>
+<span class="cm">from_context, std::type_index to_type, const std::vector&lt;context::Context *&gt;</span>
+<span class="cm">&amp;to_contexts, bool is_move_conversion){ auto map =</span>
+<span class="cm">get_conversion_map(is_move_conversion); if (map-&gt;find(from_type) != map-&gt;end())</span>
+<span class="cm">{ if ((*map)[from_type].find(to_type) != (*map)[from_type].end()) { for (auto</span>
+<span class="cm">condition_function_pair : (*map)[from_type][to_type]) { for (auto to_context :</span>
+<span class="cm">to_contexts) { if (std::get&lt;0&gt;(condition_function_pair)(from_context,</span>
+<span class="cm">to_context)) { return std::make_tuple&lt;bool, context::Context *&gt;( true,</span>
+<span class="cm">std::forward&lt;context::Context *&gt;(to_context));</span>
+<span class="cm">          }</span>
+<span class="cm">        }</span>
+<span class="cm">      }</span>
+<span class="cm">    }</span>
+<span class="cm">  }</span>
+<span class="cm">  return {};</span>
+<span class="cm">}</span>
+<span class="cm"> */</span><span class="w"></span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ConversionStep</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ConversionBFS</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">from_type</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">from_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">to_contexts</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ConversionMap</span><span class="w"> </span><span class="o">*</span><span class="n">map</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">deque</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frontier</span><span class="p">{</span><span class="n">from_type</span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span><span class="w"></span>
+<span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="p">,</span><span class="w"> </span><span class="n">ConversionStep</span><span class="o">&gt;&gt;</span><span class="w"></span>
+<span class="w">      </span><span class="n">seen</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">seen</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">               </span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)));</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">level_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">frontier</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">level_size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frontier</span><span class="p">.</span><span class="n">back</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="n">frontier</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">map</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">())</span><span class="w"></span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">neighbor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">map</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">curr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">seen</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">neighbor</span><span class="p">.</span><span class="n">first</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">seen</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">curr_to_neighbor_functions</span><span class="w"> </span><span class="o">:</span><span class="w"></span>
+<span class="w">                 </span><span class="n">neighbor</span><span class="p">.</span><span class="n">second</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// go over every edge curr-&gt;neighbor</span>
+<span class="w">              </span><span class="kt">bool</span><span class="w"> </span><span class="n">found_an_edge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"></span>
+<span class="w">              </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">to_context</span><span class="w"> </span><span class="o">:</span><span class="w"></span>
+<span class="w">                   </span><span class="n">to_contexts</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// check if, with the given</span>
+<span class="w">                                   </span><span class="c1">// contexts, this edge exists</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">curr_to_neighbor_functions</span><span class="p">)(</span><span class="n">from_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                                            </span><span class="n">to_context</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                  </span><span class="n">seen</span><span class="p">.</span><span class="n">emplace</span><span class="p">(</span><span class="w"></span>
+<span class="w">                      </span><span class="n">neighbor</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="w"></span>
+<span class="w">                      </span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="w"></span>
+<span class="w">                          </span><span class="n">curr</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="w"></span>
+<span class="w">                                    </span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">curr_to_neighbor_functions</span><span class="p">),</span><span class="w"></span>
+<span class="w">                                    </span><span class="n">to_context</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)));</span><span class="w"></span>
+<span class="w">                  </span><span class="n">frontier</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">neighbor</span><span class="p">.</span><span class="n">first</span><span class="p">);</span><span class="w"></span>
+<span class="w">                  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">neighbor</span><span class="p">.</span><span class="n">first</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">to_type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ConversionStep</span><span class="o">&gt;</span><span class="w"> </span><span class="n">output</span><span class="p">(</span><span class="n">level</span><span class="p">);</span><span class="w"></span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">tip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">to_type</span><span class="p">;</span><span class="w"></span>
+<span class="w">                    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                      </span><span class="n">output</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seen</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">tip</span><span class="p">).</span><span class="n">second</span><span class="p">;</span><span class="w"></span>
+<span class="w">                      </span><span class="n">tip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seen</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">tip</span><span class="p">).</span><span class="n">first</span><span class="p">;</span><span class="w"></span>
+<span class="w">                    </span><span class="p">}</span><span class="w"></span>
+<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">output</span><span class="p">;</span><span class="w"></span>
+<span class="w">                  </span><span class="p">}</span><span class="w"></span>
+<span class="w">                  </span><span class="n">found_an_edge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">                  </span><span class="k">break</span><span class="p">;</span><span class="w">  </span><span class="c1">// no need to check other contexts</span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">              </span><span class="p">}</span><span class="w"></span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">found_an_edge</span><span class="p">)</span><span class="w"></span>
+<span class="w">                </span><span class="k">break</span><span class="p">;</span><span class="w">  </span><span class="c1">// no need to check other edges between curr-&gt;neighbor</span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">level</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">level_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frontier</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">ConversionChain</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">GetConversionChain</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">from_type</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">from_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">to_contexts</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// If the source doesn&#39;t need conversion, return an empty but existing</span>
+<span class="w">  </span><span class="c1">// optional</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">from_type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">to_type</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">find</span><span class="p">(</span><span class="n">to_contexts</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"></span>
+<span class="w">                                        </span><span class="n">from_context</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">.</span><span class="n">end</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ConversionChain</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">in_place</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_conversion_map</span><span class="p">(</span><span class="n">is_move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">conversions</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">      </span><span class="n">ConversionBFS</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span><span class="w"> </span><span class="n">from_context</span><span class="p">,</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">,</span><span class="w"> </span><span class="n">map</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">conversions</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="n">conversions</span><span class="p">,</span><span class="w"> </span><span class="n">conversions</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">CanConvert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">from_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">from_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">to_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">GetConversionChain</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span><span class="w"> </span><span class="n">from_context</span><span class="p">,</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">to_context</span><span class="p">},</span><span class="w"></span>
+<span class="w">                            </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="p">.</span><span class="n">has_value</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">bool</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">CanConvert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">from_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*</span><span class="n">from_context</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">context</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">to_contexts</span><span class="p">,</span><span class="w"></span>
+<span class="w">                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">GetConversionChain</span><span class="p">(</span><span class="n">from_type</span><span class="p">,</span><span class="w"> </span><span class="n">from_context</span><span class="p">,</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"> </span><span class="n">to_contexts</span><span class="p">,</span><span class="w"></span>
+<span class="w">                            </span><span class="n">is_move_conversion</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="p">.</span><span class="n">has_value</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ClearConversionFunctions</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">from_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                         </span><span class="n">std</span><span class="o">::</span><span class="n">type_index</span><span class="w"> </span><span class="n">to_type</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                         </span><span class="kt">bool</span><span class="w"> </span><span class="n">move_conversion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_conversion_map</span><span class="p">(</span><span class="n">move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">from_type</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">map</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">find</span><span class="p">(</span><span class="n">to_type</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">end</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">erase</span><span class="p">(</span><span class="n">to_type</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="o">*</span><span class="n">map</span><span class="p">)[</span><span class="n">from_type</span><span class="p">].</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">map</span><span class="o">-&gt;</span><span class="n">erase</span><span class="p">(</span><span class="n">from_type</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ClearConversionFunctions</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">move_conversion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_conversion_map</span><span class="p">(</span><span class="n">move_conversion</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">map</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ApplyConversionChain</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ConversionChain</span><span class="w"> </span><span class="o">&amp;</span><span class="n">chain</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">input</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">clear_intermediate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">format_chain</span><span class="p">{</span><span class="n">input</span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">chain</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">conversion_chain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="o">*</span><span class="n">chain</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*</span><span class="n">current_format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">conversion_chain</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">conversion_step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conversion_chain</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"></span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="o">*</span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conversion_step</span><span class="p">)(</span><span class="n">current_format</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                               </span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">conversion_step</span><span class="p">));</span><span class="w"></span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">clear_intermediate</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">conversion_chain</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">format_chain</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">res</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">delete</span><span class="w"> </span><span class="n">current_format</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">current_format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">res</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">format_chain</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;&gt;</span><span class="w"> </span><span class="n">Converter</span><span class="o">::</span><span class="n">ApplyConversionSchema</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ConversionSchema</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cs</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">packed_sfs</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">clear_intermediate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// Each element in ret is a chain of formats resulting from</span>
+<span class="w">  </span><span class="c1">// converting one of the packed_sfs</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;&gt;</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">cs</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">conversion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">format</span><span class="o">::</span><span class="n">Format</span><span class="w"> </span><span class="o">*&gt;</span><span class="w"> </span><span class="n">format_chain</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">        </span><span class="n">ApplyConversionChain</span><span class="p">(</span><span class="n">conversion</span><span class="p">,</span><span class="w"> </span><span class="n">packed_sfs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">clear_intermediate</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">format_chain</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ret</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="n">Converter</span><span class="o">::~</span><span class="n">Converter</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+
+<span class="p">}</span><span class="w">  </span><span class="c1">// namespace sparsebase::converter</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

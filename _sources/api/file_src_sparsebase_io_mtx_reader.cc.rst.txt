@@ -1,0 +1,54 @@
+
+.. _file_src_sparsebase_io_mtx_reader.cc:
+
+File mtx_reader.cc
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_io>` (``src/sparsebase/io``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/io/mtx_reader.cc``)
+------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_io_mtx_reader.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/mtx_reader.inc``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/io/mtx_reader.h`` (:ref:`file_src_sparsebase_io_mtx_reader.h`)
+
+- ``sstream``
+
+- ``string``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__io`
+

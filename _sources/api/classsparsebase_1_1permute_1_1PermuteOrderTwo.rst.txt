@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1permute_1_1PermuteOrderTwo:
+
+Template Class PermuteOrderTwo
+==============================
+
+- Defined in :ref:`file_src_sparsebase_permute_permute_order_two.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::permute::Permuter< format::FormatOrderTwo< IDType, NNZType, ValueType >, format::FormatOrderTwo< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1permute_1_1Permuter`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::permute::PermuteOrderTwo
+   :members:
+   :protected-members:
+   :undoc-members:

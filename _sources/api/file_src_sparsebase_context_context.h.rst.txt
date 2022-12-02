@@ -29,6 +29,10 @@ Includes
 --------
 
 
+- ``sparsebase/config.h``
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
 - ``typeindex``
 
 
@@ -37,13 +41,19 @@ Included By
 -----------
 
 
-- :ref:`file_src_sparsebase_context_context.cc`
+- :ref:`file_src_sparsebase_context_cpu_context.cc`
+
+- :ref:`file_src_sparsebase_context_cpu_context.h`
+
+- :ref:`file_src_sparsebase_context_cuda_context_cuda.cu`
+
+- :ref:`file_src_sparsebase_context_cuda_context_cuda.cuh`
 
 - :ref:`file_src_sparsebase_format_format.h`
 
-- :ref:`file_src_sparsebase_preprocess_preprocess.h`
-
 - :ref:`file_src_sparsebase_sparsebase.h`
+
+- :ref:`file_src_sparsebase_utils_extractable.h`
 
 
 
@@ -62,8 +72,4 @@ Classes
 
 
 - :ref:`exhale_struct_structsparsebase_1_1context_1_1Context`
-
-- :ref:`exhale_struct_structsparsebase_1_1context_1_1ContextImplementation`
-
-- :ref:`exhale_struct_structsparsebase_1_1context_1_1CPUContext`
 

@@ -1,0 +1,13 @@
+.. _exhale_enum_patoh__partition_8h_1aa88bca7e7117ba82e769d3051257f8ce:
+
+Enum ParameterInit
+==================
+
+- Defined in :ref:`file_src_sparsebase_partition_patoh_partition.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: sparsebase::partition::patoh::ParameterInit

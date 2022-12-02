@@ -1,0 +1,13 @@
+.. _exhale_function_jaccard__weights__cuda_8cu_1a34fb3be3c82ac58b2303d5c4e1443a8c:
+
+Function sparsebase::feature::calculateMask
+===========================================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights_cuda.cu`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sparsebase::feature::calculateMask(char, unsigned long long)

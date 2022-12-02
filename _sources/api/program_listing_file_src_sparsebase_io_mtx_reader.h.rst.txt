@@ -1,0 +1,64 @@
+
+.. _program_listing_file_src_sparsebase_io_mtx_reader.h:
+
+Program Listing for File mtx_reader.h
+=====================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_io_mtx_reader.h>` (``src/sparsebase/io/mtx_reader.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_MTX_READER_H
+   #define SPARSEBASE_PROJECT_MTX_READER_H
+   #include "sparsebase/config.h"
+   #include "sparsebase/io/reader.h"
+   
+   namespace sparsebase::io {
+   #define MMX_PREFIX "%%MatrixMarket"
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   class MTXReader : public Reader,
+                     public ReadsCSR<IDType, NNZType, ValueType>,
+                     public ReadsCOO<IDType, NNZType, ValueType>,
+                     public ReadsArray<ValueType> {
+    public:
+     explicit MTXReader(std::string filename, bool convert_to_zero_index = true);
+     format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
+     format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+     format::Array<ValueType> *ReadArray() const override;
+     ~MTXReader() override;
+   
+    private:
+     enum MTXObjectOptions { matrix, vector };
+     enum MTXFormatOptions { coordinate, array };
+     enum MTXFieldOptions { real, double_field, complex, integer, pattern };
+     enum MTXSymmetryOptions {
+       general = 0,
+       symmetric = 1,
+       skew_symmetric = 2,
+       hermitian = 3
+     };
+     struct MTXOptions {
+       MTXObjectOptions object;
+       MTXFormatOptions format;
+       MTXFieldOptions field;
+       MTXSymmetryOptions symmetry;
+     };
+     MTXOptions ParseHeader(std::string header_line) const;
+     format::Array<ValueType> *ReadCoordinateIntoArray() const;
+     format::Array<ValueType> *ReadArrayIntoArray() const;
+     template <bool weighted>
+     format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
+     template <bool weighted, int symm, bool conv_to_zero>
+     format::COO<IDType, NNZType, ValueType> *ReadCoordinateIntoCOO() const;
+     std::string filename_;
+     bool convert_to_zero_index_;
+     MTXOptions options_;
+   };
+   }  // namespace sparsebase::io
+   #ifdef _HEADER_ONLY
+   #include "mtx_reader.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_MTX_READER_H

@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1format_1_1CUDACSR:
+
+Template Class CUDACSR
+======================
+
+- Defined in :ref:`file_src_sparsebase_format_cuda_csr_cuda.cuh`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::IdentifiableImplementation< CUDACSR< IDType, NNZType, ValueType >, FormatOrderTwo< IDType, NNZType, ValueType > >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::format::CUDACSR
+   :members:
+   :protected-members:
+   :undoc-members:

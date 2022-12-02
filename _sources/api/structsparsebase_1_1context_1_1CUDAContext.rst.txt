@@ -1,0 +1,25 @@
+.. _exhale_struct_structsparsebase_1_1context_1_1CUDAContext:
+
+Struct CUDAContext
+==================
+
+- Defined in :ref:`file_src_sparsebase_context_cuda_context_cuda.cuh`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::IdentifiableImplementation< CUDAContext, Context >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1IdentifiableImplementation`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::context::CUDAContext
+   :members:
+   :protected-members:
+   :undoc-members:

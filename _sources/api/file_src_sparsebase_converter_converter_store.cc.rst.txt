@@ -1,0 +1,48 @@
+
+.. _file_src_sparsebase_converter_converter_store.cc:
+
+File converter_store.cc
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_converter>` (``src/sparsebase/converter``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/converter/converter_store.cc``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_converter_converter_store.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``converter_store.h`` (:ref:`file_src_sparsebase_converter_converter_store.h`)
+
+- ``mutex``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__converter`
+

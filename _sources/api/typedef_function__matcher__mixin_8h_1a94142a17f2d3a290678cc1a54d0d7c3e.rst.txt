@@ -1,0 +1,13 @@
+.. _exhale_typedef_function__matcher__mixin_8h_1a94142a17f2d3a290678cc1a54d0d7c3e:
+
+Typedef sparsebase::utils::PreprocessFunction
+=============================================
+
+- Defined in :ref:`file_src_sparsebase_utils_function_matcher_mixin.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::utils::PreprocessFunction

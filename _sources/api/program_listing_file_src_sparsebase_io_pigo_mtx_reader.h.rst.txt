@@ -1,0 +1,44 @@
+
+.. _program_listing_file_src_sparsebase_io_pigo_mtx_reader.h:
+
+Program Listing for File pigo_mtx_reader.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_io_pigo_mtx_reader.h>` (``src/sparsebase/io/pigo_mtx_reader.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_PIGO_MTX_READER_H
+   #define SPARSEBASE_PROJECT_PIGO_MTX_READER_H
+   
+   #include <fstream>
+   #include <string>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/io/reader.h"
+   namespace sparsebase::io {
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   class PigoMTXReader : public Reader,
+                         public ReadsCOO<IDType, NNZType, ValueType>,
+                         public ReadsCSR<IDType, NNZType, ValueType> {
+    public:
+     PigoMTXReader(std::string filename, bool weighted,
+                   bool convert_to_zero_index = true);
+     format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
+     format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+     // format::Array<ValueType> *ReadArray() const override;
+     virtual ~PigoMTXReader() = default;
+   
+    private:
+     std::string filename_;
+     bool weighted_;
+     bool convert_to_zero_index_;
+   };
+   }  // namespace sparsebase::io
+   #ifdef _HEADER_ONLY
+   #include "pigo_mtx_reader.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_PIGO_MTX_READER_H

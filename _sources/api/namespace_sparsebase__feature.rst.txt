@@ -17,17 +17,44 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structsparsebase_1_1feature_1_1Implementation`
+- :ref:`exhale_struct_structsparsebase_1_1feature_1_1DegreeDistributionParams`
 
-- :ref:`exhale_class_classsparsebase_1_1feature_1_1ClassMatcherMixin`
+- :ref:`exhale_struct_structsparsebase_1_1feature_1_1JaccardWeightsParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1feature_1_1Params`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1DegreeDistribution`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1Degrees`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1Degrees__DegreeDistribution`
 
 - :ref:`exhale_class_classsparsebase_1_1feature_1_1Extractor`
 
 - :ref:`exhale_class_classsparsebase_1_1feature_1_1FeatureExtractor`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1FeaturePreprocessType`
+
+- :ref:`exhale_class_classsparsebase_1_1feature_1_1JaccardWeights`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_jaccard__weights__cuda_8cu_1a2b726a850ff7fe6c3bf68d91123aeb0e`
+
+- :ref:`exhale_function_jaccard__weights__cuda_8cu_1a34fb3be3c82ac58b2303d5c4e1443a8c`
+
+- :ref:`exhale_function_jaccard__weights__cuda_8cu_1a329afa9a8b7226bae13478dbd042d7c3`
+
+- :ref:`exhale_function_jaccard__weights__cuda_8cu_1aad2ce231834d43380df9f605b76f2a06`
+
+- :ref:`exhale_function_jaccard__weights__cuda_8cu_1a49d8bbd15b500cacdc763d69665396c1`
 
 
 Typedefs
 --------
 
 
-- :ref:`exhale_typedef_feature_8h_1a290ecb674ec42caaa3427d237e0b65d9`
+- :ref:`exhale_typedef_extractor_8h_1aee0281fed21bc18177c1b154f7aceae2`

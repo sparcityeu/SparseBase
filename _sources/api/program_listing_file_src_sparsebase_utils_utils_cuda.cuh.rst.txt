@@ -1,0 +1,25 @@
+
+.. _program_listing_file_src_sparsebase_utils_utils_cuda.cuh:
+
+Program Listing for File utils_cuda.cuh
+=======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_utils_utils_cuda.cuh>` (``src/sparsebase/utils/utils_cuda.cuh``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #ifndef SPARSEBASE_PROJECT_UTILS_CUDA_CUH
+   #define SPARSEBASE_PROJECT_UTILS_CUDA_CUH
+   
+   namespace sparsebase::utils {
+   
+   template <typename T>
+   struct CUDADeleter {
+     void operator()(T *obj) { cudaFree(obj); }
+   };
+   
+   }  // namespace sparsebase::utils
+   
+   #endif  // SPARSEBASE_PROJECT_UTILS_CUDA_CUH

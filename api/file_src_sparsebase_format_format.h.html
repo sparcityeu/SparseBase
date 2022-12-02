@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File format.h &mdash; SparseBase v0.2.3 documentation</title>
+  <title>File format.h &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -39,7 +39,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
@@ -100,12 +100,14 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">algorithm</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cstring</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cxxabi.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">fstream</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">functional</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">memory</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sparsebase/config.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sparsebase/context/context.h</span></code> (<a class="reference internal" href="file_src_sparsebase_context_context.h.html#file-src-sparsebase-context-context-h"><span class="std std-ref">File context.h</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sparsebase/utils/exception.h</span></code> (<a class="reference internal" href="file_src_sparsebase_utils_exception.h.html#file-src-sparsebase-utils-exception-h"><span class="std std-ref">File exception.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sparsebase/utils/utils.h</span></code> (<a class="reference internal" href="file_src_sparsebase_utils_utils.h.html#file-src-sparsebase-utils-utils-h"><span class="std std-ref">File utils.h</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">typeindex</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">typeinfo</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">vector</span></code></p></li>
@@ -114,24 +116,37 @@
 <section id="included-by">
 <h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="file_src_sparsebase_feature_feature.h.html#file-src-sparsebase-feature-feature-h"><span class="std std-ref">File feature.h</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_format_format.cc.html#file-src-sparsebase-format-format-cc"><span class="std std-ref">File format.cc</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_object_object.h.html#file-src-sparsebase-object-object-h"><span class="std std-ref">File object.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_bases_iobase.h.html#file-src-sparsebase-bases-iobase-h"><span class="std std-ref">File iobase.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter.cc.html#file-src-sparsebase-converter-converter-cc"><span class="std std-ref">File converter.cc</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter_cuda.cu.html#file-src-sparsebase-converter-converter-cuda-cu"><span class="std std-ref">File converter_cuda.cu</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter_cuda.cuh.html#file-src-sparsebase-converter-converter-cuda-cuh"><span class="std std-ref">File converter_cuda.cuh</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter_order_one.cc.html#file-src-sparsebase-converter-converter-order-one-cc"><span class="std std-ref">File converter_order_one.cc</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter_order_one_cuda.cu.html#file-src-sparsebase-converter-converter-order-one-cuda-cu"><span class="std std-ref">File converter_order_one_cuda.cu</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter_order_one_cuda.cuh.html#file-src-sparsebase-converter-converter-order-one-cuda-cuh"><span class="std std-ref">File converter_order_one_cuda.cuh</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_converter_converter_order_two_cuda.cu.html#file-src-sparsebase-converter-converter-order-two-cuda-cu"><span class="std std-ref">File converter_order_two_cuda.cu</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_experiment_experiment_helper.h.html#file-src-sparsebase-experiment-experiment-helper-h"><span class="std std-ref">File experiment_helper.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_experiment_experiment_type.h.html#file-src-sparsebase-experiment-experiment-type-h"><span class="std std-ref">File experiment_type.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_feature_extractor.h.html#file-src-sparsebase-feature-extractor-h"><span class="std std-ref">File extractor.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_feature_feature_extractor.h.html#file-src-sparsebase-feature-feature-extractor-h"><span class="std std-ref">File feature_extractor.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_format_cuda_csr_cuda.cu.html#file-src-sparsebase-format-cuda-csr-cuda-cu"><span class="std std-ref">File cuda_csr_cuda.cu</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_format_format_implementation.h.html#file-src-sparsebase-format-format-implementation-h"><span class="std std-ref">File format_implementation.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_io_writer.h.html#file-src-sparsebase-io-writer-h"><span class="std std-ref">File writer.h</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_sparsebase_object_object.cc.html#file-src-sparsebase-object-object-cc"><span class="std std-ref">File object.cc</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_preprocess_preprocess.h.html#file-src-sparsebase-preprocess-preprocess-h"><span class="std std-ref">File preprocess.h</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_preprocess_preprocess.cc.html#file-src-sparsebase-preprocess-preprocess-cc"><span class="std std-ref">File preprocess.cc</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_object_object.h.html#file-src-sparsebase-object-object-h"><span class="std std-ref">File object.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_partition_partitioner.cc.html#file-src-sparsebase-partition-partitioner-cc"><span class="std std-ref">File partitioner.cc</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_partition_partitioner.h.html#file-src-sparsebase-partition-partitioner-h"><span class="std std-ref">File partitioner.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_permute_permuter.h.html#file-src-sparsebase-permute-permuter-h"><span class="std std-ref">File permuter.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_reorder_reorderer.cc.html#file-src-sparsebase-reorder-reorderer-cc"><span class="std std-ref">File reorderer.cc</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_reorder_reorderer.h.html#file-src-sparsebase-reorder-reorderer-h"><span class="std std-ref">File reorderer.h</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_sparsebase_sparsebase.h.html#file-src-sparsebase-sparsebase-h"><span class="std std-ref">File sparsebase.h</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_utils_converter_converter.cc.html#file-src-sparsebase-utils-converter-converter-cc"><span class="std std-ref">File converter.cc</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_utils_converter_converter.h.html#file-src-sparsebase-utils-converter-converter-h"><span class="std std-ref">File converter.h</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_utils_io_reader.cc.html#file-src-sparsebase-utils-io-reader-cc"><span class="std std-ref">File reader.cc</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_utils_io_reader.h.html#file-src-sparsebase-utils-io-reader-h"><span class="std std-ref">File reader.h</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_sparsebase_utils_io_writer.h.html#file-src-sparsebase-utils-io-writer-h"><span class="std std-ref">File writer.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_sparsebase_utils_extractable.h.html#file-src-sparsebase-utils-extractable-h"><span class="std std-ref">File extractable.h</span></a></p></li>
 </ul>
 </section>
 <section id="namespaces">
 <h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="namespace_sparsebase.html#namespace-sparsebase"><span class="std std-ref">Namespace sparsebase</span></a></p></li>
+<li><p><a class="reference internal" href="namespace_sparsebase__converter.html#namespace-sparsebase-converter"><span class="std std-ref">Namespace sparsebase::converter</span></a></p></li>
 <li><p><a class="reference internal" href="namespace_sparsebase__format.html#namespace-sparsebase-format"><span class="std std-ref">Namespace sparsebase::format</span></a></p></li>
 </ul>
 </section>
@@ -141,11 +156,7 @@
 <li><p><a class="reference internal" href="structsparsebase_1_1format_1_1BlankDeleter.html#exhale-struct-structsparsebase-1-1format-1-1blankdeleter"><span class="std std-ref">Template Struct BlankDeleter</span></a></p></li>
 <li><p><a class="reference internal" href="structsparsebase_1_1format_1_1Deleter.html#exhale-struct-structsparsebase-1-1format-1-1deleter"><span class="std std-ref">Template Struct Deleter</span></a></p></li>
 <li><p><a class="reference internal" href="structsparsebase_1_1format_1_1Deleter2D.html#exhale-struct-structsparsebase-1-1format-1-1deleter2d"><span class="std std-ref">Template Struct Deleter2D</span></a></p></li>
-<li><p><a class="reference internal" href="classsparsebase_1_1format_1_1Array.html#exhale-class-classsparsebase-1-1format-1-1array"><span class="std std-ref">Template Class Array</span></a></p></li>
-<li><p><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#exhale-class-classsparsebase-1-1format-1-1coo"><span class="std std-ref">Template Class COO</span></a></p></li>
-<li><p><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#exhale-class-classsparsebase-1-1format-1-1csr"><span class="std std-ref">Template Class CSR</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1format_1_1Format.html#exhale-class-classsparsebase-1-1format-1-1format"><span class="std std-ref">Class Format</span></a></p></li>
-<li><p><a class="reference internal" href="classsparsebase_1_1format_1_1FormatImplementation.html#exhale-class-classsparsebase-1-1format-1-1formatimplementation"><span class="std std-ref">Template Class FormatImplementation</span></a></p></li>
 </ul>
 </section>
 <section id="enums">

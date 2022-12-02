@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorials &mdash; SparseBase v0.2.3 documentation</title>
+  <title>Tutorials &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Reordering a graph" href="001_reordering.html" />
-    <link rel="prev" title="Getting Started" href="../getting_started.html" /> 
+    <link rel="prev" title="Available components" href="../getting_started/available.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,10 +41,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="001_reordering.html">Reordering a graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="002_feature_extraction.html">Feature Extraction from a Matrix Market File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="003_experiment.html">Creating an SPMV Experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="004_cuda_spmv.html">Accelerating SpMV on the GPU using reordering</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
@@ -97,6 +99,20 @@
 <li class="toctree-l2"><a class="reference internal" href="002_feature_extraction.html#steps">Steps</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="003_experiment.html">Creating an SPMV Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="003_experiment.html#objective">Objective</a></li>
+<li class="toctree-l2"><a class="reference internal" href="003_experiment.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="003_experiment.html#preliminaries">Preliminaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="003_experiment.html#steps">Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="004_cuda_spmv.html">Accelerating SpMV on the GPU using reordering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="004_cuda_spmv.html#objective">Objective</a></li>
+<li class="toctree-l2"><a class="reference internal" href="004_cuda_spmv.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="004_cuda_spmv.html#preliminaries">Preliminaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="004_cuda_spmv.html#steps">Steps</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -105,7 +121,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../getting_started/available.html" class="btn btn-neutral float-left" title="Available components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="001_reordering.html" class="btn btn-neutral float-right" title="Reordering a graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

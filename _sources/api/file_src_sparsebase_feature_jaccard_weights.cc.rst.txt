@@ -1,0 +1,54 @@
+
+.. _file_src_sparsebase_feature_jaccard_weights.cc:
+
+File jaccard_weights.cc
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_feature>` (``src/sparsebase/feature``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/feature/jaccard_weights.cc``)
+----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_feature_jaccard_weights.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/jaccard_weights.inc``
+
+- ``sparsebase/feature/jaccard_weights.h`` (:ref:`file_src_sparsebase_feature_jaccard_weights.h`)
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/format/cuda_csr_cuda.cuh`` (:ref:`file_src_sparsebase_format_cuda_csr_cuda.cuh`)
+
+- ``vector``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__feature`
+

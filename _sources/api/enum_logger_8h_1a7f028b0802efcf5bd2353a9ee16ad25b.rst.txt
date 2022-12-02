@@ -1,0 +1,13 @@
+.. _exhale_enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b:
+
+Enum LogLevel
+=============
+
+- Defined in :ref:`file_src_sparsebase_utils_logger.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: sparsebase::utils::LogLevel

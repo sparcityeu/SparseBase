@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Testing &mdash; SparseBase v0.2.3 documentation</title>
+  <title>Testing &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="License (MIT)" href="../license.html" />
-    <link rel="prev" title="Making Contributions to the Repo" href="github_guide.html" /> 
+    <link rel="prev" title="Instantiating Classes in SparseBase" href="instantiations.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,14 +41,16 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Contributing</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dependencies.html">Adding New Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="documentation_guide.html">Documentation Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="github_guide.html">Making Contributions to the Repo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instantiations.html">Instantiating Classes in SparseBase</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Testing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#terminology">Terminology</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#assertions">Assertions</a><ul>
@@ -148,7 +150,7 @@
 <section id="custom-message">
 <h3>Custom message<a class="headerlink" href="#custom-message" title="Permalink to this headline"></a></h3>
 <p>When an assertion fails, Google Test prints an automated message. Users can add their own message to an assertion using the <code class="docutils literal notranslate"><span class="pre">operator&lt;&lt;</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">y</span><span class="p">.</span><span class="n">size</span><span class="p">())</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Vectors x and y are of unequal length&quot;</span><span class="p">;</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">size</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Vectors x and y are of unequal length&quot;</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -173,11 +175,11 @@
 <h2>Test cases<a class="headerlink" href="#test-cases" title="Permalink to this headline"></a></h2>
 <p>A test case is a C++ function containing a group of assertions. Since it’s a function, code within a test case has a state (variables) that can be changed within the test case, but different test cases cannot share states (variables). If all assertions in a test case pass then so does the test case, and if any of them fails then so does the test case.</p>
 <p>A test case has a name and belongs to a test suite. We define a test case using the macro <code class="docutils literal notranslate"><span class="pre">TEST(TestSuiteName,</span> <span class="pre">TestName)</span></code>.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">SparseFormatSuite</span><span class="p">,</span> <span class="n">CSR</span><span class="p">){</span>
-   <span class="c1">// create variables</span>
-   <span class="c1">// add assertions</span>
-   <span class="c1">// clean up</span>
-<span class="p">}</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">SparseFormatSuite</span><span class="p">,</span><span class="w"> </span><span class="n">CSR</span><span class="p">){</span><span class="w"></span>
+<span class="w">   </span><span class="c1">// create variables</span>
+<span class="w">   </span><span class="c1">// add assertions</span>
+<span class="w">   </span><span class="c1">// clean up</span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Test cases are grouped by test suite when executing.</p>
@@ -186,44 +188,44 @@
 <h2>Test Fixtures<a class="headerlink" href="#test-fixtures" title="Permalink to this headline"></a></h2>
 <p>When multiple tests might use the same initial state (same starting variables), we can place these variables inside a “Fixture” class that defines how they are constructed and deleted. Then, every test case that needs these variables in this initial state will get a fresh copy of the fixture without any code repetition. Methods can also be added to fixtures for added utility.</p>
 <p>Here is an example of a fixture:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">QueueTest</span> <span class="o">:</span> <span class="k">public</span> <span class="o">::</span><span class="n">testing</span><span class="o">::</span><span class="n">Test</span> <span class="p">{</span>
- <span class="k">protected</span><span class="o">:</span>
-  <span class="kt">void</span> <span class="n">SetUp</span><span class="p">()</span> <span class="k">override</span> <span class="p">{</span>
-     <span class="n">q1_</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-     <span class="n">q2_</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-     <span class="n">q2_</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
-  <span class="p">}</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">QueueTest</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="o">::</span><span class="n">testing</span><span class="o">::</span><span class="n">Test</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="k">protected</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetUp</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="n">q1_</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">     </span><span class="n">q2_</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">     </span><span class="n">q2_</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="c1">// void TearDown() override {}</span>
+<span class="w">  </span><span class="c1">// void TearDown() override {}</span>
 
-  <span class="n">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">q0_</span><span class="p">;</span>
-  <span class="n">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">q1_</span><span class="p">;</span>
-  <span class="n">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">q2_</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="w">  </span><span class="n">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">q0_</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">q1_</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">q2_</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
 <p>A test case can use a single fixture only. When a test case function is going to use a fixture <code class="docutils literal notranslate"><span class="pre">FixtureTest</span></code>, you define it using the macro <code class="docutils literal notranslate"><span class="pre">TEST_F(FixtureTest,</span> <span class="pre">TestCaseName)</span></code> macro. The test suite name of the test case will be the fixture name.</p>
 <p>When you define a test case using a fixture, you can think of it as creating a sub-class of the fixture, and adding the test case function as a member of the child. Therefore, you have access to all the protected data members of the fixture directly. Here are two test cases using the fixture above.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_F</span><span class="p">(</span><span class="n">QueueTest</span><span class="p">,</span> <span class="n">IsEmptyInitially</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">q0_</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
-<span class="p">}</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">TEST_F</span><span class="p">(</span><span class="n">QueueTest</span><span class="p">,</span><span class="w"> </span><span class="n">IsEmptyInitially</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">q0_</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="n">TEST_F</span><span class="p">(</span><span class="n">QueueTest</span><span class="p">,</span> <span class="n">DequeueWorks</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span><span class="o">*</span> <span class="n">n</span> <span class="o">=</span> <span class="n">q0_</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
-  <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
+<span class="n">TEST_F</span><span class="p">(</span><span class="n">QueueTest</span><span class="p">,</span><span class="w"> </span><span class="n">DequeueWorks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q0_</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w"></span>
 
-  <span class="n">n</span> <span class="o">=</span> <span class="n">q1_</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
-  <span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
-  <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-  <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">q1_</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
-  <span class="k">delete</span> <span class="n">n</span><span class="p">;</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q1_</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">EXPECT_EQ</span><span class="p">(</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">q1_</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">delete</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"></span>
 
-  <span class="n">n</span> <span class="o">=</span> <span class="n">q2_</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
-  <span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="k">nullptr</span><span class="p">);</span>
-  <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
-  <span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">q2_</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mi">1</span><span class="p">);</span>
-  <span class="k">delete</span> <span class="n">n</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q2_</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">ASSERT_NE</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">EXPECT_EQ</span><span class="p">(</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">EXPECT_EQ</span><span class="p">(</span><span class="n">q2_</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">delete</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>As you can see, we use the data members <code class="docutils literal notranslate"><span class="pre">q0_</span></code>, <code class="docutils literal notranslate"><span class="pre">q1_</span></code>, and <code class="docutils literal notranslate"><span class="pre">q2_</span></code> directly.</p>
@@ -283,13 +285,13 @@ the <a class="reference external" href="https://google.github.io/googletest/faq.
 <p>The file you create will be located in the test directory determined in step 1. It will have the same name as the source file that it is testing, with the addition of the suffix <code class="docutils literal notranslate"><span class="pre">_tests</span></code>.</p>
 <p>For example, if the source file you are testing is <code class="docutils literal notranslate"><span class="pre">sparsebase/src/sparsebase/preprocess/preprocess.cc</span></code>, you will create the file <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/preprocess_tests.cc</span></code>.</p>
 <p>You must start this file by including the GTest header, the <code class="docutils literal notranslate"><span class="pre">sparsebase/config.h</span></code> header, and then whichever headers you need for the test. For example:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;gtest/gtest.h&quot;</span><span class="cp"></span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gtest/gtest.h&quot;</span><span class="cp"></span>
 
 <span class="c1">// needed for CMake flags (e.g. CUDA, PIGO, etc.)</span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/format/format.h&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;sparsebase/object/object.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/format/format.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/object/object.h&quot;</span><span class="cp"></span>
 
 <span class="c1">// test suites and test functions</span>
 </pre></div>
@@ -308,22 +310,22 @@ the <a class="reference external" href="https://google.github.io/googletest/faq.
 </div>
 <p>To add the executable and CTest test to the build system generation process, add the following lines to the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file in the test file’s directory:</p>
 <div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="c"># Add the executable target</span>
-<span class="nb">add_executable</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span> <span class="s">&lt;test_source_file&gt;</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span> <span class="s">sparsebase</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span> <span class="s">gtest</span> <span class="s">gtest_main</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span><span class="w"> </span><span class="s">&lt;test_source_file&gt;</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span><span class="w"> </span><span class="s">sparsebase</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">&lt;test_executable_name&gt;</span><span class="w"> </span><span class="s">gtest</span><span class="w"> </span><span class="s">gtest_main</span><span class="p">)</span>
 
 <span class="c"># Add the CTest test </span>
-<span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span> <span class="s">&lt;CTest_test_name&gt;</span> <span class="s">COMMAND</span> <span class="s">&lt;test_executable_name&gt;</span><span class="p">)</span>
+<span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span><span class="w"> </span><span class="s">&lt;CTest_test_name&gt;</span><span class="w"> </span><span class="s">COMMAND</span><span class="w"> </span><span class="s">&lt;test_executable_name&gt;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For example, given that the test file we are adding is <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/preprocess_tests.cc</span></code>, we would add the following lines to the file <code class="docutils literal notranslate"><span class="pre">tests/suites/src/sparsebase/preprocess/CMakeLists.txt</span></code>:</p>
 <div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="c"># Add the executable target</span>
-<span class="nb">add_executable</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span> <span class="s">preprocess_tests.cc</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span> <span class="s">sparsebase</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span> <span class="s">gtest</span> <span class="s">gtest_main</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span><span class="w"> </span><span class="s">preprocess_tests.cc</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span><span class="w"> </span><span class="s">sparsebase</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_preprocess_tests.test</span><span class="w"> </span><span class="s">gtest</span><span class="w"> </span><span class="s">gtest_main</span><span class="p">)</span>
 
 <span class="c"># Add the CTest test </span>
-<span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span> <span class="s">sparsebase_preprocess_preprocess_tests</span> <span class="s">COMMAND</span> <span class="s">sparsebase_preprocess_preprocess_tests.test</span><span class="p">)</span>
+<span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span><span class="w"> </span><span class="s">sparsebase_preprocess_preprocess_tests</span><span class="w"> </span><span class="s">COMMAND</span><span class="w"> </span><span class="s">sparsebase_preprocess_preprocess_tests.test</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -340,12 +342,12 @@ the <a class="reference external" href="https://google.github.io/googletest/faq.
 <h4>Conditional compilation<a class="headerlink" href="#conditional-compilation" title="Permalink to this headline"></a></h4>
 <p>If there is a certain test file that is conditional on a CMake option, then you can simply surround the executable and test declerations of that test (shown in step 4 of “Adding a new test file”) with an <code class="docutils literal notranslate"><span class="pre">if()</span></code> call contingent on that option.</p>
 <p>For example, the test file <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/cuda/preprocess_tests.cu</span></code> should only be added when the library is compiled with the <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> option enabled. Here is how we define its executable and tests in the file <code class="docutils literal notranslate"><span class="pre">tests/suites/sparsebase/preprocess/cuda/CMakeLists.txt</span></code>:</p>
-<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="nb">if</span><span class="p">(</span><span class="o">${</span><span class="nv">CUDA</span><span class="o">}</span><span class="p">)</span>
-    <span class="nb">add_executable</span><span class="p">(</span><span class="s">sparsebase__preprocess_cuda_preprocess_tests.test</span> <span class="s">preprocess_tests.cu</span><span class="p">)</span>
-    <span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_cuda_preprocess_tests.test</span> <span class="s">sparsebase</span><span class="p">)</span>
-    <span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_cuda_preprocess_tests.test</span> <span class="s">gtest</span> <span class="s">gtest_main</span><span class="p">)</span>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="nb">if</span><span class="p">(</span><span class="o">${</span><span class="nv">USE_CUDA</span><span class="o">}</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">add_executable</span><span class="p">(</span><span class="s">sparsebase__preprocess_cuda_preprocess_tests.test</span><span class="w"> </span><span class="s">preprocess_tests.cu</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_cuda_preprocess_tests.test</span><span class="w"> </span><span class="s">sparsebase</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">sparsebase_preprocess_cuda_preprocess_tests.test</span><span class="w"> </span><span class="s">gtest</span><span class="w"> </span><span class="s">gtest_main</span><span class="p">)</span>
 
-    <span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span> <span class="s">sparsebase_preprocess_preprocess_cuda_tests</span> <span class="s">COMMAND</span> <span class="s">sparsebase_preprocess_preprocess_cuda_tests.test</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">add_test</span><span class="p">(</span><span class="s">NAME</span><span class="w"> </span><span class="s">sparsebase_preprocess_preprocess_cuda_tests</span><span class="w"> </span><span class="s">COMMAND</span><span class="w"> </span><span class="s">sparsebase_preprocess_preprocess_cuda_tests.test</span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -354,12 +356,12 @@ the <a class="reference external" href="https://google.github.io/googletest/faq.
 <h4>2. Conditional tests within a test file<a class="headerlink" href="#conditional-tests-within-a-test-file" title="Permalink to this headline"></a></h4>
 <p>If a certain code (or test) within a test file is conditional on a CMake option, you can surround that code with a preprocessor if statement. Note: make sure that the test file includes the <code class="docutils literal notranslate"><span class="pre">sparsebase/config.h</span></code> file since that is where all the CMake flags are defined.</p>
 <p>For example, if a certain test is only required when the library is compiled with <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> enabled, we can define that test in the code as follows:</p>
-<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
+<div class="highlight-C++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sparsebase/config.h&quot;</span><span class="cp"></span>
 
-<span class="cp">#ifdef CUDA</span>
-<span class="n">TEST</span><span class="p">(</span><span class="n">CudaTestSuite</span><span class="p">,</span> <span class="n">CudaInitialization</span><span class="p">){</span>
-  <span class="c1">// code</span>
-<span class="p">}</span>
+<span class="cp">#ifdef USE_CUDA</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">CudaTestSuite</span><span class="p">,</span><span class="w"> </span><span class="n">CudaInitialization</span><span class="p">){</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// code</span>
+<span class="p">}</span><span class="w"></span>
 <span class="cp">#endif</span>
 </pre></div>
 </div>
@@ -377,7 +379,7 @@ make
 </pre></div>
 </div>
 <p>Once its built, while in the build directory, do the following:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ctest</span> <span class="o">-</span><span class="n">V</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ctest</span><span class="w"> </span><span class="o">-</span><span class="n">V</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -386,7 +388,7 @@ make
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="github_guide.html" class="btn btn-neutral float-left" title="Making Contributions to the Repo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="instantiations.html" class="btn btn-neutral float-left" title="Instantiating Classes in SparseBase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../license.html" class="btn btn-neutral float-right" title="License (MIT)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -1,0 +1,102 @@
+
+.. _program_listing_file_src_sparsebase_format_csc.h:
+
+Program Listing for File csc.h
+==============================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_format_csc.h>` (``src/sparsebase/format/csc.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include "sparsebase/config.h"
+   #include "sparsebase/context/cpu_context.h"
+   #include "sparsebase/format/format_order_two.h"
+   #include "sparsebase/utils/exception.h"
+   #include "sparsebase/utils/utils.h"
+   #ifndef SPARSEBASE_PROJECT_CSC_H
+   #define SPARSEBASE_PROJECT_CSC_H
+   
+   namespace sparsebase::format {
+   
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   class CSC : public utils::IdentifiableImplementation<
+                   CSC<IDType, NNZType, ValueType>,
+                   FormatOrderTwo<IDType, NNZType, ValueType>> {
+    public:
+     CSC(IDType n, IDType m, NNZType *col_ptr, IDType *col, ValueType *vals,
+         Ownership own = kNotOwned, bool ignore_sort = false);
+     CSC(const CSC<IDType, NNZType, ValueType> &);
+     CSC(CSC<IDType, NNZType, ValueType> &&);
+     CSC<IDType, NNZType, ValueType> &operator=(
+         const CSC<IDType, NNZType, ValueType> &);
+     Format *Clone() const override;
+     virtual ~CSC();
+     NNZType *get_col_ptr() const;
+     IDType *get_row() const;
+     ValueType *get_vals() const;
+   
+     NNZType *release_col_ptr();
+     IDType *release_row();
+     ValueType *release_vals();
+   
+     void set_col_ptr(NNZType *, Ownership own = kNotOwned);
+     void set_row(IDType *, Ownership own = kNotOwned);
+     void set_vals(ValueType *, Ownership own = kNotOwned);
+   
+     virtual bool ColPtrIsOwned();
+     virtual bool RowIsOwned();
+     virtual bool ValsIsOwned();
+   
+    protected:
+     std::unique_ptr<NNZType, std::function<void(NNZType *)>> col_ptr_;
+     std::unique_ptr<IDType, std::function<void(IDType *)>> row_;
+     std::unique_ptr<ValueType, std::function<void(ValueType *)>> vals_;
+   };
+   
+   template <typename IDType, typename NNZType, typename ValueType>
+   template <typename ToIDType, typename ToNNZType, typename ToValueType>
+   struct format::FormatOrderTwo<IDType, NNZType, ValueType>::TypeConverter<
+       CSC, ToIDType, ToNNZType, ToValueType> {
+     CSC<ToIDType, ToNNZType, ToValueType> *operator()(
+         FormatOrderTwo<IDType, NNZType, ValueType> *source,
+         bool is_move_conversion) {
+       CSC<IDType, NNZType, ValueType> *csc = source->template As<CSC>();
+       auto dims = csc->get_dimensions();
+       auto num_nnz = csc->get_num_nnz();
+       ToNNZType *new_col_ptr;
+       ToIDType *new_row;
+       ToValueType *new_vals;
+   
+       if (!is_move_conversion || !std::is_same_v<NNZType, ToNNZType>) {
+         new_col_ptr =
+             utils::ConvertArrayType<ToNNZType>(csc->get_col_ptr(), dims[0] + 1);
+       } else {
+         if constexpr (std::is_same_v<NNZType, ToNNZType>)
+           new_col_ptr = csc->release_col_ptr();
+       }
+   
+       if (!is_move_conversion || !std::is_same_v<IDType, ToIDType>) {
+         new_row = utils::ConvertArrayType<ToIDType>(csc->get_row(), num_nnz);
+       } else {
+         if constexpr (std::is_same_v<IDType, ToIDType>)
+           new_row = csc->release_row();
+       }
+       if (!is_move_conversion || !std::is_same_v<ValueType, ToValueType>) {
+         new_vals = utils::ConvertArrayType<ToValueType>(csc->get_vals(), num_nnz);
+       } else {
+         if constexpr (std::is_same_v<ValueType, ToValueType>)
+           new_vals = csc->release_vals();
+       }
+       return new CSC<ToIDType, ToNNZType, ToValueType>(
+           dims[0], dims[1], new_col_ptr, new_row, new_vals, kOwned);
+     }
+   };
+   }  // namespace sparsebase::format
+   
+   #ifdef _HEADER_ONLY
+   #include "csc.cc"
+   #endif
+   #endif  // SPARSEBASE_PROJECT_CSC_H

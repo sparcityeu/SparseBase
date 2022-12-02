@@ -1,0 +1,25 @@
+.. _dir_src_sparsebase_permute:
+
+
+Directory permute
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase>` (``src/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase/permute``
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_permute_permute_order_one.cc`
+- :ref:`file_src_sparsebase_permute_permute_order_one.h`
+- :ref:`file_src_sparsebase_permute_permute_order_two.cc`
+- :ref:`file_src_sparsebase_permute_permute_order_two.h`
+- :ref:`file_src_sparsebase_permute_permuter.cc`
+- :ref:`file_src_sparsebase_permute_permuter.h`
+
+

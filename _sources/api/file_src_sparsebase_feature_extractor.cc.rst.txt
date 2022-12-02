@@ -1,0 +1,52 @@
+
+.. _file_src_sparsebase_feature_extractor.cc:
+
+File extractor.cc
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_feature>` (``src/sparsebase/feature``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/feature/extractor.cc``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_feature_extractor.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/feature/extractor.h`` (:ref:`file_src_sparsebase_feature_extractor.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sparsebase/utils/extractable.h`` (:ref:`file_src_sparsebase_utils_extractable.h`)
+
+- ``vector``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__feature`
+

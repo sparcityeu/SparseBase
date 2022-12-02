@@ -1,9 +1,9 @@
 .. _exhale_class_classsparsebase_1_1format_1_1FormatImplementation:
 
-Template Class FormatImplementation
-===================================
+Class FormatImplementation
+==========================
 
-- Defined in :ref:`file_src_sparsebase_format_format.h`
+- Defined in :ref:`file_src_sparsebase_format_format_implementation.h`
 
 
 Inheritance Relationships
@@ -13,6 +13,13 @@ Base Type
 *********
 
 - ``public sparsebase::format::Format`` (:ref:`exhale_class_classsparsebase_1_1format_1_1Format`)
+
+
+Derived Types
+*************
+
+- ``public sparsebase::format::FormatOrderOne< ValueType >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatOrderOne`)
+- ``public sparsebase::format::FormatOrderTwo< IDType, NNZType, ValueType >`` (:ref:`exhale_class_classsparsebase_1_1format_1_1FormatOrderTwo`)
 
 
 Class Documentation

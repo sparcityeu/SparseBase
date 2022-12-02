@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1feature_1_1JaccardWeights:
+
+Template Class JaccardWeights
+=============================
+
+- Defined in :ref:`file_src_sparsebase_feature_jaccard_weights.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::FunctionMatcherMixin< format::Format * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::feature::JaccardWeights
+   :members:
+   :protected-members:
+   :undoc-members:

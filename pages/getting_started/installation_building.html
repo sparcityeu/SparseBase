@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &amp; Building &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Optional Dependencies" href="optional_dependencies.html" />
+    <link rel="prev" title="Getting Started" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Installation &amp; Building</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compiling">Compiling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specifying-explicit-instantiation-types">Specifying explicit instantiation types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#header-only">Header-only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="optional_dependencies.html">Optional Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available.html">Available components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Getting Started</a> &raquo;</li>
+      <li>Installation &amp; Building</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/getting_started/installation_building.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="installation-building">
+<h1>Installation &amp; Building<a class="headerlink" href="#installation-building" title="Permalink to this headline"></a></h1>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<p>Compilers listed below are the ones we used during development and testing.
+Other compilers may work but are not officially supported at the moment.
+Lowest versions are included based on the feature sets of the tools/compilers
+and not all of them are tested.
+We suggest using the most recent versions when possible.</p>
+<ul class="simple">
+<li><p>Supported Compilers:</p>
+<ul>
+<li><p>clang++ (version 6 or above)</p></li>
+<li><p>g++ (version 7 or above)</p></li>
+<li><p>MSYS2 g++ (<a class="reference external" href="https://packages.msys2.org/package/mingw-w64-x86_64-gcc?repo=mingw64">mingw-w64-x86_64-gcc</a>)</p></li>
+</ul>
+</li>
+<li><p>Build tools:</p>
+<ul>
+<li><p>cmake (version 3.12 or above) (with CUDA support enabled 3.18 or above)</p></li>
+<li><p>GNU make (version 4.1 or above) or ninja (version 1.11 or above)</p></li>
+</ul>
+</li>
+<li><p>Other dependencies:</p>
+<ul>
+<li><p>Python (version 3.6 or above)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="compiling">
+<h2>Compiling<a class="headerlink" href="#compiling" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><p>A version of the header-only release can be obtained in the releases section on Github
+(no compilation needed)
+along with a documentation pdf and license information.
+We still suggest compiling and using a non-header-only build if possible
+for faster compile times on your projects.</p>
+</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
+cmake -DCMAKE_BUILD_TYPE<span class="o">=</span>Release -DUSE_CUDA<span class="o">=</span>CUDA ..
+make
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> is <code class="docutils literal notranslate"><span class="pre">ON</span></code> if CUDA support is needed and <code class="docutils literal notranslate"><span class="pre">OFF</span></code> otherwise.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the library is installed with cuda support, the user code must be compiled using <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>.</p>
+</div>
+<p>This will generate the library as a static library. In addition, the example codes are compiled and their binaries are located in <code class="docutils literal notranslate"><span class="pre">build/examples</span></code>.</p>
+<p>Due to optimizations and templates, this process might take several minutes.</p>
+</section>
+<section id="specifying-explicit-instantiation-types">
+<h2>Specifying explicit instantiation types<a class="headerlink" href="#specifying-explicit-instantiation-types" title="Permalink to this headline"></a></h2>
+<p>Most classes in the library are templated over four template parameter types:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IDType</span></code>: data type that will contain IDs of element in a format object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NNZType</span></code>: data type that will contain numbers of non-zeros in a format object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueType</span></code>: data type that will contain values stored inside format objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FloatType</span></code>: data type that will contain floating point values (e.g., degree distributions).</p></li>
+</ol>
+<p>When generating the build system, you can specify a list of data types for each one of these template parameters. Explicit instantiations of all the classes in the library will be created to satisfy the power set of all the types you passed. You can specify the data types using CMake cache variables that you pass as semi-colon-seperated, quotation-enclosed lists. For example, the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake -DID_TYPES<span class="o">=</span><span class="s2">&quot;unsigned int; unsigned long long&quot;</span> -DNNZ_TYPES<span class="o">=</span><span class="s2">&quot;unsigned long long; short&quot;</span> -DVALUE_TYPES<span class="o">=</span><span class="s2">&quot;float&quot;</span> -DFLOAT_TYPES<span class="o">=</span><span class="s2">&quot;double; float&quot;</span> ..
+</pre></div>
+</div>
+<p>specifies the data types to be used with each of the four template parameter types stated above.</p>
+<p>Alternatively, you can edit the <code class="docutils literal notranslate"><span class="pre">CMakeCache.txt</span></code> file located in the build directory. Note that this file is generated after creating the build system (after executing <code class="docutils literal notranslate"><span class="pre">cmake</span></code>).</p>
+</section>
+<section id="header-only">
+<h2>Header-only<a class="headerlink" href="#header-only" title="Permalink to this headline"></a></h2>
+<p>Additionally, the library has a header-only setting, in which none of the classes of the library will be explicitly instantiated at library-build time. Building the library to be header-only can be done as shown:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="n">build</span><span class="w"></span>
+<span class="n">cmake</span><span class="w"> </span><span class="o">-</span><span class="n">D_HEADER_ONLY</span><span class="o">=</span><span class="n">ON</span><span class="w"> </span><span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="o">=</span><span class="n">Release</span><span class="w"> </span><span class="o">-</span><span class="n">DUSE_CUDA</span><span class="o">=</span><span class="n">CUDA</span><span class="w"> </span><span class="p">..</span><span class="w"></span>
+<span class="n">make</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">CUDA</span></code> is <code class="docutils literal notranslate"><span class="pre">ON</span></code> if CUDA support is needed and <code class="docutils literal notranslate"><span class="pre">OFF</span></code> otherwise.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the library is installed with cuda support, the user code must be compiled using <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>.</p>
+</div>
+<p>This will prepare the library for installation and compile the example codes located in <code class="docutils literal notranslate"><span class="pre">build/examples</span></code>.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>To install the library, compile the library as shown in the previous section. Afterwards, you can install the library files either to the systems global location or to a custom location. To install the library to the default system location:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
+cmake --install .
+</pre></div>
+</div>
+<p>To install the library to a custom directory, do the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> build
+cmake --install . --prefix <span class="s2">&quot;/custom/location&quot;</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> We suggest using <strong>absolute paths</strong> for prefixes as relative paths have been known to cause problems from time to time.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="optional_dependencies.html" class="btn btn-neutral float-right" title="Optional Dependencies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

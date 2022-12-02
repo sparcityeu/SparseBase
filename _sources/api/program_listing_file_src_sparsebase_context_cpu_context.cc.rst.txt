@@ -1,0 +1,30 @@
+
+.. _program_listing_file_src_sparsebase_context_cpu_context.cc:
+
+Program Listing for File cpu_context.cc
+=======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_context_cpu_context.cc>` (``src/sparsebase/context/cpu_context.cc``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   //
+   // Created by Amro on 3/31/2022.
+   //
+   
+   #include "sparsebase/context/cpu_context.h"
+   
+   #include "sparsebase/context/context.h"
+   
+   namespace sparsebase::context {
+   
+   bool CPUContext::IsEquivalent(Context *rhs) const {
+     if (dynamic_cast<CPUContext *>(rhs) != nullptr) {
+       return true;
+     } else {
+       return false;
+     }
+   }
+   }  // namespace sparsebase::context

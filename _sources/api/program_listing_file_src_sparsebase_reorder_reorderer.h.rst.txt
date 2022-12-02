@@ -1,0 +1,72 @@
+
+.. _program_listing_file_src_sparsebase_reorder_reorderer.h:
+
+Program Listing for File reorderer.h
+====================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_reorder_reorderer.h>` (``src/sparsebase/reorder/reorderer.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <any>
+   #include <cmath>
+   #include <iostream>
+   #include <memory>
+   #include <typeindex>
+   #include <typeinfo>
+   #include <unordered_map>
+   #include <vector>
+   
+   #include "sparsebase/config.h"
+   #include "sparsebase/context/cpu_context.h"
+   #include "sparsebase/converter/converter.h"
+   #include "sparsebase/format/format.h"
+   #include "sparsebase/format/format_order_one.h"
+   #include "sparsebase/format/format_order_two.h"
+   #include "sparsebase/utils/extractable.h"
+   #include "sparsebase/utils/function_matcher_mixin.h"
+   #ifndef SPARSEBASE_PROJECT_REORDERING_H
+   #define SPARSEBASE_PROJECT_REORDERING_H
+   
+   #ifdef USE_METIS
+   namespace sparsebase::metis {
+   #include <metis.h>
+   }
+   #endif
+   
+   namespace sparsebase::reorder {
+   
+   
+   template <typename IDType>
+   class Reorderer : public utils::FunctionMatcherMixin<IDType *> {
+    protected:
+    public:
+   
+     IDType *GetReorder(format::Format *format,
+                        std::vector<context::Context *> contexts,
+                        bool convert_input);
+   
+     IDType *GetReorder(format::Format *format, utils::Parameters *params,
+                        std::vector<context::Context *> contexts,
+                        bool convert_input);
+   
+     std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
+     GetReorderCached(format::Format *csr,
+                      std::vector<context::Context *> contexts,
+                      bool convert_input);
+   
+     std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
+     GetReorderCached(format::Format *csr, utils::Parameters *params,
+                      std::vector<context::Context *> contexts,
+                      bool convert_input);
+     virtual ~Reorderer();
+   };
+   
+   }  // namespace sparsebase::reorder
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/reorder/reorderer.cc"
+   #endif
+   
+   #endif  // SPARSEBASE_PROJECT_REORDERING_H

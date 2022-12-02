@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class IOBase &mdash; SparseBase v0.3.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class ReorderBase" href="classsparsebase_1_1bases_1_1ReorderBase.html" />
+    <link rel="prev" title="Class GraphFeatureBase" href="classsparsebase_1_1bases_1_1GraphFeatureBase.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> SparseBase
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/contributing/index.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/license.html">License (MIT)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SparseBase</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="library_root.html">Library API</a> &raquo;</li>
+      <li>Class IOBase</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classsparsebase_1_1bases_1_1IOBase.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-iobase">
+<span id="exhale-class-classsparsebase-1-1bases-1-1iobase"></span><h1>Class IOBase<a class="headerlink" href="#class-iobase" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_bases_iobase.h.html#file-src-sparsebase-bases-iobase-h"><span class="std std-ref">File iobase.h</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N10sparsebase5bases6IOBaseE">
+<span id="_CPPv3N10sparsebase5bases6IOBaseE"></span><span id="_CPPv2N10sparsebase5bases6IOBaseE"></span><span id="sparsebase::bases::IOBase"></span><span class="target" id="classsparsebase_1_1bases_1_1IOBase"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">bases</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">IOBase</span></span></span><a class="headerlink" href="#_CPPv4N10sparsebase5bases6IOBaseE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase12ReadMTXToCSRENSt6stringEb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase12ReadMTXToCSRENSt6stringEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a161b29902750e0d1095960aec45ff05b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToCSR::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToCSR::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToCSR::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadMTXToCSR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_index_to_zero</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read a matrix market file into a CSR format. </p>
+<p>Read the matrix market file in the path <code class="docutils literal notranslate"><span class="pre">filename</span></code> into a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filename</strong> – the path to the matrix market file. </p></li>
+<li><p><strong>convert_index_to_zero</strong> – whether to convert indices in the matrix market to zero-indexing or to read them as is and add an empty zeroth row and column. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pointer at a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase12ReadMTXToCOOENSt6stringEb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase12ReadMTXToCOOENSt6stringEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1ac83488b2a7f08e90990ea938eff64408"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToCOO::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToCOO::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToCOO::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadMTXToCOO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_index_to_zero</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase12ReadMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read a matrix market file into a COO format. </p>
+<p>Read the matrix market file in the path <code class="docutils literal notranslate"><span class="pre">filename</span></code> into a <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filename</strong> – the path to the matrix market file. </p></li>
+<li><p><strong>convert_index_to_zero</strong> – whether to convert indices in the matrix market to zero-indexing or to read them as is and add an empty zeroth row and column. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pointer at a <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase14ReadMTXToArrayEPN6format5ArrayI9ValueTypeEENSt6stringEb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase14ReadMTXToArrayENSt6stringEb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase14ReadMTXToArrayENSt6stringEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1ae61d7e50fdc026ca1493d7d801c2ce1e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Array.html#_CPPv4I0EN10sparsebase6format5ArrayE" title="sparsebase::format::Array"><span class="n"><span class="pre">Array</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase14ReadMTXToArrayEPN6format5ArrayI9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadMTXToArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadMTXToArray</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_index_to_zero</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase14ReadMTXToArrayEPN6format5ArrayI9ValueTypeEENSt6stringEb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read a matrix market file into a dense array format. </p>
+<p>Read the matrix market file in the path <code class="docutils literal notranslate"><span class="pre">filename</span></code> into a <code class="docutils literal notranslate"><span class="pre">Array&lt;ValueType&gt;</span></code> object. If the matrix inside the file has more than a single row or more than a single column, an exception will be thrown. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filename</strong> – the path to the matrix market file. </p></li>
+<li><p><strong>convert_index_to_zero</strong> – whether to convert indices in the matrix market to zero-indexing or to read them as is and add an empty zeroth row and column. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pointer at a <code class="docutils literal notranslate"><span class="pre">Array&lt;ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSRENSt6stringEbb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSRENSt6stringEbb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1aa311c382b65da3ad86b6b31433362349"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="sparsebase::bases::IOBase::ReadPigoMTXToCSR::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="sparsebase::bases::IOBase::ReadPigoMTXToCSR::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="sparsebase::bases::IOBase::ReadPigoMTXToCSR::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadPigoMTXToCSR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_index_to_zero</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read a matrix market file into a CSR format using PIGO parallel reading. </p>
+<p>Read the matrix market file in the path <code class="docutils literal notranslate"><span class="pre">filename</span></code> into a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filename</strong> – the path to the matrix market file. </p></li>
+<li><p><strong>convert_index_to_zero</strong> – whether to convert indices in the matrix market to zero-indexing or to read them as is and add an empty zeroth row and column. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pointer at a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOENSt6stringEbb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOENSt6stringEbb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a752d962ed335c63c7dbcf961343be5aa"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="sparsebase::bases::IOBase::ReadPigoMTXToCOO::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="sparsebase::bases::IOBase::ReadPigoMTXToCOO::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="sparsebase::bases::IOBase::ReadPigoMTXToCOO::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadPigoMTXToCOO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">convert_index_to_zero</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase16ReadPigoMTXToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbb" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSRENSt6stringEb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSRENSt6stringEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a4a026038287c98c4fecb833ace16ba89"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadPigoEdgeListToCSR::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadPigoEdgeListToCSR::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadPigoEdgeListToCSR::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadPigoEdgeListToCSR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEb" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOENSt6stringEb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOENSt6stringEb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a446a715a8f98f3fb1226f81459a5d165"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadPigoEdgeListToCOO::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadPigoEdgeListToCOO::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="sparsebase::bases::IOBase::ReadPigoEdgeListToCOO::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadPigoEdgeListToCOO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase21ReadPigoEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEb" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbbbb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSRENSt6stringEbbbb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSRENSt6stringEbbbb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a7eeb9940921eba869006406b72041a11"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="sparsebase::bases::IOBase::ReadEdgeListToCSR::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="sparsebase::bases::IOBase::ReadEdgeListToCSR::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="sparsebase::bases::IOBase::ReadEdgeListToCSR::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadEdgeListToCSR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">remove_self_edges</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">read_undirected</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">square</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read an edge list file into a CSR object. </p>
+<p>Reads an edge list file into a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filename</strong> – path to the edge list file. </p></li>
+<li><p><strong>weighted</strong> – whether the edge list file contains edge weights. </p></li>
+<li><p><strong>remove_self_edges</strong> – whether self-edges should be removed. </p></li>
+<li><p><strong>read_undirected</strong> – if true, reading the edge (u,v) will also add the edge (v,u) to the object. </p></li>
+<li><p><strong>square</strong> – whether the graph is square. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbbbb">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOENSt6stringEbbbb"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOENSt6stringEbbbb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a5aa73d40458fcfbaea42d5ffb9a8d273"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="sparsebase::bases::IOBase::ReadEdgeListToCOO::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="sparsebase::bases::IOBase::ReadEdgeListToCOO::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="sparsebase::bases::IOBase::ReadEdgeListToCOO::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadEdgeListToCOO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">remove_self_edges</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">read_undirected</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">square</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase17ReadEdgeListToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringEbbbb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read an edge list file into a COO object. </p>
+<p>Reads an edge list file into a <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>filename</strong> – path to the edge list file. </p></li>
+<li><p><strong>weighted</strong> – whether the edge list file contains edge weights. </p></li>
+<li><p><strong>remove_self_edges</strong> – whether self-edges should be removed. </p></li>
+<li><p><strong>read_undirected</strong> – if true, reading the edge (u,v) will also add the edge (v,u) to the object. </p></li>
+<li><p><strong>square</strong> – whether the graph is square. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase15ReadBinaryToCSRENSt6stringE"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase15ReadBinaryToCSRENSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a21e452c0675ca43c70051a796bfca89b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToCSR::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToCSR::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToCSR::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadBinaryToCSR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCSREPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read an SparseBase Binary file into a CSR. </p>
+<p>Reads a SparseBase binary file into a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>filename</strong> – path to the edge list file. </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOENSt6stringE"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOENSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a828ff905a476a334b22a92e2ca74f470"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToCOO::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToCOO::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToCOO::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadBinaryToCOO</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase15ReadBinaryToCOOEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read an SparseBase Binary file into a COO. </p>
+<p>Reads a SparseBase binary file into a <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>filename</strong> – path to the edge list file. </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase5bases6IOBase17ReadBinaryToArrayEPN6format5ArrayI9ValueTypeEENSt6stringE">
+<span id="_CPPv3I0EN10sparsebase5bases6IOBase17ReadBinaryToArrayENSt6stringE"></span><span id="_CPPv2I0EN10sparsebase5bases6IOBase17ReadBinaryToArrayENSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a0c629d68cbb35e3cd2bb38e6c6dddceb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Array.html#_CPPv4I0EN10sparsebase6format5ArrayE" title="sparsebase::format::Array"><span class="n"><span class="pre">Array</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase5bases6IOBase17ReadBinaryToArrayEPN6format5ArrayI9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::ReadBinaryToArray::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ReadBinaryToArray</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN10sparsebase5bases6IOBase17ReadBinaryToArrayEPN6format5ArrayI9ValueTypeEENSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Read an SparseBase Binary file into a Array. </p>
+<p>Reads a SparseBase binary file into a <code class="docutils literal notranslate"><span class="pre">Array&lt;ValueType&gt;</span></code> object </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>filename</strong> – path to the edge list file. </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A pointer at a <code class="docutils literal notranslate"><span class="pre">Array&lt;ValueType&gt;</span></code> object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEvPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1aa5a398c85106ea3123841f382333ebfd"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteCOOToBinary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1COO.html#_CPPv4I000EN10sparsebase6format3COOE" title="sparsebase::format::COO"><span class="n"><span class="pre">COO</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEvPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteCOOToBinary::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEvPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteCOOToBinary::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEvPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteCOOToBinary::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coo</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCOOToBinaryEvPN6format3COOI6IDType7NNZType9ValueTypeEENSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Write a COO object to a SparseBase binary file. </p>
+<p>Write a COO object to a SparseBase binary file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>coo</strong> – a pointer at the <code class="docutils literal notranslate"><span class="pre">COO&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object to write. </p></li>
+<li><p><strong>filename</strong> – path to write the file. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEvPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE">
+<span id="_CPPv3I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE"></span><span id="_CPPv2I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IDType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NNZType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1a3969a04d6cd7424e7ac931914f725977"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteCSRToBinary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1CSR.html#_CPPv4I000EN10sparsebase6format3CSRE" title="sparsebase::format::CSR"><span class="n"><span class="pre">CSR</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEvPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteCSRToBinary::IDType"><span class="n"><span class="pre">IDType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEvPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteCSRToBinary::NNZType"><span class="n"><span class="pre">NNZType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEvPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteCSRToBinary::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">csr</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I000EN10sparsebase5bases6IOBase16WriteCSRToBinaryEvPN6format3CSRI6IDType7NNZType9ValueTypeEENSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Write a CSR object to a SparseBase binary file. </p>
+<p>Write a CSR object to a SparseBase binary file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IDType</strong> – type to represent the number of rows and columns in the object. </p></li>
+<li><p><strong>NNZType</strong> – type to represent the number of non-zeros in the object. </p></li>
+<li><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>csr</strong> – a pointer at the <code class="docutils literal notranslate"><span class="pre">CSR&lt;IDType,</span> <span class="pre">NNZType,</span> <span class="pre">ValueType&gt;</span></code> object to write. </p></li>
+<li><p><strong>filename</strong> – path to write the file. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN10sparsebase5bases6IOBase18WriteArrayToBinaryEvPN6format5ArrayI9ValueTypeEENSt6stringE">
+<span id="_CPPv3I0EN10sparsebase5bases6IOBase18WriteArrayToBinaryEPN6format5ArrayI9ValueTypeEENSt6stringE"></span><span id="_CPPv2I0EN10sparsebase5bases6IOBase18WriteArrayToBinaryEPN6format5ArrayI9ValueTypeEENSt6stringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValueType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classsparsebase_1_1bases_1_1IOBase_1ad5aefbf2853d6990f8122627183b9185"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteArrayToBinary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1format_1_1Array.html#_CPPv4I0EN10sparsebase6format5ArrayE" title="sparsebase::format::Array"><span class="n"><span class="pre">Array</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN10sparsebase5bases6IOBase18WriteArrayToBinaryEvPN6format5ArrayI9ValueTypeEENSt6stringE" title="sparsebase::bases::IOBase::WriteArrayToBinary::ValueType"><span class="n"><span class="pre">ValueType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">array</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN10sparsebase5bases6IOBase18WriteArrayToBinaryEvPN6format5ArrayI9ValueTypeEENSt6stringE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>Write an Array object to a SparseBase binary file. </p>
+<p>Write a Array object to a SparseBase binary file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters</dt>
+<dd class="field-odd"><p><strong>ValueType</strong> – type to represent the data inside the matrix (vertex weights in the case of a graph). </p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>array</strong> – a pointer at the <code class="docutils literal notranslate"><span class="pre">Array&lt;ValueType&gt;</span></code> object to write. </p></li>
+<li><p><strong>filename</strong> – path to write the file. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classsparsebase_1_1bases_1_1GraphFeatureBase.html" class="btn btn-neutral float-left" title="Class GraphFeatureBase" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classsparsebase_1_1bases_1_1ReorderBase.html" class="btn btn-neutral float-right" title="Class ReorderBase" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SparCity Project.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+
+.. _namespace_sparsebase__format__format:
+
+Namespace sparsebase::format::format
+====================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase__format__format__FormatOrderTwo`

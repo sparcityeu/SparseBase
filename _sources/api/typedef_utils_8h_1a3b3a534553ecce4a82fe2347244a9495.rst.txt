@@ -1,0 +1,13 @@
+.. _exhale_typedef_utils_8h_1a3b3a534553ecce4a82fe2347244a9495:
+
+Typedef sparsebase::utils::CostType
+===================================
+
+- Defined in :ref:`file_src_sparsebase_utils_utils.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::utils::CostType

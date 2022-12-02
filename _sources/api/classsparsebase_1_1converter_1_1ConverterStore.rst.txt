@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1converter_1_1ConverterStore:
+
+Class ConverterStore
+====================
+
+- Defined in :ref:`file_src_sparsebase_converter_converter_store.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::converter::ConverterStore
+   :members:
+   :protected-members:
+   :undoc-members:

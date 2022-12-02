@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1feature_1_1Degrees__DegreeDistribution:
+
+Template Class Degrees_DegreeDistribution
+=========================================
+
+- Defined in :ref:`file_src_sparsebase_feature_degrees_degree_distribution.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::feature::FeaturePreprocessType< std::unordered_map< std::type_index, std::any > >`` (:ref:`exhale_class_classsparsebase_1_1feature_1_1FeaturePreprocessType`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::feature::Degrees_DegreeDistribution
+   :members:
+   :protected-members:
+   :undoc-members:

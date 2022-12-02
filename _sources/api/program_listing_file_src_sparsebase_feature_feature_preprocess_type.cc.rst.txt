@@ -1,0 +1,59 @@
+
+.. _program_listing_file_src_sparsebase_feature_feature_preprocess_type.cc:
+
+Program Listing for File feature_preprocess_type.cc
+===================================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_feature_feature_preprocess_type.cc>` (``src/sparsebase/feature/feature_preprocess_type.cc``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include "sparsebase/feature/feature_preprocess_type.h"
+   
+   #include <any>
+   #include <memory>
+   #include <unordered_map>
+   
+   namespace sparsebase::feature {
+   
+   template <typename FeatureType>
+   FeaturePreprocessType<FeatureType>::~FeaturePreprocessType() = default;
+   
+   template <typename FeatureType>
+   std::shared_ptr<utils::Parameters>
+   FeaturePreprocessType<FeatureType>::get_params() {
+     return this->params_;
+   }
+   template <typename FeatureType>
+   std::shared_ptr<utils::Parameters>
+   FeaturePreprocessType<FeatureType>::get_params(std::type_index t) {
+     if (this->pmap_.find(t) != this->pmap_.end()) {
+       return this->pmap_[t];
+     } else {
+       throw utils::FeatureParamsException(get_id().name(), t.name());
+     }
+   }
+   template <typename FeatureType>
+   void FeaturePreprocessType<FeatureType>::set_params(
+       std::type_index t, std::shared_ptr<utils::Parameters> p) {
+     auto ids = this->get_sub_ids();
+     if (std::find(ids.begin(), ids.end(), t) != ids.end()) {
+       this->pmap_[t] = p;
+     } else {
+       throw utils::FeatureParamsException(get_id().name(), t.name());
+     }
+   }
+   template <typename FeatureType>
+   std::type_index FeaturePreprocessType<FeatureType>::get_id() {
+     return typeid(*this);
+   }
+   
+   #if !defined(_HEADER_ONLY)
+   #include "init/feature_preprocess_type.inc"
+   template class FeaturePreprocessType<
+       std::unordered_map<std::type_index, std::any>>;
+   #endif
+   
+   }  // namespace sparsebase::feature

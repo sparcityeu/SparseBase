@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct CPUContext &mdash; SparseBase v0.2.3 documentation</title>
+  <title>Struct CPUContext &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Template Struct Implementation" href="structsparsebase_1_1feature_1_1Implementation.html" />
-    <link rel="prev" title="Template Struct ContextImplementation" href="structsparsebase_1_1context_1_1ContextImplementation.html" /> 
+    <link rel="next" title="Struct CUDAContext" href="structsparsebase_1_1context_1_1CUDAContext.html" />
+    <link rel="prev" title="Struct Context" href="structsparsebase_1_1context_1_1Context.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +41,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
@@ -78,14 +78,14 @@
   <section id="struct-cpucontext">
 <span id="exhale-struct-structsparsebase-1-1context-1-1cpucontext"></span><h1>Struct CPUContext<a class="headerlink" href="#struct-cpucontext" title="Permalink to this headline"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_context_context.h.html#file-src-sparsebase-context-context-h"><span class="std std-ref">File context.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_sparsebase_context_cpu_context.h.html#file-src-sparsebase-context-cpu-context-h"><span class="std std-ref">File cpu_context.h</span></a></p></li>
 </ul>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
 <section id="base-type">
 <h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::context::ContextImplementation&lt;</span> <span class="pre">CPUContext</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="structsparsebase_1_1context_1_1ContextImplementation.html#exhale-struct-structsparsebase-1-1context-1-1contextimplementation"><span class="std std-ref">Template Struct ContextImplementation</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">sparsebase::utils::IdentifiableImplementation&lt;</span> <span class="pre">CPUContext,</span> <span class="pre">Context</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="classsparsebase_1_1utils_1_1IdentifiableImplementation.html#exhale-class-classsparsebase-1-1utils-1-1identifiableimplementation"><span class="std std-ref">Template Class IdentifiableImplementation</span></a>)</p></li>
 </ul>
 </section>
 </section>
@@ -93,7 +93,7 @@
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Permalink to this headline"></a></h2>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N10sparsebase7context10CPUContextE">
-<span id="_CPPv3N10sparsebase7context10CPUContextE"></span><span id="_CPPv2N10sparsebase7context10CPUContextE"></span><span id="sparsebase::context::CPUContext"></span><span class="target" id="structsparsebase_1_1context_1_1CPUContext"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CPUContext</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structsparsebase_1_1context_1_1ContextImplementation.html#_CPPv4I0EN10sparsebase7context21ContextImplementationE" title="sparsebase::context::ContextImplementation"><span class="n"><span class="pre">ContextImplementation</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N10sparsebase7context10CPUContextE" title="sparsebase::context::CPUContext"><span class="n"><span class="pre">CPUContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N10sparsebase7context10CPUContextE" title="Permalink to this definition"></a><br /></dt>
+<span id="_CPPv3N10sparsebase7context10CPUContextE"></span><span id="_CPPv2N10sparsebase7context10CPUContextE"></span><span id="sparsebase::context::CPUContext"></span><span class="target" id="structsparsebase_1_1context_1_1CPUContext"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CPUContext</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">sparsebase</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">utils</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classsparsebase_1_1utils_1_1IdentifiableImplementation.html#_CPPv4I00EN10sparsebase5utils26IdentifiableImplementationE" title="sparsebase::utils::IdentifiableImplementation"><span class="n"><span class="pre">IdentifiableImplementation</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N10sparsebase7context10CPUContextE" title="sparsebase::context::CPUContext"><span class="n"><span class="pre">CPUContext</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structsparsebase_1_1context_1_1Context.html#_CPPv4N10sparsebase7context7ContextE" title="sparsebase::context::Context"><span class="n"><span class="pre">Context</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N10sparsebase7context10CPUContextE" title="Permalink to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -111,8 +111,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structsparsebase_1_1context_1_1ContextImplementation.html" class="btn btn-neutral float-left" title="Template Struct ContextImplementation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="structsparsebase_1_1feature_1_1Implementation.html" class="btn btn-neutral float-right" title="Template Struct Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="structsparsebase_1_1context_1_1Context.html" class="btn btn-neutral float-left" title="Struct Context" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structsparsebase_1_1context_1_1CUDAContext.html" class="btn btn-neutral float-right" title="Struct CUDAContext" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

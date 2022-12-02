@@ -1,0 +1,65 @@
+
+.. _file_src_sparsebase_utils_class_matcher_mixin.h:
+
+File class_matcher_mixin.h
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/class_matcher_mixin.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_class_matcher_mixin.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``typeindex``
+
+- ``utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_feature_feature_extractor.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1ClassMatcherMixin`
+

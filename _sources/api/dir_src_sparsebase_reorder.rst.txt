@@ -1,0 +1,37 @@
+.. _dir_src_sparsebase_reorder:
+
+
+Directory reorder
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase>` (``src/sparsebase``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+*Directory path:* ``src/sparsebase/reorder``
+
+
+Files
+-----
+
+- :ref:`file_src_sparsebase_reorder_amd_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_amd_reorder.h`
+- :ref:`file_src_sparsebase_reorder_degree_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_degree_reorder.h`
+- :ref:`file_src_sparsebase_reorder_generic_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_generic_reorder.h`
+- :ref:`file_src_sparsebase_reorder_gray_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_gray_reorder.h`
+- :ref:`file_src_sparsebase_reorder_metis_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_metis_reorder.h`
+- :ref:`file_src_sparsebase_reorder_rabbit_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_rabbit_reorder.h`
+- :ref:`file_src_sparsebase_reorder_rcm_reorder.cc`
+- :ref:`file_src_sparsebase_reorder_rcm_reorder.h`
+- :ref:`file_src_sparsebase_reorder_reorder_heatmap.cc`
+- :ref:`file_src_sparsebase_reorder_reorder_heatmap.h`
+- :ref:`file_src_sparsebase_reorder_reorderer.cc`
+- :ref:`file_src_sparsebase_reorder_reorderer.h`
+
+

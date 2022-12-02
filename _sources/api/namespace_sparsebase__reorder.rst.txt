@@ -1,0 +1,57 @@
+
+.. _namespace_sparsebase__reorder:
+
+Namespace sparsebase::reorder
+=============================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1AMDReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1DegreeReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1GrayReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1MetisReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1RabbitReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1RCMReorderParams`
+
+- :ref:`exhale_struct_structsparsebase_1_1reorder_1_1ReorderHeatmapParams`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1AMDReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1DegreeReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1GenericReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1GrayReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1MetisReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1RabbitReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1RCMReorder`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1Reorderer`
+
+- :ref:`exhale_class_classsparsebase_1_1reorder_1_1ReorderHeatmap`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_gray__reorder_8h_1a6e256f7fab12ee0868b354d7350dc24a`

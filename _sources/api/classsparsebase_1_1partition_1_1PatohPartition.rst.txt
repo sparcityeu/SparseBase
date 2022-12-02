@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1partition_1_1PatohPartition:
+
+Template Class PatohPartition
+=============================
+
+- Defined in :ref:`file_src_sparsebase_partition_patoh_partition.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::partition::Partitioner< IDType >`` (:ref:`exhale_class_classsparsebase_1_1partition_1_1Partitioner`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::partition::PatohPartition
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1partition_1_1PulpPartition:
+
+Template Class PulpPartition
+============================
+
+- Defined in :ref:`file_src_sparsebase_partition_pulp_partition.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::partition::Partitioner< IDType >`` (:ref:`exhale_class_classsparsebase_1_1partition_1_1Partitioner`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::partition::PulpPartition
+   :members:
+   :protected-members:
+   :undoc-members:

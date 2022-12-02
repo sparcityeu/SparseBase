@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Namespace sparsebase::utils &mdash; SparseBase v0.2.3 documentation</title>
+  <title>Namespace sparsebase::utils &mdash; SparseBase v0.3.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Namespace sparsebase::utils::converter" href="namespace_sparsebase__utils__converter.html" />
-    <link rel="prev" title="Namespace sparsebase::preprocess" href="namespace_sparsebase__preprocess.html" /> 
+    <link rel="next" title="Namespace std" href="namespace_std.html" />
+    <link rel="prev" title="Namespace sparsebase::reorder" href="namespace_sparsebase__reorder.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +41,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pages/getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/explanations/index.html">Explanations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/how_to_guides/index.html">How To Guides</a></li>
@@ -80,31 +80,74 @@
 <div class="contents local topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#namespaces" id="id2">Namespaces</a></p></li>
-<li><p><a class="reference internal" href="#classes" id="id3">Classes</a></p></li>
+<li><p><a class="reference internal" href="#classes" id="id2">Classes</a></p></li>
+<li><p><a class="reference internal" href="#enums" id="id3">Enums</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id4">Functions</a></p></li>
+<li><p><a class="reference internal" href="#typedefs" id="id5">Typedefs</a></p></li>
+<li><p><a class="reference internal" href="#variables" id="id6">Variables</a></p></li>
 </ul>
 </div>
-<section id="namespaces">
-<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="namespace_sparsebase__utils__converter.html#namespace-sparsebase-utils-converter"><span class="std std-ref">Namespace sparsebase::utils::converter</span></a></p></li>
-<li><p><a class="reference internal" href="namespace_sparsebase__utils__io.html#namespace-sparsebase-utils-io"><span class="std std-ref">Namespace sparsebase::utils::io</span></a></p></li>
-</ul>
-</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
 <ul class="simple">
+<li><p><a class="reference internal" href="structsparsebase_1_1utils_1_1CUDADeleter.html#exhale-struct-structsparsebase-1-1utils-1-1cudadeleter"><span class="std std-ref">Template Struct CUDADeleter</span></a></p></li>
+<li><p><a class="reference internal" href="structsparsebase_1_1utils_1_1Implementation.html#exhale-struct-structsparsebase-1-1utils-1-1implementation"><span class="std std-ref">Template Struct Implementation</span></a></p></li>
+<li><p><a class="reference internal" href="structsparsebase_1_1utils_1_1Parameters.html#exhale-struct-structsparsebase-1-1utils-1-1parameters"><span class="std std-ref">Struct Parameters</span></a></p></li>
+<li><p><a class="reference internal" href="structsparsebase_1_1utils_1_1TypeIndexVectorHash.html#exhale-struct-structsparsebase-1-1utils-1-1typeindexvectorhash"><span class="std std-ref">Struct TypeIndexVectorHash</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1AllocationException.html#exhale-class-classsparsebase-1-1utils-1-1allocationexception"><span class="std std-ref">Class AllocationException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1AttemptToReset.html#exhale-class-classsparsebase-1-1utils-1-1attempttoreset"><span class="std std-ref">Template Class AttemptToReset</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1ClassMatcherMixin.html#exhale-class-classsparsebase-1-1utils-1-1classmatchermixin"><span class="std std-ref">Template Class ClassMatcherMixin</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1ConversionException.html#exhale-class-classsparsebase-1-1utils-1-1conversionexception"><span class="std std-ref">Class ConversionException</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1CUDADeviceException.html#exhale-class-classsparsebase-1-1utils-1-1cudadeviceexception"><span class="std std-ref">Class CUDADeviceException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1DemangleException.html#exhale-class-classsparsebase-1-1utils-1-1demangleexception"><span class="std std-ref">Class DemangleException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1DirectExecutionNotAvailableException.html#exhale-class-classsparsebase-1-1utils-1-1directexecutionnotavailableexception"><span class="std std-ref">Template Class DirectExecutionNotAvailableException</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1Exception.html#exhale-class-classsparsebase-1-1utils-1-1exception"><span class="std std-ref">Class Exception</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1Extractable.html#exhale-class-classsparsebase-1-1utils-1-1extractable"><span class="std std-ref">Class Extractable</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1FeatureException.html#exhale-class-classsparsebase-1-1utils-1-1featureexception"><span class="std std-ref">Class FeatureException</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1FeatureParamsException.html#exhale-class-classsparsebase-1-1utils-1-1featureparamsexception"><span class="std std-ref">Class FeatureParamsException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1FunctionMatcherMixin.html#exhale-class-classsparsebase-1-1utils-1-1functionmatchermixin"><span class="std std-ref">Template Class FunctionMatcherMixin</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1FunctionNotFoundException.html#exhale-class-classsparsebase-1-1utils-1-1functionnotfoundexception"><span class="std std-ref">Class FunctionNotFoundException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1Identifiable.html#exhale-class-classsparsebase-1-1utils-1-1identifiable"><span class="std std-ref">Class Identifiable</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1IdentifiableImplementation.html#exhale-class-classsparsebase-1-1utils-1-1identifiableimplementation"><span class="std std-ref">Template Class IdentifiableImplementation</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1InvalidDataMember.html#exhale-class-classsparsebase-1-1utils-1-1invaliddatamember"><span class="std std-ref">Class InvalidDataMember</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1Logger.html#exhale-class-classsparsebase-1-1utils-1-1logger"><span class="std std-ref">Class Logger</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1NoConverterException.html#exhale-class-classsparsebase-1-1utils-1-1noconverterexception"><span class="std std-ref">Class NoConverterException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1OnceSettable.html#exhale-class-classsparsebase-1-1utils-1-1oncesettable"><span class="std std-ref">Template Class OnceSettable</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1Parameterizable.html#exhale-class-classsparsebase-1-1utils-1-1parameterizable"><span class="std std-ref">Class Parameterizable</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1ReaderException.html#exhale-class-classsparsebase-1-1utils-1-1readerexception"><span class="std std-ref">Class ReaderException</span></a></p></li>
+<li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1ReorderException.html#exhale-class-classsparsebase-1-1utils-1-1reorderexception"><span class="std std-ref">Class ReorderException</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1TypeException.html#exhale-class-classsparsebase-1-1utils-1-1typeexception"><span class="std std-ref">Class TypeException</span></a></p></li>
 <li><p><a class="reference internal" href="classsparsebase_1_1utils_1_1WriterException.html#exhale-class-classsparsebase-1-1utils-1-1writerexception"><span class="std std-ref">Class WriterException</span></a></p></li>
+</ul>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="enum_logger_8h_1a7f028b0802efcf5bd2353a9ee16ad25b.html#exhale-enum-logger-8h-1a7f028b0802efcf5bd2353a9ee16ad25b"><span class="std std-ref">Enum LogLevel</span></a></p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_utils_8h_1a47671e3e65bf3f49be1d5c62d380bbbc.html#exhale-function-utils-8h-1a47671e3e65bf3f49be1d5c62d380bbbc"><span class="std std-ref">Template Function sparsebase::utils::CanTypeFitValue</span></a></p></li>
+<li><p><a class="reference internal" href="function_utils_8h_1aa9c32f90fc68e812c31e29e931156186.html#exhale-function-utils-8h-1aa9c32f90fc68e812c31e29e931156186"><span class="std std-ref">Template Function sparsebase::utils::ConvertArrayType</span></a></p></li>
+<li><p><a class="reference internal" href="function_utils_8cc_1ac19467f3576914cbf58bc63759354c29.html#exhale-function-utils-8cc-1ac19467f3576914cbf58bc63759354c29"><span class="std std-ref">Function sparsebase::utils::demangle(const std::string&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_utils_8cc_1a7099d4763bd70cf9909f5151f7a193cf.html#exhale-function-utils-8cc-1a7099d4763bd70cf9909f5151f7a193cf"><span class="std std-ref">Function sparsebase::utils::demangle(std::type_index)</span></a></p></li>
+<li><p><a class="reference internal" href="function_utils_8h_1a9cdfe685573f3ff5732bad032e131139.html#exhale-function-utils-8h-1a9cdfe685573f3ff5732bad032e131139"><span class="std std-ref">Template Function sparsebase::utils::isTypeConversionSafe</span></a></p></li>
+<li><p><a class="reference internal" href="function_exception_8h_1aa0beb3b2d7aadd170b0d49830a207205.html#exhale-function-exception-8h-1aa0beb3b2d7aadd170b0d49830a207205"><span class="std std-ref">Template Function sparsebase::utils::ListOfKeysToString</span></a></p></li>
+</ul>
+</section>
+<section id="typedefs">
+<h2>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="typedef_utils_8h_1a3b3a534553ecce4a82fe2347244a9495.html#exhale-typedef-utils-8h-1a3b3a534553ecce4a82fe2347244a9495"><span class="std std-ref">Typedef sparsebase::utils::CostType</span></a></p></li>
+<li><p><a class="reference internal" href="typedef_function__matcher__mixin_8h_1a94142a17f2d3a290678cc1a54d0d7c3e.html#exhale-typedef-function-matcher-mixin-8h-1a94142a17f2d3a290678cc1a54d0d7c3e"><span class="std std-ref">Typedef sparsebase::utils::PreprocessFunction</span></a></p></li>
+</ul>
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="variable_utils_8h_1ab42e65c44f9456748d1bc3fcc256326e.html#exhale-variable-utils-8h-1ab42e65c44f9456748d1bc3fcc256326e"><span class="std std-ref">Variable sparsebase::utils::always_false</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -113,8 +156,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="namespace_sparsebase__preprocess.html" class="btn btn-neutral float-left" title="Namespace sparsebase::preprocess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="namespace_sparsebase__utils__converter.html" class="btn btn-neutral float-right" title="Namespace sparsebase::utils::converter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="namespace_sparsebase__reorder.html" class="btn btn-neutral float-left" title="Namespace sparsebase::reorder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_std.html" class="btn btn-neutral float-right" title="Namespace std" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

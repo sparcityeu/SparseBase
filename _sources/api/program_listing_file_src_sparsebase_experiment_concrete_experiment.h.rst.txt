@@ -1,0 +1,68 @@
+
+.. _program_listing_file_src_sparsebase_experiment_concrete_experiment.h:
+
+Program Listing for File concrete_experiment.h
+==============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_experiment_concrete_experiment.h>` (``src/sparsebase/experiment/concrete_experiment.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   
+   /*******************************************************
+    * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+    *Sener All rights reserved.
+    *
+    * This file is distributed under MIT license.
+    * The complete license agreement can be obtained at
+    * https://sparcityeu.github.io/sparsebase/pages/license.html
+    ********************************************************/
+   #ifndef SPARSEBASE_SPARSEBASE_EXPERIMENT_EXPERIMENT_H_
+   #define SPARSEBASE_SPARSEBASE_EXPERIMENT_EXPERIMENT_H_
+   
+   #include "sparsebase/experiment/experiment_type.h"
+   
+   namespace sparsebase::experiment {
+   
+   class ConcreteExperiment : public ExperimentType {
+    public:
+   
+     void Run(unsigned int times = 1, bool store_auxiliary = false) override;
+   
+     void AddDataLoader(LoadDataFunction func,
+                        std::vector<std::pair<std::vector<std::string>, std::any>>
+                            targets) override;
+   
+     void AddPreprocess(std::string id, PreprocessFunction func,
+                        std::any params) override;
+   
+     void AddKernel(std::string id, KernelFunction func, std::any params) override;
+   
+     std::map<std::string, std::vector<double>> GetRunTimes() override;
+   
+     std::map<std::string, std::vector<std::any>> GetResults() override;
+   
+     std::map<std::string, std::any> GetAuxiliary() override;
+   
+    protected:
+     std::vector<std::vector<std::pair<std::vector<std::string>, std::any>>>
+         targets_;
+     std::unordered_map<std::string, std::pair<KernelFunction, std::any>> kernels_;
+     // std::unordered_map<std::string, std::any> _kernel_parameters;
+     std::vector<LoadDataFunction> dataLoaders_;
+     std::unordered_map<std::string, std::pair<PreprocessFunction, std::any>>
+         preprocesses_;
+     std::map<std::string, std::any> auxiliary_;
+     std::map<std::string, std::vector<double>> runtimes_;
+     std::map<std::string, std::vector<std::any>> results_;
+   };
+   
+   }  // namespace sparsebase::experiment
+   
+   #ifdef _HEADER_ONLY
+   #include "sparsebase/experiment/concrete_experiment.cc"
+   #endif
+   
+   #endif

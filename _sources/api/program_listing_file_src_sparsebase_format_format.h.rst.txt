@@ -11,8 +11,8 @@ Program Listing for File format.h
 .. code-block:: cpp
 
    /*******************************************************
-    * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda Sener
-    * All rights reserved.
+    * Copyright (c) 2022 SparCity, Amro Alabsi Aljundi, Taha Atahan Akyildiz, Arda
+    *Sener All rights reserved.
     *
     * This file is distributed under MIT license.
     * The complete license agreement can be obtained at:
@@ -21,9 +21,8 @@ Program Listing for File format.h
    #ifndef SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
    #define SPARSEBASE_SPARSEBASE_FORMAT_FORMAT_H_
    
-   #include "sparsebase/config.h"
-   #include "sparsebase/context/context.h"
-   #include "sparsebase/utils/exception.h"
+   #include <cxxabi.h>
+   
    #include <algorithm>
    #include <cstring>
    #include <fstream>
@@ -33,7 +32,20 @@ Program Listing for File format.h
    #include <typeinfo>
    #include <vector>
    
+   #include "sparsebase/config.h"
+   #include "sparsebase/context/context.h"
+   #include "sparsebase/utils/exception.h"
+   #include "sparsebase/utils/utils.h"
+   
    namespace sparsebase {
+   
+   namespace converter {
+   class Converter;
+   template <typename ValueType>
+   class ConverterOrderOne;
+   template <typename IDType, typename NNZType, typename ValueType>
+   class ConverterOrderTwo;
+   }  // namespace converter
    
    namespace format {
    
@@ -42,14 +54,16 @@ Program Listing for File format.h
      kOwned = 1,
    };
    
-   template <typename T> struct Deleter {
+   template <typename T>
+   struct Deleter {
      void operator()(T *obj) {
-       if (obj != nullptr)
-         delete obj;
+       if constexpr (!std::is_same_v<T, void>)
+         if (obj != nullptr) delete obj;
      }
    };
    
-   template <long long dim, typename T> struct Deleter2D {
+   template <long long dim, typename T>
+   struct Deleter2D {
      void operator()(T *obj) {
        for (long long i = 0; i < dim; i++) {
          delete[] obj[i];
@@ -58,17 +72,21 @@ Program Listing for File format.h
      }
    };
    
-   template <class T> struct BlankDeleter {
+   template <class T>
+   struct BlankDeleter {
      void operator()(T *obj) {}
    };
    
    typedef unsigned long long DimensionType;
    
    
-   class Format {
-   public:
+   class Format : public utils::Identifiable {
+    public:
    
-     virtual std::type_index get_format_id() = 0;
+     // virtual std::type_index get_id() = 0;
+   
+     // virtual std::string get_name() = 0;
+   
      virtual ~Format() = default;
    
      virtual Format *Clone() const = 0;
@@ -81,139 +99,40 @@ Program Listing for File format.h
    
      virtual context::Context *get_context() const = 0;
    
-     virtual std::type_index get_context_type() const = 0;
+     virtual std::type_index get_id() const = 0;
+   
+     virtual std::shared_ptr<converter::Converter const> get_converter() const = 0;
+   
+     // virtual void set_converter(converter::Converter*) = 0;
    
    
-     template <typename T> T *As() {
-       if (this->get_format_id() == std::type_index(typeid(T))) {
-         return static_cast<T *>(this);
+     template <typename T>
+     typename std::remove_pointer<T>::type *AsAbsolute() {
+       static_assert(std::is_base_of_v<Format, T>,
+                     "Cannot cast a non-Format class using AsAbsolute");
+       using TBase = typename std::remove_pointer<T>::type;
+       if (this->get_id() == std::type_index(typeid(TBase))) {
+         return static_cast<TBase *>(this);
        }
-       throw utils::TypeException(get_format_id().name(), typeid(T).name());
+       throw utils::TypeException(get_name(), typeid(TBase).name());
      }
-   };
-   
-   
-   template <typename FormatType> class FormatImplementation : public Format {
-   public:
-     virtual std::vector<DimensionType> get_dimensions() const {
-       return dimension_;
-     }
-     virtual DimensionType get_num_nnz() const { return nnz_; }
-     virtual DimensionType get_order() const { return order_; }
-     virtual context::Context *get_context() const { return context_.get(); }
-   
-     std::type_index get_format_id() final { return typeid(FormatType); }
-   
-     static std::type_index get_format_id_static() { return typeid(FormatType); }
-   
-     virtual std::type_index get_context_type() const {
-       return this->context_->get_context_type_member();
+     template <template <typename...> typename T>
+     void *AsAbsolute() {
+       static_assert(utils::always_false<T<void>>,
+                     "When casting a format pointer, you need to pass the data "
+                     "type with the template arguments");
+       return nullptr;
      }
    
-   protected:
-     DimensionType order_;
-     std::vector<DimensionType> dimension_;
-     DimensionType nnz_;
-     std::unique_ptr<sparsebase::context::Context> context_;
+   
+     template <typename T>
+     bool IsAbsolute() {
+       using Tbase = typename std::remove_pointer<T>::type;
+       return this->get_id() == std::type_index(typeid(Tbase));
+   }
    };
    
+   }  // namespace format
    
-   template <typename IDType, typename NNZType, typename ValueType>
-   class COO : public FormatImplementation<COO<IDType, NNZType, ValueType>> {
-   public:
-     COO(IDType n, IDType m, NNZType nnz, IDType *row, IDType *col,
-         ValueType *vals, Ownership own = kNotOwned, bool ignore_sort = false);
-     COO(const COO<IDType, NNZType, ValueType> &);
-     COO(COO<IDType, NNZType, ValueType> &&);
-     COO<IDType, NNZType, ValueType> &
-     operator=(const COO<IDType, NNZType, ValueType> &);
-     Format *Clone() const override;
-     virtual ~COO();
-     IDType *get_col() const;
-     IDType *get_row() const;
-     ValueType *get_vals() const;
-   
-     IDType *release_col();
-     IDType *release_row();
-     ValueType *release_vals();
-   
-     void set_row(IDType *, Ownership own = kNotOwned);
-     void set_col(IDType *, Ownership own = kNotOwned);
-     void set_vals(ValueType *, Ownership own = kNotOwned);
-   
-     virtual bool RowIsOwned();
-     virtual bool ColIsOwned();
-     virtual bool ValsIsOwned();
-   
-   protected:
-     std::unique_ptr<IDType[], std::function<void(IDType *)>> col_;
-     std::unique_ptr<IDType[], std::function<void(IDType *)>> row_;
-     std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
-   };
-   
-   
-   template <typename ValueType>
-   class Array : public FormatImplementation<Array<ValueType>> {
-   public:
-     Array(DimensionType nnz, ValueType *row_ptr, Ownership own = kNotOwned);
-     Array(const Array<ValueType> &);
-     Array(Array<ValueType> &&);
-     Array<ValueType> &operator=(const Array<ValueType> &);
-     Format *Clone() const override;
-     virtual ~Array();
-     ValueType *get_vals() const;
-   
-     ValueType *release_vals();
-   
-     void set_vals(ValueType *, Ownership own = kNotOwned);
-   
-     virtual bool ValsIsOwned();
-   
-   protected:
-     std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
-   };
-   
-   
-   template <typename IDType, typename NNZType, typename ValueType>
-   class CSR : public FormatImplementation<CSR<IDType, NNZType, ValueType>> {
-   public:
-     CSR(IDType n, IDType m, NNZType *row_ptr, IDType *col, ValueType *vals,
-         Ownership own = kNotOwned, bool ignore_sort = false);
-     CSR(const CSR<IDType, NNZType, ValueType> &);
-     CSR(CSR<IDType, NNZType, ValueType> &&);
-     CSR<IDType, NNZType, ValueType> &
-     operator=(const CSR<IDType, NNZType, ValueType> &);
-     Format *Clone() const override;
-     virtual ~CSR();
-     NNZType *get_row_ptr() const;
-     IDType *get_col() const;
-     ValueType *get_vals() const;
-   
-     NNZType *release_row_ptr();
-     IDType *release_col();
-     ValueType *release_vals();
-   
-     void set_row_ptr(NNZType *, Ownership own = kNotOwned);
-     void set_col(IDType *, Ownership own = kNotOwned);
-     void set_vals(ValueType *, Ownership own = kNotOwned);
-   
-     virtual bool ColIsOwned();
-     virtual bool RowPtrIsOwned();
-     virtual bool ValsIsOwned();
-   
-   protected:
-     std::unique_ptr<NNZType[], std::function<void(NNZType *)>> row_ptr_;
-     std::unique_ptr<IDType[], std::function<void(IDType *)>> col_;
-     std::unique_ptr<ValueType[], std::function<void(ValueType *)>> vals_;
-   };
-   
-   } // namespace format
-   
-   } // namespace sparsebase
-   #ifdef _HEADER_ONLY
-   #include "sparsebase/format/format.cc"
-   #ifdef CUDA
-   #include "cuda/format.cu"
-   #endif
-   #endif
+   }  // namespace sparsebase
    #endif

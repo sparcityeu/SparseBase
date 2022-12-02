@@ -1,0 +1,25 @@
+.. _exhale_class_classsparsebase_1_1permute_1_1Permuter:
+
+Template Class Permuter
+=======================
+
+- Defined in :ref:`file_src_sparsebase_permute_permuter.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public sparsebase::utils::FunctionMatcherMixin< ReturnFormatType * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::permute::Permuter
+   :members:
+   :protected-members:
+   :undoc-members:

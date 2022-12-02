@@ -1,0 +1,106 @@
+
+.. _program_listing_file_src_sparsebase_bases_graph_feature_base.h:
+
+Program Listing for File graph_feature_base.h
+=============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_sparsebase_bases_graph_feature_base.h>` (``src/sparsebase/bases/graph_feature_base.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #include <algorithm>
+   #include <iostream>
+   #include <limits>
+   #include <map>
+   #include <memory>
+   #include <queue>
+   #include <set>
+   #include <tuple>
+   #include <unordered_map>
+   #include <utility>
+   #include <vector>
+   
+   #include "sparsebase/feature/degree_distribution.h"
+   #include "sparsebase/feature/degrees.h"
+   #ifndef SPARSEBASE_PROJECT_GRAPH_FEATURE_BASE_H
+   #define SPARSEBASE_PROJECT_GRAPH_FEATURE_BASE_H
+   
+   namespace sparsebase::bases {
+   
+   class GraphFeatureBase {
+    public:
+   
+     template <typename FeatureType, typename AutoIDType, typename AutoNNZType,
+               typename AutoValueType>
+     static FeatureType *GetDegreeDistribution(
+         format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
+         std::vector<context::Context *> contexts, bool convert_input) {
+       feature::DegreeDistribution<AutoIDType, AutoNNZType, AutoValueType,
+                                   FeatureType>
+           deg_dist;
+       return deg_dist.GetDistribution(format, contexts, convert_input);
+     }
+   
+   
+     template <typename FeatureType, typename AutoIDType, typename AutoNNZType,
+               typename AutoValueType>
+     static std::pair<std::vector<format::FormatOrderTwo<AutoIDType, AutoNNZType,
+                                                         AutoValueType> *>,
+                      FeatureType *>
+     GetDegreeDistributionCached(
+         format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
+         std::vector<context::Context *> contexts) {
+       feature::DegreeDistribution<AutoIDType, AutoNNZType, AutoValueType,
+                                   FeatureType>
+           deg_dist;
+       auto output = deg_dist.GetDistributionCached(format, contexts, true);
+       std::vector<
+           format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
+           converted_formats;
+       std::transform(
+           std::get<0>(output)[0].begin(), std::get<0>(output)[0].end(),
+           std::back_inserter(converted_formats),
+           [](format::Format *intermediate_format) {
+             return static_cast<
+                 format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>(
+                 intermediate_format);
+           });
+       return std::make_pair(converted_formats, std::get<1>(output));
+     }
+   
+     template <typename AutoIDType, typename AutoNNZType, typename AutoValueType>
+     static AutoNNZType *GetDegrees(
+         format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
+         std::vector<context::Context *> contexts, bool convert_input) {
+       feature::Degrees<AutoIDType, AutoNNZType, AutoValueType> deg_dist;
+       return deg_dist.GetDegrees(format, contexts, convert_input);
+     }
+   
+     template <typename AutoIDType, typename AutoNNZType, typename AutoValueType>
+     static std::pair<std::vector<format::FormatOrderTwo<AutoIDType, AutoNNZType,
+                                                         AutoValueType> *>,
+                      AutoNNZType *>
+     GetDegreesCached(
+         format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *format,
+         std::vector<context::Context *> contexts) {
+       feature::Degrees<AutoIDType, AutoNNZType, AutoValueType> deg_dist;
+       auto output = deg_dist.GetDegreesCached(format, contexts, true);
+       std::vector<
+           format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>
+           converted_formats;
+       std::transform(
+           std::get<0>(output)[0].begin(), std::get<0>(output)[0].end(),
+           std::back_inserter(converted_formats),
+           [](format::Format *intermediate_format) {
+             return static_cast<
+                 format::FormatOrderTwo<AutoIDType, AutoNNZType, AutoValueType> *>(
+                 intermediate_format);
+           });
+       return std::make_pair(converted_formats, std::get<1>(output));
+     }
+   };
+   }  // namespace sparsebase::bases
+   
+   #endif  // SPARSEBASE_PROJECT_GRAPH_FEATURE_BASE_H

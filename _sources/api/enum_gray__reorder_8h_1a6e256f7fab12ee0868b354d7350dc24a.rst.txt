@@ -1,0 +1,13 @@
+.. _exhale_enum_gray__reorder_8h_1a6e256f7fab12ee0868b354d7350dc24a:
+
+Enum BitMapSize
+===============
+
+- Defined in :ref:`file_src_sparsebase_reorder_gray_reorder.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: sparsebase::reorder::BitMapSize

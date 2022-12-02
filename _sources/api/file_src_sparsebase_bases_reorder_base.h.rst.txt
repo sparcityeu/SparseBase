@@ -1,0 +1,87 @@
+
+.. _file_src_sparsebase_bases_reorder_base.h:
+
+File reorder_base.h
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_bases>` (``src/sparsebase/bases``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/bases/reorder_base.h``)
+----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_bases_reorder_base.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/context/cpu_context.h`` (:ref:`file_src_sparsebase_context_cpu_context.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/permute/permute_order_one.h`` (:ref:`file_src_sparsebase_permute_permute_order_one.h`)
+
+- ``sparsebase/permute/permute_order_two.h`` (:ref:`file_src_sparsebase_permute_permute_order_two.h`)
+
+- ``sparsebase/reorder/amd_reorder.h`` (:ref:`file_src_sparsebase_reorder_amd_reorder.h`)
+
+- ``sparsebase/reorder/degree_reorder.h`` (:ref:`file_src_sparsebase_reorder_degree_reorder.h`)
+
+- ``sparsebase/reorder/generic_reorder.h`` (:ref:`file_src_sparsebase_reorder_generic_reorder.h`)
+
+- ``sparsebase/reorder/gray_reorder.h`` (:ref:`file_src_sparsebase_reorder_gray_reorder.h`)
+
+- ``sparsebase/reorder/metis_reorder.h`` (:ref:`file_src_sparsebase_reorder_metis_reorder.h`)
+
+- ``sparsebase/reorder/rabbit_reorder.h`` (:ref:`file_src_sparsebase_reorder_rabbit_reorder.h`)
+
+- ``sparsebase/reorder/rcm_reorder.h`` (:ref:`file_src_sparsebase_reorder_rcm_reorder.h`)
+
+- ``sparsebase/reorder/reorder_heatmap.h`` (:ref:`file_src_sparsebase_reorder_reorder_heatmap.h`)
+
+- ``sparsebase/reorder/reorderer.h`` (:ref:`file_src_sparsebase_reorder_reorderer.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_experiment_experiment_helper.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__bases`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1bases_1_1ReorderBase`
+

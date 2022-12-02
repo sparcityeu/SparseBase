@@ -1,0 +1,13 @@
+.. _exhale_typedef_extractor_8h_1aee0281fed21bc18177c1b154f7aceae2:
+
+Typedef sparsebase::feature::Feature
+====================================
+
+- Defined in :ref:`file_src_sparsebase_feature_extractor.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::feature::Feature

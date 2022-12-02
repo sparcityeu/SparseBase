@@ -1,0 +1,95 @@
+
+.. _file_src_sparsebase_permute_permuter.h:
+
+File permuter.h
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_permute>` (``src/sparsebase/permute``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/permute/permuter.h``)
+--------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_permute_permuter.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``any``
+
+- ``cmath``
+
+- ``iostream``
+
+- ``memory``
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/context/cpu_context.h`` (:ref:`file_src_sparsebase_context_cpu_context.h`)
+
+- ``sparsebase/converter/converter.h`` (:ref:`file_src_sparsebase_converter_converter.h`)
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/format/format_order_one.h`` (:ref:`file_src_sparsebase_format_format_order_one.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/utils/extractable.h`` (:ref:`file_src_sparsebase_utils_extractable.h`)
+
+- ``sparsebase/utils/function_matcher_mixin.h`` (:ref:`file_src_sparsebase_utils_function_matcher_mixin.h`)
+
+- ``typeindex``
+
+- ``typeinfo``
+
+- ``unordered_map``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_permute_permute_order_one.h`
+
+- :ref:`file_src_sparsebase_permute_permute_order_two.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__permute`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1permute_1_1Permuter`
+

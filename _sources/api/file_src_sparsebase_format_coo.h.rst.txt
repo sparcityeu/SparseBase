@@ -1,0 +1,83 @@
+
+.. _file_src_sparsebase_format_coo.h:
+
+File coo.h
+==========
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_format>` (``src/sparsebase/format``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/format/coo.h``)
+--------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_format_coo.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/context/cpu_context.h`` (:ref:`file_src_sparsebase_context_cpu_context.h`)
+
+- ``sparsebase/format/format_order_two.h`` (:ref:`file_src_sparsebase_format_format_order_two.h`)
+
+- ``sparsebase/utils/exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_converter_converter_order_two.cc`
+
+- :ref:`file_src_sparsebase_experiment_experiment_helper.h`
+
+- :ref:`file_src_sparsebase_format_coo.cc`
+
+- :ref:`file_src_sparsebase_io_reader.h`
+
+- :ref:`file_src_sparsebase_io_writer.h`
+
+- :ref:`file_src_sparsebase_partition_partitioner.cc`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__format`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1format_1_1format_1_1FormatOrderTwo_1_1TypeConverter_3_01COO_00_01ToIDType_00fb050e2636af8baebd7b6c0022e8caad`
+
+- :ref:`exhale_class_classsparsebase_1_1format_1_1COO`
+

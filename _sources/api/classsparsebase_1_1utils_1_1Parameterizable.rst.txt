@@ -1,0 +1,29 @@
+.. _exhale_class_classsparsebase_1_1utils_1_1Parameterizable:
+
+Class Parameterizable
+=====================
+
+- Defined in :ref:`file_src_sparsebase_utils_parameterizable.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::utils::FunctionMatcherMixin< format::FormatOrderOne< FloatType > * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+- ``public sparsebase::utils::FunctionMatcherMixin< IDType * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+- ``public sparsebase::utils::FunctionMatcherMixin< ReturnFormatType * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+- ``public sparsebase::utils::FunctionMatcherMixin< format::Format * >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+- ``public sparsebase::utils::FunctionMatcherMixin< ReturnType, PreprocessingImpl, Function, Key, KeyHash, KeyEqualTo >`` (:ref:`exhale_class_classsparsebase_1_1utils_1_1FunctionMatcherMixin`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::utils::Parameterizable
+   :members:
+   :protected-members:
+   :undoc-members:

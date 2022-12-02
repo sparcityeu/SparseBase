@@ -1,0 +1,16 @@
+.. _exhale_class_classsparsebase_1_1bases_1_1GraphFeatureBase:
+
+Class GraphFeatureBase
+======================
+
+- Defined in :ref:`file_src_sparsebase_bases_graph_feature_base.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: sparsebase::bases::GraphFeatureBase
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,63 @@
+
+.. _file_src_sparsebase_utils_utils.cc:
+
+File utils.cc
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/utils.cc``)
+----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_utils.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``cxxabi.h``
+
+- ``exception.h`` (:ref:`file_src_sparsebase_utils_exception.h`)
+
+- ``sstream``
+
+- ``utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_utils_8cc_1a7099d4763bd70cf9909f5151f7a193cf`
+
+- :ref:`exhale_function_utils_8cc_1ac19467f3576914cbf58bc63759354c29`
+

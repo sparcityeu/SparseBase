@@ -1,0 +1,91 @@
+
+.. _file_src_sparsebase_context_cpu_context.h:
+
+File cpu_context.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_context>` (``src/sparsebase/context``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/context/cpu_context.h``)
+-----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_context_cpu_context.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/context/context.h`` (:ref:`file_src_sparsebase_context_context.h`)
+
+- ``sparsebase/utils/utils.h`` (:ref:`file_src_sparsebase_utils_utils.h`)
+
+- ``typeindex``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+- :ref:`file_src_sparsebase_context_cpu_context.cc`
+
+- :ref:`file_src_sparsebase_converter_converter_cuda.cu`
+
+- :ref:`file_src_sparsebase_format_array.h`
+
+- :ref:`file_src_sparsebase_format_coo.h`
+
+- :ref:`file_src_sparsebase_format_csc.h`
+
+- :ref:`file_src_sparsebase_format_csr.h`
+
+- :ref:`file_src_sparsebase_format_cuda_csr_cuda.cuh`
+
+- :ref:`file_src_sparsebase_format_format_order_one.h`
+
+- :ref:`file_src_sparsebase_format_format_order_two.h`
+
+- :ref:`file_src_sparsebase_partition_partitioner.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.h`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__context`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1context_1_1CPUContext`
+

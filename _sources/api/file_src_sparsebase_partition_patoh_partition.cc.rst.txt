@@ -1,0 +1,54 @@
+
+.. _file_src_sparsebase_partition_patoh_partition.cc:
+
+File patoh_partition.cc
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_partition>` (``src/sparsebase/partition``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/partition/patoh_partition.cc``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_partition_patoh_partition.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/patoh_partition.inc``
+
+- ``patoh.h``
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/partition/partitioner.h`` (:ref:`file_src_sparsebase_partition_partitioner.h`)
+
+- ``sparsebase/partition/patoh_partition.h`` (:ref:`file_src_sparsebase_partition_patoh_partition.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__partition`
+

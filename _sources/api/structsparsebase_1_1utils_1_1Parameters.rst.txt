@@ -1,0 +1,39 @@
+.. _exhale_struct_structsparsebase_1_1utils_1_1Parameters:
+
+Struct Parameters
+=================
+
+- Defined in :ref:`file_src_sparsebase_utils_parameterizable.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public sparsebase::feature::DegreeDistributionParams`` (:ref:`exhale_struct_structsparsebase_1_1feature_1_1DegreeDistributionParams`)
+- ``public sparsebase::feature::JaccardWeightsParams`` (:ref:`exhale_struct_structsparsebase_1_1feature_1_1JaccardWeightsParams`)
+- ``public sparsebase::feature::Params`` (:ref:`exhale_struct_structsparsebase_1_1feature_1_1Params`)
+- ``public sparsebase::partition::MetisPartitionParams`` (:ref:`exhale_struct_structsparsebase_1_1partition_1_1MetisPartitionParams`)
+- ``public sparsebase::partition::PatohPartitionParams`` (:ref:`exhale_struct_structsparsebase_1_1partition_1_1PatohPartitionParams`)
+- ``public sparsebase::partition::PulpPartitionParams`` (:ref:`exhale_struct_structsparsebase_1_1partition_1_1PulpPartitionParams`)
+- ``public sparsebase::permute::PermuteOrderOneParams< IDType >`` (:ref:`exhale_struct_structsparsebase_1_1permute_1_1PermuteOrderOneParams`)
+- ``public sparsebase::permute::PermuteOrderTwoParams< IDType >`` (:ref:`exhale_struct_structsparsebase_1_1permute_1_1PermuteOrderTwoParams`)
+- ``public sparsebase::reorder::AMDReorderParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1AMDReorderParams`)
+- ``public sparsebase::reorder::DegreeReorderParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1DegreeReorderParams`)
+- ``public sparsebase::reorder::GrayReorderParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1GrayReorderParams`)
+- ``public sparsebase::reorder::MetisReorderParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1MetisReorderParams`)
+- ``public sparsebase::reorder::RCMReorderParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1RCMReorderParams`)
+- ``public sparsebase::reorder::RabbitReorderParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1RabbitReorderParams`)
+- ``public sparsebase::reorder::ReorderHeatmapParams`` (:ref:`exhale_struct_structsparsebase_1_1reorder_1_1ReorderHeatmapParams`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::utils::Parameters
+   :members:
+   :protected-members:
+   :undoc-members:

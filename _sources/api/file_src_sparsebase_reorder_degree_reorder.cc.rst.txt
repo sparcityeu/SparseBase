@@ -1,0 +1,50 @@
+
+.. _file_src_sparsebase_reorder_degree_reorder.cc:
+
+File degree_reorder.cc
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_reorder>` (``src/sparsebase/reorder``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/reorder/degree_reorder.cc``)
+---------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_reorder_degree_reorder.cc.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``init/degree_reorder.inc``
+
+- ``sparsebase/format/csr.h`` (:ref:`file_src_sparsebase_format_csr.h`)
+
+- ``sparsebase/reorder/degree_reorder.h`` (:ref:`file_src_sparsebase_reorder_degree_reorder.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__reorder`
+

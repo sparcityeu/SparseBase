@@ -1,0 +1,85 @@
+
+.. _file_src_sparsebase_utils_extractable.h:
+
+File extractable.h
+==================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_utils>` (``src/sparsebase/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/utils/extractable.h``)
+---------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_utils_extractable.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``memory``
+
+- ``sparsebase/context/context.h`` (:ref:`file_src_sparsebase_context_context.h`)
+
+- ``sparsebase/format/format.h`` (:ref:`file_src_sparsebase_format_format.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``unordered_map``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_feature_extractor.cc`
+
+- :ref:`file_src_sparsebase_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_feature_feature_extractor.cc`
+
+- :ref:`file_src_sparsebase_feature_feature_extractor.h`
+
+- :ref:`file_src_sparsebase_feature_feature_preprocess_type.h`
+
+- :ref:`file_src_sparsebase_partition_partitioner.cc`
+
+- :ref:`file_src_sparsebase_partition_partitioner.h`
+
+- :ref:`file_src_sparsebase_permute_permuter.h`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.cc`
+
+- :ref:`file_src_sparsebase_reorder_reorderer.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__utils`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classsparsebase_1_1utils_1_1Extractable`
+

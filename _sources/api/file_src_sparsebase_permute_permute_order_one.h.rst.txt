@@ -1,0 +1,73 @@
+
+.. _file_src_sparsebase_permute_permute_order_one.h:
+
+File permute_order_one.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_sparsebase_permute>` (``src/sparsebase/permute``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/sparsebase/permute/permute_order_one.h``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_sparsebase_permute_permute_order_one.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``sparsebase/config.h``
+
+- ``sparsebase/format/array.h`` (:ref:`file_src_sparsebase_format_array.h`)
+
+- ``sparsebase/permute/permuter.h`` (:ref:`file_src_sparsebase_permute_permuter.h`)
+
+- ``sparsebase/utils/parameterizable.h`` (:ref:`file_src_sparsebase_utils_parameterizable.h`)
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_sparsebase_bases_reorder_base.h`
+
+- :ref:`file_src_sparsebase_permute_permute_order_one.cc`
+
+- :ref:`file_src_sparsebase_sparsebase.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_sparsebase`
+
+- :ref:`namespace_sparsebase__permute`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structsparsebase_1_1permute_1_1PermuteOrderOneParams`
+
+- :ref:`exhale_class_classsparsebase_1_1permute_1_1PermuteOrderOne`
+

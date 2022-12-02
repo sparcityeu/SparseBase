@@ -1,0 +1,13 @@
+
+.. _namespace_sparsebase__metis:
+
+Namespace sparsebase::metis
+===========================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+

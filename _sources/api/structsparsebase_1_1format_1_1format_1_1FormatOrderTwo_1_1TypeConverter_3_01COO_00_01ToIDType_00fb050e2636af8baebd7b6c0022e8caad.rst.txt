@@ -1,0 +1,16 @@
+.. _exhale_struct_structsparsebase_1_1format_1_1format_1_1FormatOrderTwo_1_1TypeConverter_3_01COO_00_01ToIDType_00fb050e2636af8baebd7b6c0022e8caad:
+
+Template Struct TypeConverter< COO, ToIDType, ToNNZType, ToValueType >
+======================================================================
+
+- Defined in :ref:`file_src_sparsebase_format_coo.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: sparsebase::format::format::FormatOrderTwo::TypeConverter< COO, ToIDType, ToNNZType, ToValueType >
+   :members:
+   :protected-members:
+   :undoc-members:

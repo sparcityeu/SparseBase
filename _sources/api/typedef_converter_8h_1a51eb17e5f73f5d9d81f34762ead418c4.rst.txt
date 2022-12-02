@@ -1,0 +1,13 @@
+.. _exhale_typedef_converter_8h_1a51eb17e5f73f5d9d81f34762ead418c4:
+
+Typedef sparsebase::converter::ConversionCondition
+==================================================
+
+- Defined in :ref:`file_src_sparsebase_converter_converter.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: sparsebase::converter::ConversionCondition
