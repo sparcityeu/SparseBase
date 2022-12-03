@@ -37,6 +37,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
           mtxFile << line[0] << line[1] << line[2] << "\n";
           line = coo->get_vals();
 
+      mtxFile.close();
 }
 #ifndef _HEADER_ONLY
 #include "init/mtx_writer.inc"
