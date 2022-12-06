@@ -21,8 +21,11 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       mtxFile.open(filename_);
     
       //write header line
-      std::string headerLine = "%%MatrixMarket matrix coordinate pattern general\n";
+      std::string headerLine = "%%MatrixMarket matrix coordinate real general\n";
       mtxFile << headerLine;
+      //void --> pattern 
+      //int int
+      //float real
 
       //write comment lines
 
@@ -31,13 +34,20 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       mtxFile << dimensions[0] << " " << dimensions[1] << " " << coo->get_num_nnz() << "\n";
       
       //write data lines
-      auto line = coo->get_vals();
+      auto line = coo->get_vals(); //array of nonnegatives
       while(line != nullptr)
+      {
         if constexpr (!std::is_same_v<ValueType, void>)
+        {
           mtxFile << line[0] << line[1] << line[2] << "\n";
           line = coo->get_vals();
-
+        }
+        //get_vals() returns array
+        //get_rows() get_columns()
+      }
       mtxFile.close();
+
+      //dont forget to throw exceptions
 }
 #ifndef _HEADER_ONLY
 #include "init/mtx_writer.inc"
