@@ -6,7 +6,7 @@ else()
   cmake_policy(VERSION 3.18)
 endif()
 
-project( SparseBase_project VERSION 0.2.4 )
+project( SparseBase_project VERSION 0.3.1 )
 option(RUN_TESTS "Enable running tests" OFF)
 option(_HEADER_ONLY "Use the library as a header only library?" OFF)
 option(USE_CUDA "Enable CUDA" OFF)
