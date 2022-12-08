@@ -21,6 +21,27 @@
 
 namespace sparsebase::utils {
 
+namespace MatrixMarket {
+
+enum MTXObjectOptions { matrix, vector };
+enum MTXFormatOptions { coordinate, array };
+enum MTXFieldOptions { real, double_field, complex, integer, pattern };
+enum MTXSymmetryOptions {
+  general = 0,
+  symmetric = 1,
+  skew_symmetric = 2,
+  hermitian = 3
+};
+struct MTXOptions {
+  MTXObjectOptions object;
+  MTXFormatOptions format;
+  MTXFieldOptions field;
+  MTXSymmetryOptions symmetry;
+};
+MTXOptions ParseHeader(std::string header_line);
+
+}  // namespace MatrixMarket
+
 //! Type used for calculating function costs
 typedef float CostType;
 // Thanks to artificial mind blog:
