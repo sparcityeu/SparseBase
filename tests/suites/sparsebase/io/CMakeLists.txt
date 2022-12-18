@@ -61,3 +61,11 @@ add_executable(sparsebase_io_binary_writer_order_two_tests.test binary_writer_or
 target_link_libraries(sparsebase_io_binary_writer_order_two_tests.test  sparsebase)
 target_link_libraries(sparsebase_io_binary_writer_order_two_tests.test  gtest gtest_main)
 add_test(NAME sparsebase_io_binary_writer_order_two_tests.test COMMAND sparsebase_io_binary_writer_order_two_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(edge_list_writer_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_io_edge_list_writer_tests.test edge_list_writer_tests.cc)
+target_link_libraries(sparsebase_io_edge_list_writer_tests.test  sparsebase)
+target_link_libraries(sparsebase_io_edge_list_writer_tests.test  gtest gtest_main)
+add_test(NAME sparsebase_io_edge_list_writer_tests.test COMMAND sparsebase_io_edge_list_writer_tests.test)
