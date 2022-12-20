@@ -30,24 +30,25 @@ void EdgeListWriter<IDType, NNZType, ValueType>::WriteCOO(
       }
       edges.push_back(std::tuple<IDType, IDType>(u, v));
     }
-    sort(edges.begin(), edges.end(),
-         [](const std::tuple<IDType, IDType> &t1,
-            const std::tuple<IDType, IDType> t2) {
-           if (std::get<0>(t1) == std::get<0>(t2)) {
-             return std::get<1>(t1) < std::get<1>(t2);
-           } else {
-             return std::get<0>(t1) < std::get<0>(t2);
-           }
-         });
-    
+    if (!this->directed_) {
+      sort(edges.begin(), edges.end(),
+           [](const std::tuple<IDType, IDType>& t1,
+              const std::tuple<IDType, IDType> t2) {
+             if (std::get<0>(t1) == std::get<0>(t2)) {
+               return std::get<1>(t1) < std::get<1>(t2);
+             } else {
+               return std::get<0>(t1) < std::get<0>(t2);
+             }
+           });
+
       auto unique_it = unique(edges.begin(), edges.end(),
-                              [](const std::tuple<IDType, IDType> &t1,
+                              [](const std::tuple<IDType, IDType>& t1,
                                  const std::tuple<IDType, IDType> t2) {
                                 return (std::get<0>(t1) == std::get<0>(t2)) &&
                                        (std::get<1>(t1) == std::get<1>(t2));
                               });
       edges.erase(unique_it, edges.end());
-    
+    }
     for (int i = 0; i < (int) edges.size(); ++i) {
       edgeListFile << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
     }
@@ -68,25 +69,26 @@ void EdgeListWriter<IDType, NNZType, ValueType>::WriteCOO(
         }
         edges.push_back(std::tuple<IDType, IDType, ValueType>(u, v, w));
       }
-      sort(edges.begin(), edges.end(),
-           [](const std::tuple<IDType, IDType, ValueType> &t1,
-              const std::tuple<IDType, IDType, ValueType> t2) {
-             if (std::get<0>(t1) == std::get<0>(t2)) {
-               return std::get<1>(t1) < std::get<1>(t2);
-             } else {
-               return std::get<0>(t1) < std::get<0>(t2);
-             }
-           });
-      
+      if (!this->directed_) {
+        sort(edges.begin(), edges.end(),
+             [](const std::tuple<IDType, IDType, ValueType>& t1,
+                const std::tuple<IDType, IDType, ValueType> t2) {
+               if (std::get<0>(t1) == std::get<0>(t2)) {
+                 return std::get<1>(t1) < std::get<1>(t2);
+               } else {
+                 return std::get<0>(t1) < std::get<0>(t2);
+               }
+             });
+
         auto unique_it =
             unique(edges.begin(), edges.end(),
-                   [](const std::tuple<IDType, IDType, ValueType> &t1,
+                   [](const std::tuple<IDType, IDType, ValueType>& t1,
                       const std::tuple<IDType, IDType, ValueType> t2) {
                      return (std::get<0>(t1) == std::get<0>(t2)) &&
                             (std::get<1>(t1) == std::get<1>(t2));
                    });
         edges.erase(unique_it, edges.end());
-      
+      }
       for (int i = 0; i < (int) edges.size(); ++i) {
         edgeListFile << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]);
         if (val != nullptr)
@@ -115,25 +117,27 @@ void EdgeListWriter<IDType, NNZType, ValueType>::WriteCSR(
         edges.push_back(std::tuple<IDType, IDType>(u, v));
       }
     }
-    sort(edges.begin(), edges.end(),
-         [](const std::tuple<IDType, IDType> &t1,
-            const std::tuple<IDType, IDType> t2) {
-           if (std::get<0>(t1) == std::get<0>(t2)) {
-             return std::get<1>(t1) < std::get<1>(t2);
-           } else {
-             return std::get<0>(t1) < std::get<0>(t2);
-           }
-         });
+    if (!this->directed_) {
+      sort(edges.begin(), edges.end(),
+           [](const std::tuple<IDType, IDType>& t1,
+              const std::tuple<IDType, IDType> t2) {
+             if (std::get<0>(t1) == std::get<0>(t2)) {
+               return std::get<1>(t1) < std::get<1>(t2);
+             } else {
+               return std::get<0>(t1) < std::get<0>(t2);
+             }
+           });
       auto unique_it = unique(edges.begin(), edges.end(),
-                              [](const std::tuple<IDType, IDType> &t1,
+                              [](const std::tuple<IDType, IDType>& t1,
                                  const std::tuple<IDType, IDType> t2) {
                                 return (std::get<0>(t1) == std::get<0>(t2)) &&
                                        (std::get<1>(t1) == std::get<1>(t2));
                               });
       edges.erase(unique_it, edges.end());
-    
-    for (int i = 0; i < (int) edges.size(); ++i) {
-      edgeListFile << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
+    }
+    for (int i = 0; i < (int)edges.size(); ++i) {
+      edgeListFile << std::get<0>(edges[i]) << " " << std::get<1>(edges[i])
+                   << "\n";
     }
   }
   else {
@@ -154,25 +158,26 @@ void EdgeListWriter<IDType, NNZType, ValueType>::WriteCSR(
         edges.push_back(std::tuple<IDType, IDType, ValueType>(u, v, w));
       }
     }
-    sort(edges.begin(), edges.end(),
-         [](const std::tuple<IDType, IDType, ValueType> &t1,
-            const std::tuple<IDType, IDType, ValueType> t2) {
-           if (std::get<0>(t1) == std::get<0>(t2)) {
-             return std::get<1>(t1) < std::get<1>(t2);
-           } else {
-             return std::get<0>(t1) < std::get<0>(t2);
-           }
-         });
-    
+    if (!this->directed_) {
+      sort(edges.begin(), edges.end(),
+           [](const std::tuple<IDType, IDType, ValueType>& t1,
+              const std::tuple<IDType, IDType, ValueType> t2) {
+             if (std::get<0>(t1) == std::get<0>(t2)) {
+               return std::get<1>(t1) < std::get<1>(t2);
+             } else {
+               return std::get<0>(t1) < std::get<0>(t2);
+             }
+           });
+
       auto unique_it =
           unique(edges.begin(), edges.end(),
-                 [](const std::tuple<IDType, IDType, ValueType> &t1,
+                 [](const std::tuple<IDType, IDType, ValueType>& t1,
                     const std::tuple<IDType, IDType, ValueType> t2) {
                    return (std::get<0>(t1) == std::get<0>(t2)) &&
                           (std::get<1>(t1) == std::get<1>(t2));
                  });
       edges.erase(unique_it, edges.end());
-    
+    }
     for (int i = 0; i < (int) edges.size(); ++i) {
       edgeListFile << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]);
       if (val != nullptr)
