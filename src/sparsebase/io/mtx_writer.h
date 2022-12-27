@@ -1,10 +1,8 @@
-#include <string>
-
-#include "sparsebase/config.h"
-#include "sparsebase/io/writer.h"
-
 #ifndef SPARSEBASE_PROJECT_MTX_WRITER_H
 #define SPARSEBASE_PROJECT_MTX_WRITER_H
+#include <string>
+#include "sparsebase/config.h"
+#include "sparsebase/io/writer.h"
 
 namespace sparsebase::io {
 
@@ -22,7 +20,8 @@ class MTXWriter : public Writer,
   explicit MTXWriter(std::string filename);
   ~MTXWriter() override = default;
   void WriteCOO(format::COO<IDType, NNZType, ValueType> *coo) const override;
-
+  void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const override;
+ 
  private:
   std::string filename_;
 };

@@ -13,11 +13,11 @@ TEST(MTXWriter, COO) {
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a Mtx file with sparsebase
-  sparsebase::io::MTXWriter<int, int, float> writer("mtx_writer_coo.mtx");
+  sparsebase::io::MTXWriter<int, int, float> writer("writer_test_coo_mtx.mtx");
   writer.WriteCOO(&coo);
 
   // Read the COO from the Mtx file with sparsebase
-  sparsebase::io::MTXReader<int, int, float> reader("mtx_writer_coo.mtx");
+  sparsebase::io::MTXReader<int, int, float> reader("reader_test_coo_mtx.mtx");
   auto coo2 = reader.ReadCOO();
 
   // Compare the dimensions
@@ -30,4 +30,9 @@ TEST(MTXWriter, COO) {
     EXPECT_EQ(coo.get_col()[i], coo2->get_col()[i]);
     EXPECT_EQ(coo.get_vals()[i], coo2->get_vals()[i]);
   }
+  //TODO: add more tests
+}
+
+TEST(MTXWriter, CSR) {
+  //TODO: write tests for CSR
 }

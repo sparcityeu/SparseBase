@@ -16,16 +16,13 @@ MTXWriter<IDType, NNZType, ValueType>::MTXWriter(
 template <typename IDType, typename NNZType, typename ValueType>
 void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
     format::COO<IDType, NNZType, ValueType> *coo) const {
-      //output stream
       std::ofstream mtxFile;
       mtxFile.open(filename_);
     
       //write header line
+      //TODO: take header values from user
       std::string headerLine = "%%MatrixMarket matrix coordinate real general\n";
       mtxFile << headerLine;
-      //void --> pattern 
-      //int int
-      //float real
 
       //write comment lines
 
@@ -34,21 +31,28 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       mtxFile << dimensions[0] << " " << dimensions[1] << " " << coo->get_num_nnz() << "\n";
       
       //write data lines
-      auto line = coo->get_vals(); //array of nonnegatives
-      while(line != nullptr)
+      if constexpr (!std::is_same_v<ValueType, void>)
       {
-        if constexpr (!std::is_same_v<ValueType, void>)
-        {
-          mtxFile << line[0] << line[1] << line[2] << "\n";
-          line = coo->get_vals();
-        }
-        //get_vals() returns array
-        //get_rows() get_columns()
+        IDType* row = coo->get_row();
+        IDType* col = coo->get_col();
+        ValueType* val  coo->get_vals();
+      }
+      for (int i = 0; i < coo->get_num_nnz(); i++)
+      {
+        mtxFile << row[i] << " " << col[i] << " " << val[i] << "\n";
       }
       mtxFile.close();
-
-      //dont forget to throw exceptions
+      //TODO: throw exceptions as needed
+      //TODO: write tests for mtx writer
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+void MTXWriter<IDType, NNZType, ValueType>::WriteCSR(
+    format::CSR<IDType, NNZType, ValueType> *coo) const {
+  //TODO: implement CSR version of above COO implementation
+}
+
+
 #ifndef _HEADER_ONLY
 #include "init/mtx_writer.inc"
 #endif
