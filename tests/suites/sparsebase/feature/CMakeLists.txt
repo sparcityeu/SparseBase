@@ -52,3 +52,38 @@ target_link_libraries(sparsebase_feature_jaccard_weights_tests.test gtest gtest_
 
 add_test(NAME sparsebase_feature_jaccard_weights_tests.test COMMAND sparsebase_feature_jaccard_weights_tests.test)
 
+if(${USE_CUDA})
+    set_source_files_properties(min_degree_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_min_degree_tests.test min_degree_tests.cc)
+target_link_libraries(sparsebase_feature_min_degree_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_min_degree_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_min_degree_tests.test COMMAND sparsebase_feature_min_degree_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(max_degree_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_max_degree_tests.test max_degree_tests.cc)
+target_link_libraries(sparsebase_feature_max_degree_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_max_degree_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_max_degree_tests.test COMMAND sparsebase_feature_max_degree_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(avg_degree_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_avg_degree_tests.test avg_degree_tests.cc)
+target_link_libraries(sparsebase_feature_avg_degree_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_avg_degree_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_avg_degree_tests.test COMMAND sparsebase_feature_avg_degree_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(min_max_avg_degree_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_min_max_avg_degree_tests.test min_max_avg_degree_tests.cc)
+target_link_libraries(sparsebase_feature_min_max_avg_degree_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_min_max_avg_degree_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_min_max_avg_degree_tests.test COMMAND sparsebase_feature_min_max_avg_degree_tests.test)
