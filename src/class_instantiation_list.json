@@ -211,6 +211,13 @@
       "exceptions": null
     },
     {
+      "template": "class EdgeListWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "edge_list_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "mtx_reader.inc",
       "ifdef": null,
