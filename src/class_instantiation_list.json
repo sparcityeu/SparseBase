@@ -463,6 +463,34 @@
       "exceptions": null
     },
     {
+      "template": "class MinDegree<$id_type, $nnz_type, $value_type>",
+      "filename": "min_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MaxDegree<$id_type, $nnz_type, $value_type>",
+      "filename": "max_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class AvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MinMaxAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "min_max_avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "jaccard_weights.inc",
       "ifdef": null,
