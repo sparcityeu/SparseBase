@@ -17,13 +17,21 @@ class MTXWriter : public Writer,
                              public WritesCOO<IDType, NNZType, ValueType>,
                              public WritesCSR<IDType, NNZType, ValueType> {
  public:
-  explicit MTXWriter(std::string filename);
+  explicit MTXWriter(
+    std::string filename,
+    std::string format = "coordinate",
+    std::string field = "real",
+    std::string symmetry = "general"
+    );
   ~MTXWriter() override = default;
   void WriteCOO(format::COO<IDType, NNZType, ValueType> *coo) const override;
   void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const override;
  
  private:
   std::string filename_;
+  std::string format_;
+  std::string field_;
+  std::string symmetry_;
 };
 
 }  // namespace sparsebase::io
