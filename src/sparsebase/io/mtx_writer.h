@@ -19,6 +19,7 @@ class MTXWriter : public Writer,
  public:
   explicit MTXWriter(
     std::string filename,
+    std::string object = "matrix",
     std::string format = "coordinate",
     std::string field = "real",
     std::string symmetry = "general"
@@ -28,6 +29,7 @@ class MTXWriter : public Writer,
   void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const override;
  
  private:
+ std::string object_;
   std::string filename_;
   std::string format_;
   std::string field_;
