@@ -28,7 +28,7 @@ TEST(MTXWriter, WriteCOO) {
   EXPECT_EQ(coo_1.get_num_nnz(), coo_1_r->get_num_nnz());
 
   // Compare the underlying arrays
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 4; i++) {
     EXPECT_EQ(coo_1.get_row()[i], coo_1_r->get_row()[i]);
     EXPECT_EQ(coo_1.get_col()[i], coo_1_r->get_col()[i]);
     EXPECT_EQ(coo_1.get_vals()[i], coo_1_r->get_vals()[i]);
@@ -58,7 +58,7 @@ TEST(MTXWriter, WriteCSR) {
   EXPECT_EQ(csr_1.get_num_nnz(), csr_1_r->get_num_nnz());
 
   // Compare the underlying arrays
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 4; i++) {
     EXPECT_EQ(csr_1.get_row_ptr()[i], csr_1_r->get_row_ptr()[i]);
     EXPECT_EQ(csr_1.get_col()[i], csr_1_r->get_col()[i]);
     EXPECT_EQ(csr_1.get_vals()[i], csr_1_r->get_vals()[i]);

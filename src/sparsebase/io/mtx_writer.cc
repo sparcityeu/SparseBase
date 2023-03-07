@@ -10,8 +10,9 @@ namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 MTXWriter<IDType, NNZType, ValueType>::MTXWriter(
-    std::string filename, std::string format, std::string field, std::string symmetry)
+    std::string filename, std::string object, std::string format, std::string field, std::string symmetry)
     : filename_(filename),
+      object_(object),
       format_(format),
       field_(field),
       symmetry_(symmetry) {}
@@ -20,19 +21,23 @@ template <typename IDType, typename NNZType, typename ValueType>
 void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
     format::COO<IDType, NNZType, ValueType> *coo) const {
       
-      if constexpr (std::is_same_v<ValueType, void>)
+      if (object_ != "matrix" && object_ != "vector") 
       {
-        throw utils::WriterException("Cannot write an MTX with void ValueType");
+        throw utils::ReaderException("Illegal value for the 'object' option in matrix market header");
       }
-      if (format_ != "array" || format_ != "coordinate") 
+      else if (object_ == "vector")
+      {
+        throw utils::ReaderException("Matrix market writer does not currently support writing vectors.");
+      }
+      if (format_ != "array" && format_ != "coordinate") 
       {
         throw utils::ReaderException("Illegal value for the 'format' option in matrix market header");
       }
-      if (field_ != "real" || field_ != "double" || field_ != "complex" || field_ != "integer" || field_ != "pattern") 
+      if (field_ != "real" && field_ != "double" && field_ != "complex" && field_ != "integer" && field_ != "pattern") 
       {
         throw utils::ReaderException("Illegal value for the 'format' option in matrix market header");
       }
-      if (symmetry_ != "general" || symmetry_ != "symmetric" || symmetry_ != "skew-symmetric" || symmetry_ != "hermitian") 
+      if (symmetry_ != "general" && symmetry_ != "symmetric" && symmetry_ != "skew-symmetric" && symmetry_ != "hermitian") 
       {
         throw utils::ReaderException("Illegal value for the 'format' option in matrix market header");
       }
@@ -45,7 +50,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       mtxFile.open(filename_);
 
       //header
-      std::string headerLine = "%%MatrixMarket matrix " + format_ + " " + field_ + " " + symmetry_ + "\n";
+      std::string headerLine = "%%MatrixMarket " + object_ + " " + format_ + " " + field_ + " " + symmetry_ + "\n";
       mtxFile << headerLine;
 
       //dimensions
@@ -59,45 +64,61 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
         mtxFile << dimensions[0] << " " << dimensions[1] << " " << coo->get_num_nnz() << "\n";
       }
       
-      else if constexpr (std::is_same_v<ValueType, int> && field_ != "integer")
+      IDType* row = coo->get_row();
+      IDType* col = coo->get_col();
+      ValueType* val = coo->get_vals();
+      
+      //TODO add warning when given field and actual data format is not same (integer vs float etc)
+
+      if (val != NULL && field_ == "pattern")
       {
-        //TODO add warning
+        //TODO add warning, pattern selected but values given
       }
-      else if constexpr (std::is_same_v<ValueType, float> && field_ != "real") //TODO  find out what to use for value comparison and fix it
+
+      //data lines
+      if constexpr (std::is_same_v<ValueType, void>)
       {
-        //TODO add warning
+        throw utils::WriterException("Cannot write an MTX with void ValueType");
       }
       else
       {
-        IDType* row = coo->get_row();
-        IDType* col = coo->get_col();
-        ValueType* val = coo->get_vals();
-        if (val != NULL && field_ == "pattern")
-        {
-          //TODO add warning, pattern selected but values given
-        }
-
 
         //TODO handle symmetry
-        //data lines
-        for (int i = 0; i < coo->get_num_nnz(); i++)
+        if (symmetry_ == "general")
         {
-          if (format_ == "array") 
-          {//format: value
-              mtxFile << val[i] << "\n";
-          }
-          else //cordinate
+          if (format_ == "coordinate")
           {
-            if (field_ == "pattern")
-            {//format: i j
-              mtxFile << row[i] << " " << col[i] << "\n";
-            }
-            else
-            {//format: i j value
-              mtxFile << row[i] << " " << col[i] << " " << val[i] << "\n";
+            for (int i = 0; i < coo->get_num_nnz(); i++)
+            {
+              
+                if (field_ == "pattern")
+                {//format: i j
+                  mtxFile << row[i] << " " << col[i] << "\n";
+                }
+                else
+                {//format: i j value
+                  mtxFile << row[i] << " " << col[i] << " " << val[i] << "\n";
+                }   
             }
           }
-        }
+          else if (format_ == "array")
+          {
+            int index = 0;
+            int current_index = 0;
+            for (int i = 0; i < coo->get_num_nnz(); i++)
+            {
+              current_index = row[i] * dimensions[0] + col[i];
+              for (int k = index; k < current_index; k++)
+              {
+                mtxFile << 0 << "\n";
+              }
+              mtxFile << val[i] << "\n";
+              index = current_index + 1;
+            }
+          }
+
+
+        }      
       }
       mtxFile.close();
       //TODO: write more tests for mtx writer
