@@ -8,8 +8,8 @@
 
 TEST(MTXWriter, WriteCOO) {
   // Initialize a COO for testing
-  int row_1[4]{1, 2, 3, 4};
-  int col_1[4]{5, 6, 7, 8};
+  int row_1[4]{0, 1, 2, 3};
+  int col_1[4]{0, 2, 1, 3};
   float vals_1[4]{0.1, 0.2, 0.3, 0.4};
   sparsebase::format::COO<int, int, float> coo_1(4, 4, 4, row_1, col_1, vals_1,
                                                sparsebase::format::kNotOwned);
@@ -38,17 +38,17 @@ TEST(MTXWriter, WriteCOO) {
 
 TEST(MTXWriter, WriteCSR) {
   // Initialize a CSR for testing
-  int row_1[4]{1, 2, 3, 4};
-  int col_1[4]{5, 6, 7, 8};
+  int row_1[4]{0, 1, 2, 3};
+  int col_1[4]{0, 2, 1, 3};
   float vals_1[4]{0.1, 0.2, 0.3, 0.4};
   sparsebase::format::CSR<int, int, float> csr_1(4, 4, row_1, col_1, vals_1,
                                                sparsebase::format::kNotOwned);
 
-  // Write the COO to a Mtx file with sparsebase
+  // Write the CSR to a Mtx file with sparsebase
   sparsebase::io::MTXWriter<int, int, float> writerCSR_1("writer_test_csr_mtx.mtx");
   writerCSR_1.WriteCSR(&csr_1);
 
-  // Read the COO from the Mtx file with sparsebase
+  // Read the CSR from the Mtx file with sparsebase
   sparsebase::io::MTXReader<int, int, float> readerCSR_1("writer_test_csr_mtx.mtx");
 
   auto csr_1_r = readerCSR_1.ReadCSR();

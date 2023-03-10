@@ -27,7 +27,7 @@ class MTXWriter : public Writer,
   ~MTXWriter() override = default;
   void WriteCOO(format::COO<IDType, NNZType, ValueType> *coo) const override;
   void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const override;
- 
+  
  private:
  std::string object_;
   std::string filename_;
