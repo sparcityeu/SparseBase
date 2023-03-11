@@ -77,3 +77,4 @@ add_executable(sparsebase_io_mtx_writer_tests.test mtx_writer_tests.cc)
 target_link_libraries(sparsebase_io_mtx_writer_tests.test  sparsebase)
 target_link_libraries(sparsebase_io_mtx_writer_tests.test  gtest gtest_main)
 add_test(NAME sparsebase_io_mtx_writer_tests.test COMMAND sparsebase_io_mtx_writer_tests.test)
+
