@@ -52,9 +52,9 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       {
         throw utils::ReaderException("Matrix market files with array format cannot have the property 'symmetry' ");
       }
-      if (format_ == "array") 
+      if (symmetry_ == "skew-symmetric" || symmetry_ == "hermitian") 
       {
-        throw utils::ReaderException("Matrix market reader does not currently support writing arrays.");
+        throw utils::ReaderException("Matrix market writer currently cannot handle skew-symmetric and hermitian");
       }
 
       std::ofstream mtxFile;
@@ -94,63 +94,50 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
         //Symmetry check
         bool saidSymmetric = (symmetry_ == "symmetric" || symmetry_ == "skew-symmetric" || symmetry_ == "hermitian");
-        bool isSymmetric = false;
         
-        std::vector<IDType> upper_rows(coo->get_num_nnz(), 0);
-        std::vector<IDType> upper_cols(coo->get_num_nnz(), 0);
-        std::vector<ValueType> upper_vals(coo->get_num_nnz());
-        
-        // check if number of rows and columns are equal
-        if (dimensions[0] == dimensions[1]) {
-          //store upper triangle
-          for (int i = 0; i < coo->get_num_nnz(); i++)
-          {
-            if (row[i] < col[i]) //upper
-            {
-              upper_rows[i] = row[i];
-              upper_cols[i] = col[i];
-              upper_vals[i] = val[i];
-            }
-          }
-          //check lower triangle with upper triangle
-          for (int i = 0; i < coo->get_num_nnz(); i++)
-          {
-            if (row[i] > col[i]) //lower
-            {
-              bool found_symmetric = false;
-              for (int j = 0; j < coo->get_num_nnz(); j++)
-              {
-                if (upper_rows[i] == col[i] && upper_cols[i] == row[i] && upper_vals[i] == val[i])
-                {
-                  found_symmetric = true;
+        if (saidSymmetric && dimensions[0] == dimensions[1]) {
+            for (int i = 0; i < coo->get_num_nnz(); ++i) {
+                if (row[i] != col[i]) { // Non-diagonal entry, check symmetric counterpart
+                    bool found_symmetric = false;
+                    for (int j = 0; j < coo->get_num_nnz(); ++j) {
+                        if (row[j] == col[i] && col[j] == row[i] && val[j] == val[i]) {
+                            found_symmetric = true;
+                            break;
+                        }
+                    }
+                    if (!found_symmetric) {
+                        throw utils::ReaderException("Matrix is not symmetric!");
+                    }
                 }
-              }
-              if (found_symmetric == false)
-              {
-                isSymmetric = false;
-                break;
-              }
             }
-          }
         }
-
+      
         //write data lines
         if (format_ == "array")
         {
-          //TODO: implement writing as array format
+          // Write the coo matrix in array format
+          int index = 0;
+          int current_index = 0;
+          for (int i = 0; i < coo->get_num_nnz(); i++)
+          { 
+            current_index = row[i] * dimensions[0] + col[i];
+            while (index < current_index)
+            {
+              mtxFile << 0 << "\n";
+              index++;
+            }
+            mtxFile << val[i] << "\n";
+            index++;
+          }
         }
         else //coordinate
         {
-          if (saidSymmetric == true && isSymmetric == false)
-          {
-            throw utils::ReaderException("wrong value for the 'symmetry' option in matrix market header, Matrix is not symmetric");
-          }
 
           if (saidSymmetric)
           {
             for (int i = 0; i < coo->get_num_nnz(); i++)
             {
-              if (symmetry_ != "skew-symmetric" && col[i] == val[i])
+              if (symmetry_ != "skew-symmetric" && col[i] == row[i])
               {//on diagonal entries
                 mtxFile << row[i]+1 << " " << col[i]+1;
                 if (field_ == "pattern")
@@ -162,7 +149,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
                   mtxFile << " " << val[i] << "\n";
                 }
               }
-              if (col[i] < val[i])
+              if (col[i] < row[i])
               {//strictly below diagonal entries
                 mtxFile << row[i]+1 << " " << col[i]+1;
                 if (field_ == "pattern")
@@ -202,16 +189,9 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCSR(
 
       converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
       context::CPUContext cpu_context;
-      //auto coo = converterObj.template Convert<format::COO<IDType, NNZType, ValueType>>(
-      //csr, &cpu_context);
       auto coo = converterObj.template Convert<format::COO<IDType, NNZType, ValueType>>(
-      csr, csr->get_context(), true);
-      
+      csr, &cpu_context);
       WriteCOO(coo);
-      
-      //format::COO<IDType, NNZType, ValueType> *coo = ReadCOO();
-      //return converter.template Convert<format::CSR<IDType, NNZType, ValueType>>(
-      //coo, coo->get_context(), true);
 }
 
 
