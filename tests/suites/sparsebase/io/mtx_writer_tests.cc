@@ -81,10 +81,11 @@ TEST(MTXWriter, WriteCOO_trueSymmetric) {
 
 TEST(MTXWriter, WriteCOO_array) {
   // Initialize a COO for testing
-  int row_4[4]{0, 1, 2, 3};
-  int col_4[4]{0, 2, 1, 3};
-  float vals_4[4]{0.1, 0.2, 0.3, 0.4};
-  sparsebase::format::COO<int, int, float> coo_4(4, 4, 4, row_4, col_4, vals_4,
+  int row_4[5]{1, 2, 3, 4, 4};
+  int col_4[5]{0, 1, 0, 2, 3};
+  float vals_4[5]{0.1, 0.3, 0.2, 0.4, 0.5};
+
+  sparsebase::format::COO<int, int, float> coo_4(5, 5, 5, row_4, col_4, vals_4,
                                                sparsebase::format::kNotOwned);
 
   // Write the COO to a Mtx file with sparsebase
@@ -101,7 +102,7 @@ TEST(MTXWriter, WriteCOO_array) {
   EXPECT_EQ(coo_4.get_num_nnz(), coo_4_r->get_num_nnz());
 
   // Compare the underlying arrays
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 5; i++) {
     EXPECT_EQ(coo_4.get_row()[i], coo_4_r->get_row()[i]);
     EXPECT_EQ(coo_4.get_col()[i], coo_4_r->get_col()[i]);
     EXPECT_EQ(coo_4.get_vals()[i], coo_4_r->get_vals()[i]);
@@ -110,10 +111,11 @@ TEST(MTXWriter, WriteCOO_array) {
 
 TEST(MTXWriter, WriteCSR) {
   // Initialize a CSR for testing
-  int row_10[4]{0, 1, 2, 3};
-  int col_10[4]{0, 2, 1, 3};
-  float vals_10[4]{0.1, 0.2, 0.3, 0.4};
-  sparsebase::format::CSR<int, int, float> csr_1(4, 4, row_10, col_10, vals_10,
+  int row_10[6]{0, 0, 1, 2, 3, 5};
+  int col_10[5]{0, 1, 0, 2, 3};
+  float vals_10[5]{0.1, 0.3, 0.2, 0.4, 0.5};
+
+  sparsebase::format::CSR<int, int, float> csr_1(5, 5, row_10, col_10, vals_10,
                                                sparsebase::format::kNotOwned);
 
   // Write the CSR to a Mtx file with sparsebase
@@ -130,9 +132,11 @@ TEST(MTXWriter, WriteCSR) {
   EXPECT_EQ(csr_1.get_num_nnz(), csr_1_r->get_num_nnz());
 
   // Compare the underlying arrays
-  for (int i = 0; i < 4; i++) {
-    EXPECT_EQ(csr_1.get_row_ptr()[i], csr_1_r->get_row_ptr()[i]);
+  for (int i = 0; i < 5; i++) {
     EXPECT_EQ(csr_1.get_col()[i], csr_1_r->get_col()[i]);
     EXPECT_EQ(csr_1.get_vals()[i], csr_1_r->get_vals()[i]);
+  }
+  for (int i = 0; i < 6; i++) {
+    EXPECT_EQ(csr_1.get_row_ptr()[i], csr_1_r->get_row_ptr()[i]);
   }
 }

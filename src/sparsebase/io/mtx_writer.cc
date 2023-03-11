@@ -59,30 +59,20 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
       std::ofstream mtxFile;
       mtxFile.open(filename_);
-
+      
       //header
       mtxFile << "%%MatrixMarket " << object_ << " " << format_ << " " << field_ << " " << symmetry_ << "\n";
-
-      //dimensions
-      auto dimensions = coo->get_dimensions();
-      if (format_ == "array")
-      {
-        mtxFile << dimensions[0] << " " << dimensions[1] << "\n";
-      }
-      else //cordinate
-      {
-        mtxFile << dimensions[0] << " " << dimensions[1] << " " << coo->get_num_nnz() << "\n";
-      }
       
+
       //TODO add warning when given field and actual data format is not same (integer vs float etc)
 
-      //data lines
       if constexpr (std::is_same_v<ValueType, void>)
       {
         throw utils::WriterException("Cannot write an MTX with void ValueType");
       }
       else
       {
+        auto dimensions = coo->get_dimensions();
         IDType* row = coo->get_row();
         IDType* col = coo->get_col();
         ValueType* val = coo->get_vals();
@@ -94,7 +84,8 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
         //Symmetry check
         bool saidSymmetric = (symmetry_ == "symmetric" || symmetry_ == "skew-symmetric" || symmetry_ == "hermitian");
-        
+        int NNZ = coo->get_num_nnz();
+        int count_symmetric = 0;
         if (saidSymmetric && dimensions[0] == dimensions[1]) {
             for (int i = 0; i < coo->get_num_nnz(); ++i) {
                 if (row[i] != col[i]) { // Non-diagonal entry, check symmetric counterpart
@@ -102,6 +93,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
                     for (int j = 0; j < coo->get_num_nnz(); ++j) {
                         if (row[j] == col[i] && col[j] == row[i] && val[j] == val[i]) {
                             found_symmetric = true;
+                            count_symmetric++;
                             break;
                         }
                     }
@@ -110,8 +102,19 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
                     }
                 }
             }
+            NNZ -= (count_symmetric/2);
         }
       
+        //dimensions and nnz
+        if (format_ == "array")
+        {
+          mtxFile << dimensions[0] << " " << dimensions[1] << "\n";
+        }
+        else //cordinate
+        {
+          mtxFile << dimensions[0] << " " << dimensions[1] << " " << NNZ << "\n";
+        }
+
         //write data lines
         if (format_ == "array")
         {
@@ -129,6 +132,11 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
             mtxFile << val[i] << "\n";
             index++;
           }
+          while (index < dimensions[0]*dimensions[1])
+            {
+              mtxFile << 0 << "\n";
+              index++;
+            }
         }
         else //coordinate
         {
