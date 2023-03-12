@@ -375,7 +375,7 @@ format::COO<IDType, NNZType, ValueType>
           check_diagonal = false;
         else
           check_diagonal = true;
-        if (check_diagonal && m != n) {
+        if (!check_diagonal || m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
           if constexpr (weighted && !std::is_same_v<void, ValueType> &&

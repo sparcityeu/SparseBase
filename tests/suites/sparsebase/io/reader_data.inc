@@ -11,6 +11,9 @@ int row_ptr_symm[6]{0, 3, 5, 7, 9, 11};
 int row_symm[11]{0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4};
 int col_symm[11]{0, 1, 3, 0, 2, 1, 4, 0, 4, 2, 3};
 float vals_symm[11]{0.7, 0.1, 0.2, 0.1, 0.3, 0.3, 0.4, 0.2, 0.5, 0.4, 0.5};
+int row_skew_symm[10]{0, 0, 1, 1, 2, 2, 3, 3, 4, 4};
+int col_skew_symm[10]{1, 3, 0, 2, 1, 4, 0, 4, 2, 3};
+float vals_skew_symm[10]{0.1, 0.2, 0.1, 0.3, 0.3, 0.4, 0.2, 0.5, 0.4, 0.5};
 const std::string mtx_data =
     R"(%%MatrixMarket matrix coordinate pattern general
 %This is a comment
@@ -27,6 +30,17 @@ const std::string mtx_symm_data =
 %This is a comment
 5 5 6
 1 1
+2 1
+4 1
+3 2
+5 3
+5 4
+)";
+
+const std::string mtx_skew_symm_data =
+    R"(%%MatrixMarket matrix coordinate pattern skew-symmetric
+%This is a comment
+5 5 5
 2 1
 4 1
 3 2
@@ -112,6 +126,17 @@ const std::string mtx_symm_data_with_values =
 %This is a comment
 5 5 6
 1 1 0.7
+2 1 0.1
+4 1 0.2
+3 2 0.3
+5 3 0.4
+5 4 0.5
+)";
+
+const std::string mtx_skew_symm_data_with_values =
+    R"(%%MatrixMarket matrix coordinate real symmetric
+%This is a comment
+5 5 5
 2 1 0.1
 4 1 0.2
 3 2 0.3
