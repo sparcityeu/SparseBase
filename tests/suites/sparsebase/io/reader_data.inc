@@ -64,13 +64,9 @@ const std::string mtx_data_with_values_array =
 %This is a comment
 5 5
 0
-0
-0
-0
-0
 0.1
 0
-0
+0.2
 0
 0
 0
@@ -78,15 +74,19 @@ const std::string mtx_data_with_values_array =
 0
 0
 0
-0.2
-0
-0
-0
 0
 0
 0
 0.4
+0
+0
+0
+0
 0.5
+0
+0
+0
+0
 0
 )";
 
@@ -95,13 +95,9 @@ const std::string mtx_data_array =
 %This is a comment
 5 5
 0
-0
-0
-0
-0
 0.1
 0
-0
+0.2
 0
 0
 0
@@ -109,15 +105,19 @@ const std::string mtx_data_array =
 0
 0
 0
-0.2
-0
-0
-0
 0
 0
 0
 0.4
+0
+0
+0
+0
 0.5
+0
+0
+0
+0
 0
 )";
 

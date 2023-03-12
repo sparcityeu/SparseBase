@@ -119,7 +119,7 @@ TEST(MTXReader, BasicsArray) {
   ofs2.close();
 
   // Read non-weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, int> reader("test.mtx");
+  sparsebase::io::MTXReader<int, int, float> reader("test_arr.mtx");
   auto coo = reader.ReadCOO();
 
   // Check the dimensions
@@ -138,7 +138,7 @@ TEST(MTXReader, BasicsArray) {
   }
 
   // Read the weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, float> reader2("test_values.mtx", true);
+  sparsebase::io::MTXReader<int, int, float> reader2("test_arr_values.mtx", true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions

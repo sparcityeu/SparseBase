@@ -140,8 +140,8 @@ format::COO<IDType, NNZType, ValueType>
     fin >> w;
 
     if (w != 0) {
-      long_cols[num_nnz] = l / N;
-      long_rows[num_nnz] = l % N;
+      long_cols[num_nnz] = l / M;
+      long_rows[num_nnz] = l % M;
       if constexpr (weighted) long_vals[num_nnz] = w;
       num_nnz++;
     }
