@@ -109,6 +109,63 @@ TEST(MTXWriter, WriteCOO_array) {
   }
 }
 
+TEST(MTXWriter, WriteCOO_SkewSymmetric) {
+  // Initialize a COO for testing
+  int row_5[2]{1, 2};
+  int col_5[2]{2, 1};
+  int vals_5[2]{-3, 3};
+  sparsebase::format::COO<int, int, int> coo_5(4, 4, 2, row_5, col_5, vals_5,
+                                               sparsebase::format::kNotOwned);
+
+  // Write the COO to a Mtx file with sparsebase
+  sparsebase::io::MTXWriter<int, int, int> writerCOO_5("writer_test_coo_mtx5.mtx", "matrix", "coordinate", "integer", "skew-symmetric");
+  writerCOO_5.WriteCOO(&coo_5);
+
+  // Read the COO from the Mtx file with sparsebase
+  sparsebase::io::MTXReader<int, int, int> readerCOO_5("writer_test_coo_mtx5.mtx");
+
+  auto coo_5_r = readerCOO_5.ReadCOO();
+
+  // Compare the dimensions
+  EXPECT_EQ(coo_5.get_dimensions(), coo_5_r->get_dimensions());
+  EXPECT_EQ(coo_5.get_num_nnz(), coo_5_r->get_num_nnz());
+
+  // Compare the underlying arrays
+  for (int i = 0; i < 2; i++) {
+    EXPECT_EQ(coo_5.get_row()[i], coo_5_r->get_row()[i]);
+    EXPECT_EQ(coo_5.get_col()[i], coo_5_r->get_col()[i]);
+    EXPECT_EQ(coo_5.get_vals()[i], coo_5_r->get_vals()[i]);
+  }
+}
+
+TEST(MTXWriter, WriteCOO_PatternSymmetric) {
+  // Initialize a COO for testing
+  int row_6[11]{0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4};
+  int col_6[11]{0, 1, 3, 0, 2, 1, 4, 0, 4, 2, 3};
+  float vals_6[11]{0.7, 0.1, 0.2, 0.1, 0.3, 0.3, 0.4, 0.2, 0.5, 0.4, 0.5};
+  sparsebase::format::COO<int, int, float> coo_6(5, 5, 11, row_6, col_6, vals_6,
+                                               sparsebase::format::kNotOwned);
+
+  // Write the COO to a Mtx file with sparsebase
+  sparsebase::io::MTXWriter<int, int, float> writerCOO_6("writer_test_coo_mtx6.mtx", "matrix", "coordinate", "pattern", "symmetric");
+  writerCOO_6.WriteCOO(&coo_6);
+
+  // Read the COO from the Mtx file with sparsebase
+  sparsebase::io::MTXReader<int, int, float> readerCOO_6("writer_test_coo_mtx6.mtx");
+
+  auto coo_6_r = readerCOO_6.ReadCOO();
+
+  // Compare the dimensions
+  EXPECT_EQ(coo_6.get_dimensions(), coo_6_r->get_dimensions());
+  EXPECT_EQ(coo_6.get_num_nnz(), coo_6_r->get_num_nnz());
+
+  // Compare the underlying arrays
+  for (int i = 0; i < 11; i++) {
+    EXPECT_EQ(coo_6.get_row()[i], coo_6_r->get_row()[i]);
+    EXPECT_EQ(coo_6.get_col()[i], coo_6_r->get_col()[i]);
+  }
+}
+
 TEST(MTXWriter, WriteCSR) {
   // Initialize a CSR for testing
   int row_10[6]{0, 0, 1, 2, 3, 5};

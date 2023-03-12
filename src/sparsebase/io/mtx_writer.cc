@@ -52,9 +52,9 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       {
         throw utils::ReaderException("Matrix market files with array format cannot have the property 'symmetry' ");
       }
-      if (symmetry_ == "skew-symmetric" || symmetry_ == "hermitian") 
+      if (symmetry_ == "hermitian") 
       {
-        throw utils::ReaderException("Matrix market writer currently cannot handle skew-symmetric and hermitian");
+        throw utils::ReaderException("Matrix market writer does not currently support hermitian symmetry.");
       }
 
       std::ofstream mtxFile;
@@ -79,30 +79,55 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
         if (val != NULL && field_ == "pattern")
         {
-          //TODO add warning, pattern selected but values given
+          std::cerr << "Warning: Pattern selected but values given.\n";
         }
 
         //Symmetry check
         bool saidSymmetric = (symmetry_ == "symmetric" || symmetry_ == "skew-symmetric" || symmetry_ == "hermitian");
         int NNZ = coo->get_num_nnz();
         int count_symmetric = 0;
+        int count_diagonal = 0;
         if (saidSymmetric && dimensions[0] == dimensions[1]) {
             for (int i = 0; i < coo->get_num_nnz(); ++i) {
                 if (row[i] != col[i]) { // Non-diagonal entry, check symmetric counterpart
                     bool found_symmetric = false;
                     for (int j = 0; j < coo->get_num_nnz(); ++j) {
+                      if (symmetry_ == "skew-symmetric")
+                      {
+                        if (row[j] == col[i] && col[j] == row[i] && val[j] == -val[i]) {
+                            found_symmetric = true;
+                            count_symmetric++;
+                            break;
+                        }
+                      }
+                      else
+                      {
                         if (row[j] == col[i] && col[j] == row[i] && val[j] == val[i]) {
                             found_symmetric = true;
                             count_symmetric++;
                             break;
                         }
+                      }
+                        
                     }
                     if (!found_symmetric) {
                         throw utils::ReaderException("Matrix is not symmetric!");
                     }
                 }
+                else //diagonal
+                {
+                  count_diagonal++;
+                }
             }
-            NNZ -= (count_symmetric/2);
+            if(symmetry_ == "skew-symmetric")
+            {
+              NNZ -= (count_symmetric/2) + count_diagonal;
+            }
+            else
+            {
+              NNZ -= (count_symmetric/2);
+            }
+            
         }
       
         //dimensions and nnz
