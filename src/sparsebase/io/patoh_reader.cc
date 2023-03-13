@@ -34,6 +34,46 @@ HyperGraphOptions PatohReader<IDType, NNZType, ValueType>::ParseHeader(
     options.net_num = stoi(net_num);
     options.pin_num = stoi(pin_num);
     return options;
-}           
+}
+template <typename IDType, typename NNZType, typename ValueType>
+format::CSR<IDType, NNZType, ValueType>
+    *PatohReader<IDType, NNZType, ValueType>::ReadCSR() const{
+    
+    std::ifstream fin(filename_);
+    //Ignore headers and comments:
+    int *pin_arr = new int[options_.pin_num];
+    int *xpin_arr = new int[options_.net_num+1];
+    int *netSize_arr = new int[options_.net_num]; // stores the vertex number of each net
+    memset(netSize_arr, 0, options_.net_num * sizeof(int));
+    std::string line;
+    int i =0,k =0;
+    while(std::getline(fin,line))
+    {
+        std::stringstream ss(line);
+        if(line[0] != '%'){
+            int num;
+            int net_size = 0;
+            while(ss>>num){
+                pin_arr[i] = num;
+                i++;
+                net_size++;
+            }
+            netSize_arr[k] = net_size;
+            k++;
+        }
+    }
+    xpin_arr[0] = 0;
+    for(int j=0; j<options_.net_num+1;j++)
+    {
+        xpin_arr[j+1] = xpin_arr[j]+netSize_arr[j];
+    }
+
+    int *row_ptr,col_ptr,*vals;
+
+    row_ptr = (int *)malloc(sizeof(int)*(options_.net_num+1));
+    memcpy(row_ptr,xpin_arr,sizeof(int) * (options_.net_num+1));
+
+    
+}
 
 }
