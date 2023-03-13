@@ -143,12 +143,32 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
         //write data lines
         if (format_ == "array")
         {
+
+          //sort according to column values
+          std::vector<std::pair<IDType, IDType>> sort_vec;
+          for (int i = 0; i < coo->get_num_nnz(); i++) {
+            sort_vec.emplace_back(col[i], row[i]);
+          }
+          std::sort(sort_vec.begin(), sort_vec.end(),
+                    [](std::pair<IDType, IDType> t1, std::pair<IDType, IDType> t2) {
+                      if (t1.first == t2.first) {
+                        return t1.second < t2.second;
+                      }
+                      return t1.first < t2.first;
+                    });
+
+          for (int i = 0; i < coo->get_num_nnz(); i++) {
+            auto &t = sort_vec[i];
+            col[i] = t.first;
+            row[i] = t.second;
+          }
+
           // Write the coo matrix in array format
           int index = 0;
           int current_index = 0;
           for (int i = 0; i < coo->get_num_nnz(); i++)
           { 
-            current_index = row[i] * dimensions[0] + col[i];
+            current_index = col[i] * dimensions[1] + row[i];
             while (index < current_index)
             {
               mtxFile << 0 << "\n";
