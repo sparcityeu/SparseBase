@@ -145,22 +145,20 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
         {
 
           //sort according to column values
-          std::vector<std::pair<IDType, IDType>> sort_vec;
+          std::vector<std::tuple<IDType, IDType, ValueType>> sort_vec;
           for (int i = 0; i < coo->get_num_nnz(); i++) {
-            sort_vec.emplace_back(col[i], row[i]);
+            sort_vec.emplace_back(col[i], row[i], val[i]);
           }
           std::sort(sort_vec.begin(), sort_vec.end(),
-                    [](std::pair<IDType, IDType> t1, std::pair<IDType, IDType> t2) {
-                      if (t1.first == t2.first) {
-                        return t1.second < t2.second;
+                    [](std::tuple<IDType, IDType, ValueType> t1, std::tuple<IDType, IDType, ValueType> t2) {
+                      if (std::get<0>(t1) == std::get<0>(t2)) {
+                        return std::get<1>(t1) < std::get<1>(t2);
                       }
-                      return t1.first < t2.first;
+                      return std::get<0>(t1) < std::get<0>(t2);
                     });
 
           for (int i = 0; i < coo->get_num_nnz(); i++) {
             auto &t = sort_vec[i];
-            col[i] = t.first;
-            row[i] = t.second;
           }
 
           // Write the coo matrix in array format
@@ -168,13 +166,13 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
           int current_index = 0;
           for (int i = 0; i < coo->get_num_nnz(); i++)
           { 
-            current_index = col[i] * dimensions[1] + row[i];
+            current_index = std::get<0>(sort_vec[i]) * dimensions[0] + std::get<1>(sort_vec[i]);
             while (index < current_index)
             {
               mtxFile << 0 << "\n";
               index++;
             }
-            mtxFile << val[i] << "\n";
+            mtxFile << std::get<2>(sort_vec[i]) << "\n";
             index++;
           }
           while (index < dimensions[0]*dimensions[1])
