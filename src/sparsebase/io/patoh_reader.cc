@@ -46,6 +46,8 @@ format::CSR<IDType, NNZType, ValueType>
     int *netSize_arr = new int[options_.net_num]; // stores the vertex number of each net
     memset(netSize_arr, 0, options_.net_num * sizeof(int));
     std::string line;
+    std::getline(fin, line); // To skip the comment
+    std::getline(fin, line); // To skip Information about hypergraphs
     int i =0,k =0;
     while(std::getline(fin,line))
     {
@@ -73,7 +75,7 @@ format::CSR<IDType, NNZType, ValueType>
     row_ptr = (int *)malloc(sizeof(int)*(options_.net_num+1));
     memcpy(row_ptr,xpin_arr,sizeof(int) * (options_.net_num+1));
 
-    
+
 }
 
 }
