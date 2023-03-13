@@ -15,6 +15,7 @@
 #include "sparsebase/io/binary_writer_order_two.h"
 #include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/mtx_reader.h"
+#include "sparsebase/io/mtx_writer.h"
 #include "sparsebase/io/pigo_edge_list_reader.h"
 #include "sparsebase/io/pigo_mtx_reader.h"
 #include "sparsebase/io/reader.h"
@@ -289,6 +290,70 @@ class IOBase {
                                  std::string filename) {
     io::BinaryWriterOrderOne<ValueType> writer(filename);
     return writer.WriteArray(array);
+  }
+  //! Write a CSR object to a matrix market file
+  /*!
+   * Write a CSR object to a matrix market file.
+   * @tparam IDType type to represent the number of rows and columns in the
+   * object.
+   * @tparam NNZType type to represent the number of non-zeros in the object.
+   * @tparam ValueType type to represent the data inside the matrix (vertex
+   * weights in the case of a graph).
+   * @param csr a pointer at the `CSR<IDType, NNZType, ValueType>` object to write.
+   * @param filename path to write the file.
+   * @param object is either matrix or vector.
+   * @param format is either coordinate or array.
+   * @param field is either real, double, complex, integer or pattern.
+   * @param symmetry is either general (legal for real, complex,
+    integer or pattern fields), symmetric (real, complex, integer or pattern),
+     skew-symmetric (real, complex or integer), or hermitian (complex only).
+   */
+  template <typename IDType, typename NNZType, typename ValueType>
+  static void WriteCSRToMTX(
+      format::CSR<IDType, NNZType, ValueType>* csr,
+      std::string filename,
+      std::string object = "matrix",
+      std::string format = "coordinate",
+      std::string field = "real",
+      std::string symmetry = "general") {
+    io::MTXWriter<IDType, NNZType, ValueType> writer(filename,
+                                                     object,
+                                                     format,
+                                                     field,
+                                                     symmetry);
+    return writer.WriteCSR(csr);
+  }
+  //! Write a COO object to a matrix market file
+  /*!
+   * Write a COO object to a matrix market file.
+   * @tparam IDType type to represent the number of rows and columns in the
+   * object.
+   * @tparam NNZType type to represent the number of non-zeros in the object.
+   * @tparam ValueType type to represent the data inside the matrix (vertex
+   * weights in the case of a graph).
+   * @param coo a pointer at the `CSR<IDType, NNZType, ValueType>` object to write.
+   * @param filename path to write the file.
+   * @param object is either matrix or vector.
+   * @param format is either coordinate or array.
+   * @param field is either real, double, complex, integer or pattern.
+   * @param symmetry is either general (legal for real, complex,
+    integer or pattern fields), symmetric (real, complex, integer or pattern),
+     skew-symmetric (real, complex or integer), or hermitian (complex only).
+   */
+  template <typename IDType, typename NNZType, typename ValueType>
+  static void WriteCOOToMTX(
+      format::CSR<IDType, NNZType, ValueType>* coo,
+      std::string filename,
+      std::string object = "matrix",
+      std::string format = "coordinate",
+      std::string field = "real",
+      std::string symmetry = "general") {
+    io::MTXWriter<IDType, NNZType, ValueType> writer(filename,
+                                                     object,
+                                                     format,
+                                                     field,
+                                                     symmetry);
+    return writer.WriteCOO(coo);
   }
 };
 }  // namespace sparsebase::bases
