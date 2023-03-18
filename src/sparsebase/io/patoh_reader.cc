@@ -14,7 +14,8 @@ PatohReader<IDType, NNZType, ValueType>::PatohReader(std::string filename,
     std::ifstream fin(filename_);
     if(fin.is_open()){
         std::string header_line;
-        std::getline(fin,header_line); // To skip the comment
+        while (fin.peek() == '%')
+            fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // To skip the comment
         std::getline(fin,header_line); // Information about hypergraphs
         options_ = ParseHeader(header_line);
     }
@@ -23,21 +24,26 @@ PatohReader<IDType, NNZType, ValueType>::PatohReader(std::string filename,
     }
         }
 template <typename IDType, typename NNZType, typename ValueType>
-HyperGraphOptions PatohReader<IDType, NNZType, ValueType>::ParseHeader(
+typename PatohReader<IDType, NNZType, ValueType>::HyperGraphOptions 
+PatohReader<IDType, NNZType, ValueType>::ParseHeader(
         std::string header_line) const {
     std::stringstream line_ss(header_line);
     HyperGraphOptions options;
-    std::string base_type, cell_num, net_num, pin_num;
-    line_ss >> base_type >> cell_num >> net_num >> pin_num;
+    std::string base_type, cell_num, net_num, pin_num,weighted_scheme,constraint_num;
+    line_ss >> base_type >> cell_num >> net_num >> pin_num>>weighted_scheme>>constraint_num;
     options.base_type = stoi(base_type);
     options.cell_num = stoi(cell_num);
     options.net_num = stoi(net_num);
     options.pin_num = stoi(pin_num);
+    if (weighted_scheme != "") 
+        options.weighted_scheme = stoi(weighted_scheme);
+    if (constraint_num != "")
+        options.constraint_num = stoi(constraint_num);
     return options;
 }
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType>
-    *PatohReader<IDType, NNZType, ValueType>::ReadCSR() const{
+
+ void PatohReader<IDType, NNZType, ValueType>::ReadCSR(){
     
     std::ifstream fin(filename_);
     //Ignore headers and comments:
@@ -45,17 +51,28 @@ format::CSR<IDType, NNZType, ValueType>
     int *xpin_arr = new int[options_.net_num+1];
     int *netSize_arr = new int[options_.net_num]; // stores the vertex number of each net
     memset(netSize_arr, 0, options_.net_num * sizeof(int));
+    //Weight arrays of cells and nets
+     int *cell_weight_arr = new int[options_.cell_num];
+    std::fill(cell_weight_arr, cell_weight_arr + options_.cell_num, 1);
+    int *net_weight_arr = new int[options_.net_num];
+    std::fill(net_weight_arr, net_weight_arr + options_.net_num, 1);
+
     std::string line;
-    std::getline(fin, line); // To skip the comment
+     while (fin.peek() == '%')
+            fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // To skip the comment
     std::getline(fin, line); // To skip Information about hypergraphs
     int i =0,k =0;
-    while(std::getline(fin,line))
+     while (std::getline(fin, line))
     {
         std::stringstream ss(line);
-        if(line[0] != '%'){
+        if (line[0] != '%') {
             int num;
             int net_size = 0;
-            while(ss>>num){
+            if (options_.weighted_scheme == 2 || options_.weighted_scheme == 3) {
+                ss >> num;
+                net_weight_arr[k] = num;
+            }
+            while (ss >> num) {
                 pin_arr[i] = num;
                 i++;
                 net_size++;
@@ -70,10 +87,9 @@ format::CSR<IDType, NNZType, ValueType>
         xpin_arr[j+1] = xpin_arr[j]+netSize_arr[j];
     }
 
-    int *row_ptr,col_ptr,*vals;
-
-    row_ptr = (int *)malloc(sizeof(int)*(options_.net_num+1));
-    memcpy(row_ptr,xpin_arr,sizeof(int) * (options_.net_num+1));
+    //int *row_ptr,col_ptr,*vals;
+    //row_ptr = (int *)malloc(sizeof(int)*(options_.net_num+1));
+    //memcpy(row_ptr,xpin_arr,sizeof(int) * (options_.net_num+1));
 
 
 }

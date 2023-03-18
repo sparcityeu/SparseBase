@@ -8,12 +8,12 @@ namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 class PatohReader : public Reader,
-                    public ReadCSR<IDType, NNZType,ValueType>{
+                    public ReadsCSR<IDType, NNZType, ValueType>{
                         
 public :
 
 explicit PatohReader(std::string filename,bool convert_to_zero_index = true);
-format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
+void ReadCSR();
 format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
 ~PatohReader() override;
 
@@ -23,6 +23,8 @@ struct HyperGraphOptions {
     int cell_num;
     int net_num;
     int pin_num;
+    int weight_scheme = NULL; // Optional, If it equals 1 cells are weighted, If it equals 2 nets are weighted, if equals 3, both are weighted
+    int constraint_num = 1; // Optional
 };
 std::string filename_;
 bool convert_to_zero_index_;
