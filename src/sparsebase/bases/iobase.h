@@ -331,7 +331,7 @@ class IOBase {
    * @tparam NNZType type to represent the number of non-zeros in the object.
    * @tparam ValueType type to represent the data inside the matrix (vertex
    * weights in the case of a graph).
-   * @param coo a pointer at the `CSR<IDType, NNZType, ValueType>` object to write.
+   * @param coo a pointer at the `COO<IDType, NNZType, ValueType>` object to write.
    * @param filename path to write the file.
    * @param object is either matrix or vector.
    * @param format is either coordinate or array.
@@ -354,6 +354,38 @@ class IOBase {
                                                      field,
                                                      symmetry);
     return writer.WriteCOO(coo);
+  }
+  //! Write an Array object to a matrix market file
+  /*!
+   * Write an Array object to a matrix market file.
+   * @tparam IDType type to represent the number of rows and columns in the
+   * object.
+   * @tparam NNZType type to represent the number of non-zeros in the object.
+   * @tparam ValueType type to represent the data inside the array (vertex
+   * weights in the case of a graph).
+   * @param arr a pointer at the `Array<ValueType>` object to write.
+   * @param filename path to write the file.
+   * @param object is either matrix or vector.
+   * @param format is either coordinate or array.
+   * @param field is either real, double, complex, integer or pattern.
+   * @param symmetry is either general (legal for real, complex,
+    integer or pattern fields), symmetric (real, complex, integer or pattern),
+     skew-symmetric (real, complex or integer), or hermitian (complex only).
+   */
+  template <typename IDType, typename NNZType, typename ValueType>
+  static void WriteArrayToMTX(
+      format::Array<ValueType>* arr,
+      std::string filename,
+      std::string object = "matrix",
+      std::string format = "coordinate",
+      std::string field = "real",
+      std::string symmetry = "general") {
+    io::MTXWriter<IDType, NNZType, ValueType> writer(filename,
+                                                     object,
+                                                     format,
+                                                     field,
+                                                     symmetry);
+    return writer.WriteArray(arr);
   }
 };
 }  // namespace sparsebase::bases

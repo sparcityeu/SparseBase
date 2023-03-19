@@ -15,7 +15,8 @@ namespace sparsebase::io {
 template <typename IDType, typename NNZType, typename ValueType>
 class MTXWriter : public Writer,
                              public WritesCOO<IDType, NNZType, ValueType>,
-                             public WritesCSR<IDType, NNZType, ValueType> {
+                             public WritesCSR<IDType, NNZType, ValueType>,
+                             public WritesArray<ValueType> {
  public:
   explicit MTXWriter(
     std::string filename,
@@ -27,6 +28,7 @@ class MTXWriter : public Writer,
   ~MTXWriter() override = default;
   void WriteCOO(format::COO<IDType, NNZType, ValueType> *coo) const override;
   void WriteCSR(format::CSR<IDType, NNZType, ValueType> *csr) const override;
+  void WriteArray(format::Array<ValueType> *arr) const override;
   
  private:
  std::string object_;

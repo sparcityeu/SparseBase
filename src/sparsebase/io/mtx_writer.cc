@@ -245,6 +245,74 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCSR(
       WriteCOO(coo);
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+void MTXWriter<IDType, NNZType, ValueType>::WriteArray(
+  format::Array<ValueType> *arr) const {
+    
+    //illegal parameter checks
+    if (object_ != "matrix" && object_ != "vector") 
+    {
+      throw utils::ReaderException("Illegal value for the 'object' option in matrix market header");
+    }
+    else if (object_ == "vector")
+    {
+      throw utils::ReaderException("Matrix market writer does not currently support writing vectors.");
+    }
+    if (format_ != "array" && format_ != "coordinate") 
+    {
+      throw utils::ReaderException("Illegal value for the 'format' option in matrix market header");
+    }
+    if (field_ != "real" && field_ != "double" && field_ != "complex" && field_ != "integer" && field_ != "pattern") 
+    {
+      throw utils::ReaderException("Illegal value for the 'field' option in matrix market header");
+    }
+    if (symmetry_ != "general" && symmetry_ != "symmetric" && symmetry_ != "skew-symmetric" && symmetry_ != "hermitian") 
+    {
+      throw utils::ReaderException("Illegal value for the 'symmetry' option in matrix market header");
+    }
+    if (format_ == "array" && field_ == "pattern") 
+    {
+      throw utils::ReaderException("Matrix market files with array format cannot have the field ""'pattern' ");
+    }
+    if (format_ == "array" && symmetry_ != "general") 
+    {
+      throw utils::ReaderException("Matrix market files with array format cannot have the property 'symmetry' ");
+    }
+    if (symmetry_ == "hermitian") 
+    {
+      throw utils::ReaderException("Matrix market writer does not currently support hermitian symmetry.");
+    }
+    if (format_ == "coordinate")
+    {
+      throw utils::ReaderException("Matrix market writer does not currently support writing array as coordinate.");
+    }
+
+    std::ofstream mtxFile;
+    mtxFile.open(filename_);
+    
+    //header
+    mtxFile << "%%MatrixMarket " << object_ << " " << format_ << " " << field_ << " " << symmetry_ << "\n";
+    
+    //TODO add warning when given field and actual data format is not same (integer vs float etc)
+
+    if constexpr (std::is_same_v<ValueType, void>)
+    {
+      throw utils::WriterException("Cannot write an MTX with void ValueType");
+    }
+    else
+    {
+      ValueType* val = arr->get_vals();
+      auto dimensions = arr->get_dimensions();
+      //dimensions
+      mtxFile << 1 << " " << dimensions[0] << "\n";
+      
+      for (int i = 0; i < dimensions[0]; i++)
+      { 
+        mtxFile << val[i] << "\n";
+      }
+      mtxFile.close();
+    }
+  }
 
 #ifndef _HEADER_ONLY
 #include "init/mtx_writer.inc"

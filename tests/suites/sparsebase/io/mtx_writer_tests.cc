@@ -197,3 +197,23 @@ TEST(MTXWriter, WriteCSR) {
     EXPECT_EQ(csr_1.get_row_ptr()[i], csr_1_r->get_row_ptr()[i]);
   }
 }
+
+TEST(MTXWriter, WriteArray) {
+  // Initialize an array for testing
+  float array[5]{0.1, 0.2, 0.3, 0.4, 0.5};
+  sparsebase::format::Array<float> sbArray_1(5, array,
+                                         sparsebase::format::kNotOwned);
+
+  // Write the CSR to a Mtx file with sparsebase
+  sparsebase::io::MTXWriter<int, int, float> writerArray_1("writer_test_array_mtx.mtx", "matrix", "array", "real", "general");
+  writerArray_1.WriteArray(&sbArray_1);
+
+  // Read the CSR from the Mtx file with sparsebase
+  sparsebase::io::MTXReader<int, int, float> readerArray_1("writer_test_array_mtx.mtx");
+  auto sbArray_1_r = readerArray_1.ReadArray();
+
+  // Compare the arrays
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(array[i], sbArray_1_r->get_vals()[i]);
+  }
+}
