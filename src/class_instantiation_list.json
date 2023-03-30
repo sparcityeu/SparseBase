@@ -225,6 +225,13 @@
       "exceptions": null
     },
     {
+      "template": "class MetisGraphReader<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class PigoEdgeListReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_edge_list_reader.inc",
       "ifdef": null,
