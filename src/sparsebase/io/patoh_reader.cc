@@ -49,8 +49,7 @@ template <typename IDType, typename NNZType, typename ValueType>
     //Ignore headers and comments:
     int *pin_arr = new int[options_.pin_num];
     int *xpin_arr = new int[options_.net_num+1];
-    int *netSize_arr = new int[options_.net_num]; // stores the vertex number of each net
-    memset(netSize_arr, 0, options_.net_num * sizeof(int));
+    xpin_arr[0] = 0;
     //Weight arrays of cells and nets
      int *cell_weight_arr = new int[options_.cell_num];
     std::fill(cell_weight_arr, cell_weight_arr + options_.cell_num, 1);
@@ -61,32 +60,38 @@ template <typename IDType, typename NNZType, typename ValueType>
      while (fin.peek() == '%')
             fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // To skip the comment
     std::getline(fin, line); // To skip Information about hypergraphs
-    int i =0,k =0;
+    int i =0,k =0,l=0;
      while (std::getline(fin, line))
     {
         std::stringstream ss(line);
+        //If line is not comment
         if (line[0] != '%') {
             int num;
             int net_size = 0;
             if (options_.weighted_scheme == 2 || options_.weighted_scheme == 3) {
-                ss >> num;
-                net_weight_arr[k] = num;
+               if (!(options_.weighted_scheme == 3 && fin.eof())) {
+                    ss >> num;
+                    net_weight_arr[k] = num;
+                }
             }
             while (ss >> num) {
-                pin_arr[i] = num;
-                i++;
-                net_size++;
+                if((options_.weighted_scheme == 1 || options_.weighted_scheme == 3)&& (fin.eof()))// The last line of the file carries to information of cell's weights 
+                {
+                    cell_weight_arr[l] = num;
+                    l++;
+                }
+                else {
+                    pin_arr[i] = num;
+                    i++;
+                    net_size++;
+                }
             }
-            netSize_arr[k] = net_size;
-            k++;
+            if(!((options_.weighted_scheme == 1 || options_.weighted_scheme == 3) && (fin.eof()))){
+                xpin_arr[k + 1] = xpin_arr[k] + net_size;
+                k++;
+            }
         }
     }
-    xpin_arr[0] = 0;
-    for(int j=0; j<options_.net_num+1;j++)
-    {
-        xpin_arr[j+1] = xpin_arr[j]+netSize_arr[j];
-    }
-
     //int *row_ptr,col_ptr,*vals;
     //row_ptr = (int *)malloc(sizeof(int)*(options_.net_num+1));
     //memcpy(row_ptr,xpin_arr,sizeof(int) * (options_.net_num+1));
