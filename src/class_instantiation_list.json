@@ -239,6 +239,13 @@
       "exceptions": null
     },
     {
+      "template": "class PatohReader<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class BinaryReaderOrderTwo<$id_type, $nnz_type, $value_type>",
       "filename": "binary_reader_order_two.inc",
       "ifdef": null,

@@ -185,3 +185,27 @@ const std::string edge_list_data_with_values = R"(1 0 0.1
 4 2 0.4
 4 3 0.5
 )";
+
+//PATOH HyperGraph Reader
+
+int hypergraph1_n = 11;
+int hypergraph1_m = 31;
+int hypergraph1_vertex_size = 12;
+int hypergraph1_xpins[12]{0,5,7,11,13,15,19,21,25,27,29,31};
+int hypergraph1_pins[31]{2, 3, 5, 6, 9, 0, 1, 0, 1, 2, 3, 1, 3, 4, 5, 4, 5, 6, 7, 6, 7, 8, 9, 10, 11, 8, 10, 8, 11, 2, 5};
+int hypergraph1_netWeights[31]{1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1 ,1, 1, 1};
+
+const std::string hypergraph_1 = R"(% base:(0/1) #cells #nets #pins
+0 12 11 31 
+% pins of each net in the hypergraph
+2 3 5 6 9
+0 1
+0 1 2 3
+1 3
+4 5
+4 5 6 7
+6 7
+8 9 10 11
+8 10
+8 11
+2 5)";
