@@ -33,10 +33,10 @@ We suggest using the most recent versions when possible.
 
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=CUDA ..
+cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CUDA=OFF ..
 make
 ```
-Where `CUDA` is `ON` if CUDA support is needed and `OFF` otherwise.
+This will build the library without CUDA support. If CUDA support is needed, then replace `-DUSE_CUDA=OFF` with `-DUSE_CUDA=ON`.
 
 ```{warning}
 If the library is installed with cuda support, the user code must be compiled using `nvcc`.
