@@ -140,7 +140,7 @@ format::COO<IDType, NNZType, ValueType>
    options_.symmetry != general)
    {
       utils::Logger logger(typeid(this));
-      logger.Log("Warning: PIGO is not equipped to read these options, defaulting to sequential reader...", utils::LOG_LVL_WARNING);
+      logger.Log("PIGO is not equipped to read these options, defaulting to sequential reader...", utils::LOG_LVL_WARNING);
       
       sparsebase::io::MTXReader<IDType, NNZType, ValueType> reader(filename_);
       coo = reader.ReadCOO();
