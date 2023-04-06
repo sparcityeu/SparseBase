@@ -26,13 +26,15 @@ class MetisGraphReader : public Reader,
   /*!
    * Constructor for the MetisGraphReader class
    * @param filename path to the file to be read
+   * @param convert_to_zero_index if set to true the indices will be converted
    */
-  explicit MetisGraphReader(std::string filename);
+  explicit MetisGraphReader(std::string filename, bool convert_to_zero_index = false);
   sparsebase::object::Graph<IDType, NNZType, ValueType> *ReadGraph() const override;
   ~MetisGraphReader() override;
 
  private:
   std::string filename_;
+  bool convert_to_zero_index_;
 };
 
 }  // namespace sparsebase::io

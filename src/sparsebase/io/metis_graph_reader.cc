@@ -8,8 +8,9 @@ namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 MetisGraphReader<IDType, NNZType, ValueType>::MetisGraphReader(
-    std::string filename)
-    : filename_(filename) {}
+    std::string filename, bool convert_to_zero_index)
+    : filename_(filename),
+      convert_to_zero_index_(convert_to_zero_index) {}
 
 template <typename IDType, typename NNZType, typename ValueType>
 sparsebase::object::Graph<IDType, NNZType, ValueType>
@@ -17,7 +18,6 @@ sparsebase::object::Graph<IDType, NNZType, ValueType>
   IDType n, m;
   IDType *row;
   IDType *col;
-  ValueType *val;
   int FMT = 0, NCON = 0;
   bool isEdgeWeighted = false, isVertexWeighted = false;
   std::ifstream infile(this->filename_);
@@ -28,6 +28,7 @@ sparsebase::object::Graph<IDType, NNZType, ValueType>
         std::istringstream iss(line);
         iss >> n >> m;
         m *= 2;
+        n += (!convert_to_zero_index_);
         if (iss >> FMT);
         if (iss >> NCON);
         if ((FMT == 1 || FMT == 11) && NCON == 0) NCON = 1;
@@ -38,33 +39,38 @@ sparsebase::object::Graph<IDType, NNZType, ValueType>
     }
     row = new IDType[m];
     col = new IDType[m];
-    val = nullptr;
-    IDType node = 0, neig, curr = 0;
+    IDType node = (0 - convert_to_zero_index_), neig, curr = 0;
     if constexpr (std::is_same_v<ValueType, void>) {
-      //No vertex/edge weights
+      //No vertex/edge weights will be stored
+      int ignore;
       while (std::getline(infile, line)) {
         if (line[0] != '%') {
           std::istringstream iss(line);
           ++node;
+          if (isVertexWeighted)
+            for (int i = 0; i < NCON; ++i)
+              iss >> ignore;
           while (iss >> neig) {
             row[curr] = node;
-            col[curr] = neig;
+            col[curr] = (neig - convert_to_zero_index_);
+            if (isEdgeWeighted)
+              iss >> ignore;
             ++curr;
           }
         }
       }
       return new sparsebase::object::Graph<IDType, NNZType, ValueType>(
-          new format::COO<IDType, NNZType, ValueType>(n, n, m, row, col,val)
+          new format::COO<IDType, NNZType, ValueType>(n, n, m, row, col, nullptr)
               );
     } else {
+      ValueType* val = nullptr;
       format::Array<ValueType>** vertexWeights = nullptr;
       if (isVertexWeighted) {
-        vertexWeights = new format::Array<ValueType>*[n+1];
-
-        //Nodes are 1-indexed, weights for node 0 set to 0's as default
+        vertexWeights = new format::Array<ValueType>*[n];
         ValueType* tmp = new ValueType[NCON];
         for (int i = 0; i < NCON; ++i) tmp[i] = 0;
-        vertexWeights[0] = new format::Array<ValueType>(NCON, tmp);
+        if (!convert_to_zero_index_)
+          vertexWeights[0] = new format::Array<ValueType>(NCON, tmp);
       }
       if (isEdgeWeighted) {
         val = new ValueType[m];
@@ -80,7 +86,7 @@ sparsebase::object::Graph<IDType, NNZType, ValueType>
           }
           while (iss >> neig) {
             row[curr] = node;
-            col[curr] = neig;
+            col[curr] = (neig - convert_to_zero_index_);
             if (isEdgeWeighted)
             {
               iss >> val[curr];
