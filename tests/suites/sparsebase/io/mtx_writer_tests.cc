@@ -47,7 +47,7 @@ TEST(MTXWriter, WriteCOO_falseSymmetric) {
   sparsebase::io::MTXWriter<int, int, float> writerCOO_2("writer_test_coo_mtx2.mtx", "matrix", "coordinate", "real", "symmetric");
   EXPECT_THROW(
       (writerCOO_2.WriteCOO(&coo_2)),
-      sparsebase::utils::ReaderException);
+      sparsebase::utils::WriterException);
 }
 
 TEST(MTXWriter, WriteCOO_trueSymmetric) {

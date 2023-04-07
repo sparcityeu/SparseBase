@@ -7,6 +7,7 @@
 #include "sparsebase/io/writer.h"
 #include "sparsebase/format/coo.h"
 #include "sparsebase/format/csr.h"
+#include "sparsebase/utils/logger.h"
 
 namespace sparsebase::io {
 
@@ -26,35 +27,35 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       //illegal parameter checks
       if (object_ != "matrix" && object_ != "vector") 
       {
-        throw utils::ReaderException("Illegal value for the 'object' option in matrix market header");
+        throw utils::WriterException("Illegal value for the 'object' option in matrix market header");
       }
       else if (object_ == "vector")
       {
-        throw utils::ReaderException("Matrix market writer does not currently support writing vectors.");
+        throw utils::WriterException("Matrix market writer does not currently support writing vectors.");
       }
       if (format_ != "array" && format_ != "coordinate") 
       {
-        throw utils::ReaderException("Illegal value for the 'format' option in matrix market header");
+        throw utils::WriterException("Illegal value for the 'format' option in matrix market header");
       }
       if (field_ != "real" && field_ != "double" && field_ != "complex" && field_ != "integer" && field_ != "pattern") 
       {
-        throw utils::ReaderException("Illegal value for the 'field' option in matrix market header");
+        throw utils::WriterException("Illegal value for the 'field' option in matrix market header");
       }
       if (symmetry_ != "general" && symmetry_ != "symmetric" && symmetry_ != "skew-symmetric" && symmetry_ != "hermitian") 
       {
-        throw utils::ReaderException("Illegal value for the 'symmetry' option in matrix market header");
+        throw utils::WriterException("Illegal value for the 'symmetry' option in matrix market header");
       }
       if (format_ == "array" && field_ == "pattern") 
       {
-        throw utils::ReaderException("Matrix market files with array format cannot have the field ""'pattern' ");
+        throw utils::WriterException("Matrix market files with array format cannot have the field ""'pattern' ");
       }
       if (format_ == "array" && symmetry_ != "general") 
       {
-        throw utils::ReaderException("Matrix market files with array format cannot have the property 'symmetry' ");
+        throw utils::WriterException("Matrix market files with array format cannot have the property 'symmetry' ");
       }
       if (symmetry_ == "hermitian") 
       {
-        throw utils::ReaderException("Matrix market writer does not currently support hermitian symmetry.");
+        throw utils::WriterException("Matrix market writer does not currently support hermitian symmetry.");
       }
 
       std::ofstream mtxFile;
@@ -68,7 +69,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
       if constexpr (std::is_same_v<ValueType, void>)
       {
-        throw utils::WriterException("Cannot write an MTX with void ValueType");
+        throw utils::WriterException("Cannot write an MTX with void ValueType, unless field is pattern.");
       }
       else
       {
@@ -79,7 +80,8 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
         if (val != NULL && field_ == "pattern")
         {
-          std::cerr << "Warning: Pattern selected but values given.\n";
+          utils::Logger logger(typeid(this));
+          logger.Log("Pattern selected but values given.", utils::LOG_LVL_WARNING);
         }
 
         //Symmetry check
@@ -87,6 +89,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
         int NNZ = coo->get_num_nnz();
         int count_symmetric = 0;
         int count_diagonal = 0;
+        int is_diagonal_all_zero = true;
         if (saidSymmetric && dimensions[0] == dimensions[1]) {
             for (int i = 0; i < coo->get_num_nnz(); ++i) {
                 if (row[i] != col[i]) { // Non-diagonal entry, check symmetric counterpart
@@ -111,16 +114,24 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
                         
                     }
                     if (!found_symmetric) {
-                        throw utils::ReaderException("Matrix is not symmetric!");
+                        throw utils::WriterException("Matrix is not symmetric!");
                     }
                 }
                 else //diagonal
                 {
                   count_diagonal++;
+                  if (val[i] != 0)
+                  {
+                    is_diagonal_all_zero = false;
+                  }
                 }
             }
             if(symmetry_ == "skew-symmetric")
             {
+              if (!is_diagonal_all_zero)
+              {
+                throw utils::WriterException("Skew-symmetric matrix with non-zero diagonal values!");
+              }
               NNZ -= (count_symmetric/2) + count_diagonal;
             }
             else
@@ -156,10 +167,6 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
                       }
                       return std::get<0>(t1) < std::get<0>(t2);
                     });
-
-          for (int i = 0; i < coo->get_num_nnz(); i++) {
-            auto &t = sort_vec[i];
-          }
 
           // Write the coo matrix in array format
           int index = 0;
@@ -252,39 +259,39 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteArray(
     //illegal parameter checks
     if (object_ != "matrix" && object_ != "vector") 
     {
-      throw utils::ReaderException("Illegal value for the 'object' option in matrix market header");
+      throw utils::WriterException("Illegal value for the 'object' option in matrix market header");
     }
     else if (object_ == "vector")
     {
-      throw utils::ReaderException("Matrix market writer does not currently support writing vectors.");
+      throw utils::WriterException("Matrix market writer does not currently support writing vectors.");
     }
     if (format_ != "array" && format_ != "coordinate") 
     {
-      throw utils::ReaderException("Illegal value for the 'format' option in matrix market header");
+      throw utils::WriterException("Illegal value for the 'format' option in matrix market header");
     }
     if (field_ != "real" && field_ != "double" && field_ != "complex" && field_ != "integer" && field_ != "pattern") 
     {
-      throw utils::ReaderException("Illegal value for the 'field' option in matrix market header");
+      throw utils::WriterException("Illegal value for the 'field' option in matrix market header");
     }
     if (symmetry_ != "general" && symmetry_ != "symmetric" && symmetry_ != "skew-symmetric" && symmetry_ != "hermitian") 
     {
-      throw utils::ReaderException("Illegal value for the 'symmetry' option in matrix market header");
+      throw utils::WriterException("Illegal value for the 'symmetry' option in matrix market header");
     }
     if (format_ == "array" && field_ == "pattern") 
     {
-      throw utils::ReaderException("Matrix market files with array format cannot have the field ""'pattern' ");
+      throw utils::WriterException("Matrix market files with array format cannot have the field ""'pattern' ");
     }
     if (format_ == "array" && symmetry_ != "general") 
     {
-      throw utils::ReaderException("Matrix market files with array format cannot have the property 'symmetry' ");
+      throw utils::WriterException("Matrix market files with array format cannot have the property 'symmetry' ");
     }
     if (symmetry_ == "hermitian") 
     {
-      throw utils::ReaderException("Matrix market writer does not currently support hermitian symmetry.");
+      throw utils::WriterException("Matrix market writer does not currently support hermitian symmetry.");
     }
     if (format_ == "coordinate")
     {
-      throw utils::ReaderException("Matrix market writer does not currently support writing array as coordinate.");
+      throw utils::WriterException("Matrix market writer does not currently support writing array as coordinate.");
     }
 
     std::ofstream mtxFile;
