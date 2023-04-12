@@ -113,6 +113,13 @@
       "exceptions": null
     },
     {
+      "template": "class HyperGraph<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class ConverterOrderOne<$value_type>",
       "filename": "converter_order_one.inc",
       "ifdef": null,

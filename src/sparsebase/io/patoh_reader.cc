@@ -50,18 +50,20 @@ sparsebase::object::HyperGraph<IDType, NNZType, ValueType>
     //Ignore headers and comments:
     IDType *pin_arr = new IDType[options_.pin_num];
     NNZType *xpin_arr = new NNZType[options_.net_num+1];
-
     IDType *net_arr = new IDType[options_.pin_num];
     NNZType *xnet_arr = new NNZType[options_.cell_num + 1];
-    xpin_arr[0] = 0,xnet_arr[0];
+    xpin_arr[0] = 0;
+    xnet_arr[0] = 0;
 
     //Weight arrays of cells and nets
     //ValueType *cell_weight_arr = new ValueType[options_.cell_num];
     //std::fill(cell_weight_arr, cell_weight_arr + options_.cell_num, 1);
     //ValueType *net_weight_arr = new ValueType[options_.net_num];
     //std::fill(net_weight_arr, net_weight_arr + options_.net_num, 1);
-    ValueType *cell_weight_arr = nullptr;
-    ValueType *net_weight_arr = nullptr;
+
+    // Null arrays for filling the val array of CSR Matrix
+    ValueType *xpin_val_arr = nullptr;
+    ValueType *xnet_val_arr = nullptr;
     if constexpr (std::is_same_v<ValueType, void>) {
         std::string line;
         while (fin.peek() == '%')
@@ -132,15 +134,14 @@ sparsebase::object::HyperGraph<IDType, NNZType, ValueType>
         }
     
         return new sparsebase::object::HyperGraph<IDType, NNZType, ValueType>(
-            new format::CSR<IDType,NNZType,ValueType>(options_.net_num,options_.cell_num,xpin_arr,pin_arr,net_weight_arr),
+            new format::CSR<IDType,NNZType,ValueType>(options_.net_num,options_.cell_num,xpin_arr,pin_arr,xpin_val_arr,sparsebase::format::kNotOwned,true),
             options_.constraint_num,
-            new format::CSR<IDType,NNZType,ValueType>(options_.cell_num,options_.net_num,xnet_arr,net_arr,cell_weight_arr)
+            new format::CSR<IDType,NNZType,ValueType>(options_.cell_num,options_.net_num,xnet_arr,net_arr,xnet_val_arr,sparsebase::format::kNotOwned,true)
 
         );
     }
 
     else {
-        //Weight arrays of cells and nets
         ValueType *cell_weight_arr = new ValueType[options_.cell_num];
         std::fill(cell_weight_arr, cell_weight_arr + options_.cell_num, 1);
         ValueType *net_weight_arr = new ValueType[options_.net_num];
@@ -227,12 +228,13 @@ sparsebase::object::HyperGraph<IDType, NNZType, ValueType>
                 xnet_arr[m + 1] = xnet_arr[m] + vertice_size;
             }
         }
-    
-        return new sparsebase::object::HyperGraph<IDType, NNZType, ValueType>(
-            new format::CSR<IDType,NNZType,ValueType>(options_.net_num,options_.cell_num,xpin_arr,pin_arr,net_weight_arr),
-            options_.constraint_num,
-            new format::CSR<IDType,NNZType,ValueType>(options_.cell_num,options_.net_num,xnet_arr,net_arr,cell_weight_arr)
 
+        return new sparsebase::object::HyperGraph<IDType, NNZType, ValueType>(
+            new format::CSR<IDType,NNZType,ValueType>(options_.net_num,options_.cell_num,xpin_arr,pin_arr,xpin_val_arr,sparsebase::format::kNotOwned,true),
+            new format::Array<ValueType>(options_.net_num,net_weight_arr),
+            new format::Array<ValueType>(options_.cell_num,cell_weight_arr),
+            options_.constraint_num,
+            new format::CSR<IDType,NNZType,ValueType>(options_.cell_num,options_.net_num,xnet_arr,net_arr,xnet_val_arr,sparsebase::format::kNotOwned,true)
         );
     }
 }

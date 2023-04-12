@@ -17,6 +17,7 @@
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
 #include "sparsebase/format/csr.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/io/reader.h"
 
 namespace sparsebase {
@@ -70,10 +71,13 @@ template <typename VertexID, typename NumEdges, typename Weight>
 class HyperGraph : public Graph<VertexID, NumEdges, Weight> {
  public:
   HyperGraph();
-  HyperGraph(format::Format *connectivity, VertexID constraint_num, format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
+  HyperGraph(format::Format *connectivity,VertexID constraint_num,format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
+  HyperGraph(format::Format *connectivity, format::Array<Weight> *netWeights,format::Array<Weight> *cellWeights, VertexID constraint_num, format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
   virtual ~HyperGraph();
   VertexID constraint_num_ = 1;
   format::CSR<VertexID,NumEdges,Weight> *xNetCSR_;
+  format::Array<Weight> *netWeights_ = nullptr;
+  format::Array<Weight> *cellWeights_ = nullptr;
 };
 // template<typename VertexID, typename NumEdges, typename t_t>
 // class TemporalGraph : public AbstractSparseObject<VertexID, NumEdges>{
