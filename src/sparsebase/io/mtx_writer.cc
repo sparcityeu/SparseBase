@@ -64,97 +64,135 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       //header
       mtxFile << "%%MatrixMarket " << object_ << " " << format_ << " " << field_ << " " << symmetry_ << "\n";
       
-
       //TODO add warning when given field and actual data format is not same (integer vs float etc)
 
       if constexpr (std::is_same_v<ValueType, void>)
       {
-        throw utils::WriterException("Cannot write an MTX with void ValueType, unless field is pattern.");
+        if (field_ == "pattern")
+          throw utils::WriterException("Cannot write an MTX with void ValueType, unless field is pattern.");
       }
-      else
+
+      auto dimensions = coo->get_dimensions();
+      IDType* row = coo->get_row();
+      IDType* col = coo->get_col();
+      ValueType* val = coo->get_vals();
+
+      if (val != NULL && field_ == "pattern")
       {
-        auto dimensions = coo->get_dimensions();
-        IDType* row = coo->get_row();
-        IDType* col = coo->get_col();
-        ValueType* val = coo->get_vals();
+        utils::Logger logger(typeid(this));
+        logger.Log("Pattern selected but values given.", utils::LOG_LVL_WARNING);
+      }
 
-        if (val != NULL && field_ == "pattern")
-        {
-          utils::Logger logger(typeid(this));
-          logger.Log("Pattern selected but values given.", utils::LOG_LVL_WARNING);
-        }
-
-        //Symmetry check
-        bool saidSymmetric = (symmetry_ == "symmetric" || symmetry_ == "skew-symmetric" || symmetry_ == "hermitian");
-        int NNZ = coo->get_num_nnz();
-        int count_symmetric = 0;
-        int count_diagonal = 0;
-        int is_diagonal_all_zero = true;
-        if (saidSymmetric && dimensions[0] == dimensions[1]) {
-            for (int i = 0; i < coo->get_num_nnz(); ++i) {
-                if (row[i] != col[i]) { // Non-diagonal entry, check symmetric counterpart
-                    bool found_symmetric = false;
-                    for (int j = 0; j < coo->get_num_nnz(); ++j) {
-                      if (symmetry_ == "skew-symmetric")
-                      {
-                        if (row[j] == col[i] && col[j] == row[i] && val[j] == -val[i]) {
-                            found_symmetric = true;
-                            count_symmetric++;
-                            break;
-                        }
-                      }
-                      else
-                      {
-                        if (row[j] == col[i] && col[j] == row[i] && val[j] == val[i]) {
-                            found_symmetric = true;
-                            count_symmetric++;
-                            break;
-                        }
-                      }
-                        
-                    }
-                    if (!found_symmetric) {
-                        throw utils::WriterException("Matrix is not symmetric!");
-                    }
-                }
-                else //diagonal
+      //Symmetry check
+      bool saidSymmetric = (symmetry_ == "symmetric" || symmetry_ == "skew-symmetric" || symmetry_ == "hermitian");
+      int NNZ = coo->get_num_nnz();
+      int count_symmetric = 0;
+      int count_diagonal = 0;
+      int is_diagonal_all_zero = true;
+      if (saidSymmetric && dimensions[0] == dimensions[1]) 
+      {
+          for (int i = 0; i < coo->get_num_nnz(); ++i) 
+          {
+            if (row[i] != col[i]) 
+            { // Non-diagonal entry, check symmetric counterpart
+                bool found_symmetric = false;
+                for (int j = 0; j < coo->get_num_nnz(); ++j) 
                 {
-                  count_diagonal++;
-                  if (val[i] != 0)
+                  if (symmetry_ == "skew-symmetric")
                   {
-                    is_diagonal_all_zero = false;
+                    if constexpr (std::is_same_v<ValueType, void>)
+                    {
+                      break; //pattern cannot be skew-symmetric
+                    }
+                    else
+                    {
+                      if (row[j] == col[i] && col[j] == row[i] && val[j] == -val[i]) 
+                      {
+                        found_symmetric = true;
+                        count_symmetric++;
+                        break;
+                      }
+                    }
+                  }
+                  else
+                  {
+                    if constexpr (std::is_same_v<ValueType, void>)
+                    {
+                      if (row[j] == col[i] && col[j] == row[i]) 
+                      {
+                        found_symmetric = true;
+                        count_symmetric++;
+                        break;
+                      }
+                    }
+                    else
+                    {
+                      if (row[j] == col[i] && col[j] == row[i] && val[j] == val[i]) 
+                      {
+                        found_symmetric = true;
+                        count_symmetric++;
+                        break;
+                      }
+                    }
                   }
                 }
+                if (!found_symmetric) {
+                    throw utils::WriterException("Matrix is not symmetric!");
+                }
             }
-            if(symmetry_ == "skew-symmetric")
+            else //diagonal
             {
-              if (!is_diagonal_all_zero)
+              count_diagonal++;
+              if constexpr (std::is_same_v<ValueType, void>)
               {
-                throw utils::WriterException("Skew-symmetric matrix with non-zero diagonal values!");
+                //zero
               }
-              NNZ -= (count_symmetric/2) + count_diagonal;
+              else
+              {
+                if (val[i] != 0)
+                {
+                  is_diagonal_all_zero = false;
+                }
+              }
             }
-            else
+          }
+          if(symmetry_ == "skew-symmetric")
+          {
+            if (!is_diagonal_all_zero)
             {
-              NNZ -= (count_symmetric/2);
+              throw utils::WriterException("Skew-symmetric matrix with non-zero diagonal values!");
             }
-            
-        }
-      
-        //dimensions and nnz
-        if (format_ == "array")
-        {
-          mtxFile << dimensions[0] << " " << dimensions[1] << "\n";
-        }
-        else //cordinate
-        {
-          mtxFile << dimensions[0] << " " << dimensions[1] << " " << NNZ << "\n";
-        }
+            NNZ -= (count_symmetric/2) + count_diagonal;
+          }
+          else
+          {
+            NNZ -= (count_symmetric/2);
+          }
+      }
 
+      //dimensions and nnz
+      if (format_ == "array")
+      {
+        mtxFile << dimensions[0] << " " << dimensions[1] << "\n";
+      }
+      else //cordinate
+      {
+        mtxFile << dimensions[0] << " " << dimensions[1] << " " << NNZ << "\n";
+      }
+      if (format_ == "array")
+      {
         //write data lines
-        if (format_ == "array")
+        if constexpr (std::is_same_v<ValueType, void>)
+        { 
+          int index = 0;
+          while (index < dimensions[0]*dimensions[1])
+            {
+              mtxFile << 0 << "\n";
+              index++;
+            }
+        }
+        else
         {
-
           //sort according to column values
           std::vector<std::tuple<IDType, IDType, ValueType>> sort_vec;
           for (int i = 0; i < coo->get_num_nnz(); i++) {
@@ -188,44 +226,69 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
               index++;
             }
         }
-        else //coordinate
-        {
+      }
+      else //coordinate
+      {
 
-          if (saidSymmetric)
+        if (saidSymmetric)
+        {
+          for (int i = 0; i < coo->get_num_nnz(); i++)
           {
-            for (int i = 0; i < coo->get_num_nnz(); i++)
-            {
-              if (symmetry_ != "skew-symmetric" && col[i] == row[i])
-              {//on diagonal entries
-                mtxFile << row[i]+1 << " " << col[i]+1;
-                if (field_ == "pattern")
-                {
-                  mtxFile << "\n";
-                }
-                else
-                {
-                  mtxFile << " " << val[i] << "\n";
-                }
-              }
-              if (col[i] < row[i])
-              {//strictly below diagonal entries
-                mtxFile << row[i]+1 << " " << col[i]+1;
-                if (field_ == "pattern")
-                {
-                  mtxFile << "\n";
-                }
-                else
-                {
-                  mtxFile << " " << val[i] << "\n";
-                }
-              }
-            }       
-          }
-          else //general
-          { 
-            for (int i = 0; i < coo->get_num_nnz(); i++)
-            {
+            if (symmetry_ != "skew-symmetric" && col[i] == row[i])
+            {//on diagonal entries
               mtxFile << row[i]+1 << " " << col[i]+1;
+              if constexpr (std::is_same_v<ValueType, void>)
+              {
+                if (field_ == "pattern")
+                  mtxFile << "\n";
+              }
+              else
+              {
+                if (field_ == "pattern")
+                {
+                  mtxFile << "\n";
+                }
+                else
+                {
+                  mtxFile << " " << val[i] << "\n";
+                }
+              }
+            }
+            if (col[i] < row[i])
+            {//strictly below diagonal entries
+              mtxFile << row[i]+1 << " " << col[i]+1;
+              if constexpr (std::is_same_v<ValueType, void>)
+              {
+                if (field_ == "pattern")
+                  mtxFile << "\n";
+              } 
+              else
+              { 
+                if (field_ == "pattern")
+                {
+                  mtxFile << "\n";
+                }
+                else
+                {
+                  mtxFile << " " << val[i] << "\n";
+                }
+              }
+            }
+          }       
+        }
+        else //general
+        { 
+          for (int i = 0; i < coo->get_num_nnz(); i++)
+          {
+            mtxFile << row[i]+1 << " " << col[i]+1;
+
+            if constexpr (std::is_same_v<ValueType, void>)
+            {
+              if (field_ == "pattern")
+                mtxFile << "\n";
+            }
+            else
+            {
               if (field_ == "pattern")
               {
                 mtxFile << "\n";
@@ -236,8 +299,8 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
               }
             }
           }
-        }        
-      }
+        }
+      }        
       mtxFile.close();
 }
 
