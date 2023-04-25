@@ -68,7 +68,7 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
 
       if constexpr (std::is_same_v<ValueType, void>)
       {
-        if (field_ == "pattern")
+        if (field_ != "pattern")
           throw utils::WriterException("Cannot write an MTX with void ValueType, unless field is pattern.");
       }
 
@@ -89,6 +89,10 @@ void MTXWriter<IDType, NNZType, ValueType>::WriteCOO(
       int count_symmetric = 0;
       int count_diagonal = 0;
       int is_diagonal_all_zero = true;
+      if (saidSymmetric == true && dimensions[0] != dimensions[1])
+      {
+        throw utils::WriterException("Matrix is not symmetric!");
+      }
       if (saidSymmetric && dimensions[0] == dimensions[1]) 
       {
           for (int i = 0; i < coo->get_num_nnz(); ++i) 

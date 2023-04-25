@@ -217,3 +217,34 @@ TEST(MTXWriter, WriteArray) {
     EXPECT_EQ(array[i], sbArray_1_r->get_vals()[i]);
   }
 }
+
+TEST(MTXWriter, WriteCOO_falseSymmetricRecntangle) {
+  // Initialize a COO for testing
+  int row_7[3]{0, 1, 2};
+  int col_7[3]{0, 2, 1};
+  float vals_7[3]{0.1, 0.3, 0.3};
+  sparsebase::format::COO<int, int, float> coo_7(4, 5, 3, row_7, col_7, vals_7,
+                                                 sparsebase::format::kNotOwned);
+
+  // Write the COO to a Mtx file with sparsebase
+  sparsebase::io::MTXWriter<int, int, float> writerCOO_7("writer_test_coo_mtx7.mtx", "matrix", "coordinate", "real", "symmetric");
+
+  EXPECT_THROW(
+      (writerCOO_7.WriteCOO(&coo_7)),
+      sparsebase::utils::WriterException);
+}
+
+TEST(MTXWriter, WriteCOO_voidValueNonPattern) {
+  // Initialize a COO for testing
+  int row_8[3]{0, 1, 2};
+  int col_8[3]{0, 2, 1};
+  sparsebase::format::COO<int, int, void> coo_8(4, 4, 3, row_8, col_8, nullptr,
+                                                 sparsebase::format::kNotOwned);
+
+  // Write the COO to a Mtx file with sparsebase
+  sparsebase::io::MTXWriter<int, int, void> writerCOO_8("writer_test_coo_mtx8.mtx", "matrix", "coordinate", "real", "symmetric");
+
+  EXPECT_THROW(
+      (writerCOO_8.WriteCOO(&coo_8)),
+      sparsebase::utils::WriterException);
+}
