@@ -71,10 +71,11 @@ template <typename VertexID, typename NumEdges, typename Weight>
 class HyperGraph : public Graph<VertexID, NumEdges, Weight> {
  public:
   HyperGraph();
-  HyperGraph(format::Format *connectivity,VertexID constraint_num,format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
-  HyperGraph(format::Format *connectivity, format::Array<Weight> *netWeights,format::Array<Weight> *cellWeights, VertexID constraint_num, format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
+  HyperGraph(format::Format *connectivity,VertexID base_type,VertexID constraint_num,format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
+  HyperGraph(format::Format *connectivity, format::Array<Weight> *netWeights, format::Array<Weight> *cellWeights, VertexID base_type, VertexID constraint_num, format::CSR<VertexID,NumEdges,Weight> *xNetCSR);
   virtual ~HyperGraph();
   VertexID constraint_num_ = 1;
+  VertexID base_type_;
   format::CSR<VertexID,NumEdges,Weight> *xNetCSR_;
   format::Array<Weight> *netWeights_ = nullptr;
   format::Array<Weight> *cellWeights_ = nullptr;

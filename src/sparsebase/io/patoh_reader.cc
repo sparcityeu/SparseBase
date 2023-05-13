@@ -135,6 +135,7 @@ sparsebase::object::HyperGraph<IDType, NNZType, ValueType>
     
         return new sparsebase::object::HyperGraph<IDType, NNZType, ValueType>(
             new format::CSR<IDType,NNZType,ValueType>(options_.net_num,options_.cell_num,xpin_arr,pin_arr,xpin_val_arr,sparsebase::format::kNotOwned,true),
+            options_.base_type,
             options_.constraint_num,
             new format::CSR<IDType,NNZType,ValueType>(options_.cell_num,options_.net_num,xnet_arr,net_arr,xnet_val_arr,sparsebase::format::kNotOwned,true)
 
@@ -233,6 +234,7 @@ sparsebase::object::HyperGraph<IDType, NNZType, ValueType>
             new format::CSR<IDType,NNZType,ValueType>(options_.net_num,options_.cell_num,xpin_arr,pin_arr,xpin_val_arr,sparsebase::format::kNotOwned,true),
             new format::Array<ValueType>(options_.net_num,net_weight_arr),
             new format::Array<ValueType>(options_.cell_num,cell_weight_arr),
+            options_.base_type,
             options_.constraint_num,
             new format::CSR<IDType,NNZType,ValueType>(options_.cell_num,options_.net_num,xnet_arr,net_arr,xnet_val_arr,sparsebase::format::kNotOwned,true)
         );

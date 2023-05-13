@@ -16,6 +16,8 @@ TEST(PatohReader,ReadHyperGraph1){
     sparsebase::format::Format *con = hypergraph1->get_connectivity();
     int n_ = hypergraph1->n_;
     int m_ = hypergraph1->m_;
+    int constraint_num_ = hypergraph1->constraint_num_;
+    int base_type_ = hypergraph1->base_type_;
     int vertex_size = con->get_dimensions()[1];
     auto xpins = con->AsAbsolute<sparsebase::format::CSR<int,int,int>>()->get_row_ptr();
     auto pins = con->AsAbsolute<sparsebase::format::CSR<int,int,int>>()->get_col();
@@ -31,6 +33,8 @@ TEST(PatohReader,ReadHyperGraph1){
     EXPECT_EQ(n_,hypergraph1_n);
     EXPECT_EQ(vertex_size, hypergraph1_vertex_size);
     EXPECT_EQ(m_,hypergraph1_m);
+    EXPECT_EQ(constraint_num_,hypergraph1_constraint_num);
+    EXPECT_EQ(base_type_,hypergraph1_base_type);
     EXPECT_NE(xpins, nullptr);
     EXPECT_NE(pins, nullptr);
     EXPECT_NE(xnets, nullptr);
