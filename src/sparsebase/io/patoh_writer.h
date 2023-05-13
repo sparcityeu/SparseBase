@@ -24,7 +24,6 @@ std::string filename_;
 bool is_zero_indexed_;
 bool is_edge_weighted_;
 bool is_vertex_weighted_;
-int constraint_num;
 };
 
 } // namespace sparsebase::io

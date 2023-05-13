@@ -18,6 +18,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
+#include "sparsebase/object/object.h"
 
 namespace sparsebase {
 

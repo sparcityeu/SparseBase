@@ -11,7 +11,7 @@ namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 PatohWriter<IDType, NNZType, ValueType>::PatohWriter(
-    std::string filename, bool is_zero_indexed, bool is_edge_weighted, bool is_vertex_weighted) 
+    std::string filename, bool is_zero_indexed, bool is_edge_weighted, bool is_vertex_weighted, int constraint_num) 
     : filename_(filename),
       is_zero_indexed_(is_zero_indexed),
       is_edge_weighted_(is_edge_weighted),
@@ -86,9 +86,14 @@ void PatohWriter<IDType, NNZType, ValueType>::WriteHyperGraph(
     }
 
     else{
-        auto cell_weight_arr = hyperGraph->cellWeights_;
-        auto net_weight_arr = hyperGraph->netWeights_;
+        auto cell_weights = hyperGraph->cellWeights_;
+        auto net_weights = hyperGraph->netWeights_;
+        auto cell_weight_arr = cell_weights->get_vals();
+        auto net_weight_arr = net_weights->get_vals();
+
         int index_num;
+        int j = 0;
+        int xpin_arr_size = 1;
         if(is_zero_indexed_){
         index_num = 0;
         if(base_type == 1){ // If the hypergraph was 1 indexed convert it into 0 index
