@@ -50,6 +50,13 @@ class WritesArray {
   virtual void WriteArray(format::Array<T> *arr) const = 0;
 };
 
+//! Interface for writers that can write an HyperGraph instance to a file
+template <typename IDType, typename NNZType, typename ValueType>
+class WritesHyperGraph {
+  //! Writes the given HyperGraph instance to a file
+  virtual void WriteHyperGraph(object::HyperGraph<IDType, NNZType, ValueType> *hyperGraph) const = 0;
+};
+
 }  // namespace io
 
 }  // namespace sparsebase
