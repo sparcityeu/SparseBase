@@ -133,7 +133,7 @@ TEST(PatohReader,ReadHyperGraph1){
 
     
 
-     //Write the hypergraph data with no vertices weight to a file
+     //Write the hypergraph data with no nets weight to a file
     std::ofstream ofs3("HyperGraph_no_Nets_Weight.hypeg");
     ofs3 << hypergraph_3;
     ofs3.close();
@@ -195,7 +195,7 @@ TEST(PatohReader,ReadHyperGraph1){
 
     
 
-    //Write the hypergraph data with no vertices weight to a file
+    //Write the hypergraph data with both vertices and nets weight to a file
     std::ofstream ofs4("HyperGraph_With_Cell_and_Nets_Weight.hypeg");
     ofs4 << hypergraph_4;
     ofs4.close();
