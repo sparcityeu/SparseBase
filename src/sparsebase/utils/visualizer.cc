@@ -11,9 +11,8 @@
 #include "sparsebase/external/json/json.hpp"
 #include "sparsebase/feature/feature_preprocess_type.h"
 #include "sparsebase/format/csr.h"
-#include "sparsebase/format/coo.h" //
+//#include "sparsebase/format/coo.h"
 #include "sparsebase/reorder/reorderer.h"
-
 #include "sparsebase/io/mtx_reader.h"
 
 template <typename IDType, typename NNZType, typename ValueType>
@@ -195,6 +194,113 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
     html += "); \nmaximizar();";
     html += "</script> \n";
     // std::cout << html;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
+void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
+    
+    for(int orderIndex = 0; orderIndex < (*orderings).size(); orderIndex++){
+        sparsebase::context::CPUContext cpu_context;
+        sparsebase::format::FormatOrderTwo<IDType , NNZType , ValueType >* reordered = reorder_custom<IDType, NNZType, ValueType>(matrix, 
+            (*orderings)[orderIndex], {&cpu_context}, true);
+        
+        sparsebase::format::CSR<IDType , NNZType , ValueType >* csr = static_cast<sparsebase::format::CSR<IDType , NNZType , ValueType>*>(reordered);
+        //int bucketSize = 22000000;
+        auto x_dim = ceil(csr->get_dimensions()[0] / (double)bucket_size);
+        auto y_dim = ceil(csr->get_dimensions()[1] / (double)bucket_size);
+        auto r = csr->get_row_ptr();
+        auto c = csr->get_col();
+        std::vector<std::vector<long long>> resulting_matrix(x_dim, std::vector<long long>(y_dim, 0));
+
+        long long tmp_elem_index = 0;
+        //std::cout << "bucketSize: " << bucketSize << " dim0: " << csr->get_dimensions()[0] << " dim1: " << csr->get_dimensions()[1] << "\n";
+        for (int i = 0; i < csr->get_dimensions()[0]; i++) {
+            for(int j=r[i]; j<r[i+1]; j++){
+                //int k = (*orderings)[0]
+                int k = i / (double)bucket_size;
+                int l = c[j] / (double)bucket_size;
+                if(l>=y_dim){
+                    std::cout << "r: " << i << " c: " << c[j] << " k " << k << " l " << l << "\n";
+                    std::cout << "ydim: " << y_dim << " l: " << l << std::endl;
+                }
+                assert(k < x_dim);
+                assert(l < y_dim);
+                assert(k>-1);
+                assert(l>-1);
+                if(plot_edges_by_weights)
+                    resulting_matrix[k][l] += abs(csr->get_vals()[tmp_elem_index++]);
+                else
+                    resulting_matrix[k][l]++;
+            }
+        }
+
+        std::string order_name = (*feature_list)["features_list"][orderIndex+1]["order_name"];
+
+       html += "<div class=\"section\">\n"
+               "  <div class=\"left-section\">\n"
+               "    <h2>Degree Reorder</h2>\n"
+               "      <div id=\"plot1\" class=\"matrix\"></div>\n"
+               "  </div>\n"
+               "  <div class=\"middle-section\">\n"
+               "    <div class=\"info-box\">\n"
+               "      <h3>Information</h3>\n"
+               "      <p>lorem ipsum</p>\n"
+               "      <p>lorem ipsum</p>\n"
+               "      <p>lorem ipsum</p>\n"
+               "    </div>\n"
+               "    <div class=\"feature-box\">\n"
+               "      <h3>Ordering Based Features</h3>\n"
+               "      <ul>";
+
+        for (const auto& feature : (*feature_list)["features_list"][orderIndex]["features"].items())
+        {
+            html+= "<li>" + feature.key() + ": " + feature.value().dump() + "</li>";
+        }
+        
+        html+=
+        "      </ul>\n"
+        "    </div>\n"
+        "  </div>\n"
+        "  <div class=\"right-section\">\n"
+        "    <div class=\"graphical-box\">\n"
+        "      <h3>Graphical Features</h3>\n"
+        "      <div class=\"graph\"><p>insert graph here</p></div>\n"
+        "      <div class=\"graph\"><p>insert graph here</p></div>\n"
+        "    </div>\n"
+        "  </div>\n"
+        "</div> "
+        "<script "
+        "src=\"https://cdn.plot.ly/plotly-1.45.3.min.js\"></script>\n"
+        "<script>\n"
+        "function "
+        "maximizar(){Plotly.relayout(document.getElementById('plot" + std::to_string(orderIndex+1) +"')"
+        ");};window.onresize = function() "
+        "{$('.js-plotly-plot').each(function(index, gd) "
+        "{Plotly.Plots.resize(gd).then(function(){maximizar()});});};"
+        "Plotly.react(document.getElementById('plot"+ std::to_string(orderIndex+1)+"'),[";
+        
+        nlohmann::json json_plot;
+        json_plot["type"] = "heatmap";
+        json_plot["z"] = resulting_matrix;
+        json_plot["xgap"] = 1;
+        json_plot["ygap"] = 1;
+        json_plot["colorscale"] = "YlOrRd"; //"Greys";
+        json_plot["reversescale"] = true;
+        json_plot["hovertemplate"] =
+            "X: %{x}<br>Y: %{y}<br>NNZ(s): %{z}<extra></extra>";
+
+        html += json_plot.dump();
+        html += "], ";
+        html +=
+            "{yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: "
+            "1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\"}";  // use json
+                                                                    // dump of the
+                                                                    // layout;
+        html += "); \nmaximizar();";
+        html += "</script> \n";
+    }
+    html+= "  </div>\n"
+           "</div>";
 }
 
 int main(void) {
