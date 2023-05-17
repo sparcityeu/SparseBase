@@ -35,3 +35,35 @@ body {
   justify-content: center;
   margin-top: 8px;
 }
+
+h1 {
+  margin: 12px;
+  color: var(--title_color);
+}
+
+h2 {
+  margin: 4px;
+  color: var(--title_color);
+}
+
+h3 {
+  margin: 4px;
+  color: var(--title_color);
+}
+
+h4 {
+  margin: 4px;
+  color: var(--title_color);
+}
+
+p {
+  margin: 8px;
+  color: var(--text_color);
+}
+
+ul {
+  padding-left: 20px;
+}
+
+.graphical-box {
+}
