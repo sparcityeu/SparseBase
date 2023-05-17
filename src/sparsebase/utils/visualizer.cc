@@ -128,6 +128,73 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
                 resulting_matrix[k][l]++;
         }
     }
+
+    std::string order_name = (*feature_list)["features_list"][0]["order_name"];
+
+    html+=  "<div class=\"ordering-based-features\">\n"
+            "  <div class=\"section\">\n"
+            "    <div class=\"left-section\">\n"
+            "      <h2>"+order_name+"</h2>\n"
+            "          <div id=\"plot0\" class=\"matrix\"></div>\n" // plot0
+            "    </div>\n"
+            "    <div class=\"middle-section\">\n"
+            "      <div class=\"info-box\">\n"
+            "        <h3>Information</h3>\n"
+            "        <p>lorem ipsum</p>\n"
+            "        <p>lorem ipsum</p>\n"
+            "        <p>lorem ipsum</p>\n"
+            "      </div>\n"
+            "      <div class=\"feature-box\">\n"
+            "        <h3>Ordering Based Features</h3>\n"
+            "        <ul>";
+
+    for (const auto& feature : (*feature_list)["features_list"][0]["features"].items())
+    {
+        html+=  "<li>"+feature.key()+": "+feature.value().dump()+"</li>\n";
+    }
+
+    html+=  "     </ul>\n"
+            "    </div>\n"
+            "  </div>\n"
+            "  <div class=\"right-section\">\n"
+            "    <div class=\"graphical-box\">\n"
+            "      <h3>Graphical Features</h3>\n"
+            "      <div class=\"graph\"><p>insert graph here</p></div>\n"
+            "      <div class=\"graph\"><p>insert graph here</p></div>\n"
+            "    </div>\n"
+            "  </div>\n"
+            "</div>";
+    
+    html+=  "<div class=\"footer\"></div>\n"
+            "<script src=\"https://cdn.plot.ly/plotly-1.45.3.min.js\"></script>\n"
+            "<script>\n"
+            "  function maximizar()\n"
+            "  {Plotly.relayout(document.getElementById('plot0'));}\n"
+            "  ;window.onresize = function() {$('.js-plotly-plot')\n"
+            "  .each(function(index, gd) {Plotly.Plots.resize(gd)\n"
+            "    .then(function(){maximizar()});});};Plotly\n"
+            "    .react(document.getElementById('plot0'),\n"
+            "    [";
+
+    nlohmann::json json_plot;
+    json_plot["type"] = "heatmap";
+    json_plot["z"] = resulting_matrix;
+    json_plot["xgap"] = 1;
+    json_plot["ygap"] = 1;
+    json_plot["colorscale"] = "YlOrRd";
+    json_plot["reversescale"] = true;
+    json_plot["hovertemplate"] =
+        "X: %{x}<br>Y: %{y}<br>NNZ(s): %{z}<extra></extra>";
+
+    html += json_plot.dump();
+    html +=
+        "], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: "
+        "1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\"}";  // use json
+                                                                // dump of the
+                                                                // layout;
+    html += "); \nmaximizar();";
+    html += "</script> \n";
+    // std::cout << html;
 }
 
 int main(void) {
