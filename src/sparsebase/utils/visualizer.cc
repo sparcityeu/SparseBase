@@ -66,3 +66,33 @@ class Visualizer{
         std::string html = "";
         //std::vector<sparsebase::feature::FeaturePreprocessType<FeatureType>> *features;
 };
+
+template <typename IDType, typename NNZType, typename ValueType>
+void Visualizer<IDType, NNZType, ValueType>::initHtml() {
+     html +=
+            "<!DOCTYPE html>\n"
+            "<html lang=\"en\">\n"
+            "  <head>\n"
+            "    <meta charset=\"UTF-8\" />\n"
+            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
+            "    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\" />\n"
+            "    <title>Visualization</title>\n"
+            "    <link rel=\"stylesheet\" href=\"style.css\" />\n"
+            "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\"></script>\n"
+            "  </head>\n"
+            "  <body>\n"
+            "    <div class=\"header\">\n"
+            "      <h1>Name of Matrix/Graph</h1>\n"
+            "    </div>\n"
+            "    <div class=\"content\">\n"
+            "      <div class=\"non-ordering-based-features\">";
+            for (const auto& feature : (*feature_list)["non_ordering_based_features"].items())
+            {
+                html += "<div class=\"card\">\n"
+                        "  <h3>"+feature.key()+"</h3>\n"
+                        "  <p>" +feature.value().dump()+"</p>\n"
+                        "</div>";
+            }
+
+     html+= "</div>\n";
+}
