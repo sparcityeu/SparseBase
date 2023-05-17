@@ -1,0 +1,37 @@
+:root {
+  --background: #e8f5fd;
+  --header_background: #cbebff;
+  --card: #76c4f596;
+  --text_color: #145480;
+  --title_color: #004472;
+}
+
+body {
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--background);
+  color: var(--text_color);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--header_background);
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.non-ordering-based-features {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
