@@ -96,3 +96,37 @@ void Visualizer<IDType, NNZType, ValueType>::initHtml() {
 
      html+= "</div>\n";
 }
+
+template <typename IDType, typename NNZType, typename ValueType>
+void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
+    //auto *coo = toCoo(matrix);
+    //int bucketSize = 22000000;//190000;
+    auto x_dim = ceil(matrix->get_dimensions()[0] / (double)bucket_size);
+    auto y_dim = ceil(matrix->get_dimensions()[1] / (double)bucket_size);
+    std::vector<std::vector<long long>> resulting_matrix(x_dim, std::vector<long long>(y_dim, 0));
+    auto r = matrix->get_row_ptr();
+    auto c = matrix->get_col();
+    long long tmp_elem_index = 0;
+
+
+    for (int i = 0; i < matrix->get_dimensions()[0]; i++) {
+        for(int j=r[i]; j<r[i+1]; j++){
+            //int k = (*orderings)[0]
+            int k = i / (double)bucket_size;
+            int l = c[j] / (double)bucket_size;
+            if(l>=y_dim){
+                std::cout << "r: " << i << " c: " << c[j] << " k " << k << " l " << l << "\n";
+                std::cout << "ydim: " << y_dim << " l: " << l << std::endl;
+            }
+            assert(k < x_dim);
+            assert(l < y_dim);
+            assert(k>-1);
+            assert(l>-1);
+            if(plot_edges_by_weights)
+                resulting_matrix[k][l] += abs(matrix->get_vals()[tmp_elem_index++]);
+            else
+                resulting_matrix[k][l]++;
+        }
+    }
+
+}
