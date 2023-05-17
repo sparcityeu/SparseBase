@@ -308,6 +308,11 @@ void Visualizer<IDType, NNZType, ValueType>::packHtml() {
     html += "</body> \n </html> \n";
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+std::string Visualizer<IDType, NNZType, ValueType>::writeToHtml() {
+     return html;
+}
+
 int main(void) {
     /*
     int csr_row_ptr[5]{0, 2, 3, 3, 4};
