@@ -303,6 +303,11 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
            "</div>";
 }
 
+template <typename IDType, typename NNZType, typename ValueType>
+void Visualizer<IDType, NNZType, ValueType>::packHtml() {
+    html += "</body> \n </html> \n";
+}
+
 int main(void) {
     /*
     int csr_row_ptr[5]{0, 2, 3, 3, 4};
