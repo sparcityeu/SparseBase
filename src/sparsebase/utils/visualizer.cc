@@ -128,5 +128,69 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
                 resulting_matrix[k][l]++;
         }
     }
+}
 
+int main(void) {
+    /*
+    int csr_row_ptr[5]{0, 2, 3, 3, 4};
+    int csr_col[4]{0, 2, 1, 3};
+    int csr_vals[4]{4, 5, 7, 9};
+    sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col, csr_vals);
+    */
+
+    std::string file_name = "mawi_201512020330.mtx";
+    sparsebase::io::MTXReader<unsigned int, unsigned int, float> reader(file_name);
+    sparsebase::format::CSR<unsigned int, unsigned int, float> *csr =
+        reader.ReadCSR();
+
+    sparsebase::reorder::DegreeReorder<unsigned int,unsigned int,float> orderer(1);
+    std::vector<sparsebase::reorder::Reorderer<unsigned int>*> orderings;
+    orderings.push_back(&orderer);
+
+    nlohmann::json featuresList = {
+        {"non_ordering_based_features", {
+            {"number_triangles", 0},         // unsigned integer
+            {"max_degree", 0},               // unsigned integer
+            {"avg_degree", 0.0},             // float ?
+            {"betweenness_centrality", 0.0}, // float
+            {"symmetry_ratio", 0.0}          // float
+        }},
+        {"features_list", {
+            {
+                {"order_name", "Natural Ordering"},
+                {"features", {
+                    {"number_diagonal_entries", 0},            // unsigned integer
+                    {"number_non_diagonal_entries", 0},        // unsigned integer
+                    {"number_dense_rows", 0},                  // unsigned integer
+                    {"bandwidth", 0.0}                         // float ?
+
+                }}
+            },
+            {
+                {"order_name", "Degree Reorder"},
+                {"features", {
+                    {"number_diagonal_entries", 0},            // unsigned integer
+                    {"number_non_diagonal_entries", 0},        // unsigned integer
+                    {"number_dense_rows", 0},                  // unsigned integer
+                    {"bandwidth", 0.0}                         // float ?
+                }}
+            }
+        }}
+    };
+
+    unsigned int bucketSize = 22000000;
+    bool doPlotByWeights = true;
+    Visualizer<unsigned int,unsigned int,float>vsl (csr, &orderings, &featuresList, bucketSize, doPlotByWeights);
+    //std::cout << vsl.writeToHtml();
+
+    std::ofstream file("myfile.html");
+    if (file.is_open()) {
+        file << vsl.writeToHtml();
+        file.close();
+    }
+    else {
+        std::cout << "Error: Unable to open file!" << std::endl;
+    }
+                
+    return 0;
 }
