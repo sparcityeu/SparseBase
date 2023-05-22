@@ -15,6 +15,18 @@
 #include "sparsebase/reorder/reorderer.h"
 #include "sparsebase/io/mtx_reader.h"
 
+template <typename IDType, typename NNZType, typename ValueType,
+    typename FeatureType>
+sparsebase::format::FormatOrderTwo<IDType, NNZType, FeatureType>* reorder_custom(
+    sparsebase::format::FormatOrderTwo<IDType, NNZType, FeatureType>* input,
+    sparsebase::reorder::Reorderer<IDType> * reordering,
+    std::vector<sparsebase::context::Context*> contexts,
+    bool convert_inputs
+    ){
+  IDType* perm_vector = reordering->GetReorder(input, contexts, convert_inputs);
+  return sparsebase::bases::ReorderBase::Permute2D(perm_vector, input, contexts, convert_inputs);
+};
+
 template <typename IDType, typename NNZType, typename ValueType>
 class Visualizer{
 
@@ -186,12 +198,26 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
         "X: %{x}<br>Y: %{y}<br>NNZ(s): %{z}<extra></extra>";
 
     html += json_plot.dump();
-    html +=
-        "], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: "
-        "1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\"}";  // use json
-                                                                // dump of the
-                                                                // layout;
-    html += "); \nmaximizar();";
+
+    std::string annotationsStr = "[";
+    for (int i = 0; i < x_dim; i++) {
+        for (int j = 0; j < y_dim; j++) {
+            if (resulting_matrix[i][j] == 0) {
+                // Generate a single annotation object
+                std::string annotation = "{x: " + std::to_string(i) + ", y: " + std::to_string(j) + ", text: 'X', showarrow: false}, ";
+                annotationsStr += annotation;
+            }
+        }
+    }
+    // Remove the trailing comma and space
+    if (annotationsStr.length() > 1) {
+        annotationsStr = annotationsStr.substr(0, annotationsStr.length() - 2);
+    }
+    annotationsStr += "]";
+
+    //std::cout << annotationsStr;
+    html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
+    html += "}); \nmaximizar();";
     html += "</script> \n";
     // std::cout << html;
 }
@@ -236,7 +262,7 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
 
         std::string order_name = (*feature_list)["features_list"][orderIndex+1]["order_name"];
 
-       html += "<div class=\"section\">\n"
+        html += "<div class=\"section\">\n"
                "  <div class=\"left-section\">\n"
                "    <h2>Degree Reorder</h2>\n"
                "      <div id=\"plot1\" class=\"matrix\"></div>\n"
@@ -284,19 +310,32 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
         json_plot["z"] = resulting_matrix;
         json_plot["xgap"] = 1;
         json_plot["ygap"] = 1;
-        json_plot["colorscale"] = "YlOrRd"; //"Greys";
+        json_plot["colorscale"] = "YlOrRd";
         json_plot["reversescale"] = true;
         json_plot["hovertemplate"] =
             "X: %{x}<br>Y: %{y}<br>NNZ(s): %{z}<extra></extra>";
 
         html += json_plot.dump();
-        html += "], ";
-        html +=
-            "{yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: "
-            "1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\"}";  // use json
-                                                                    // dump of the
-                                                                    // layout;
-        html += "); \nmaximizar();";
+
+        std::string annotationsStr = "[";
+        for (int i = 0; i < x_dim; i++) {
+            for (int j = 0; j < y_dim; j++) {
+                if (resulting_matrix[i][j] == 0) {
+                    // Generate a single annotation object
+                    std::string annotation = "{x: " + std::to_string(i) + ", y: " + std::to_string(j) + ", text: 'X', showarrow: false}, ";
+                    annotationsStr += annotation;
+                }
+            }
+        }
+        // Remove the trailing comma and space
+        if (annotationsStr.length() > 1) {
+            annotationsStr = annotationsStr.substr(0, annotationsStr.length() - 2);
+        }
+        annotationsStr += "]";
+
+        //std::cout << annotationsStr;
+        html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
+        html += "}); \nmaximizar();";
         html += "</script> \n";
     }
     html+= "  </div>\n"
@@ -321,7 +360,7 @@ int main(void) {
     sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col, csr_vals);
     */
 
-    std::string file_name = "mawi_201512020330.mtx";
+    std::string file_name = "ecology1.mtx";
     sparsebase::io::MTXReader<unsigned int, unsigned int, float> reader(file_name);
     sparsebase::format::CSR<unsigned int, unsigned int, float> *csr =
         reader.ReadCSR();
@@ -361,7 +400,7 @@ int main(void) {
         }}
     };
 
-    unsigned int bucketSize = 22000000;
+    unsigned int bucketSize = 50000; //22000000
     bool doPlotByWeights = true;
     Visualizer<unsigned int,unsigned int,float>vsl (csr, &orderings, &featuresList, bucketSize, doPlotByWeights);
     //std::cout << vsl.writeToHtml();
