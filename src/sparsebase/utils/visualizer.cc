@@ -216,7 +216,23 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
     annotationsStr += "]";
 
     //std::cout << annotationsStr;
-    html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
+
+    nlohmann::json json_xaxis;
+    json_xaxis["dtick"] = 1;
+    json_xaxis["side"] = "top";
+    if (x_dim > 25) {
+        json_xaxis["showticklabels"] = false;
+    }
+
+    nlohmann::json json_yaxis;
+    json_yaxis["dtick"] = 1;
+    json_yaxis["autorange"] = "reversed";
+    if (y_dim > 25) {
+        json_yaxis["showticklabels"] = false;
+    }
+
+    html += std::string("], {yaxis: ") + json_yaxis.dump() + ", xaxis: " + json_xaxis.dump() + ", zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: " + annotationsStr;
+    //html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
     html += "}); \nmaximizar();";
     html += "</script> \n";
     // std::cout << html;
@@ -333,8 +349,24 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
         }
         annotationsStr += "]";
 
+        nlohmann::json json_xaxis;
+        json_xaxis["dtick"] = 1;
+        json_xaxis["side"] = "top";
+        if (x_dim > 25) {
+            json_xaxis["showticklabels"] = false;
+        }
+
+        nlohmann::json json_yaxis;
+        json_yaxis["dtick"] = 1;
+        json_yaxis["autorange"] = "reversed";
+        if (y_dim > 25) {
+            json_yaxis["showticklabels"] = false;
+        }
+
+        html += std::string("], {yaxis: ") + json_yaxis.dump() + ", xaxis: " + json_xaxis.dump() + ", zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: " + annotationsStr;
+
         //std::cout << annotationsStr;
-        html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
+        //html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
         html += "}); \nmaximizar();";
         html += "</script> \n";
     }
