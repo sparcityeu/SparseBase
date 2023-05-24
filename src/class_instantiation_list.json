@@ -491,6 +491,20 @@
       "exceptions": null
     },
     {
+      "template": "class OffDiagBlockNNZ<$id_type, $nnz_type, $value_type>",
+      "filename": "off_diag_block_nnz.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Profile<$id_type, $nnz_type, $value_type>",
+      "filename": "profile.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "jaccard_weights.inc",
       "ifdef": null,
