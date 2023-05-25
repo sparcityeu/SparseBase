@@ -491,6 +491,13 @@
       "exceptions": null
     },
     {
+      "template": "class TriangleCount<$id_type, $nnz_type, $value_type>",
+      "filename": "triangle_count.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class JaccardWeights<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "jaccard_weights.inc",
       "ifdef": null,
