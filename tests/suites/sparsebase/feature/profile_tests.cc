@@ -21,7 +21,6 @@ using namespace sparsebase;
 using namespace sparsebase::reorder;
 using namespace sparsebase::bases;
 using namespace sparsebase::feature;
-#include "../functionality_common.inc"
 
 class ProfileTest : public ::testing::Test {
  protected:
@@ -31,6 +30,7 @@ class ProfileTest : public ::testing::Test {
 };
 
 TEST_F(ProfileTest, AllTests) {
+  sparsebase::context::CPUContext cpu_context;
   Params1 p1;
   const int n = 4;
   const int nnz = 7;

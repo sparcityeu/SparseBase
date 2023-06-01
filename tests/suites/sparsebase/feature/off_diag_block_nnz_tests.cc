@@ -21,12 +21,12 @@ using namespace sparsebase;
 using namespace sparsebase::reorder;
 using namespace sparsebase::bases;
 using namespace sparsebase::feature;
-#include "../functionality_common.inc"
 
 class OffDiagBlockNNZTest : public ::testing::Test {
 };
 
 TEST_F(OffDiagBlockNNZTest, AllTests) {
+  sparsebase::context::CPUContext cpu_context;
   OffDiagBlockNNZParams p1(3);
   auto feature =  feature::OffDiagBlockNNZ<int,int,void>(p1);
   const int n = 4;
