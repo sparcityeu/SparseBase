@@ -83,6 +83,4 @@ TEST_F(OffDiagBlockNNZTest, AllTests) {
   }
 
   EXPECT_EQ(*std::any_cast<int *>(feature_map[feature.get_id()]), ans);
-
-  delete offdiagblocknnz;
 }
