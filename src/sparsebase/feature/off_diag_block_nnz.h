@@ -19,7 +19,7 @@ struct OffDiagBlockNNZParams : utils::Parameters {
 
 //! Find the number of nonzeros in off-diagonal blocks of partitioned matrix, in the graph representation of a format object
 template <typename IDType, typename NNZType, typename ValueType>
-class OffDiagBlockNNZ : public feature::FeaturePreprocessType<int64_t *> {
+class OffDiagBlockNNZ : public feature::FeaturePreprocessType<IDType *> {
  public:
   typedef OffDiagBlockNNZParams ParamsType;
   OffDiagBlockNNZ();
@@ -40,10 +40,10 @@ class OffDiagBlockNNZ : public feature::FeaturePreprocessType<int64_t *> {
    * @param convert_input whether or not to convert the input format if that is needed.
    * @return OffDiagBlockNNZ in the graph representation of `format`
    */
-  int64_t *GetOffDiagBlockNNZ(format::Format *format, std::vector<context::Context *> contexts,
+  IDType *GetOffDiagBlockNNZ(format::Format *format, std::vector<context::Context *> contexts,
                      bool convert_input);
 
-  std::tuple<std::vector<std::vector<format::Format *>>, int64_t *>
+  std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
   //! OffDiagBlockNNZ executor function that carries out function matching with cached output
   /*!
    * @param format a single format pointer to any format
@@ -59,7 +59,7 @@ class OffDiagBlockNNZ : public feature::FeaturePreprocessType<int64_t *> {
    * @param params a Parameters pointer, though it is not used in the function
    * @return OffDiagBlockNNZ in the graph representations of 'format[0]'
    */
-  static int64_t *GetOffDiagBlockNNZCSR(std::vector<format::Format *> formats, utils::Parameters *params);
+  static IDType *GetOffDiagBlockNNZCSR(std::vector<format::Format *> formats, utils::Parameters *params);
 
   ~OffDiagBlockNNZ();
 

@@ -42,7 +42,7 @@ TEST_F(OffDiagBlockNNZTest, AllTests) {
    * 5   0 0 0 0 1 0 1
    * 6   0 0 0 0 0 1 0 */
 
-  int64_t ans = 8;
+  int ans = 8;
   auto csr = new sparsebase::format::CSR<int, int, void>(n, m, row_ptr_, col_, nullptr,
                                                                         sparsebase::format::kOwned);
   // test get_sub_ids
@@ -59,7 +59,7 @@ TEST_F(OffDiagBlockNNZTest, AllTests) {
   EXPECT_NE(subs[0], &feature);
 
   // Check GetOffDiagBlockNNZCSR implementation function
-  int64_t* offdiagblocknnz =
+  int* offdiagblocknnz =
       feature::OffDiagBlockNNZ<int, int, void>::GetOffDiagBlockNNZCSR({csr}, &p1);
 
   EXPECT_EQ(*offdiagblocknnz, ans);
@@ -82,7 +82,7 @@ TEST_F(OffDiagBlockNNZTest, AllTests) {
     EXPECT_EQ(feat.first, std::type_index(typeid(feature)));
   }
 
-  EXPECT_EQ(*std::any_cast<int64_t *>(feature_map[feature.get_id()]), ans);
+  EXPECT_EQ(*std::any_cast<int *>(feature_map[feature.get_id()]), ans);
 
   delete offdiagblocknnz;
 }

@@ -69,18 +69,18 @@ Profile<IDType, NNZType, ValueType>::Extract(format::Format *format,
                                               std::vector<context::Context *> c,
                                               bool convert_input) {
   return {{this->get_id(),
-           std::forward<int64_t *>(GetProfile(format, c, convert_input))}};
+           std::forward<IDType *>(GetProfile(format, c, convert_input))}};
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-int64_t *Profile<IDType, NNZType, ValueType>::GetProfile(
+IDType *Profile<IDType, NNZType, ValueType>::GetProfile(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
   return this->Execute(this->params_.get(), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<std::vector<format::Format *>>, int64_t *>
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 Profile<IDType, NNZType, ValueType>::GetProfileCached(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
@@ -89,22 +89,20 @@ Profile<IDType, NNZType, ValueType>::GetProfileCached(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-int64_t *Profile<IDType, NNZType, ValueType>::GetProfileCSR(
+IDType *Profile<IDType, NNZType, ValueType>::GetProfileCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
   auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
   auto row_ptr = csr->get_row_ptr();
   auto col = csr->get_col();
-  int64_t sum = 0;
+  IDType sum = 0;
   for (int i = 0; i < csr->get_dimensions()[0]; ++i) {
-    int64_t j = i;
+    IDType j = i;
     for (int k = row_ptr[i]; k < row_ptr[i+1]; ++k) {
       if (j > col[k]) j = col[k];
     }
     sum += i-j;
   }
-  int64_t* profile = new int64_t;
-  *profile = sum;
-  return profile;
+  return new IDType(sum);
 }
 
 #if !defined(_HEADER_ONLY)

@@ -11,7 +11,7 @@ namespace sparsebase::feature {
 
 //! Compute profile in the graph representation of a format object
 template <typename IDType, typename NNZType, typename ValueType>
-class Profile : public feature::FeaturePreprocessType<int64_t *> {
+class Profile : public feature::FeaturePreprocessType<IDType *> {
  public:
   //! An empty struct used for the parameters of Profile Feature
   typedef utils::Parameters ParamsType;
@@ -33,10 +33,10 @@ class Profile : public feature::FeaturePreprocessType<int64_t *> {
    * @param convert_input whether or not to convert the input format if that is needed.
    * @return Profile in the graph representation of `format`
    */
-  int64_t *GetProfile(format::Format *format, std::vector<context::Context *> contexts,
+  IDType *GetProfile(format::Format *format, std::vector<context::Context *> contexts,
                      bool convert_input);
 
-  std::tuple<std::vector<std::vector<format::Format *>>, int64_t *>
+  std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
   //! Profile executor function that carries out function matching with cached output
   /*!
    * @param format a single format pointer to any format
@@ -52,7 +52,7 @@ class Profile : public feature::FeaturePreprocessType<int64_t *> {
    * @param params a Parameters pointer, though it is not used in the function
    * @return Profile in the graph representations of 'format[0]'
    */
-  static int64_t *GetProfileCSR(std::vector<format::Format *> formats, utils::Parameters *params);
+  static IDType *GetProfileCSR(std::vector<format::Format *> formats, utils::Parameters *params);
 
   ~Profile();
 

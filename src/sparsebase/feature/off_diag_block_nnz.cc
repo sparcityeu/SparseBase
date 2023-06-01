@@ -71,18 +71,18 @@ OffDiagBlockNNZ<IDType, NNZType, ValueType>::Extract(format::Format *format,
                                               std::vector<context::Context *> c,
                                               bool convert_input) {
   return {{this->get_id(),
-           std::forward<int64_t *>(GetOffDiagBlockNNZ(format, c, convert_input))}};
+           std::forward<IDType *>(GetOffDiagBlockNNZ(format, c, convert_input))}};
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-int64_t *OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZ(
+IDType *OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZ(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
   return this->Execute(this->params_.get(), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<std::vector<format::Format *>>, int64_t *>
+std::tuple<std::vector<std::vector<format::Format *>>, IDType *>
 OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZCached(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
@@ -91,12 +91,12 @@ OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZCached(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-int64_t *OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZCSR(
+IDType *OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
   OffDiagBlockNNZParams* param = static_cast<OffDiagBlockNNZParams*>(params);
   int h = param->blockrowsize, w = param->blockcolsize;
   auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
-  int64_t count = 0;
+  IDType cnt = 0;
   int num_rows = csr->get_dimensions()[0];
   int num_cols = csr->get_dimensions()[1];
   auto row_ptr = csr->get_row_ptr();
@@ -107,14 +107,12 @@ int64_t *OffDiagBlockNNZ<IDType, NNZType, ValueType>::GetOffDiagBlockNNZCSR(
     IDType colstart = std::min(num_cols, p*(num_cols/w) + std::min(p, num_cols%w));
     IDType colend = std::min(num_cols, (p+1)*(num_cols/w) + std::min(p+1, num_cols%w));
     for (IDType i = rowstart; i < rowend; i++) {
-      for (int64_t k = row_ptr[i]; k < row_ptr[i+1]; k++) {
-        if (col[k] < colstart || col[k] >= colend) ++count;
+      for (IDType k = row_ptr[i]; k < row_ptr[i+1]; k++) {
+        if (col[k] < colstart || col[k] >= colend) ++cnt;
       }
     }
   }
-  int64_t* offdiagblocknnz = new int64_t;
-  *offdiagblocknnz = count;
-  return offdiagblocknnz;
+  return new IDType(cnt);
 }
 
 #if !defined(_HEADER_ONLY)
