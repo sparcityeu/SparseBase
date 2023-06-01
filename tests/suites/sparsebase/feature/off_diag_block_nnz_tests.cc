@@ -29,17 +29,21 @@ TEST_F(OffDiagBlockNNZTest, AllTests) {
   sparsebase::context::CPUContext cpu_context;
   OffDiagBlockNNZParams p1(3);
   auto feature =  feature::OffDiagBlockNNZ<int,int,void>(p1);
-  const int n = 4;
-  const int nnz = 7;
-  int row_ptr_[n+1]{0, 3, 4, 6, 7};
-  int col_[nnz]{0, 2, 3, 2, 4, 0, 2};
-  /*  1 0 1 1 0
-   *  0 0 1 0 0
-   *  1 0 0 0 1
-   *  0 0 1 0 0
-   * */
-  int64_t ans = 6;
-  auto csr = new sparsebase::format::CSR<int, int, void>(n, 5, row_ptr_, col_, nullptr,
+  const int n = 7, m = 7;
+  const int nnz = 12;
+  int row_ptr_[n+1] = {0, 2, 2, 5, 7, 9, 11, 12};
+  int col_[nnz] = {2, 3, 0, 3, 4, 0, 2, 2, 5, 4, 6, 5};
+  /*     0 1 2 3 4 5 6
+   * 0   0 0 1 1 0 0 0
+   * 1   0 0 0 0 0 0 0
+   * 2   1 0 0 1 1 0 0
+   * 3   1 0 1 0 0 0 0
+   * 4   0 0 1 0 0 1 0
+   * 5   0 0 0 0 1 0 1
+   * 6   0 0 0 0 0 1 0 */
+
+  int64_t ans = 8;
+  auto csr = new sparsebase::format::CSR<int, int, void>(n, m, row_ptr_, col_, nullptr,
                                                                         sparsebase::format::kOwned);
   // test get_sub_ids
   EXPECT_EQ(feature.get_sub_ids().size(), 1);
