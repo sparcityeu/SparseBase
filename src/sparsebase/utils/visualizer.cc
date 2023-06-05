@@ -23,6 +23,8 @@ sparsebase::format::FormatOrderTwo<IDType, NNZType, FeatureType>* reorder_custom
     std::vector<sparsebase::context::Context*> contexts,
     bool convert_inputs
     ){
+        // Summary: Converts the input FormatOrderTwo form to a specified format.
+        // Returns: The reordered form of the input.
   IDType* perm_vector = reordering->GetReorder(input, contexts, convert_inputs);
   return sparsebase::bases::ReorderBase::Permute2D(perm_vector, input, contexts, convert_inputs);
 };
@@ -31,6 +33,9 @@ template <typename IDType, typename NNZType, typename ValueType>
 class Visualizer{
 
     public:
+        // Summary: Constructor that can be used if only natural order form of the matrix is to be plotted.
+        // Params: Takes a pointer to the CSR matrix, a feature_list json object, 
+        // bucket_size unsigned int and do_plot_by_weights flag as parameters.
         Visualizer(sparsebase::format::CSR<IDType, NNZType, ValueType> *matrix,
                     nlohmann::json *feature_list, 
                     unsigned int bucket_size, 
@@ -44,6 +49,10 @@ class Visualizer{
             packHtml();
         };
 
+        // Summary: Constructor that can be used if only natural order form of the matrix is to be plotted.
+        // Params: Takes a pointer to the CSR matrix, a vector of desired alternate orderings to be plotted,
+        // a feature_list json object, bucket_size unsigned int and do_plot_by_weights flag as parameters.
+        // Note: Example usage of the constructor can be found in the main function at the bottom.
         Visualizer(sparsebase::format::CSR<IDType, NNZType, ValueType> *matrix,
                     std::vector<sparsebase::reorder::Reorderer<IDType>*> *orderings,
                     nlohmann::json *feature_list,
@@ -60,7 +69,7 @@ class Visualizer{
             packHtml();
         };
         
-        std::string getHtml();
+        std::string getHtml(); // Getter for the html string
 
     private:
         void initHtml();
@@ -69,18 +78,18 @@ class Visualizer{
         void packHtml();
 
     private:
-        sparsebase::format::CSR<IDType, NNZType, ValueType> *matrix; //
+        sparsebase::format::CSR<IDType, NNZType, ValueType> *matrix;
         std::vector<sparsebase::reorder::Reorderer<IDType>*> *orderings;
         nlohmann::json *feature_list;
         unsigned int bucket_size = 1;
         bool plot_edges_by_weights = false;
         std::string html = "";
-        //std::vector<sparsebase::feature::FeaturePreprocessType<FeatureType>> *features;
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
 void Visualizer<IDType, NNZType, ValueType>::initHtml() {
      html +=
+            // Initiliaze the html
             "<!DOCTYPE html>\n"
             "<html lang=\"en\">\n"
             "  <head>\n"
@@ -88,15 +97,24 @@ void Visualizer<IDType, NNZType, ValueType>::initHtml() {
             "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n"
             "    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\" />\n"
             "    <title>Visualization</title>\n"
+
+            // Get the styles from styles.css
             "    <link rel=\"stylesheet\" href=\"style.css\" />\n"
+
             "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js\"></script>\n"
             "  </head>\n"
             "  <body>\n"
             "    <div class=\"header\">\n"
+
+            // Display the name of the matrix/graph on html.
             "      <h1>Name of Matrix/Graph</h1>\n"
             "    </div>\n"
             "    <div class=\"content\">\n"
+
+            // Non-orderings based features are displayed on the top section
             "      <div class=\"non-ordering-based-features\">";
+
+            // Add the key, values of non-ordering based features from json object
             for (const auto& feature : (*feature_list)["non_ordering_based_features"].items())
             {
                 html += "<div class=\"card\">\n"
@@ -422,30 +440,40 @@ std::string Visualizer<IDType, NNZType, ValueType>::getHtml() {
 }
 
 int main(void) {
+
+    // Example matrices can be found at "https://sparse.tamu.edu/"
+    // Below matrix (ecology1.mtx) is from "https://sparse.tamu.edu/McRae/ecology1"
+    // ecology1 matrix' dimensions are 1 mil x 1 mil
+    std::string file_name = "ecology1.mtx"; // a matrix in .mtx format in the same directory
+    sparsebase::io::MTXReader<unsigned int, unsigned int, float> reader(file_name);
+    sparsebase::format::CSR<unsigned int, unsigned int, float> *csr =
+        reader.ReadCSR();
+
     /*
+    // Alternatively, can generate a CSR ourselves and use it for plotting
     int csr_row_ptr[5]{0, 2, 3, 3, 4};
     int csr_col[4]{0, 2, 1, 3};
     int csr_vals[4]{4, 5, 7, 9};
     sparsebase::format::CSR<int, int, int> csr(4, 4, csr_row_ptr, csr_col, csr_vals);
     */
 
-    std::string file_name = "ecology1.mtx";
-    sparsebase::io::MTXReader<unsigned int, unsigned int, float> reader(file_name);
-    sparsebase::format::CSR<unsigned int, unsigned int, float> *csr =
-        reader.ReadCSR();
-
+    // Specify the desired orderings to be plotted and add it to the orderings vector
     sparsebase::reorder::DegreeReorder<unsigned int,unsigned int,float> orderer(1);
     std::vector<sparsebase::reorder::Reorderer<unsigned int>*> orderings;
     orderings.push_back(&orderer);
 
+    // Generate a json object for features list, add the feature, value pairs in the respective sections.
     nlohmann::json featuresList = {
+        // "non_ordering_based_features" contain the ordering invariant features,
+        // which will be displayed at the top of the html page
         {"non_ordering_based_features", {
             {"number_triangles", 0},         // unsigned integer
             {"max_degree", 0},               // unsigned integer
-            {"avg_degree", 0.0},             // float ?
+            {"avg_degree", 0.0},             // float
             {"betweenness_centrality", 0.0}, // float
             {"symmetry_ratio", 0.0}          // float
         }},
+        // section that contains ordering dependent features names/values and ordering names for each ordering
         {"features_list", {
             {
                 {"order_name", "Natural Ordering"},
@@ -453,8 +481,7 @@ int main(void) {
                     {"number_diagonal_entries", 0},            // unsigned integer
                     {"number_non_diagonal_entries", 0},        // unsigned integer
                     {"number_dense_rows", 0},                  // unsigned integer
-                    {"bandwidth", 0.0}                         // float ?
-
+                    {"bandwidth", 0.0}                         // float
                 }}
             },
             {
@@ -463,16 +490,20 @@ int main(void) {
                     {"number_diagonal_entries", 0},            // unsigned integer
                     {"number_non_diagonal_entries", 0},        // unsigned integer
                     {"number_dense_rows", 0},                  // unsigned integer
-                    {"bandwidth", 0.0}                         // float ?
+                    {"bandwidth", 0.0}                         // float
                 }}
             }
         }}
     };
 
-    unsigned int bucketSize = 50000; //22000000
+    // Set bucket size parameter for the plot that will be generated. 
+    // e.g. For a 1 mil x 1 mil matrix, ceil(1000000/50000) will result in a 20x20 plot matrix
+    unsigned int bucketSize = 50000; 
+
+    // Flag to do plotting by weight or frequency.
     bool doPlotByWeights = true;
+
     Visualizer<unsigned int,unsigned int,float>vsl (csr, &orderings, &featuresList, bucketSize, doPlotByWeights);
-    //std::cout << vsl.getHtml();
 
     std::ofstream file("myfile.html");
     if (file.is_open()) {
