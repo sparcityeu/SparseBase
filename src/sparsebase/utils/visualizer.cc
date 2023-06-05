@@ -498,6 +498,7 @@ int main(void) {
 
     // Set bucket size parameter for the plot that will be generated. 
     // e.g. For a 1 mil x 1 mil matrix, ceil(1000000/50000) will result in a 20x20 plot matrix
+    // Should be set to an appropriate value for the input matrix to avoid too small/large plot sizes
     unsigned int bucketSize = 50000; 
 
     // Flag to do plotting by weight or frequency.
