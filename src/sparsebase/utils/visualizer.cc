@@ -11,9 +11,9 @@
 #include "sparsebase/external/json/json.hpp"
 #include "sparsebase/feature/feature_preprocess_type.h"
 #include "sparsebase/format/csr.h"
-//#include "sparsebase/format/coo.h"
 #include "sparsebase/reorder/reorderer.h"
 #include "sparsebase/io/mtx_reader.h"
+//#include "sparsebase/format/coo.h"
 
 template <typename IDType, typename NNZType, typename ValueType,
     typename FeatureType>
@@ -60,7 +60,7 @@ class Visualizer{
             packHtml();
         };
         
-        std::string writeToHtml();
+        std::string getHtml();
 
     private:
         void initHtml();
@@ -110,29 +110,38 @@ void Visualizer<IDType, NNZType, ValueType>::initHtml() {
 
 template <typename IDType, typename NNZType, typename ValueType>
 void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
-    //auto *coo = toCoo(matrix);
-    //int bucketSize = 22000000;//190000;
+    //Summary: Generates the html corresponding to the natural order plot and its features
+    //         Appends the generated html to the overall html string.
+    
+    //Decide on the plot dimensions based on original matrix dimensions and specified bucket size
     auto x_dim = ceil(matrix->get_dimensions()[0] / (double)bucket_size);
     auto y_dim = ceil(matrix->get_dimensions()[1] / (double)bucket_size);
+
+    //Define a 2D vector for the plot, set row pointer and col.
     std::vector<std::vector<long long>> resulting_matrix(x_dim, std::vector<long long>(y_dim, 0));
     auto r = matrix->get_row_ptr();
     auto c = matrix->get_col();
     long long tmp_elem_index = 0;
 
 
+    //Iterate through the original matrix
     for (int i = 0; i < matrix->get_dimensions()[0]; i++) {
         for(int j=r[i]; j<r[i+1]; j++){
-            //int k = (*orderings)[0]
+            
+            // Calculate the corresponding cell coordinates on the plot matrix.
+            // Converts from original matrix' cell coordinates to plot matrix' cell coordinates using bucket_size
+            // e.g. 15x15 matrix is plotted as 3x3. Cell at (8,12) index will correspond to (1,2) on the plot matrix
             int k = i / (double)bucket_size;
             int l = c[j] / (double)bucket_size;
-            if(l>=y_dim){
-                std::cout << "r: " << i << " c: " << c[j] << " k " << k << " l " << l << "\n";
-                std::cout << "ydim: " << y_dim << " l: " << l << std::endl;
-            }
+
+            // Check for out-of-bound indices
             assert(k < x_dim);
             assert(l < y_dim);
             assert(k>-1);
             assert(l>-1);
+
+            // If plot_edges_by_weights flag is "true", add its absolute value to its corresponding cell on the plot
+            // If set to false, will plot based on frequency, and increment cell value by 1
             if(plot_edges_by_weights)
                 resulting_matrix[k][l] += abs(matrix->get_vals()[tmp_elem_index++]);
             else
@@ -140,25 +149,25 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
         }
     }
 
+    // Get the name of the ordering from the features_list json object to be printed on the html.
     std::string order_name = (*feature_list)["features_list"][0]["order_name"];
 
+    // Add the html sections for the plot and its features
     html+=  "<div class=\"ordering-based-features\">\n"
             "  <div class=\"section\">\n"
+            // Left section
             "    <div class=\"left-section\">\n"
             "      <h2>"+order_name+"</h2>\n"
             "          <div id=\"plot0\" class=\"matrix\"></div>\n" // plot0
             "    </div>\n"
+
+            //Middle section
             "    <div class=\"middle-section\">\n"
-            "      <div class=\"info-box\">\n"
-            "        <h3>Information</h3>\n"
-            "        <p>lorem ipsum</p>\n"
-            "        <p>lorem ipsum</p>\n"
-            "        <p>lorem ipsum</p>\n"
-            "      </div>\n"
             "      <div class=\"feature-box\">\n"
             "        <h3>Ordering Based Features</h3>\n"
             "        <ul>";
 
+    // Add the features and their values from the json object
     for (const auto& feature : (*feature_list)["features_list"][0]["features"].items())
     {
         html+=  "<li>"+feature.key()+": "+feature.value().dump()+"</li>\n";
@@ -167,6 +176,8 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
     html+=  "     </ul>\n"
             "    </div>\n"
             "  </div>\n"
+
+            //End of the middle section, start of the right section
             "  <div class=\"right-section\">\n"
             "    <div class=\"graphical-box\">\n"
             "      <h3>Graphical Features</h3>\n"
@@ -176,6 +187,8 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
             "  </div>\n"
             "</div>";
     
+
+    // Add the plot.ly script to the HTML string
     html+=  "<div class=\"footer\"></div>\n"
             "<script src=\"https://cdn.plot.ly/plotly-1.45.3.min.js\"></script>\n"
             "<script>\n"
@@ -187,18 +200,21 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
             "    .react(document.getElementById('plot0'),\n"
             "    [";
 
+    // Set plotly heatmap parameters by forming a json object
     nlohmann::json json_plot;
     json_plot["type"] = "heatmap";
     json_plot["z"] = resulting_matrix;
-    json_plot["xgap"] = 1;
+    json_plot["xgap"] = 1; // xgap and ygap adds the small black border effect for the cell on the graph
     json_plot["ygap"] = 1;
     json_plot["colorscale"] = "YlOrRd";
     json_plot["reversescale"] = true;
     json_plot["hovertemplate"] =
         "X: %{x}<br>Y: %{y}<br>NNZ(s): %{z}<extra></extra>";
 
+    // dump the graph parameters to the html string
     html += json_plot.dump();
 
+    // Generate annotations to display "X" symbols on empty plot cells.
     std::string annotationsStr = "[";
     for (int i = 0; i < x_dim; i++) {
         for (int j = 0; j < y_dim; j++) {
@@ -215,8 +231,7 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
     }
     annotationsStr += "]";
 
-    //std::cout << annotationsStr;
-
+    // If x axis cell count is larger than set threshold (25), do not display tick labels to prevent distorted graphs
     nlohmann::json json_xaxis;
     json_xaxis["dtick"] = 1;
     json_xaxis["side"] = "top";
@@ -224,6 +239,7 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
         json_xaxis["showticklabels"] = false;
     }
 
+    // If y axis cell count is larger than set threshold (25), do not display tick labels to prevent distorted graphs
     nlohmann::json json_yaxis;
     json_yaxis["dtick"] = 1;
     json_yaxis["autorange"] = "reversed";
@@ -231,44 +247,55 @@ void Visualizer<IDType, NNZType, ValueType>::plotNaturalOrdering() {
         json_yaxis["showticklabels"] = false;
     }
 
+    // Set the layout parameters of the graph. 
+    // (Might be better to convert it to a json object or another format if further modifications are needed.)
     html += std::string("], {yaxis: ") + json_yaxis.dump() + ", xaxis: " + json_xaxis.dump() + ", zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: " + annotationsStr;
-    //html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
     html += "}); \nmaximizar();";
     html += "</script> \n";
-    // std::cout << html;
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
 void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
     
+    // Iterate through all the desired orderings 
     for(int orderIndex = 0; orderIndex < (*orderings).size(); orderIndex++){
+
+        // Convert the original matrix to the desired ordering.
+        // Note: This way of conversion may be incorrect, or there might be a bug with the converter. Check later.
         sparsebase::context::CPUContext cpu_context;
         sparsebase::format::FormatOrderTwo<IDType , NNZType , ValueType >* reordered = reorder_custom<IDType, NNZType, ValueType>(matrix, 
-            (*orderings)[orderIndex], {&cpu_context}, true);
-        
+            (*orderings)[orderIndex], {&cpu_context}, true); 
         sparsebase::format::CSR<IDType , NNZType , ValueType >* csr = static_cast<sparsebase::format::CSR<IDType , NNZType , ValueType>*>(reordered);
-        //int bucketSize = 22000000;
+
+
+        //Decide on the plot dimensions based on original matrix dimensions and specified bucket size
         auto x_dim = ceil(csr->get_dimensions()[0] / (double)bucket_size);
         auto y_dim = ceil(csr->get_dimensions()[1] / (double)bucket_size);
+
+        //Define a 2D vector for the plot, set row pointer and col.
         auto r = csr->get_row_ptr();
         auto c = csr->get_col();
         std::vector<std::vector<long long>> resulting_matrix(x_dim, std::vector<long long>(y_dim, 0));
-
         long long tmp_elem_index = 0;
-        //std::cout << "bucketSize: " << bucketSize << " dim0: " << csr->get_dimensions()[0] << " dim1: " << csr->get_dimensions()[1] << "\n";
+
+        //Iterate through the original matrix
         for (int i = 0; i < csr->get_dimensions()[0]; i++) {
             for(int j=r[i]; j<r[i+1]; j++){
-                //int k = (*orderings)[0]
+                
+                // Calculate the corresponding cell coordinates on the plot matrix.
+                // Converts from original matrix' cell coordinates to plot matrix' cell coordinates using bucket_size
+                // e.g. 15x15 matrix is plotted as 3x3. Cell at (8,12) index will correspond to (1,2) on the plot matrix
                 int k = i / (double)bucket_size;
                 int l = c[j] / (double)bucket_size;
-                if(l>=y_dim){
-                    std::cout << "r: " << i << " c: " << c[j] << " k " << k << " l " << l << "\n";
-                    std::cout << "ydim: " << y_dim << " l: " << l << std::endl;
-                }
+
+                // Check for out-of-bound indices
                 assert(k < x_dim);
                 assert(l < y_dim);
                 assert(k>-1);
                 assert(l>-1);
+
+                // If plot_edges_by_weights flag is "true", add its absolute value to its corresponding cell on the plot
+                // If set to false, will plot based on frequency, and increment cell value by 1
                 if(plot_edges_by_weights)
                     resulting_matrix[k][l] += abs(csr->get_vals()[tmp_elem_index++]);
                 else
@@ -276,24 +303,24 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
             }
         }
 
+        // Get the name of the ordering from the features_list json object to be printed on the html.
         std::string order_name = (*feature_list)["features_list"][orderIndex+1]["order_name"];
 
+        // Add the html sections for the plot and its features
         html += "<div class=\"section\">\n"
+               // Left section
                "  <div class=\"left-section\">\n"
-               "    <h2>Degree Reorder</h2>\n"
+               "    <h2>Degree Reorder</h2>\n" //MODIFY
                "      <div id=\"plot1\" class=\"matrix\"></div>\n"
                "  </div>\n"
+
+               //Middle section
                "  <div class=\"middle-section\">\n"
-               "    <div class=\"info-box\">\n"
-               "      <h3>Information</h3>\n"
-               "      <p>lorem ipsum</p>\n"
-               "      <p>lorem ipsum</p>\n"
-               "      <p>lorem ipsum</p>\n"
-               "    </div>\n"
                "    <div class=\"feature-box\">\n"
                "      <h3>Ordering Based Features</h3>\n"
                "      <ul>";
 
+        // Add the features and their values from the json object
         for (const auto& feature : (*feature_list)["features_list"][orderIndex]["features"].items())
         {
             html+= "<li>" + feature.key() + ": " + feature.value().dump() + "</li>";
@@ -303,6 +330,8 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
         "      </ul>\n"
         "    </div>\n"
         "  </div>\n"
+
+        //End of the middle section, start of the right section
         "  <div class=\"right-section\">\n"
         "    <div class=\"graphical-box\">\n"
         "      <h3>Graphical Features</h3>\n"
@@ -311,6 +340,8 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
         "    </div>\n"
         "  </div>\n"
         "</div> "
+
+        // Add the plot.ly script to the HTML string
         "<script "
         "src=\"https://cdn.plot.ly/plotly-1.45.3.min.js\"></script>\n"
         "<script>\n"
@@ -321,18 +352,21 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
         "{Plotly.Plots.resize(gd).then(function(){maximizar()});});};"
         "Plotly.react(document.getElementById('plot"+ std::to_string(orderIndex+1)+"'),[";
         
+        // Set plotly heatmap parameters by forming a json object
         nlohmann::json json_plot;
         json_plot["type"] = "heatmap";
         json_plot["z"] = resulting_matrix;
-        json_plot["xgap"] = 1;
+        json_plot["xgap"] = 1; // xgap and ygap adds the small black border effect for the cell on the graph
         json_plot["ygap"] = 1;
         json_plot["colorscale"] = "YlOrRd";
         json_plot["reversescale"] = true;
         json_plot["hovertemplate"] =
             "X: %{x}<br>Y: %{y}<br>NNZ(s): %{z}<extra></extra>";
 
+        // dump the graph parameters to the html string
         html += json_plot.dump();
 
+        // Generate annotations to display "X" symbols on empty plot cells.
         std::string annotationsStr = "[";
         for (int i = 0; i < x_dim; i++) {
             for (int j = 0; j < y_dim; j++) {
@@ -349,6 +383,7 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
         }
         annotationsStr += "]";
 
+        // If x axis cell count is larger than set threshold (25), do not display tick labels to prevent distorted graphs
         nlohmann::json json_xaxis;
         json_xaxis["dtick"] = 1;
         json_xaxis["side"] = "top";
@@ -356,6 +391,7 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
             json_xaxis["showticklabels"] = false;
         }
 
+        // If y axis cell count is larger than set threshold (25), do not display tick labels to prevent distorted graphs
         nlohmann::json json_yaxis;
         json_yaxis["dtick"] = 1;
         json_yaxis["autorange"] = "reversed";
@@ -363,10 +399,9 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
             json_yaxis["showticklabels"] = false;
         }
 
+        // Set the layout parameters of the graph. 
+        // (Might be better to convert it to a json object or another format if further modifications are needed.)
         html += std::string("], {yaxis: ") + json_yaxis.dump() + ", xaxis: " + json_xaxis.dump() + ", zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: " + annotationsStr;
-
-        //std::cout << annotationsStr;
-        //html += std::string("], {yaxis: {dtick: 1, \"autorange\": \"reversed\"}, xaxis: {dtick: 1, \"side\":\"top\"}, zaxis: {title:\"NNZ(s)\"}, plot_bgcolor:\"rgba(0,0,0,1)\", paper_bgcolor:\"rgba(0,0,0,0)\", annotations: ") + annotationsStr;
         html += "}); \nmaximizar();";
         html += "</script> \n";
     }
@@ -376,11 +411,13 @@ void Visualizer<IDType, NNZType, ValueType>::plotAlternateOrderings() {
 
 template <typename IDType, typename NNZType, typename ValueType>
 void Visualizer<IDType, NNZType, ValueType>::packHtml() {
+    // Finalize the html
     html += "</body> \n </html> \n";
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::string Visualizer<IDType, NNZType, ValueType>::writeToHtml() {
+std::string Visualizer<IDType, NNZType, ValueType>::getHtml() {
+    // Returns the generated html
      return html;
 }
 
@@ -435,11 +472,11 @@ int main(void) {
     unsigned int bucketSize = 50000; //22000000
     bool doPlotByWeights = true;
     Visualizer<unsigned int,unsigned int,float>vsl (csr, &orderings, &featuresList, bucketSize, doPlotByWeights);
-    //std::cout << vsl.writeToHtml();
+    //std::cout << vsl.getHtml();
 
     std::ofstream file("myfile.html");
     if (file.is_open()) {
-        file << vsl.writeToHtml();
+        file << vsl.getHtml();
         file.close();
     }
     else {

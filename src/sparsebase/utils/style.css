@@ -44,11 +44,15 @@ h1 {
 h2 {
   margin: 4px;
   color: var(--title_color);
+  display: flex;
+  justify-content: center;
 }
 
 h3 {
   margin: 4px;
   color: var(--title_color);
+  display: flex;
+  justify-content: center;
 }
 
 h4 {
@@ -142,6 +146,7 @@ ul {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   background-color: var(--header_background);
   padding: 4px;
+  flex-grow: 1;
 }
 
 .right-section {
