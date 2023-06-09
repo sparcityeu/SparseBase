@@ -10,7 +10,7 @@
 namespace sparsebase::feature {
 //! Bandwidth calculation class for graph representation
 template <typename IDType, typename NNZType, typename ValueType>
-class Bandwidth : public feature::FeaturePreprocessType<int64_t *> {
+class Bandwidth : public feature::FeaturePreprocessType<int *> {
  public:
   //! An empty struct used for the parameters of Bandwidth
   typedef utils::Parameters ParamsType;
@@ -34,11 +34,11 @@ class Bandwidth : public feature::FeaturePreprocessType<int64_t *> {
     * is needed.
     * \return calculated bandwidth of graph representation of `format`
     */
-  int64_t *GetBandwidth(format::Format *format,
+  int *GetBandwidth(format::Format *format,
                      std::vector<context::Context *> contexts,
                      bool convert_input);
   std::
-      tuple<std::vector<std::vector<format::Format *>>, int64_t *>
+      tuple<std::vector<std::vector<format::Format *>>, int *>
       //! Calculate the bandwidth of the format with cached output
       /*!
        *
@@ -61,7 +61,7 @@ class Bandwidth : public feature::FeaturePreprocessType<int64_t *> {
    * is not used in the function
    * @return calculated bandwidth of graph representation of `format[0]`
    */
-  static int64_t *GetBandwidthCSR(std::vector<format::Format *> formats,
+  static int *GetBandwidthCSR(std::vector<format::Format *> formats,
                                utils::Parameters *params);
   ~Bandwidth();
 

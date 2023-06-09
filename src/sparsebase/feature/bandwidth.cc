@@ -70,18 +70,18 @@ Bandwidth<IDType, NNZType, ValueType>::Extract(format::Format *format,
                                              std::vector<context::Context *> c,
                                              bool convert_input) {
   return {{this->get_id(),
-           std::forward<int64_t *>(GetBandwidth(format, c, convert_input))}};
+           std::forward<int *>(GetBandwidth(format, c, convert_input))}};
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
-int64_t *Bandwidth<IDType, NNZType, ValueType>::GetBandwidth(
+int *Bandwidth<IDType, NNZType, ValueType>::GetBandwidth(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
   return this->Execute(this->params_.get(), c, convert_input, format);
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-std::tuple<std::vector<std::vector<format::Format *>>, int64_t *>
+std::tuple<std::vector<std::vector<format::Format *>>, int *>
 Bandwidth<IDType, NNZType, ValueType>::GetBandwidthCached(
     format::Format *format, std::vector<context::Context *> c,
     bool convert_input) {
@@ -90,14 +90,14 @@ Bandwidth<IDType, NNZType, ValueType>::GetBandwidthCached(
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-int64_t *Bandwidth<IDType, NNZType, ValueType>::GetBandwidthCSR(
+int *Bandwidth<IDType, NNZType, ValueType>::GetBandwidthCSR(
     std::vector<format::Format *> formats, utils::Parameters *params) {
     auto csr = formats[0]->AsAbsolute<format::CSR<IDType, NNZType, ValueType>>();
     auto dims = csr->get_dimensions();
     IDType num_rows = dims[0]; //??
     NNZType *rows = csr->get_row_ptr();
     IDType *columns = csr->get_col();
-    int64_t bandwidth = 0;
+    int bandwidth = 0;
     for (NNZType i = 0; i < num_rows; i++) {
         for (NNZType k = rows[i]; k < rows[i + 1]; k++) {
             IDType j = columns[k];
@@ -108,7 +108,7 @@ int64_t *Bandwidth<IDType, NNZType, ValueType>::GetBandwidthCSR(
         }
     }
 
-    return new int64_t(bandwidth);
+    return new int(bandwidth);
 }
 
 #if !defined(_HEADER_ONLY)
