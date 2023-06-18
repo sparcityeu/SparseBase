@@ -211,6 +211,13 @@
       "exceptions": null
     },
     {
+      "template": "class EdgeListWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "edge_list_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "mtx_reader.inc",
       "ifdef": null,
@@ -451,6 +458,34 @@
     {
       "template": "class Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "degrees_degree_distribution.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MinDegree<$id_type, $nnz_type, $value_type>",
+      "filename": "min_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MaxDegree<$id_type, $nnz_type, $value_type>",
+      "filename": "max_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class AvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MinMaxAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "min_max_avg_degree.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
