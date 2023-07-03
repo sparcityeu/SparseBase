@@ -225,6 +225,20 @@
       "exceptions": null
     },
     {
+      "template": "class MetisGraphReader<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisGraphWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MTXWriter<$id_type, $nnz_type, $value_type>",
       "filename": "mtx_writer.inc",
       "ifdef": null,
