@@ -225,6 +225,20 @@
       "exceptions": null
     },
     {
+      "template": "class MetisGraphReader<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisGraphWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MTXWriter<$id_type, $nnz_type, $value_type>",
       "filename": "mtx_writer.inc",
       "ifdef": null,
@@ -500,6 +514,20 @@
     {
       "template": "class MinMaxAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "min_max_avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class OffDiagBlockNNZ<$id_type, $nnz_type, $value_type>",
+      "filename": "off_diag_block_nnz.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Profile<$id_type, $nnz_type, $value_type>",
+      "filename": "profile.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null

@@ -16,6 +16,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
+#include "sparsebase/format/array.h"
 #include "sparsebase/io/reader.h"
 
 namespace sparsebase {
@@ -49,6 +50,7 @@ template <typename VertexID, typename NumEdges, typename Weight>
 class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
  public:
   Graph(format::Format *connectivity);
+  Graph(format::Format *connectivity, NumEdges ncon, format::Array<Weight>** vertexWeights);
   Graph();
   Graph(const Graph<VertexID, NumEdges, Weight> &);
   Graph(Graph<VertexID, NumEdges, Weight> &&);
@@ -63,6 +65,9 @@ class Graph : public AbstractObject<VertexID, NumEdges, Weight> {
   void VerifyStructure();
   VertexID n_;
   NumEdges m_;
+  //! Number of vertex weights
+  NumEdges ncon_ = 0;
+  format::Array<Weight>** vertexWeights_ = nullptr;
 };
 
 // template<typename VertexID, typename NumEdges, typename t_t>
