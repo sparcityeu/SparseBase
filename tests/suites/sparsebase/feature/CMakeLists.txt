@@ -105,3 +105,12 @@ target_link_libraries(sparsebase_feature_profile_tests.test sparsebase)
 target_link_libraries(sparsebase_feature_profile_tests.test gtest gtest_main)
 
 add_test(NAME sparsebase_feature_profile_tests.test COMMAND sparsebase_feature_profile_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(bandwidth_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_bandwidth_tests.test bandwidth_tests.cc)
+target_link_libraries(sparsebase_feature_bandwidth_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_bandwidth_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_bandwidth_tests.test COMMAND sparsebase_feature_bandwidth_tests.test)

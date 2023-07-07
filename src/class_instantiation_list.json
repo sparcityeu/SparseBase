@@ -365,6 +365,13 @@
       "exceptions": null
     },
     {
+      "template": "class Bandwidth<$id_type, $nnz_type, $value_type>",
+      "filename": "bandwidth.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class RCMReorder<$id_type, $nnz_type, $value_type>",
       "filename": "rcm_reorder.inc",
       "ifdef": null,
