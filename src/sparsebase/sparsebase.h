@@ -35,6 +35,7 @@
 #include "sparsebase/io/binary_writer_order_two.h"
 #include "sparsebase/io/edge_list_reader.h"
 #include "sparsebase/io/mtx_reader.h"
+#include "sparsebase/io/mtx_writer.h"
 #include "sparsebase/io/pigo_edge_list_reader.h"
 #include "sparsebase/io/pigo_mtx_reader.h"
 #include "sparsebase/io/reader.h"

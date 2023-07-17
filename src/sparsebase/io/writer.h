@@ -51,6 +51,13 @@ class WritesArray {
   virtual void WriteArray(format::Array<T> *arr) const = 0;
 };
 
+//! Interface for writers that can write an Graph instance to a file
+template <typename IDType, typename NNZType, typename ValueType>
+class WritesGraph {
+  //! Writes the given Graph instance to a file
+  virtual void WriteGraph(object::Graph<IDType, NNZType, ValueType> *graph) const = 0;
+};
+
 //! Interface for writers that can write an HyperGraph instance to a file
 template <typename IDType, typename NNZType, typename ValueType>
 class WritesHyperGraph {

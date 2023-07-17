@@ -87,6 +87,16 @@ Graph<VertexID, NumEdges, Weight>::Graph(format::Format *connectivity) {
   this->VerifyStructure();
   InitializeInfoFromConnection();
 }
+
+template <typename VertexID, typename NumEdges, typename Weight>
+Graph<VertexID, NumEdges, Weight>::Graph(format::Format *connectivity, NumEdges ncon, format::Array<Weight>** vertexWeights) {
+  this->set_connectivity(connectivity, true);
+  this->VerifyStructure();
+  InitializeInfoFromConnection();
+  this->ncon_ = ncon;
+  this->vertexWeights_ = vertexWeights;
+}
+
 template <typename VertexID, typename NumEdges, typename Weight>
 void Graph<VertexID, NumEdges, Weight>::ReadConnectivityToCOO(
     const io::ReadsCOO<VertexID, NumEdges, Weight> &reader) {
