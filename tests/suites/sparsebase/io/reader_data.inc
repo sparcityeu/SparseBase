@@ -437,3 +437,98 @@ const std::string metis_graph_2 = R"( 7 11 10  3
 1 2 1    6  4
 )";
 
+
+//PATOH HyperGraph Reader
+
+int hypergraph1_n = 11;
+int hypergraph1_m = 31;
+int hypergraph1_constraint_num = 1;
+int hypergraph1_base_type = 0;
+int hypergraph1_vertex_size = 12;
+int hypergraph1_xpins[12]{0,5,7,11,13,15,19,21,25,27,29,31};
+int hypergraph1_pins[31]{2, 3, 5, 6, 9, 0, 1, 0, 1, 2, 3, 1, 3, 4, 5, 4, 5, 6, 7, 6, 7, 8, 9, 10, 11, 8, 10, 8, 11, 2, 5};
+int hypergraph1_netWeights[11]{1,1,1,1,1,1,1,1,1,1,1};
+int hypergraph1_cellWeights[12]{1,1,1,1,1,1,1,1,1,1,1,1};
+int hypergraph1_xnets[13]{0,2,5,8,11,13,17,20,22,25,27,29,31};
+int hypergraph1_cells[31]{1, 2, 1, 2, 3, 0, 2, 10, 0, 2, 3, 4, 5, 0, 4, 5, 10, 0, 5, 6, 5, 6, 7, 8, 9, 0, 7, 7, 8, 7, 9};
+
+const std::string hypergraph_1 = R"(% base:(0/1) #cells #nets #pins
+0 12 11 31
+% pins of each net in the hypergraph
+2 3 5 6 9
+0 1
+0 1 2 3
+1 3
+4 5
+4 5 6 7
+6 7
+8 9 10 11
+8 10
+8 11
+2 5)";
+
+int hypergraph2_n = 9;
+int hypergraph2_m = 28;
+int hypergraph2_vertex_size = 8;
+int hypergraph2_xpins[10]{0,5,9,13,15,17,20,23,26,28};
+int hypergraph2_pins[28]{8,6,3,5,2,4,5,1,7,4,2,5,7,4,7,3,5,8,2,4,6,5,2,5,7,2,8,4};
+int hypergraph2_netWeights[9]{10,15,13,18,25,20,14,27,29};
+int hypergraph2_cellWeights[8]{1,1,1,1,1,1,1,1};
+int hypergraph2_xnets[9]{0,1,6,8,13,19,21,25,28};
+int hypergraph2_cells[28]{2,1,3,6,7,8,1,5,2,3,4,6,9,1,2,3,5,7,8,1,7,2,3,4,8,1,6,9};
+
+const std::string hypergraph_2 = R"(% base:(0/1) #cells #nets #pins
+1 8 9 28 2
+10 8 6 3 5 2
+15 4 5 1 7
+13 4 2 5 7
+18 4 7
+25 3 5
+20 8 2 4
+14 6 5 2
+27 5 7 2
+29 8 4)";
+
+int hypergraph3_n = 9;
+int hypergraph3_m = 28;
+int hypergraph3_vertex_size = 8;
+int hypergraph3_xpins[10]{0,5,9,13,15,17,20,23,26,28};
+int hypergraph3_pins[28]{8,6,3,5,2,4,5,1,7,4,2,5,7,4,7,3,5,8,2,4,6,5,2,5,7,2,8,4};
+int hypergraph3_netWeights[9]{1,1,1,1,1,1,1,1,1};
+int hypergraph3_cellWeights[8]{80,85,30,55,42,39,90,102};
+int hypergraph3_xnets[9]{0,1,6,8,13,19,21,25,28};
+int hypergraph3_cells[28]{2,1,3,6,7,8,1,5,2,3,4,6,9,1,2,3,5,7,8,1,7,2,3,4,8,1,6,9};
+
+const std::string hypergraph_3 = R"(1 8 9 28 1
+8 6 3 5 2
+4 5 1 7
+4 2 5 7
+4 7
+3 5
+8 2 4
+6 5 2
+5 7 2
+8 4
+80 85 30 55 42 39 90 102)";
+
+int hypergraph4_n = 9;
+int hypergraph4_m = 28;
+int hypergraph4_vertex_size = 8;
+int hypergraph4_xpins[10]{0,5,9,13,15,17,20,23,26,28};
+int hypergraph4_pins[28]{8,6,3,5,2,4,5,1,7,4,2,5,7,4,7,3,5,8,2,4,6,5,2,5,7,2,8,4};
+int hypergraph4_netWeights[9]{10,15,13,18,25,20,14,27,29};
+int hypergraph4_cellWeights[8]{80,85,30,55,42,39,90,102};
+int hypergraph4_xnets[9]{0,1,6,8,13,19,21,25,28};
+int hypergraph4_cells[28]{2,1,3,6,7,8,1,5,2,3,4,6,9,1,2,3,5,7,8,1,7,2,3,4,8,1,6,9};
+
+const std::string hypergraph_4 = R"(1 8 9 28 3
+10 8 6 3 5 2
+15 4 5 1 7
+13 4 2 5 7
+18 4 7
+25 3 5
+20 8 2 4
+14 6 5 2
+27 5 7 2
+29 8 4
+80 85 30 55 42 39 90 102)";

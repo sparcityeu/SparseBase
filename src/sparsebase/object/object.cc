@@ -157,6 +157,35 @@ void Graph<VertexID, NumEdges, ValueType>::VerifyStructure() {
   // check dimensions
 }
 
+template <typename VertexID, typename NumEdges, typename Weight>
+HyperGraph<VertexID,NumEdges,Weight>::HyperGraph(){}
+
+template <typename VertexID, typename NumEdges, typename Weight>
+HyperGraph<VertexID,NumEdges,Weight>::HyperGraph(format::Format *connectivity, VertexID base_type, VertexID constraint_num, format::CSR<VertexID,NumEdges,Weight> *xNetCSR){
+  this->set_connectivity(connectivity, true);
+  this->VerifyStructure();
+  this->InitializeInfoFromConnection();
+  this->base_type_ = base_type;
+  this->constraint_num_ = constraint_num;
+  this->xNetCSR_ = xNetCSR;
+}
+
+template <typename VertexID, typename NumEdges, typename Weight>
+HyperGraph<VertexID,NumEdges,Weight>::HyperGraph(format::Format *connectivity,format::Array<Weight> *netWeights,format::Array<Weight> *cellWeights, VertexID base_type, VertexID constraint_num, format::CSR<VertexID,NumEdges,Weight> *xNetCSR){
+  this->set_connectivity(connectivity, true);
+  this->VerifyStructure();
+  this->InitializeInfoFromConnection();
+  this->base_type_ = base_type;
+  this->constraint_num_ = constraint_num;
+  this->xNetCSR_ = xNetCSR;
+  this->netWeights_ = netWeights;
+  this->cellWeights_ = cellWeights;
+}
+
+template <typename VertexID, typename NumEdges, typename ValueType>
+HyperGraph<VertexID, NumEdges, ValueType>::~HyperGraph(){};
+
+
 #if !defined(_HEADER_ONLY)
 #include "init/object.inc"
 #endif

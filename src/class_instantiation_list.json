@@ -113,6 +113,13 @@
       "exceptions": null
     },
     {
+      "template": "class HyperGraph<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class ConverterOrderOne<$value_type>",
       "filename": "converter_order_one.inc",
       "ifdef": null,
@@ -255,6 +262,20 @@
     {
       "template": "class PigoMTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_mtx_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohReader<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_writer.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
