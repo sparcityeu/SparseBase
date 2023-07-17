@@ -18,6 +18,7 @@
 #include "sparsebase/format/format.h"
 #include "sparsebase/format/format_order_one.h"
 #include "sparsebase/format/format_order_two.h"
+#include "sparsebase/object/object.h"
 
 namespace sparsebase {
 
@@ -48,6 +49,20 @@ template <typename T>
 class WritesArray {
   //! Writes the given Array instance to a file
   virtual void WriteArray(format::Array<T> *arr) const = 0;
+};
+
+//! Interface for writers that can write an Graph instance to a file
+template <typename IDType, typename NNZType, typename ValueType>
+class WritesGraph {
+  //! Writes the given Graph instance to a file
+  virtual void WriteGraph(object::Graph<IDType, NNZType, ValueType> *graph) const = 0;
+};
+
+//! Interface for writers that can write an HyperGraph instance to a file
+template <typename IDType, typename NNZType, typename ValueType>
+class WritesHyperGraph {
+  //! Writes the given HyperGraph instance to a file
+  virtual void WriteHyperGraph(object::HyperGraph<IDType, NNZType, ValueType> *hyperGraph) const = 0;
 };
 
 }  // namespace io

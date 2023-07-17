@@ -113,6 +113,13 @@
       "exceptions": null
     },
     {
+      "template": "class HyperGraph<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class ConverterOrderOne<$value_type>",
       "filename": "converter_order_one.inc",
       "ifdef": null,
@@ -225,6 +232,27 @@
       "exceptions": null
     },
     {
+      "template": "class MetisGraphReader<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisGraphWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MTXWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "mtx_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class PigoEdgeListReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_edge_list_reader.inc",
       "ifdef": null,
@@ -234,6 +262,20 @@
     {
       "template": "class PigoMTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_mtx_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohReader<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_writer.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -339,6 +381,13 @@
     {
       "template": "class Degrees<$id_type, $nnz_type, $value_type>",
       "filename": "degrees.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Bandwidth<$id_type, $nnz_type, $value_type>",
+      "filename": "bandwidth.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -486,6 +535,20 @@
     {
       "template": "class MinMaxAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "min_max_avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class OffDiagBlockNNZ<$id_type, $nnz_type, $value_type>",
+      "filename": "off_diag_block_nnz.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Profile<$id_type, $nnz_type, $value_type>",
+      "filename": "profile.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
