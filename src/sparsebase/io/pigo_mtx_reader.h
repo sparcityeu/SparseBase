@@ -30,6 +30,24 @@ class PigoMTXReader : public Reader,
   std::string filename_;
   bool weighted_;
   bool convert_to_zero_index_;
+
+  enum MTXObjectOptions { matrix, vector };
+  enum MTXFormatOptions { coordinate, array };
+  enum MTXFieldOptions { real, double_field, complex, integer, pattern };
+  enum MTXSymmetryOptions {
+    general = 0,
+    symmetric = 1,
+    skew_symmetric = 2,
+    hermitian = 3
+  };
+  struct MTXOptions {
+    MTXObjectOptions object;
+    MTXFormatOptions format;
+    MTXFieldOptions field;
+    MTXSymmetryOptions symmetry;
+  };
+  MTXOptions options_;
+  MTXOptions ParseHeader(std::string header_line) const;
 };
 }  // namespace sparsebase::io
 #ifdef _HEADER_ONLY
