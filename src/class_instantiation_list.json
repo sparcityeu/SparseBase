@@ -113,6 +113,13 @@
       "exceptions": null
     },
     {
+      "template": "class HyperGraph<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class ConverterOrderOne<$value_type>",
       "filename": "converter_order_one.inc",
       "ifdef": null,
@@ -211,8 +218,36 @@
       "exceptions": null
     },
     {
+      "template": "class EdgeListWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "edge_list_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "mtx_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisGraphReader<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisGraphWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MTXWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "mtx_writer.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -227,6 +262,20 @@
     {
       "template": "class PigoMTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_mtx_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohReader<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_writer.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -332,6 +381,13 @@
     {
       "template": "class Degrees<$id_type, $nnz_type, $value_type>",
       "filename": "degrees.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Bandwidth<$id_type, $nnz_type, $value_type>",
+      "filename": "bandwidth.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -451,6 +507,55 @@
     {
       "template": "class Degrees_DegreeDistribution<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "degrees_degree_distribution.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MinDegree<$id_type, $nnz_type, $value_type>",
+      "filename": "min_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MaxDegree<$id_type, $nnz_type, $value_type>",
+      "filename": "max_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class AvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MinMaxAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "min_max_avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class OffDiagBlockNNZ<$id_type, $nnz_type, $value_type>",
+      "filename": "off_diag_block_nnz.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Profile<$id_type, $nnz_type, $value_type>",
+      "filename": "profile.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class TriangleCount<$id_type, $nnz_type, $value_type>",
+      "filename": "triangle_count.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null

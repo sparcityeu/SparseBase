@@ -559,9 +559,9 @@ format::Format* returnCsc(format::Format*, context::Context*) {
 }
 
 #define CHECK_FIRST_FORMAT(v1, v2, v3)            \
-  EXPECT_EQ((v1->Is<format::CSR<TYPE>>()), true); \
-  EXPECT_EQ((v2->Is<format::COO<TYPE>>()), true); \
-  EXPECT_EQ((v3->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((v1->IsAbsolute<format::CSR<TYPE>>()), true); \
+  EXPECT_EQ((v2->IsAbsolute<format::COO<TYPE>>()), true); \
+  EXPECT_EQ((v3->IsAbsolute<format::CSC<TYPE>>()), true);
 
 TEST(ApplyConversionSchema, All) {
 #define ConversionPairVector \
@@ -598,7 +598,7 @@ TEST(ApplyConversionSchema, All) {
   EXPECT_EQ(output.size(), 3);
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 2);
-  EXPECT_EQ((output[0][1]->Is<format::COO<TYPE>>()), true);
+  EXPECT_EQ((output[0][1]->IsAbsolute<format::COO<TYPE>>()), true);
   EXPECT_EQ(output[1].size(), 1);
   EXPECT_EQ(output[2].size(), 1);
   // Convert second and third once
@@ -615,10 +615,10 @@ TEST(ApplyConversionSchema, All) {
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
   EXPECT_EQ(output[1].size(), 2);
-  EXPECT_EQ((output[1][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[1][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[1][1];
   EXPECT_EQ(output[2].size(), 2);
-  EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[2][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[2][1];
   // Convert second twice and third once
   schema.clear();
@@ -636,12 +636,12 @@ TEST(ApplyConversionSchema, All) {
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
   EXPECT_EQ(output[1].size(), 3);
-  EXPECT_EQ((output[1][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[1][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[1][1];
-  EXPECT_EQ((output[1][2]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((output[1][2]->IsAbsolute<format::CSC<TYPE>>()), true);
   delete output[1][2];
   EXPECT_EQ(output[2].size(), 2);
-  EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[2][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[2][1];
 #undef ConversionPair
 #undef TYPE
@@ -682,7 +682,7 @@ TEST(ApplyConversionSchema, ClearIntermediate) {
   EXPECT_EQ(output.size(), 3);
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 2);
-  EXPECT_EQ((output[0][1]->Is<format::COO<TYPE>>()), true);
+  EXPECT_EQ((output[0][1]->IsAbsolute<format::COO<TYPE>>()), true);
   EXPECT_EQ(output[1].size(), 1);
   EXPECT_EQ(output[2].size(), 1);
   // Convert second and third once
@@ -699,10 +699,10 @@ TEST(ApplyConversionSchema, ClearIntermediate) {
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
   EXPECT_EQ(output[1].size(), 2);
-  EXPECT_EQ((output[1][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[1][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[1][1];
   EXPECT_EQ(output[2].size(), 2);
-  EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[2][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[2][1];
   // Convert second twice and third once
   schema.clear();
@@ -720,10 +720,10 @@ TEST(ApplyConversionSchema, ClearIntermediate) {
   CHECK_FIRST_FORMAT(output[0][0], output[1][0], output[2][0]);
   EXPECT_EQ(output[0].size(), 1);
   EXPECT_EQ(output[1].size(), 2);
-  EXPECT_EQ((output[1][1]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((output[1][1]->IsAbsolute<format::CSC<TYPE>>()), true);
   delete output[1][1];
   EXPECT_EQ(output[2].size(), 2);
-  EXPECT_EQ((output[2][1]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((output[2][1]->IsAbsolute<format::CSR<TYPE>>()), true);
   delete output[2][1];
 #undef ConversionPair
 #undef TYPE

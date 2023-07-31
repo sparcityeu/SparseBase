@@ -69,6 +69,18 @@ class FormatOrderOne : public FormatImplementation {
     }
     throw utils::TypeException(this->get_name(), typeid(TBase).name());
   }
+
+  //! Templated function that can be used to check the concrete type of this
+  //! object
+  /*!
+   * @tparam T a format class (for example: Array, CUDAArray)
+   * @return true if the type of this object is T
+   */
+  template <template <typename> typename T>
+  bool Is() {
+    using TBase = typename std::remove_pointer<T<ValueType>>::type;
+    return this->get_id() == std::type_index(typeid(TBase));
+  }
 };
 template <typename ValueType>
 template <template <typename> class ToType>

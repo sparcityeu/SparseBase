@@ -254,7 +254,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
   EXPECT_EQ(std::get<1>(output), 1);
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 1);
-  EXPECT_EQ((intermediate[0][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((intermediate[0][0]->IsAbsolute<format::CSR<TYPE>>()), true);
   EXPECT_EQ(intermediate[1].size(), 0);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for second only
@@ -263,7 +263,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   EXPECT_EQ(intermediate[1].size(), 1);
-  EXPECT_EQ((intermediate[1][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][0]->IsAbsolute<format::CSR<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for second and third
   output = x.GetCached(csr, coo, coo, {&cpu}, true, false);
@@ -271,17 +271,17 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKey) {
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   EXPECT_EQ(intermediate[1].size(), 1);
-  EXPECT_EQ((intermediate[1][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][0]->IsAbsolute<format::CSC<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 1);
-  EXPECT_EQ((intermediate[2][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((intermediate[2][0]->IsAbsolute<format::CSC<TYPE>>()), true);
   // Conversion for second two-step
   output = x.GetCached(csr, csr, csc, {&cpu}, true, false);
   intermediate = std::get<0>(output);
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   ASSERT_EQ(intermediate[1].size(), 2);
-  EXPECT_EQ((intermediate[1][0]->Is<format::COO<TYPE>>()), true);
-  EXPECT_EQ((intermediate[1][1]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][0]->IsAbsolute<format::COO<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][1]->IsAbsolute<format::CSC<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 0);
   delete csc;
 #undef TYPE
@@ -315,7 +315,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
   EXPECT_EQ(std::get<1>(output), 1);
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 1);
-  EXPECT_EQ((intermediate[0][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((intermediate[0][0]->IsAbsolute<format::CSR<TYPE>>()), true);
   EXPECT_EQ(intermediate[1].size(), 0);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for second only
@@ -324,7 +324,7 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   EXPECT_EQ(intermediate[1].size(), 1);
-  EXPECT_EQ((intermediate[1][0]->Is<format::CSR<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][0]->IsAbsolute<format::CSR<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 0);
   // Conversion for second and third
   output = x.GetCached(csr, coo, coo, {&cpu}, true, true);
@@ -332,16 +332,16 @@ TEST(MultiKeyFunctionMatcherMixinTest, MultiFormatKeyClearIntermediate) {
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   EXPECT_EQ(intermediate[1].size(), 1);
-  EXPECT_EQ((intermediate[1][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][0]->IsAbsolute<format::CSC<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 1);
-  EXPECT_EQ((intermediate[2][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((intermediate[2][0]->IsAbsolute<format::CSC<TYPE>>()), true);
   // Conversion for second two-step
   output = x.GetCached(csr, csr, csc, {&cpu}, true, true);
   intermediate = std::get<0>(output);
   EXPECT_EQ(intermediate.size(), 3);
   EXPECT_EQ(intermediate[0].size(), 0);
   ASSERT_EQ(intermediate[1].size(), 1);
-  EXPECT_EQ((intermediate[1][0]->Is<format::CSC<TYPE>>()), true);
+  EXPECT_EQ((intermediate[1][0]->IsAbsolute<format::CSC<TYPE>>()), true);
   EXPECT_EQ(intermediate[2].size(), 0);
 
   delete csc;
