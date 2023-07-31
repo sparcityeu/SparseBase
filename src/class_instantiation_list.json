@@ -643,11 +643,13 @@
       "ifdef": "USE_CUDA",
       "folder": "cuda",
       "exceptions": null
+    },
+    {
+      "template": "class HigherOrderCOO<$id_type, $nnz_type, $value_type>",
+      "filename": "higher_order_coo.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
     }
-    
-    
-    
-    
-    
   ]
 }
