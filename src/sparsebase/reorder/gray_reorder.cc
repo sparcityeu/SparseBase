@@ -89,7 +89,7 @@ bool GrayReorder<IDType, NNZType, ValueType>::is_banded(
     for (int i = row_ptr[order[r]]; i < row_ptr[order[r] + 1]; i++) {
       int col = cols[i];
       nnz_++;
-      if ((int)abs(col - r) <= band_size) band_count++;
+      if ((col >= r) ? (col - r <= band_size) : (r - col <= band_size)) band_count++;
     }
   }
 
@@ -153,14 +153,14 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       for (int j = csr->get_row_ptr()[i]; j < csr->get_row_ptr()[i + 1]; j++) {
         int col = csr->get_col()[j];
         nnz_sparse++;
-        if ((int)abs(col - i) <= band_size) sparse_diagonal++;
+        if ((col >= i) ? (col - i <= band_size) : (i - col <= band_size)) sparse_diagonal++;
       }
     } else {
       dense_v_order.push_back(i);
       for (int j = csr->get_row_ptr()[i]; j < csr->get_row_ptr()[i + 1]; j++) {
         int col = csr->get_col()[j];
         nnz_dense++;
-        if ((int)abs(col - i) <= band_size) dense_diagonal++;
+        if ((col >= i) ? (col - i <= band_size) : (i - col <= band_size)) dense_diagonal++;
       }
     }
   }
