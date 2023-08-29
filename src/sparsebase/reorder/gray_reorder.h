@@ -12,8 +12,8 @@ namespace sparsebase::reorder {
 
 enum BitMapSize{
   BitSize16 = 16,
-  BitSize32 = 32/*,
-  BitSize64 = 64*/ //at the moment, using 64 bits is not working as intended
+  BitSize32 = 32,
+  BitSize64 = 64
 };
 //! Params struct for GrayReorder
 struct GrayReorderParams : utils::Parameters {
@@ -44,7 +44,7 @@ class GrayReorder : public Reorderer<IDType> {
   static bool asc_comparator(const row_grey_pair &l, const row_grey_pair &r);
 
   // not sure if all IDTypes work for this
-  static unsigned long grey_bin_to_dec(unsigned long n);
+  static unsigned long long grey_bin_to_dec(unsigned long long n);
 
   static void print_dec_in_bin(unsigned long n, int size);
 
