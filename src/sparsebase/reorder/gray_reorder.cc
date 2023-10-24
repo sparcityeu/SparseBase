@@ -110,6 +110,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       static_cast<context::CPUContext *>(csr->get_context());
 
   IDType n_rows = csr->get_dimensions()[0];
+  IDType n_cols = csr->get_dimensions()[1];
+  
   /*This array stores the permutation vector such as order[0] = 243 means that
    * row 243 is the first row of the reordered matrix*/
   IDType *order = new IDType[n_rows]();
@@ -127,7 +129,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   bool decresc_grey_order = false;
 
   int group_count = 0;
-
+ 
   /*added*/
   int sparse_diagonal = 0;
   int dense_diagonal = 0;
@@ -164,7 +166,6 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       }
     }
   }
-
   v_order.reserve(sparse_v_order.size() +
                   dense_v_order.size());  // preallocate memory
 
@@ -199,7 +200,6 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   } else {
     is_dense_banded = false;
   }
-
   std::sort(sparse_v_order.begin(), sparse_v_order.end(),
             [&](int i, int j) -> bool {
               return (csr->get_row_ptr()[i + 1] - csr->get_row_ptr()[i]) <
@@ -207,11 +207,11 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
             });  // reorder sparse matrix into nnz amount
 
   // the bit resolution determines the width of the bitmap of each row
-  if (n_rows < bit_resolution) {
-    bit_resolution = n_rows;
+  if (n_cols < bit_resolution) {
+    bit_resolution = n_cols;
   }
 
-  int row_split = n_rows / bit_resolution;
+  int row_split = n_cols / bit_resolution;
 
   auto nnz_per_row_split = new IDType[bit_resolution];
   auto nnz_per_row_split_bin = new IDType[bit_resolution];
@@ -224,7 +224,6 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       reorder_section;  // vector that contains a section to be reordered
 
   reorder_section.reserve(n_rows);
-
   if (!is_sparse_banded) {  // if banded just row ordering by nnz count is
     // enough, else do bitmap reordering in groups
     for (int i = 0; i < sparse_v_order.size();
@@ -371,7 +370,6 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
     
     reorder_section.clear();
   }
-
   if (!is_dense_banded) {
     logger.Log("Rows [" + std::to_string(sparse_dense_split) + "-" +
                    std::to_string(n_rows) +
@@ -415,7 +413,6 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
 
     reorder_section.clear();
   }
-
   v_order.insert(v_order.end(), sparse_v_order.begin(), sparse_v_order.end());
   v_order.insert(v_order.end(), dense_v_order.begin(), dense_v_order.end());
 
@@ -425,8 +422,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   for (int i = 0; i < n_rows; i++) {
     order[v_order[i]] = i;
   }
+
   // std::copy(v_order_inv.begin(), v_order_inv.end(), order);
-  
   return order;
 }
 
