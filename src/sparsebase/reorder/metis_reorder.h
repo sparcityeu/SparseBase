@@ -18,12 +18,15 @@ struct MetisReorderParams : utils::Parameters {
   int64_t nseps = 1;
   int64_t numbering = 0;
   int64_t niter = 10;
-  int64_t seed = 42;
+  int64_t seed = 1;
   int64_t no2hop = 0;
   int64_t compress = 0;
   int64_t ccorder = 0;
   int64_t pfactor = 0;
   int64_t ufactor = 30;
+  int64_t ncuts = 1;
+  int64_t nparts = 4;
+  int64_t ordering = 0; /* 0 - RCM, 1 - AMD, 2 - ND*/
 };
 
 template <typename IDType, typename NNZType, typename ValueType>
