@@ -93,15 +93,15 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
       return inv_perm;
     }
 
-    /*metis::idx_t order_track = 0;
+    metis::idx_t order_track = 0;
     metis::idx_t objval;
     metis::idx_t ncon = 1;
-    auto *part = new metis::idx_t[n];*/
+    auto *part = new metis::idx_t[n];
 
     /* Partition the graph into k parts */
-    /*int ret = metis::METIS_PartGraphKway(&n, &ncon, csr->get_row_ptr(), csr->get_col(),
+    int ret = metis::METIS_PartGraphKway(&n, &ncon, csr->get_row_ptr(), csr->get_col(),
       nullptr, nullptr, nullptr, &k, nullptr,
-      nullptr, options, &objval, part);*/
+      nullptr, options, &objval, part);
 
     /* Go through all the k parts and reorder them */
     /*for (int i = 0; i < k; i++) {
