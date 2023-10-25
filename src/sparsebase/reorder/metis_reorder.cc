@@ -140,16 +140,16 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
         }
       }
       csr_row[nodesP] = nonZerosP;
-      /*sparsebase::format::CSR<NNZType, IDType, IDType> csr_part(nodesP, nodesP, csr_row, csr_col, nullptr);
+      sparsebase::format::CSR<NNZType, IDType, IDType> csr_part(nodesP, nodesP, csr_row, csr_col, nullptr);
       sparsebase::format::CSR<NNZType, IDType, IDType> * csr_part_ptr = &csr_part;
 
       auto *perm_part = new metis::idx_t[nodesP];
-      auto *inv_perm_part = new metis::idx_t[nodesP];*/
+      auto *inv_perm_part = new metis::idx_t[nodesP];
 
       //printf("nodes per partition: %d %d\n", nodesP, nonZerosP);
 
       /* Apply reordering (RCM or AMD or ND) to the partition */
-      /*if (ordering == 0) {
+      if (ordering == 0) {
         RCMReorderParams rcm_params = {};
         inv_perm_part = ReorderBase::Reorder<RCMReorder>(rcm_params, csr_part_ptr, {&cpu_context}, true);
       } else if (ordering == 1) {
@@ -159,17 +159,17 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
         options[metis::METIS_OPTION_OBJTYPE] = metis::METIS_OBJTYPE_NODE;
         options[metis::METIS_OPTION_IPTYPE] = metis::METIS_IPTYPE_NODE;
         metis::METIS_NodeND(&nodesP, csr_row, csr_col, nullptr, options, perm_part, inv_perm_part);
-      }*/
+      }
 
       /* Insert permutation order of the partition in the permutation vector of the final graph */
-      /*for (int j = 0; j < nodesP; j++)
+      for (int j = 0; j < nodesP; j++)
         perm_part[inv_perm_part[j]] = j;
       for (int j = 0; j < nodesP; j++)
         perm[order_track + j] = inv_flag[perm_part[j]];
       order_track += nodesP;
 
       delete[] perm_part;
-      delete[] inv_perm_part;*/
+      delete[] inv_perm_part;
     }
 
     /* Create the inverse permutation vector */
