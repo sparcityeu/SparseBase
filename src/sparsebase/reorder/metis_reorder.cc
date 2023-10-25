@@ -69,10 +69,6 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     metis::idx_t k = (metis::idx_t) mparams->nparts;
     metis::idx_t ordering = (metis::idx_t) mparams->ordering;
 
-    for (int j = 0; j < n; j++) { //added
-        inv_perm[j] = j;
-      }
-
     sparsebase::context::CPUContext cpu_context;
 
     /* If only 1 partition, apply RCM or AMD or ND */
@@ -145,8 +141,6 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
       auto *perm_part = new metis::idx_t[nodesP];
       auto *inv_perm_part = new metis::idx_t[nodesP];
-
-      //printf("nodes per partition: %d %d\n", nodesP, nonZerosP);
 
       /* Apply reordering (RCM or AMD or ND) to the partition */
       if (ordering == 0) {
