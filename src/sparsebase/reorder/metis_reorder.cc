@@ -76,7 +76,7 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     sparsebase::context::CPUContext cpu_context;
 
     /* If only 1 partition, apply RCM or AMD or ND */
-    /*if (k == 1) {
+    if (k == 1) {
       if (ordering == 0) {
         RCMReorderParams rcm_params = {};
         inv_perm = ReorderBase::Reorder<RCMReorder>(rcm_params, csr, {&cpu_context}, true);
@@ -91,7 +91,7 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
       
       delete[] perm;
       return inv_perm;
-    }*/
+    }
 
     /*metis::idx_t order_track = 0;
     metis::idx_t objval;
@@ -166,10 +166,10 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
         perm_part[inv_perm_part[j]] = j;
       for (int j = 0; j < nodesP; j++)
         perm[order_track + j] = inv_flag[perm_part[j]];
-      order_track += nodesP;*/
+      order_track += nodesP;
 
       delete[] perm_part;
-      delete[] inv_perm_part;
+      delete[] inv_perm_part;*/
     }
 
     /* Create the inverse permutation vector */
