@@ -104,17 +104,17 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
       nullptr, options, &objval, part);
 
     /* Go through all the k parts and reorder them */
-    /*for (int i = 0; i < k; i++) {
+    for (int i = 0; i < k; i++) {
       auto *csr_row = new metis::idx_t[n + 1];
       auto *csr_col = new metis::idx_t[csr->get_num_nnz()];
       auto *flag = new metis::idx_t[n];
       auto *inv_flag = new metis::idx_t[n];
       metis::idx_t nodesP = 0;
       metis::idx_t nonZerosP = 0;
-      csr_row[0] = 0;*/
+      csr_row[0] = 0;
 
       /* Flag the nodes belonging to the current partition */
-      /*for (int j = 0; j < n; j++) {
+      for (int j = 0; j < n; j++) {
         if (part[j] == i) {
           flag[j] = nodesP;
           inv_flag[nodesP] = j;
@@ -123,10 +123,10 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
           flag[j] = -1;
         }
       }
-      nodesP = 0;*/
+      nodesP = 0;
 
       /* Create CSR format for the nodes in the current partition */
-      /*for (int j = 0; j < n; j++) {
+      for (int j = 0; j < n; j++) {
         if (part[j] == i) {
           csr_row[nodesP] = nonZerosP;
           for (metis::idx_t ptr = rptr[j]; ptr < rptr[j + 1]; ptr++) {
@@ -140,13 +140,13 @@ IDType *MetisReorder<IDType, NNZType, ValueType>::GetReorderCSR(
         }
       }
       csr_row[nodesP] = nonZerosP;
-      sparsebase::format::CSR<NNZType, IDType, IDType> csr_part(nodesP, nodesP, csr_row, csr_col, nullptr);
+      /*sparsebase::format::CSR<NNZType, IDType, IDType> csr_part(nodesP, nodesP, csr_row, csr_col, nullptr);
       sparsebase::format::CSR<NNZType, IDType, IDType> * csr_part_ptr = &csr_part;
 
       auto *perm_part = new metis::idx_t[nodesP];
-      auto *inv_perm_part = new metis::idx_t[nodesP];
+      auto *inv_perm_part = new metis::idx_t[nodesP];*/
 
-      printf("nodes per partition: %d %d\n", nodesP, nonZerosP);*/
+      //printf("nodes per partition: %d %d\n", nodesP, nonZerosP);
 
       /* Apply reordering (RCM or AMD or ND) to the partition */
       /*if (ordering == 0) {
