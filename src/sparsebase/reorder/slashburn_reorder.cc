@@ -285,7 +285,6 @@ void SlashburnReorder<IDType, NNZType, ValueType>::slashloop(NNZType *rptr,
       IDType n_cc = orderCC(rptr, col, v_flag, order, level, gcc_id, n-1-max_id);
       break;
     } else {
-      printf("iteration nº %d\n", level);
       level++;
     }
   }
