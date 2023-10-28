@@ -11,7 +11,7 @@
 bool GREEDY;
 bool HUB_ORDER;
 
-/*TODO*/
+/*SQ*/
 /* 1ºst imp - greedy k-hub selection, update degree of nodes */
 /* after removing one of the nodes.                          */
 /* 2ºnd imp - order spokes by hube order and not by size     */
@@ -115,12 +115,12 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::removeKHubset(NNZType *rpt
                                                               IDType min_id) {
   std::priority_queue<std::pair<IDType, IDType>, std::vector<std::pair<IDType, IDType>>, std::greater<std::pair<IDType, IDType>>> PQ;
   IDType *k_hub = new IDType[k];
-  int i = 0, j = 0, qwp1 = 0;
+  IDType i = 0, j = 0, qwp1 = 0;
 
   /* Place first k nodes in the stack */
   for (i = 0; i < n; i++) {
     if (v_flag[i] == level) {
-      int degree = 0;
+      IDType degree = 0;
       for (IDType ptr = rptr[i]; ptr < rptr[i + 1]; ptr++) {
         IDType node_id = col[ptr];
         if (v_flag[node_id] == level) degree++;
@@ -133,7 +133,7 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::removeKHubset(NNZType *rpt
   /* Check rest of the nodes to find high degree ones */
   for (i = i+1; i < n; i++) {
     if (v_flag[i] == level) {
-      int degree = 0;
+      IDType degree = 0;
       for (IDType ptr = rptr[i]; ptr < rptr[i + 1]; ptr++) {
         IDType node_id = col[ptr];
         if (v_flag[node_id] == level) degree++;
@@ -146,7 +146,7 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::removeKHubset(NNZType *rpt
   }
   /* Remove them from the graph (flag = 0) */
   while (!PQ.empty()) {
-    int node_id = PQ.top().second;
+    IDType node_id = PQ.top().second;
     order[min_id + k - 1 - qwp1] = node_id;
     v_flag[node_id] = 0;
     k_hub[k - 1 - qwp1] = node_id;
@@ -165,22 +165,24 @@ IDType SlashburnReorder<IDType, NNZType, ValueType>::findCC(NNZType *rptr,
                                                         IDType *v_flag,
                                                         IDType level,
                                                         IDType root) {
-  IDType cc_count = 0;
+  IDType cc_count = 1;
   std::stack<IDType> DFS;
 
   DFS.push(root);
+  v_flag[root] = level + 1;
   
   /* Goes through all the nodes in the connected component */
   while (!DFS.empty()) {
     IDType u = DFS.top();
     DFS.pop();
-    v_flag[u] = level + 1;
-    cc_count++;
     
     for (IDType ptr = rptr[u]; ptr < rptr[u + 1]; ptr++) {
       IDType node_id = col[ptr];
-      if (v_flag[node_id] == level)
+      if (v_flag[node_id] == level) {
         DFS.push(node_id);
+        v_flag[node_id] = level + 1;
+        cc_count++;
+      } 
     }
   }
   return cc_count;
@@ -323,24 +325,24 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::GetReorderCSR(
 
   IDType cmp_counter = 0, max_id = 0;
 
-  for (int i = 0; i < nodes; i++) {
+  for (IDType i = 0; i < nodes; i++) {
     v_flag[i] = 1;
     t_count[i] = 0;
   }
 
   /* Create CSC format matrix of the input CSR */
-  for (int i = 0; i < csr->get_num_nnz(); i++) {
+  for (IDType i = 0; i < csr->get_num_nnz(); i++) {
     IDType col_id = col[i];
     t_count[col_id]++;
   }
   
   t_row[0] = 0;
-  for (int i = 1; i < nodes; i++) {
+  for (IDType i = 1; i < nodes; i++) {
     t_row[i] = t_row[i-1] + t_count[i-1];
   }
   t_row[nodes] = csr->get_num_nnz();
 
-  for (int i = 0; i < nodes; i++) {
+  for (IDType i = 0; i < nodes; i++) {
     for (IDType ptr = rptr[i]; ptr < rptr[i + 1]; ptr++) {
       IDType node_id = col[ptr];
       t_col[t_row[node_id] + t_count[node_id] - 1] = i;
@@ -353,7 +355,7 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   IDType *last_col = new IDType[csr->get_num_nnz() * 2];
   IDType last_c = 0;
   
-  for (int i = 0; i < nodes; i++) {
+  for (IDType i = 0; i < nodes; i++) {
     for (IDType ptr = rptr[i]; ptr < rptr[i + 1]; ptr++) {
       IDType node_id = col[ptr];
       last_col[last_c] = node_id;
