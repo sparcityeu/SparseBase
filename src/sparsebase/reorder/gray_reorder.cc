@@ -92,7 +92,7 @@ bool GrayReorder<IDType, NNZType, ValueType>::is_banded(
       if ((col >= r) ? (col - r <= band_size) : (r - col <= band_size)) band_count++;
     }
   }
-
+  
   if (double(band_count) / nnz_ >= 0.3) {
     banded = true;
   }
@@ -135,7 +135,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   int dense_diagonal = 0;
   int nnz_sparse = 0;
   int nnz_dense = 0;
-  int band_size = csr->get_dimensions()[1] / 64;
+  int band_size = csr->get_dimensions()[1] / 128;
 
   // Initializing row order
   std::vector<IDType> v_order;
@@ -152,6 +152,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
         params->nnz_threshold) {
       sparse_v_order.push_back(i);
       sparse_dense_split++;
+      /* Counts how many non-zeros are in the sparse sub-matrix diagonal */
       for (int j = csr->get_row_ptr()[i]; j < csr->get_row_ptr()[i + 1]; j++) {
         int col = csr->get_col()[j];
         nnz_sparse++;
@@ -159,6 +160,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       }
     } else {
       dense_v_order.push_back(i);
+      /* Counts how many non-zeros are in the dense sub-matrix diagonal */
       for (int j = csr->get_row_ptr()[i]; j < csr->get_row_ptr()[i + 1]; j++) {
         int col = csr->get_col()[j];
         nnz_dense++;
@@ -170,23 +172,9 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
                   dense_v_order.size());  // preallocate memory
 
   utils::Logger logger(typeid(GrayReorder));
-  /*bool is_sparse_banded =
-      is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
-                csr->get_row_ptr(), csr->get_col(), sparse_v_order);
-  
-  if (is_sparse_banded)
-    logger.Log(
-        "Sparse Sub-Matrix highly banded - Performing just density reordering",
-        utils::LogLevel::LOG_LVL_INFO);
 
-  bool is_dense_banded =
-      is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
-                csr->get_row_ptr(), csr->get_col(), dense_v_order);
-  if (is_dense_banded)
-    logger.Log("Dense Sub-Matrix highly banded - Maintaining structure",
-               utils::LogLevel::LOG_LVL_INFO);*/
-
-  /*ADDED*/
+  /* ADDED */
+  /* Checks of sub-matrices are highly banded or not */
   bool is_sparse_banded;
   bool is_dense_banded;
 
@@ -200,6 +188,14 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   } else {
     is_dense_banded = false;
   }
+
+  if (is_sparse_banded)
+    logger.Log("Sparse Sub-Matrix highly banded - Performing just density reordering",
+        utils::LogLevel::LOG_LVL_INFO);
+  if (is_dense_banded)
+    logger.Log("Dense Sub-Matrix highly banded - Maintaining structure",
+               utils::LogLevel::LOG_LVL_INFO);
+
   std::sort(sparse_v_order.begin(), sparse_v_order.end(),
             [&](int i, int j) -> bool {
               return (csr->get_row_ptr()[i + 1] - csr->get_row_ptr()[i]) <
