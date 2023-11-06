@@ -120,6 +120,21 @@ void compare_csr(format::CSR<IDType, NNZType, ValueType> *correct,
     EXPECT_EQ(correct_col[i], testing_col[i]);
   }
 }
+template <typename IDType, typename NNZType, typename ValueType>
+void compare_csc(format::CSC<IDType, NNZType, ValueType> *correct,
+                 format::CSC<IDType, NNZType, ValueType> *testing) {
+  auto correct_col_ptr = correct->get_col_ptr();
+  auto correct_row = correct->get_row();
+  auto testing_col_ptr = testing->get_col_ptr();
+  auto testing_row = testing->get_row();
+
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(correct_col_ptr[i], testing_col_ptr[i]);
+  }
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(correct_row[i], testing_row[i]);
+  }
+}
 template <typename V, typename E, typename O, typename L>
 void confirm_renumbered_csr(V *xadj, V *renumbered_xadj, E *adj,
                             E *renumbered_adj, O *inverse_order, L n) {

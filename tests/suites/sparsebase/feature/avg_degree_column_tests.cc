@@ -88,7 +88,7 @@ TEST_F(AvgDegreeTest, AllTests) {
   ASSERT_EQ(cached_data[0][0]->get_id(), std::type_index(typeid(global_csc)));
   auto converted_csc =
       cached_data[0][0]->AsAbsolute<format::CSC<int, int, int>>();
-  compare_csr(&global_csc, converted_csc);
+  compare_csc(&global_csc, converted_csc);
   // Check Extract
   auto feature_map = feature.Extract(&global_csc, {&cpu_context}, true);
   // Check map size and type
