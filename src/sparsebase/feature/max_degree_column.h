@@ -74,7 +74,7 @@ class MaxDegreeColumn : public feature::FeaturePreprocessType<NNZType *> {
 
 }  // namespace sparsebase::feature
 #ifdef _HEADER_ONLY
-#include "sparsebase/feature/max_degree.cc"
+#include "sparsebase/feature/max_degree_column.cc"
 #endif
 
 #endif  // SPARSEBASE_PROJECT_MAX_DEGREE_COLUMN_H
