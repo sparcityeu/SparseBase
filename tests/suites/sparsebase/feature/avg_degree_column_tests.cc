@@ -24,7 +24,7 @@ using namespace sparsebase::bases;
 using namespace sparsebase::feature;
 #include "../functionality_common.inc"
 
-class AvgDegreeTest : public ::testing::Test {
+class AvgDegreeColumnTest : public ::testing::Test {
  protected:
   AvgDegreeColumn<int, int, int, float> feature;
 
@@ -32,7 +32,7 @@ class AvgDegreeTest : public ::testing::Test {
   struct Params2 : sparsebase::utils::Parameters {};
 };
 
-TEST_F(AvgDegreeTest, AllTests) {
+TEST_F(AvgDegreeColumnTest, AllTests) {
   // test get_sub_ids
   EXPECT_EQ(feature.get_sub_ids().size(), 1);
   EXPECT_EQ(feature.get_sub_ids()[0], std::type_index(typeid(feature)));
