@@ -55,7 +55,7 @@ class MinDegreeColumn : public feature::FeaturePreprocessType<NNZType *> {
       GetMinDegreeColumnCached(format::Format *format,
                        std::vector<context::Context *> contexts,
                        bool convert_input);
-  //! Min Degree implementation function for CSRs
+  //! Min Degree implementation function for CSCs
   /*!
    *
    * @param formats A vector containing a single format pointer that should
@@ -74,7 +74,7 @@ class MinDegreeColumn : public feature::FeaturePreprocessType<NNZType *> {
 
 }  // namespace sparsebase::feature
 #ifdef _HEADER_ONLY
-#include "sparsebase/feature/min_degree.cc"
+#include "sparsebase/feature/min_degree_column.cc"
 #endif
 
 #endif  // SPARSEBASE_PROJECT_MIN_DEGREE_COLUMN_H

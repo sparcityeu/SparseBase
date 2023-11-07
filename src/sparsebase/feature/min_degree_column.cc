@@ -104,6 +104,6 @@ NNZType *MinDegreeColumn<IDType, NNZType, ValueType>::GetMinDegreeColumnCSC(
 }
 
 #if !defined(_HEADER_ONLY)
-#include "init/min_degree.inc"
+#include "init/min_degree_column.inc"
 #endif
 }  // namespace sparsebase::feature
