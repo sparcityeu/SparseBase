@@ -94,7 +94,7 @@ NNZType *MaxDegreeColumn<IDType, NNZType, ValueType>::GetMaxDegreeColumnCSC(
     std::vector<format::Format *> formats, utils::Parameters *params) {
   auto csc = formats[0]->AsAbsolute<format::CSC<IDType, NNZType, ValueType>>();
   IDType num_col =  csc->get_dimensions()[0];
-  auto *cols = csc->get_csc_ptr();
+  auto *cols = csc->get_col_ptr();
   NNZType *max_degree = new NNZType;
   *max_degree = cols[1] - cols[0];
   for (int i = 1; i < num_col; i++) {
