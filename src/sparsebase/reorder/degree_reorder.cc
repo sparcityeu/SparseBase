@@ -31,15 +31,15 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   auto col = csr->get_col();
 
   /* Counting sort */
-  for (IDType u = 0; u < n; u++) {
+  /*for (IDType u = 0; u < n; u++) {
     counts[row_ptr[u + 1] - row_ptr[u]]++;
   }
   for (IDType u = 1; u < n + 1; u++) {
     counts[u] += counts[u - 1];
-  }
+  }*/
   IDType *sorted = new IDType[n];
   memset(sorted, -1, sizeof(IDType) * n);
-  for (IDType u = 0; u < n; u++) {
+  /*for (IDType u = 0; u < n; u++) {
     IDType deg = row_ptr[u + 1] - row_ptr[u];
     IDType ec = counts[deg];
     counts[deg]--;
@@ -51,7 +51,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
       sorted[i] = sorted[n - i - 1];
       sorted[n - i - 1] = swp;
     }
-  }
+  }*/
   /* Create inverse permutation */
   auto *inverse_permutation = new IDType[n];
   for (IDType i = 0; i < n; i++) {
