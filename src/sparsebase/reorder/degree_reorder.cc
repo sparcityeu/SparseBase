@@ -52,6 +52,9 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
       sorted[n - i - 1] = swp;
     }
   }*/
+  for (IDType u = 0; u < n; u++) {
+    sorted[u] = u;
+  }
   /* Create inverse permutation */
   auto *inverse_permutation = new IDType[n];
   for (IDType i = 0; i < n; i++) {
