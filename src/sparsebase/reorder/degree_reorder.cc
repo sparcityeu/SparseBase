@@ -39,9 +39,10 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   memset(sorted, -1, sizeof(IDType) * n);
   IDType *mr = new IDType[n]();
   for (IDType u = 0; u < n; u++) {
-    IDType ec = counts[row_ptr[u + 1] - row_ptr[u]];
-    sorted[ec + mr[ec]] = u;
-    mr[ec]++;
+    IDType deg = row_ptr[u + 1] - row_ptr[u];
+    IDType ec = counts[deg];
+    counts[deg]--;
+    sorted[ec - 1] = u;
   }
   if (!ascending) {
     for (IDType i = 0; i < n / 2; i++) {
