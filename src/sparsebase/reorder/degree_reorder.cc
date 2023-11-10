@@ -26,24 +26,22 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
   bool ascending = cast_params->ascending;
   IDType n = csr->get_dimensions()[0];
-  IDType *counts = new IDType[n + 1]();
+  IDType *counts = new IDType[n]();
   auto row_ptr = csr->get_row_ptr();
   auto col = csr->get_col();
-
-  /* Counting sort */
-  /*for (IDType u = 0; u < n; u++) {
-    counts[row_ptr[u + 1] - row_ptr[u]]++;
+  for (IDType u = 0; u < n; u++) {
+    counts[row_ptr[u + 1] - row_ptr[u] + 1]++;
   }
-  for (IDType u = 1; u < n + 1; u++) {
+  for (IDType u = 1; u < n; u++) {
     counts[u] += counts[u - 1];
-  }*/
+  }
   IDType *sorted = new IDType[n];
   memset(sorted, -1, sizeof(IDType) * n);
-  /*for (IDType u = 0; u < n; u++) {
-    IDType deg = row_ptr[u + 1] - row_ptr[u];
-    IDType ec = counts[deg];
-    counts[deg]--;
-    sorted[ec - 1] = u;
+  IDType *mr = new IDType[n]();
+  for (IDType u = 0; u < n; u++) {
+    IDType ec = counts[row_ptr[u + 1] - row_ptr[u]];
+    sorted[ec + mr[ec]] = u;
+    mr[ec]++;
   }
   if (!ascending) {
     for (IDType i = 0; i < n / 2; i++) {
@@ -51,16 +49,12 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
       sorted[i] = sorted[n - i - 1];
       sorted[n - i - 1] = swp;
     }
-  }*/
-  for (IDType u = 0; u < n; u++) {
-    sorted[u] = u;
   }
-  /* Create inverse permutation */
   auto *inverse_permutation = new IDType[n];
   for (IDType i = 0; i < n; i++) {
     inverse_permutation[sorted[i]] = i;
   }
-  
+  delete[] mr;
   delete[] counts;
   delete[] sorted;
   return inverse_permutation;
