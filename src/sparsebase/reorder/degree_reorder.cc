@@ -55,7 +55,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   for (IDType i = 0; i < n; i++) {
     inverse_permutation[sorted[i]] = i;
   }
-  //delete[] mr;
+  delete[] mr;
   delete[] counts;
   delete[] sorted;
   return inverse_permutation;
