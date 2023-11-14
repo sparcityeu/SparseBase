@@ -341,7 +341,7 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     t_row[i] = t_row[i-1] + t_count[i-1];
   }
   t_row[nodes] = csr->get_num_nnz();
-
+  
   for (IDType i = 0; i < nodes; i++) {
     for (IDType ptr = rptr[i]; ptr < rptr[i + 1]; ptr++) {
       IDType node_id = col[ptr];
@@ -349,37 +349,34 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::GetReorderCSR(
       t_count[node_id]--;
     }
   }
- 
+  
   /* Create the symmetric version of the input matrix */
   NNZType *last_row = new NNZType[nodes + 1];
   IDType *last_col = new IDType[csr->get_num_nnz() * 2];
+  IDType *s_flag = new IDType[nodes]();
   IDType last_c = 0;
   
   for (IDType i = 0; i < nodes; i++) {
     for (IDType ptr = rptr[i]; ptr < rptr[i + 1]; ptr++) {
       IDType node_id = col[ptr];
       last_col[last_c] = node_id;
+      s_flag[node_id] = i+1;
       last_c++;
     }
     for (IDType ptr = t_row[i]; ptr < t_row[i + 1]; ptr++) {
       IDType node_id = t_col[ptr];
-      bool dont = false;
-      for (IDType ptr2 = rptr[i]; ptr2 < rptr[i + 1]; ptr2++) {
-        IDType node_id2 = col[ptr2];
-        if (node_id == node_id2) {
-          dont = true;
-        }
-      }
-      if (!dont) {
+      if (s_flag[node_id] != i+1) {
         last_col[last_c] = node_id;
         last_c++;
       }
     }
     last_row[i + 1] = last_c;
   }
+
   last_row[0] = 0;
 
   /* Free the auxiliary CSC format matrix */
+  delete[] s_flag;
   delete[] t_row;
   delete[] t_count;
   delete[] t_col;
@@ -398,13 +395,13 @@ IDType *SlashburnReorder<IDType, NNZType, ValueType>::GetReorderCSR(
     IDType n_cc = orderCC(last_row, last_col, v_flag, order, 1, root, nodes-1-max_id);
     max_id += n_cc;
   }
+
   if (PQ.top().first < k) {
     IDType root = PQ.top().second;
     PQ.pop();
     IDType n_cc = orderCC(last_row, last_col, v_flag, order, 1, root, nodes-1-max_id);
   } else {
     PQ.pop();
-
     /* Call the slashburn loop algorithm to order the GCC */
     slashloop(last_row, last_col, nodes, k, v_flag, order, 2, max_id);
   }
