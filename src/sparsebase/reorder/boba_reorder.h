@@ -10,7 +10,12 @@
 
 namespace sparsebase::reorder {
 
-struct BOBAReorderParams : utils::Parameters {};
+struct BOBAReorderParams : utils::Parameters {
+  bool sequential;
+  explicit BOBAReorderParams() {}
+  BOBAReorderParams(bool sequential_)
+      : sequential(sequential_) {}
+};
 
 template <typename IDType, typename NNZType, typename ValueType>
 class BOBAReorder : public Reorderer<IDType> {
@@ -19,7 +24,7 @@ class BOBAReorder : public Reorderer<IDType> {
  public:
   //! Parameter type for GrayReorder
   typedef BOBAReorderParams ParamsType;
-  BOBAReorder();
+  BOBAReorder(bool sequential);
   BOBAReorder(ParamsType p);
 
   protected: 
