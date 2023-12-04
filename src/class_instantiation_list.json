@@ -414,7 +414,7 @@
       "exceptions": null
     },
     {
-      "template": "class SlashBurnReorder<$id_type, $nnz_type, $value_type>",
+      "template": "class SlashburnReorder<$id_type, $nnz_type, $value_type>",
       "filename": "slashburn_reorder.inc",
       "ifdef": null,
       "folder": null,
