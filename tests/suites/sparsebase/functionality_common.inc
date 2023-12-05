@@ -2,9 +2,13 @@
 #include "sparsebase/format/array.h"
 #include "sparsebase/format/csr.h"
 #include "sparsebase/format/coo.h"
+#include "sparsebase/format/csc.h"
 const int n = 3;
 const int nnz = 4;
 int row_ptr[n + 1] = {0, 2, 3, 4};
+int col_ptr[n + 1] = {0, 2, 3, 4};
+int row_ind[nnz] = {1, 2, 0, 0};
+int vals_csr[nnz] = {3, 4, 1, 2};
 int cols[nnz] = {1, 2, 0, 0};
 int rows[nnz] = {0, 0, 1, 2};
 float distribution[n] = {2.0 / nnz, 1.0 / nnz, 1.0 / nnz};
@@ -53,6 +57,8 @@ float reordered_array[array_length] = {0.1, 0.2, 0.0};
 format::Array<float> orig_arr(n, original_array, format::kNotOwned);
 format::Array<float> inv_arr(n, reordered_array, format::kNotOwned);
 format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, vals,
+                                      format::kNotOwned);
+format::CSC<int, int, int> global_csc(n, n, col_ptr, row_ind, vals_csr,
                                       format::kNotOwned);
 format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, vals,
                                       format::kNotOwned);
@@ -112,6 +118,21 @@ void compare_csr(format::CSR<IDType, NNZType, ValueType> *correct,
   }
   for (int i = 0; i < nnz; i++) {
     EXPECT_EQ(correct_col[i], testing_col[i]);
+  }
+}
+template <typename IDType, typename NNZType, typename ValueType>
+void compare_csc(format::CSC<IDType, NNZType, ValueType> *correct,
+                 format::CSC<IDType, NNZType, ValueType> *testing) {
+  auto correct_col_ptr = correct->get_col_ptr();
+  auto correct_row = correct->get_row();
+  auto testing_col_ptr = testing->get_col_ptr();
+  auto testing_row = testing->get_row();
+
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(correct_col_ptr[i], testing_col_ptr[i]);
+  }
+  for (int i = 0; i < nnz; i++) {
+    EXPECT_EQ(correct_row[i], testing_row[i]);
   }
 }
 template <typename V, typename E, typename O, typename L>
