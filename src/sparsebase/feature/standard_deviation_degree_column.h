@@ -100,6 +100,6 @@ class StandardDeviationDegreeColumn
 };
 }  // namespace sparsebase::feature
 #ifdef _HEADER_ONLY
-#include "sparsebase/feature/standard_deviation_degree_column.cc"
+#include "standard_deviation_degree_column.cc"
 #endif
 #endif  // SPARSEBASE_PROJECT_STANDARD_DEVIATION_DEGREE_COLUMN_H
