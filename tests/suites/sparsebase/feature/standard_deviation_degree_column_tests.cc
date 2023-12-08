@@ -79,7 +79,7 @@ TEST_F(StandardDeviationDegreeColumnTest, AllTests) {
       feature.GetStandardDeviationDegreeColumn(&global_coo, {&cpu_context}, true);
   EXPECT_NEAR(*standard_deviation_degree, standard_deviation_in_degrees, 0.000001);
   delete standard_deviation_degree;
-  EXPECT_THcol(feature.GetStandardDeviationDegreeColumn(&global_coo, {&cpu_context}, false),
+  EXPECT_THROW(feature.GetStandardDeviationDegreeColumn(&global_coo, {&cpu_context}, false),
                utils::DirectExecutionNotAvailableException<
                    std::vector<std::type_index>>);
   // Check GetStandardDeviationDegreeColumn with conversion and cached
