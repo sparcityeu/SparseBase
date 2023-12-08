@@ -92,7 +92,7 @@ TEST_F(StandardDeviationDegreeColumnTest, AllTests) {
   ASSERT_EQ(cached_data.size(), 1);
   ASSERT_EQ(cached_data[0][0]->get_id(), std::type_index(typeid(global_csc)));
   auto converted_csc =
-      cached_data[0][0]->AsAbsolute<format::CSR<int, int, int>>();
+      cached_data[0][0]->AsAbsolute<format::CSC<int, int, int>>();
   compare_csc(&global_csc, converted_csc);
   // Check Extract
   auto feature_map = feature.Extract(&global_csc, {&cpu_context}, true);
