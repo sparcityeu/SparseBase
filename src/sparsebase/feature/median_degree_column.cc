@@ -133,7 +133,7 @@ FeatureType *MedianDegreeColumn<IDType, NNZType, ValueType, FeatureType>::
                        utils::Parameters *params) {
   auto csc = formats[0]->AsAbsolute<format::CSC<IDType, NNZType, ValueType>>();
   IDType num_col =  csc->get_dimensions()[0];
-  auto *cols = csc->get_row_ptr();
+  auto *cols = csc->get_col_ptr();
 
   std::vector<NNZType> degrees;
   degrees.reserve(num_col);
