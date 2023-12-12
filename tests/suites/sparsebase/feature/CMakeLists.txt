@@ -134,6 +134,15 @@ target_link_libraries(sparsebase_feature_median_degree_column_tests.test gtest g
 add_test(NAME sparsebase_feature_median_degree_column_tests.test COMMAND sparsebase_feature_median_degree_column_tests.test)
 
 if(${USE_CUDA})
+    set_source_files_properties(standard_deviation_degree_column_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_standard_deviation_degree_column_tests.test standard_deviation_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_standard_deviation_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_standard_deviation_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_standard_deviation_degree_column_tests.test COMMAND sparsebase_feature_standard_deviation_degree_column_tests.test)
+
+if(${USE_CUDA})
     set_source_files_properties(coefficient_of_variation_degree_column.cc PROPERTIES LANGUAGE CUDA)
 endif()
 add_executable(sparsebase_feature_coefficient_of_variation_degree_column_tests.test coefficient_of_variation_degree_column_tests.cc)
