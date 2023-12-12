@@ -59,7 +59,7 @@ format::Array<float> inv_arr(n, reordered_array, format::kNotOwned);
 format::CSR<int, int, int> global_csr(n, n, row_ptr, cols, vals,
                                       format::kNotOwned);
 format::CSC<int, int, int> global_csc(n, n, col_ptr, row_ind, vals_csr,
-                                      format::kNotOwned);
+                                     format::kNotOwned);
 format::COO<int, int, int> global_coo(n, n, nnz, rows, cols, vals,
                                       format::kNotOwned);
 sparsebase::context::CPUContext cpu_context;
