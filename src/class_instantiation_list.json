@@ -547,6 +547,13 @@
       "exceptions": null
     },
     {
+      "template": "class MedianDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "median_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class StandardDeviationDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "standard_deviation_degree_column.inc",
       "ifdef": null,
@@ -554,6 +561,26 @@
       "exceptions": null
     },
     {
+      "template": "class StandardDeviationDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "standard_deviation_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class CoefficientOfVariationDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "coefficient_of_variation_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class GeometricAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "geometric_avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
       "template": "class CoefficientOfVariationDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "coefficient_of_variation_degree_column.inc",
       "ifdef": null,      
