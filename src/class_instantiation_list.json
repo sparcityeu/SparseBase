@@ -414,6 +414,20 @@
       "exceptions": null
     },
     {
+      "template": "class SlashburnReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "slashburn_reorder.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class BOBAReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "boba_reorder.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class GenericReorder<$id_type, $nnz_type, $value_type>",
       "filename": "generic_reorder.inc",
       "ifdef": null,
@@ -535,6 +549,20 @@
     {
       "template": "class AvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class CoefficientOfVariationDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "coefficient_of_variation_degree_column.inc",
+      "ifdef": null,      
+      "folder": null,      
+      "exceptions": null
+    },
+    {
+      "template": "class GeometricAvgDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "geometric_avg_degree_column.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
