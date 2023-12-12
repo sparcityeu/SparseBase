@@ -35,12 +35,13 @@ bool GrayReorder<IDType, NNZType, ValueType>::asc_comparator(
 
 template <typename IDType, typename NNZType, typename ValueType>
 // not sure if all IDTypes work for this
-unsigned long GrayReorder<IDType, NNZType, ValueType>::grey_bin_to_dec(
-    unsigned long n) {
-  unsigned long inv = 0;
+unsigned long long GrayReorder<IDType, NNZType, ValueType>::grey_bin_to_dec(
+    unsigned long long n) {
+  unsigned long long inv = 0;
 
-  for (; n; n = n >> 1) inv ^= n;
-
+  for (; n; n = n >> 1) {
+    inv ^= n;
+  }
   return inv;
 }
 
@@ -81,16 +82,18 @@ bool GrayReorder<IDType, NNZType, ValueType>::is_banded(
     std::vector<IDType> order, int band_size) {
   if (band_size == -1) band_size = n_cols / 64;
   int band_count = 0;
+  int nnz_ = 0;
   bool banded = false;
 
   for (int r = 0; r < order.size(); r++) {
     for (int i = row_ptr[order[r]]; i < row_ptr[order[r] + 1]; i++) {
       int col = cols[i];
-      if (abs(col - r) <= band_size) band_count++;
+      nnz_++;
+      if ((col >= r) ? (col - r <= band_size) : (r - col <= band_size)) band_count++;
     }
   }
-
-  if (double(band_count) / nnz >= 0.3) {
+  
+  if (double(band_count) / nnz_ >= 0.3) {
     banded = true;
   }
   utils::Logger logger(typeid(GrayReorder));
@@ -107,6 +110,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       static_cast<context::CPUContext *>(csr->get_context());
 
   IDType n_rows = csr->get_dimensions()[0];
+  IDType n_cols = csr->get_dimensions()[1];
+  
   /*This array stores the permutation vector such as order[0] = 243 means that
    * row 243 is the first row of the reordered matrix*/
   IDType *order = new IDType[n_rows]();
@@ -116,7 +121,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   int bit_resolution = params->resolution;
 
   int raise_to = 0;
-  int adder = 0;
+  unsigned long long adder = 0;
   int start_split_reorder, end_split_reorder;
 
   int last_row_nnz_count = 0;
@@ -124,11 +129,21 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   bool decresc_grey_order = false;
 
   int group_count = 0;
+ 
+  /*added*/
+  int sparse_diagonal = 0;
+  int dense_diagonal = 0;
+  int nnz_sparse = 0;
+  int nnz_dense = 0;
+  int band_size = csr->get_dimensions()[1] / 128;
 
   // Initializing row order
   std::vector<IDType> v_order;
   std::vector<IDType> sparse_v_order;
   std::vector<IDType> dense_v_order;
+
+  sparse_v_order.reserve(n_rows);
+  dense_v_order.reserve(n_rows);
 
   // Splitting original matrix's rows in two submatrices
   IDType sparse_dense_split = 0;
@@ -137,26 +152,46 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
         params->nnz_threshold) {
       sparse_v_order.push_back(i);
       sparse_dense_split++;
+      /* Counts how many non-zeros are in the sparse sub-matrix diagonal */
+      for (int j = csr->get_row_ptr()[i]; j < csr->get_row_ptr()[i + 1]; j++) {
+        int col = csr->get_col()[j];
+        nnz_sparse++;
+        if ((col >= i) ? (col - i <= band_size) : (i - col <= band_size)) sparse_diagonal++;
+      }
     } else {
       dense_v_order.push_back(i);
+      /* Counts how many non-zeros are in the dense sub-matrix diagonal */
+      for (int j = csr->get_row_ptr()[i]; j < csr->get_row_ptr()[i + 1]; j++) {
+        int col = csr->get_col()[j];
+        nnz_dense++;
+        if ((col >= i) ? (col - i <= band_size) : (i - col <= band_size)) dense_diagonal++;
+      }
     }
   }
-
   v_order.reserve(sparse_v_order.size() +
                   dense_v_order.size());  // preallocate memory
 
-  bool is_sparse_banded =
-      is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
-                csr->get_row_ptr(), csr->get_col(), sparse_v_order);
   utils::Logger logger(typeid(GrayReorder));
-  if (is_sparse_banded)
-    logger.Log(
-        "Sparse Sub-Matrix highly banded - Performing just density reordering",
-        utils::LogLevel::LOG_LVL_INFO);
 
-  bool is_dense_banded =
-      is_banded(csr->get_num_nnz(), csr->get_dimensions()[1],
-                csr->get_row_ptr(), csr->get_col(), dense_v_order);
+  /* ADDED */
+  /* Checks of sub-matrices are highly banded or not */
+  bool is_sparse_banded;
+  bool is_dense_banded;
+
+  if (double(sparse_diagonal) / nnz_sparse > 0.3) {
+    is_sparse_banded = true;
+  } else {
+    is_sparse_banded = false;
+  }
+  if (double(dense_diagonal) / nnz_dense > 0.2) {
+    is_dense_banded = true;
+  } else {
+    is_dense_banded = false;
+  }
+
+  if (is_sparse_banded)
+    logger.Log("Sparse Sub-Matrix highly banded - Performing just density reordering",
+        utils::LogLevel::LOG_LVL_INFO);
   if (is_dense_banded)
     logger.Log("Dense Sub-Matrix highly banded - Maintaining structure",
                utils::LogLevel::LOG_LVL_INFO);
@@ -168,25 +203,25 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
             });  // reorder sparse matrix into nnz amount
 
   // the bit resolution determines the width of the bitmap of each row
-  if (n_rows < bit_resolution) {
-    bit_resolution = n_rows;
+  if (n_cols < bit_resolution) {
+    bit_resolution = n_cols;
   }
 
-  int row_split = n_rows / bit_resolution;
+  int row_split = n_cols / bit_resolution;
 
   auto nnz_per_row_split = new IDType[bit_resolution];
   auto nnz_per_row_split_bin = new IDType[bit_resolution];
 
-  unsigned long decimal_bit_map = 0;
-  unsigned long dec_begin = 0;
+  unsigned long long decimal_bit_map = 0;
+  unsigned long long dec_begin = 0;
   int dec_begin_ind = 0;
 
   std::vector<row_grey_pair>
       reorder_section;  // vector that contains a section to be reordered
 
+  reorder_section.reserve(n_rows);
   if (!is_sparse_banded) {  // if banded just row ordering by nnz count is
     // enough, else do bitmap reordering in groups
-
     for (int i = 0; i < sparse_v_order.size();
          i++) {  // sparse sub matrix if not highly banded
       if (i == 0) {
@@ -218,6 +253,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
 
       // get bitmap of the row in decimal value (first rows are less significant
       // bits)
+
       decimal_bit_map = 0;
       for (int j = 0; j < bit_resolution; j++) {
         adder = 0;
@@ -291,7 +327,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
           group_count = 0;
         }
       }
-
+      
       // if(decimal_bit_map != 0){
       //   for(int i = 0; i < bit_resolution; i++){
       //     std::cout << "[" << nnz_per_row_split_bin[(bit_resolution-1)-i] <<
@@ -303,9 +339,10 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       // }
 
       //
-
+      
       reorder_section.push_back(
           row_grey_pair(sparse_v_order[i], grey_bin_to_dec(decimal_bit_map)));
+
 
       // when reaching end of sparse submatrix, reorder section
       if (i == sparse_v_order.size() - 1) {
@@ -326,10 +363,9 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
         }
       }
     }
-
+    
     reorder_section.clear();
   }
-
   if (!is_dense_banded) {
     logger.Log("Rows [" + std::to_string(sparse_dense_split) + "-" +
                    std::to_string(n_rows) +
@@ -339,6 +375,7 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
     for (int i = 0; i < dense_v_order.size(); i++) {
       // if first row, establish the nnz amount, and starting index
       for (int j = 0; j < bit_resolution; j++) nnz_per_row_split[j] = 0;
+      for (int j = 0; j < bit_resolution; j++) nnz_per_row_split_bin[j] = 0;
 
       for (int k = csr->get_row_ptr()[dense_v_order[i]];
            k < csr->get_row_ptr()[dense_v_order[i] + 1]; k++) {
@@ -351,12 +388,14 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
       for (int j = 0; j < bit_resolution; j++) {
         adder = 0;
         if (nnz_per_row_split[j] > threshold) {
+          nnz_per_row_split_bin[j] = 1;
           raise_to = j;  // row 0 = lowest significant bit
           adder = pow(2, raise_to);
 
           decimal_bit_map = decimal_bit_map + adder;
         }
       }
+
       reorder_section.push_back(
           row_grey_pair(dense_v_order[i], grey_bin_to_dec(decimal_bit_map)));
     }
@@ -370,7 +409,6 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
 
     reorder_section.clear();
   }
-
   v_order.insert(v_order.end(), sparse_v_order.begin(), sparse_v_order.end());
   v_order.insert(v_order.end(), dense_v_order.begin(), dense_v_order.end());
 
@@ -380,8 +418,8 @@ IDType *GrayReorder<IDType, NNZType, ValueType>::GrayReorderingCSR(
   for (int i = 0; i < n_rows; i++) {
     order[v_order[i]] = i;
   }
-  // std::copy(v_order_inv.begin(), v_order_inv.end(), order);
 
+  // std::copy(v_order_inv.begin(), v_order_inv.end(), order);
   return order;
 }
 
