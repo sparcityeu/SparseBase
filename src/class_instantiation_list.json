@@ -533,6 +533,13 @@
       "exceptions": null
     },
     {
+      "template": "class MinDegreeColumn<$id_type, $nnz_type, $value_type>",
+      "filename": "min_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MaxDegree<$id_type, $nnz_type, $value_type>",
       "filename": "max_degree.inc",
       "ifdef": null,
