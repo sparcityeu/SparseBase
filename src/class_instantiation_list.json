@@ -554,6 +554,13 @@
       "exceptions": null
     },
     {
+      "template": "class AvgDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "avg_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class StandardDeviationDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "standard_deviation_degree_column.inc",
       "ifdef": null,
