@@ -6,7 +6,7 @@ It is designed with HPC (High Performance Computing) usage at the forefront. It 
 
 The library is still in early stages of development. As a result, the API is not stable and likely to change in the near future.
 
-:rocket: [Installation & Basic Usage](https://sparcityeu.github.io/sparsebase/pages/getting_started.html)
+:rocket: [Installation & Basic Usage](https://sparcityeu.github.io/sparsebase/pages/getting_started/index.html)
 
 :computer: [Source Code](https://github.com/sparcityeu/sparsebase)
 
