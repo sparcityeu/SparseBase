@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+
 if(APPLE)
   find_package(OpenMP)
   # From https://github.com/microsoft/LightGBM/pull/5563/files
@@ -67,6 +69,12 @@ include(cmake/add_opt_library.cmake)
 option(USE_METIS "Enable METIS integration" OFF)
 if(USE_METIS)
   add_opt_library("metis" "OFF")
+endif()
+
+# External Optional Libraries q qq
+option(USE_MTKAHYPAR "Enable MTKAHYPAR integration" OFF)
+if(USE_MTKAHYPAR)
+  add_opt_library("mtkahypar" "OFF")
 endif()
 
 option(USE_AMD_ORDER "Enable AMD reorder integration" OFF)

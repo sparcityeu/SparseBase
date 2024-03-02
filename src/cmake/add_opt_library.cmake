@@ -41,7 +41,7 @@ macro(add_opt_library name LOCAL_HEADER_ONLY)
 
     find_path(
             OPT_INC
-            NAMES ${OPT_NAME_LOWER}.h ${OPT_NAME_LOWER}.hpp ${OPT_NAME_LOWER}.hxx
+            NAMES ${OPT_NAME_LOWER}.h ${OPT_NAME_LOWER}.hpp ${OPT_NAME_LOWER}.hxx lib${OPT_NAME_LOWER}.h lib${OPT_NAME_LOWER}.hpp lib${OPT_NAME_LOWER}.hxx 
             PATH_SUFFIXES include
             PATHS
             ${${OPT_NAME_UPPER}_INC_DIR}
