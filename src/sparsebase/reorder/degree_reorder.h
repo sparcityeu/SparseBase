@@ -13,7 +13,7 @@ namespace sparsebase::reorder {
 //! Parameters used in DegreeReorder, namely whether or not degrees are ordered
 //! in ascending order.
 struct DegreeReorderParams : utils::Parameters {
-  bool ascending;
+  bool ascending = true;
   DegreeReorderParams(bool ascending) : ascending(ascending) {}
 };
 //! Reordering preprocessing algorithm that reorders a format by representing it
