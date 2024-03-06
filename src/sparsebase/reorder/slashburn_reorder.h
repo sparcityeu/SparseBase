@@ -12,9 +12,9 @@
 namespace sparsebase::reorder {
 
 struct SlashburnReorderParams : utils::Parameters {
-  int k_size;
-  bool greedy;
-  bool hub_order;
+  int k_size = 1;
+  bool greedy = false;
+  bool hub_order = true;
   explicit SlashburnReorderParams() {}
   SlashburnReorderParams(int hubset_k_size, bool greedy_alg, bool hub_ordering)
       : k_size(hubset_k_size),
