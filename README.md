@@ -10,7 +10,7 @@ The library is still in early stages of development. As a result, the API is not
 
 :computer: [Source Code](https://github.com/sparcityeu/sparsebase)
 
-:books: [Documentation](https://sparcityeu.github.io/sparsebase/)
+:books: [Documentation](https://sparcityeu.github.io/SparseBase/)
 
 :scroll: [License](https://sparcityeu.github.io/sparsebase/pages/license.html)
 
