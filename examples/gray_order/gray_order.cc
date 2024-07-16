@@ -22,9 +22,9 @@ using value_type = float;
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    cout << "Usage: ./gray_order <uedgelist_file>\n";
+    cout << "Usage: ./gray_order <matrix_market_file>\n";
     cout
-        << "Hint: You can use the edgelist: examples/data/com-dblp.uedgelist\n";
+        << "Hint: You can use the edgelist: examples/data/com-dblp.mtx\n";
     return 1;
   }
   cout << "F t re  s sp r e!" << endl;
