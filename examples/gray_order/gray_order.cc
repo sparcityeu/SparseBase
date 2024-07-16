@@ -39,6 +39,9 @@ int main(int argc, char *argv[]) {
   cout << "Number of vertices: " << csr->get_dimensions()[0] << endl;
   cout << "Number of edges: " << csr->get_num_nnz() << endl;
 
+  vertex_type num_rows = csr->get_dimensions()[0];
+  edge_type num_non_zeros = csr->get_num_nnz();
+
   cout << "********************************" << endl;
   cout << "Generating Gray ordering..." << endl;
 
@@ -52,7 +55,6 @@ int main(int argc, char *argv[]) {
 
   vertex_type *gray_reorder = bases::ReorderBase::Reorder<GrayReorder>(
       gray_params, csr, {&cpu_context}, true);
-  vertex_type num_rows = csr->get_dimensions()[0];
   cout << "********************************" << endl;
 
   cout << "Checking the correctness of the ordering..." << endl;
