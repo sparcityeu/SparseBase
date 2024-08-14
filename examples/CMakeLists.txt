@@ -11,10 +11,10 @@ if (${USE_CUDA})
   add_subdirectory(array_example)
   add_subdirectory(example_experiment)
 endif()
+
 if(NOT ${_HEADER_ONLY} OR NOT ${USE_CUDA})
   add_subdirectory(csr_coo)
   add_subdirectory(degree_order)
-  add_subdirectory(amd_order)
   add_subdirectory(custom_order)
   add_subdirectory(format_conversion)
   add_subdirectory(gray_order)
@@ -28,6 +28,10 @@ if(NOT ${_HEADER_ONLY} OR NOT ${USE_CUDA})
 
   if(${USE_METIS})
     add_subdirectory(metis_partition)
+  endif()
+
+  if(${USE_AMD_ORDER})
+    add_subdirectory(amd_order)
   endif()
 
 endif()
