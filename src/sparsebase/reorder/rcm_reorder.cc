@@ -27,16 +27,18 @@ IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
   IDType r = start;
   SignedID rlevel = -1;
   SignedID qlevel = 0;
+  SignedID deg = -1, flag = -1;
 
+  /* Repeat with the new found root.                          */
+  /* If the distance is the same then return the current root */
   while (rlevel != qlevel) {
-    // cout << "Finding peripheral: current dist = " << qlevel << std::endl;;
     rlevel = qlevel;
 
-    for (IDType i = 0; i < n; i++) distance[i] = -1;
     IDType qrp = 0, qwp = 0;
     distance[r] = 0;
     Q[qwp++] = r;
 
+    /* Computes the distance to the root of every node in the connected component */
     while (qrp < qwp) {
       IDType u = Q[qrp++];
       for (NNZType ptr = xadj[u]; ptr < xadj[u + 1]; ptr++) {
@@ -44,15 +46,34 @@ IDType RCMReorder<IDType, NNZType, ValueType>::peripheral(NNZType *xadj,
         if (distance[v] == (IDType)-1) {
           distance[v] = distance[u] + 1;
           Q[qwp++] = v;
+          if (distance[v] > qlevel) {
+            qlevel = distance[v];
+          }
         }
       }
     }
 
-    qlevel = 0;
-    for (IDType i = 0; i < qrp; i++) {
-      if (qlevel < distance[Q[i]]) {
-        qlevel = distance[Q[i]];
-        r = Q[i];
+    /* If the number of levels is the same as the number of nodes in the */
+    /* connected component (N-N-N-N-N) then we already have the root     */
+    if (qrp == qlevel + 1) {return r;}
+
+    /* Goes through nodes in the connected component.                */
+    /* Root will be the node with maximum distance and lowest degree */
+    flag = -1;
+    if (rlevel != qlevel) {
+      for (IDType i = 0; i < qrp; i++) {
+        if (qlevel == distance[Q[i]]) {
+          if (flag == -1) {
+            deg = xadj[Q[i] + 1] - xadj[Q[i]] + 1;
+            flag = 0;
+          }
+          if (xadj[Q[i] + 1] - xadj[Q[i]] < deg) {
+            qlevel = distance[Q[i]];
+            r = Q[i];
+            deg = xadj[Q[i] + 1] - xadj[Q[i]];
+          }
+        } 
+        distance[Q[i]] = -1;
       }
     }
   }
@@ -67,30 +88,45 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
   IDType *adj = csr->get_col();
   IDType n = csr->get_dimensions()[0];
   IDType *Q = new IDType[n];
-
+    
   IDType *Qp = new IDType[n];
+  IDType *Qp2 = new IDType[n];
   SignedID *distance = new SignedID[n];
   IDType *V = new IDType[n];
-  for (IDType i = 0; i < n; i++) V[i] = 0;
-  std::priority_queue<std::pair<IDType, IDType>> PQ;
-  int qrp = 0, qwp = 0;
+  for (IDType i = 0; i < n; i++) {
+    distance[i] = -1;
+    V[i] = 0;
+  } 
+  std::priority_queue<std::pair<IDType, IDType>, std::vector<std::pair<IDType, IDType>>, std::greater<std::pair<IDType, IDType>>> PQ;
+  int qrp = 0, qwp = 0, qst = 0;
   IDType reverse = n - 1;
 
+  /* Go through every node in the graph */
   for (IDType i = 0; i < n; i++) {
+
+    /* If the node has not been visited yet then it belongs to a new connected component */
     if (V[i] == 0) {
+
+      /* Connected components that consist of a single node don't need reordering */
       if (xadj[i] == xadj[i + 1]) {
-        Q[reverse--] = i;
+        Q[qwp] = i;
+        Qp2[qwp++] = i;
         V[i] = 1;
         continue;
       }
 
-      // cout << i << std::endl;
+      /* Find approximate peripheral node */
       IDType perv = peripheral(xadj, adj, n, i, distance, Qp);
+      qst = qwp;
       V[perv] = 1;
       Q[qwp++] = perv;
 
+      /* BFS search of the connected component */
       while (qrp < qwp) {
         IDType u = Q[qrp++];
+
+        /* Visit all unvisited nodes neighbouring the current node. */
+        /* Order based on their degree                              */
         for (IDType ptr = xadj[u]; ptr < xadj[u + 1]; ptr++) {
           IDType v = adj[ptr];
           if (V[v] == 0) {
@@ -99,23 +135,28 @@ IDType *RCMReorder<IDType, NNZType, ValueType>::GetReorderCSR(
           }
         }
 
+        /* Place the neighbouring nodes in the queue with their new degree order */
         while (!PQ.empty()) {
           Q[qwp++] = PQ.top().second;
           ;
           PQ.pop();
         }
       }
+
+      /* Reverse connected component */
+      for (IDType j = qst; j < qst + (qwp-qst)/2; j++) {
+        Qp2[j] = Q[qwp-1 - (j - qst)];
+        Qp2[qwp-1 - (j - qst)] = Q[j];
+      }
+      if ((qwp-qst)%2 != 0) {
+        Qp2[qst + (qwp-1 - qst)/2] = Q[qst + (qwp-1 - qst)/2];
+      }
     }
   }
-
-  // Reverse
-  for (IDType i = 0; i < n / 2; i++) {
-    Qp[i] = Q[n - i - 1];
-    Qp[n - i - 1] = Q[i];
-  }
-  // Place it in the form that the transform function takes
+  
+  /* Place it in the form that the transform function takes */
   for (IDType i = 0; i < n; i++) {
-    Q[Qp[i]] = i;
+    Q[Qp2[i]] = i;
   }
 
   delete[] Qp;

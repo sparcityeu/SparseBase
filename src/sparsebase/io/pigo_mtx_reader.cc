@@ -1,8 +1,9 @@
 #include "pigo_mtx_reader.h"
 
 #include <fstream>
+#include <sstream>
 #include <string>
-
+#include "sparsebase/utils/logger.h"
 #include "sparsebase/config.h"
 #include "sparsebase/io/mtx_reader.h"
 #ifdef USE_PIGO
@@ -14,7 +15,19 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
     std::string filename, bool weighted, bool convert_to_zero_index)
     : filename_(filename),
       weighted_(weighted),
-      convert_to_zero_index_(convert_to_zero_index) {}
+      convert_to_zero_index_(convert_to_zero_index) {
+  std::ifstream fin(filename_);
+
+  if (fin.is_open()) {
+    std::string header_line;
+    std::getline(fin, header_line);
+    // parse first line
+    options_ = ParseHeader(header_line);
+  } else {
+    throw utils::ReaderException("Wrong matrix market file name\n");
+  }
+
+  }
 
 // template <typename IDType, typename NNZType, typename ValueType>
 // format::Array<ValueType> *
@@ -24,10 +37,115 @@ PigoMTXReader<IDType, NNZType, ValueType>::PigoMTXReader(
 //}
 
 template <typename IDType, typename NNZType, typename ValueType>
+typename PigoMTXReader<IDType, NNZType, ValueType>::MTXOptions
+PigoMTXReader<IDType, NNZType, ValueType>::ParseHeader(
+    std::string header_line) const {
+  std::stringstream line_ss(header_line);
+  MTXOptions options;
+  std::string prefix, object, format, field, symmetry;
+  line_ss >> prefix >> object >> format >> field >> symmetry;
+  if (prefix != MMX_PREFIX)
+    throw utils::ReaderException("Wrong prefix in a matrix market file");
+  // parsing Object option
+  if (object == "matrix") {
+    options.object =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
+  } else if (object == "vector") {
+    options.object =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXObjectOptions::matrix;
+    throw utils::ReaderException(
+        "Matrix market reader does not currently support reading vectors.");
+  } else {
+    throw utils::ReaderException(
+        "Illegal value for the 'object' option in matrix market header");
+  }
+  // parsing format option
+  if (format == "array") {
+    options.format =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFormatOptions::array;
+  } else if (format == "coordinate") {
+    options.format =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFormatOptions::coordinate;
+  } else {
+    throw utils::ReaderException(
+        "Illegal value for the 'format' option in matrix market header");
+  }
+  // parsing field option
+  if (field == "real") {
+    options.field =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::real;
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
+  } else if (field == "double") {
+    options.field =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::double_field;
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
+  } else if (field == "complex") {
+    options.field =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::complex;
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
+  } else if (field == "integer") {
+    options.field =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::integer;
+    if constexpr (std::is_same<void, ValueType>::value)
+      throw utils::ReaderException(
+          "You are reading the values of the matrix market file into a void "
+          "array");
+  } else if (field == "pattern") {
+    options.field =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXFieldOptions::pattern;
+  } else {
+    throw utils::ReaderException(
+        "Illegal value for the 'field' option in matrix market header");
+  }
+  // parsing symmetry
+  if (symmetry == "general") {
+    options.symmetry =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::general;
+  } else if (symmetry == "symmetric") {
+    options.symmetry =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::symmetric;
+  } else if (symmetry == "skew-symmetric") {
+    options.symmetry = PigoMTXReader<IDType, NNZType,
+                                 ValueType>::MTXSymmetryOptions::skew_symmetric;
+  } else if (symmetry == "hermitian") {
+    options.symmetry =
+        PigoMTXReader<IDType, NNZType, ValueType>::MTXSymmetryOptions::hermitian;
+    throw utils::ReaderException(
+        "Matrix market reader does not currently support hermitian symmetry.");
+  } else {
+    throw utils::ReaderException(
+        "Illegal value for the 'symmetry' option in matrix market header");
+  }
+  return options;
+}
+
+template <typename IDType, typename NNZType, typename ValueType>
 format::COO<IDType, NNZType, ValueType>
     *PigoMTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
 #ifdef USE_PIGO
+
   format::COO<IDType, NNZType, ValueType> *coo;
+
+  if (options_.object != matrix ||
+   options_.format != coordinate ||
+   options_.symmetry != general)
+   {
+      utils::Logger logger(typeid(this));
+      logger.Log("PIGO is not equipped to read these options, defaulting to sequential reader...", utils::LOG_LVL_WARNING);
+      
+      sparsebase::io::MTXReader<IDType, NNZType, ValueType> reader(filename_);
+      coo = reader.ReadCOO();
+      return coo;
+   }
 
   if (weighted_) {
     if constexpr (!std::is_same_v<ValueType, void>) {

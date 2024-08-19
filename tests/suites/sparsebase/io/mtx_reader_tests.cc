@@ -119,7 +119,7 @@ TEST(MTXReader, BasicsArray) {
   ofs2.close();
 
   // Read non-weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, int> reader("test.mtx");
+  sparsebase::io::MTXReader<int, int, float> reader("test_arr.mtx");
   auto coo = reader.ReadCOO();
 
   // Check the dimensions
@@ -138,7 +138,7 @@ TEST(MTXReader, BasicsArray) {
   }
 
   // Read the weighted file using sparsebase
-  sparsebase::io::MTXReader<int, int, float> reader2("test_values.mtx", true);
+  sparsebase::io::MTXReader<int, int, float> reader2("test_arr_values.mtx", true);
   auto coo2 = reader2.ReadCOO();
 
   // Check the dimensions
@@ -209,5 +209,58 @@ TEST(MTXReader, BasicsSymmetric) {
     EXPECT_EQ(coo2->get_row()[i], row_symm[i]);
     EXPECT_EQ(coo2->get_col()[i], col_symm[i]);
     EXPECT_EQ(coo2->get_vals()[i], vals_symm[i]);
+  }
+}
+
+TEST(MTXReader, BasicsSkewSymmetric) {
+  // Write the mtx data to a file
+  std::ofstream ofs("test_skew_symm.mtx");
+  ofs << mtx_skew_symm_data;
+  ofs.close();
+
+  // Write the mtx data with values to a file
+  std::ofstream ofs2("test_skew_symm_values.mtx");
+  ofs2 << mtx_skew_symm_data_with_values;
+  ofs2.close();
+
+  // Read non-weighted file using sparsebase
+  sparsebase::io::MTXReader<int, int, int> reader("test_skew_symm.mtx");
+  auto coo = reader.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo->get_dimensions()[0], 5);
+  EXPECT_EQ(coo->get_dimensions()[1], 5);
+  EXPECT_EQ(coo->get_num_nnz(), 10);
+
+  // Check that the arrays are populated
+  EXPECT_NE(coo->get_row(), nullptr);
+  EXPECT_NE(coo->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 10; i++) {
+    EXPECT_EQ(coo->get_row()[i], row_skew_symm[i]);
+    EXPECT_EQ(coo->get_col()[i], col_skew_symm[i]);
+  }
+
+  // Read the weighted file using sparsebase
+  sparsebase::io::MTXReader<int, int, float> reader2("test_skew_symm_values.mtx",
+                                                     true);
+  auto coo2 = reader2.ReadCOO();
+
+  // Check the dimensions
+  EXPECT_EQ(coo2->get_dimensions()[0], 5);
+  EXPECT_EQ(coo2->get_dimensions()[1], 5);
+  EXPECT_EQ(coo2->get_num_nnz(), 10);
+
+  // vals array should not be empty or null (same for the other arrays)
+  EXPECT_NE(coo2->get_vals(), nullptr);
+  EXPECT_NE(coo2->get_row(), nullptr);
+  EXPECT_NE(coo2->get_col(), nullptr);
+
+  // Check the integrity and order of data
+  for (int i = 0; i < 10; i++) {
+    EXPECT_EQ(coo2->get_row()[i], row_skew_symm[i]);
+    EXPECT_EQ(coo2->get_col()[i], col_skew_symm[i]);
+    EXPECT_EQ(coo2->get_vals()[i], vals_skew_symm[i]);
   }
 }

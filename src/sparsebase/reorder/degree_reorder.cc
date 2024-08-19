@@ -26,13 +26,14 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   DegreeReorderParams *cast_params = static_cast<DegreeReorderParams *>(params);
   bool ascending = cast_params->ascending;
   IDType n = csr->get_dimensions()[0];
-  IDType *counts = new IDType[n]();
+  IDType *counts = new IDType[n + 1]();
   auto row_ptr = csr->get_row_ptr();
   auto col = csr->get_col();
+
   for (IDType u = 0; u < n; u++) {
-    counts[row_ptr[u + 1] - row_ptr[u] + 1]++;
+    counts[row_ptr[u + 1] - row_ptr[u]]++;
   }
-  for (IDType u = 1; u < n; u++) {
+  for (IDType u = 1; u < n + 1; u++) {
     counts[u] += counts[u - 1];
   }
   IDType *sorted = new IDType[n];
@@ -40,7 +41,7 @@ IDType *DegreeReorder<IDType, NNZType, ValueType>::CalculateReorderCSR(
   IDType *mr = new IDType[n]();
   for (IDType u = 0; u < n; u++) {
     IDType ec = counts[row_ptr[u + 1] - row_ptr[u]];
-    sorted[ec + mr[ec]] = u;
+    sorted[ec - mr[ec] - 1] = u;
     mr[ec]++;
   }
   if (!ascending) {

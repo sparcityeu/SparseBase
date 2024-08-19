@@ -87,3 +87,93 @@ target_link_libraries(sparsebase_feature_min_max_avg_degree_tests.test sparsebas
 target_link_libraries(sparsebase_feature_min_max_avg_degree_tests.test gtest gtest_main)
 
 add_test(NAME sparsebase_feature_min_max_avg_degree_tests.test COMMAND sparsebase_feature_min_max_avg_degree_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(off_diag_block_nnz_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_off_diag_block_nnz_tests.test off_diag_block_nnz_tests.cc)
+target_link_libraries(sparsebase_feature_off_diag_block_nnz_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_off_diag_block_nnz_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_off_diag_block_nnz_tests.test COMMAND sparsebase_feature_off_diag_block_nnz_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(profile_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_profile_tests.test profile_tests.cc)
+target_link_libraries(sparsebase_feature_profile_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_profile_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_profile_tests.test COMMAND sparsebase_feature_profile_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(bandwidth_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_bandwidth_tests.test bandwidth_tests.cc)
+target_link_libraries(sparsebase_feature_bandwidth_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_bandwidth_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_bandwidth_tests.test COMMAND sparsebase_feature_bandwidth_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(triangle_count_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_triangle_count_tests.test triangle_count_tests.cc)
+target_link_libraries(sparsebase_feature_triangle_count_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_triangle_count_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_triangle_count_tests.test COMMAND sparsebase_feature_triangle_count_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(median_degree_column_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_median_degree_column_tests.test median_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_median_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_median_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_median_degree_column_tests.test COMMAND sparsebase_feature_median_degree_column_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(avg_degree_column_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_avg_degree_column_tests.test avg_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_avg_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_avg_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_avg_degree_column_tests.test COMMAND sparsebase_feature_avg_degree_column_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(min_degree_column_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_min_degree_column_tests.test min_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_min_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_min_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_min_degree_column_tests.test COMMAND sparsebase_feature_min_degree_column_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(standard_deviation_degree_column_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_standard_deviation_degree_column_tests.test standard_deviation_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_standard_deviation_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_standard_deviation_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_standard_deviation_degree_column_tests.test COMMAND sparsebase_feature_standard_deviation_degree_column_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(coefficient_of_variation_degree_column.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_coefficient_of_variation_degree_column_tests.test coefficient_of_variation_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_coefficient_of_variation_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_coefficient_of_variation_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_coefficient_of_variation_degree_column_tests.test COMMAND sparsebase_feature_coefficient_of_variation_degree_column_tests.test)
+
+if(${USE_CUDA})
+    set_source_files_properties(geometric_avg_degree_column_tests.cc PROPERTIES LANGUAGE CUDA)
+endif()
+add_executable(sparsebase_feature_geometric_avg_degree_column_tests.test geometric_avg_degree_column_tests.cc)
+target_link_libraries(sparsebase_feature_geometric_avg_degree_column_tests.test sparsebase)
+target_link_libraries(sparsebase_feature_geometric_avg_degree_column_tests.test gtest gtest_main)
+
+add_test(NAME sparsebase_feature_geometric_avg_degree_column_tests.test COMMAND sparsebase_feature_geometric_avg_degree_column_tests.test)

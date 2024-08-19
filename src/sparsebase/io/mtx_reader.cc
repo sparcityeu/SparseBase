@@ -140,8 +140,8 @@ format::COO<IDType, NNZType, ValueType>
     fin >> w;
 
     if (w != 0) {
-      long_cols[num_nnz] = l / N;
-      long_rows[num_nnz] = l % N;
+      long_cols[num_nnz] = l / M;
+      long_rows[num_nnz] = l % M;
       if constexpr (weighted) long_vals[num_nnz] = w;
       num_nnz++;
     }
@@ -166,6 +166,10 @@ format::COO<IDType, NNZType, ValueType>
     *MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   bool weighted = options_.field != MTXFieldOptions::pattern;
   if (options_.format == MTXFormatOptions::array) {
+    if (options_.symmetry != MTXSymmetryOptions::general){
+      throw utils::ReaderException(
+          "Library does not support reading array files that are symmetric, skew-symmetric, or hermetian");
+    }
     if (weighted) {
       if constexpr (!std::is_same_v<ValueType, void>) {
         return this->ReadArrayIntoCOO<true>();
@@ -375,12 +379,17 @@ format::COO<IDType, NNZType, ValueType>
           check_diagonal = false;
         else
           check_diagonal = true;
-        if (check_diagonal && m != n) {
+        if (!check_diagonal || m != n) {
           row[actual_nnzs] = n;
           col[actual_nnzs] = m;
           if constexpr (weighted && !std::is_same_v<void, ValueType> &&
-                        weighted)
-            vals[actual_nnzs] = vals[actual_nnzs - 1];
+                        weighted) {
+            if constexpr (symm == (int)MTXSymmetryOptions::skew_symmetric) {
+              vals[actual_nnzs] = -vals[actual_nnzs - 1];
+            } else {
+              vals[actual_nnzs] = vals[actual_nnzs - 1];
+            }
+          }
           actual_nnzs++;
         }
       }

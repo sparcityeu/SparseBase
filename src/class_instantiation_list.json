@@ -113,6 +113,13 @@
       "exceptions": null
     },
     {
+      "template": "class HyperGraph<$id_type, $nnz_type, $value_type>",
+      "filename": "object.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class ConverterOrderOne<$value_type>",
       "filename": "converter_order_one.inc",
       "ifdef": null,
@@ -225,6 +232,27 @@
       "exceptions": null
     },
     {
+      "template": "class MetisGraphReader<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MetisGraphWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "metis_graph_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MTXWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "mtx_writer.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class PigoEdgeListReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_edge_list_reader.inc",
       "ifdef": null,
@@ -234,6 +262,20 @@
     {
       "template": "class PigoMTXReader<$id_type, $nnz_type, $value_type>",
       "filename": "pigo_mtx_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohReader<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_reader.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class PatohWriter<$id_type, $nnz_type, $value_type>",
+      "filename": "patoh_writer.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -344,6 +386,13 @@
       "exceptions": null
     },
     {
+      "template": "class Bandwidth<$id_type, $nnz_type, $value_type>",
+      "filename": "bandwidth.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class RCMReorder<$id_type, $nnz_type, $value_type>",
       "filename": "rcm_reorder.inc",
       "ifdef": null,
@@ -360,6 +409,20 @@
     {
       "template": "class GrayReorder<$id_type, $nnz_type, $value_type>",
       "filename": "gray_reorder.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class SlashburnReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "slashburn_reorder.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class BOBAReorder<$id_type, $nnz_type, $value_type>",
+      "filename": "boba_reorder.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
@@ -470,6 +533,13 @@
       "exceptions": null
     },
     {
+      "template": "class MinDegreeColumn<$id_type, $nnz_type, $value_type>",
+      "filename": "min_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MaxDegree<$id_type, $nnz_type, $value_type>",
       "filename": "max_degree.inc",
       "ifdef": null,
@@ -484,8 +554,64 @@
       "exceptions": null
     },
     {
+      "template": "class AvgDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "avg_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class StandardDeviationDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "standard_deviation_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class CoefficientOfVariationDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "coefficient_of_variation_degree_column.inc",
+      "ifdef": null,      
+      "folder": null,      
+      "exceptions": null
+    },
+    {
+      "template": "class GeometricAvgDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "geometric_avg_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class MinMaxAvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "min_max_avg_degree.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class MedianDegreeColumn<$id_type, $nnz_type, $value_type, $float_type>",
+      "filename": "median_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class OffDiagBlockNNZ<$id_type, $nnz_type, $value_type>",
+      "filename": "off_diag_block_nnz.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class Profile<$id_type, $nnz_type, $value_type>",
+      "filename": "profile.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
+      "template": "class TriangleCount<$id_type, $nnz_type, $value_type>",
+      "filename": "triangle_count.inc",
       "ifdef": null,
       "folder": null,
       "exceptions": null
