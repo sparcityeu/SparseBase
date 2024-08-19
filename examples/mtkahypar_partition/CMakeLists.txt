@@ -1,0 +1,2 @@
+add_executable(mtkahypar_partition ${CMAKE_CURRENT_SOURCE_DIR}/mtkahypar_partition.cc)
+target_link_libraries(mtkahypar_partition sparsebase)

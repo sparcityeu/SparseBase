@@ -8,6 +8,7 @@
 #cmakedefine USE_RABBIT_ORDER
 #cmakedefine USE_AMD_ORDER
 #cmakedefine USE_PULP
-#cmakedefine USE_PATOH
+#cmakedefine USE_PATO
+#cmakedefine USE_MTKAHYPAR
 
 #endif

@@ -449,6 +449,13 @@
       "exceptions": null
     },
     {
+      "template": "class MtkahyparPartition<$id_type, $nnz_type, $value_type>",
+      "filename": "mtkahypar_partition.inc",
+      "ifdef": "USE_MTKAHYPAR",
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class AMDReorder<$id_type, $nnz_type, $value_type>",
       "filename": "amd_reorder.inc",
       "ifdef": "USE_AMD_ORDER",

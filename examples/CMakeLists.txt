@@ -28,4 +28,8 @@ if(NOT ${_HEADER_ONLY} OR NOT ${USE_CUDA})
     add_subdirectory(metis_partition)
   endif()
 
+  if(${USE_MTKAHYPAR})
+    add_subdirectory(mtkahypar_partition)
+  endif()
+
 endif()
