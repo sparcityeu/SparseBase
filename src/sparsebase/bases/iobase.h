@@ -43,9 +43,10 @@ class IOBase {
    */
   template <typename IDType, typename NNZType, typename ValueType>
   static format::CSR<IDType, NNZType, ValueType>* ReadMTXToCSR(
-      std::string filename, bool convert_index_to_zero = true) {
-    io::MTXReader<IDType, NNZType, ValueType> reader(filename,
-                                                     convert_index_to_zero);
+      std::string filename, bool convert_index_to_zero = true,
+      bool upper_triangle = false) {
+    io::MTXReader<IDType, NNZType, ValueType> reader(
+        filename, convert_index_to_zero, upper_triangle);
     return reader.ReadCSR();
   }
   //! Read a matrix market file into a COO format
