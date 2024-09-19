@@ -364,6 +364,56 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
             M, N, L, row, col, nullptr, format::kOwned);
         return coo;
       }
+    } else if constexpr ((symm == (int)MTXSymmetryOptions::symmetric ||
+                          symm == (int)MTXSymmetryOptions::skew_symmetric) &&
+                         upper_triangle) {
+      IDType *row = new IDType[L];
+      IDType *col = new IDType[L];
+      NNZType actual_nnzs = 0;
+      IDType m, n;
+      if constexpr (weighted) {
+        if constexpr (!std::is_same_v<void, ValueType>) {
+          vals = new ValueType[L];
+        } else {
+          throw utils::ReaderException(
+              "Weight type for weighted graphs can not be void");
+        }
+      }
+      for (NNZType l = 0; l < L; l++) {
+        fin >> m >> n;
+
+        if constexpr (conv_to_zero) {
+          n--;
+          m--;
+        }
+        row[actual_nnzs] = std::min(m, n);
+        col[actual_nnzs] = std::max(m, n);
+        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
+          fin >> vals[actual_nnzs];
+        }
+        actual_nnzs++;
+      }
+      /*
+      IDType *actual_rows = row;
+      IDType *actual_cols = col;
+      ValueType *actual_vals = vals;
+      if (symm == (int)MTXSymmetryOptions::symmetric && actual_nnzs != L * 2) {
+        actual_rows = new IDType[actual_nnzs];
+        actual_cols = new IDType[actual_nnzs];
+        std::copy(row, row + actual_nnzs, actual_rows);
+        std::copy(col, col + actual_nnzs, actual_cols);
+        delete[] row;
+        delete[] col;
+        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
+          actual_vals = new ValueType[actual_nnzs];
+          std::copy(vals, vals + actual_nnzs, actual_vals);
+          delete[] vals;
+        }
+      }
+      */
+      auto coo = new format::COO<IDType, NNZType, ValueType>(
+          M, N, L, row, col, vals, format::kOwned);
+      return coo;
     } else if constexpr (symm == (int)MTXSymmetryOptions::symmetric ||
                          symm == (int)MTXSymmetryOptions::skew_symmetric) {
       IDType *row = new IDType[L * 2];
@@ -424,56 +474,6 @@ MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
       auto coo = new format::COO<IDType, NNZType, ValueType>(
           M, N, actual_nnzs, actual_rows, actual_cols, actual_vals,
           format::kOwned);
-      return coo;
-    } else if constexpr ((symm == (int)MTXSymmetryOptions::symmetric ||
-                          symm == (int)MTXSymmetryOptions::skew_symmetric) &&
-                         upper_triangle) {
-      IDType *row = new IDType[L];
-      IDType *col = new IDType[L];
-      NNZType actual_nnzs = 0;
-      IDType m, n;
-      if constexpr (weighted) {
-        if constexpr (!std::is_same_v<void, ValueType>) {
-          vals = new ValueType[L];
-        } else {
-          throw utils::ReaderException(
-              "Weight type for weighted graphs can not be void");
-        }
-      }
-      for (NNZType l = 0; l < L; l++) {
-        fin >> m >> n;
-
-        if constexpr (conv_to_zero) {
-          n--;
-          m--;
-        }
-        row[actual_nnzs] = std::min(m, n);
-        col[actual_nnzs] = std::max(m, n);
-        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
-          fin >> vals[actual_nnzs];
-        }
-        actual_nnzs++;
-      }
-      /*
-      IDType *actual_rows = row;
-      IDType *actual_cols = col;
-      ValueType *actual_vals = vals;
-      if (symm == (int)MTXSymmetryOptions::symmetric && actual_nnzs != L * 2) {
-        actual_rows = new IDType[actual_nnzs];
-        actual_cols = new IDType[actual_nnzs];
-        std::copy(row, row + actual_nnzs, actual_rows);
-        std::copy(col, col + actual_nnzs, actual_cols);
-        delete[] row;
-        delete[] col;
-        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
-          actual_vals = new ValueType[actual_nnzs];
-          std::copy(vals, vals + actual_nnzs, actual_vals);
-          delete[] vals;
-        }
-      }
-      */
-      auto coo = new format::COO<IDType, NNZType, ValueType>(
-          M, N, L, row, col, vals, format::kOwned);
       return coo;
     } else {
       throw utils::ReaderException(

@@ -22,6 +22,8 @@ class MTXReader : public Reader,
    * @param filename path to the file to be read
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
+   * @param upper_triangle is set to true if only read the upper triangle of
+   * the symmetric matrix
    */
   explicit MTXReader(std::string filename, bool convert_to_zero_index = true,
                      bool upper_triangle = false);
