@@ -9,8 +9,11 @@ namespace sparsebase::io {
 
 template <typename IDType, typename NNZType, typename ValueType>
 MTXReader<IDType, NNZType, ValueType>::MTXReader(std::string filename,
-                                                 bool convert_to_zero_index)
-    : filename_(filename), convert_to_zero_index_(convert_to_zero_index) {
+                                                 bool convert_to_zero_index,
+                                                 bool upper_triangle)
+    : filename_(filename),
+      convert_to_zero_index_(convert_to_zero_index),
+      upper_triangle_(upper_triangle) {
   std::ifstream fin(filename_);
 
   if (fin.is_open()) {
@@ -117,8 +120,8 @@ MTXReader<IDType, NNZType, ValueType>::ParseHeader(
 
 template <typename IDType, typename NNZType, typename ValueType>
 template <bool weighted>
-format::COO<IDType, NNZType, ValueType>
-    *MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
+format::COO<IDType, NNZType, ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoCOO() const {
   std::ifstream fin(filename_);
   // Ignore headers and comments:
   while (fin.peek() == '%')
@@ -162,8 +165,8 @@ format::COO<IDType, NNZType, ValueType>
                                                      vals, format::kOwned);
 }
 template <typename IDType, typename NNZType, typename ValueType>
-format::COO<IDType, NNZType, ValueType>
-    *MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
+format::COO<IDType, NNZType, ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadCOO() const {
   bool weighted = options_.field != MTXFieldOptions::pattern;
   if (options_.format == MTXFormatOptions::array) {
     if (weighted) {
@@ -182,24 +185,33 @@ format::COO<IDType, NNZType, ValueType>
       if (options_.symmetry == MTXSymmetryOptions::general)
         if (this->convert_to_zero_index_)
           return this->ReadCoordinateIntoCOO<
-              true, (int)MTXSymmetryOptions::general, true>();
+              true, (int)MTXSymmetryOptions::general, true, false>();
         else
           return this->ReadCoordinateIntoCOO<
-              true, (int)MTXSymmetryOptions::general, false>();
+              true, (int)MTXSymmetryOptions::general, false, false>();
       else if (options_.symmetry == MTXSymmetryOptions::symmetric)
-        if (this->convert_to_zero_index_)
-          return this->ReadCoordinateIntoCOO<
-              true, (int)MTXSymmetryOptions::symmetric, true>();
-        else
-          return this->ReadCoordinateIntoCOO<
-              true, (int)MTXSymmetryOptions::symmetric, false>();
+        if (this->convert_to_zero_index_) {
+          if (this->upper_triangle_)
+            return this->ReadCoordinateIntoCOO<
+                true, (int)MTXSymmetryOptions::symmetric, true, true>();
+          else
+            return this->ReadCoordinateIntoCOO<
+                true, (int)MTXSymmetryOptions::symmetric, true, false>();
+        } else {
+          if (this->upper_triangle_)
+            return this->ReadCoordinateIntoCOO<
+                true, (int)MTXSymmetryOptions::symmetric, false, true>();
+          else
+            return this->ReadCoordinateIntoCOO<
+                true, (int)MTXSymmetryOptions::symmetric, false, false>();
+        }
       else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
         if (this->convert_to_zero_index_)
           return this->ReadCoordinateIntoCOO<
-              true, (int)MTXSymmetryOptions::skew_symmetric, true>();
+              true, (int)MTXSymmetryOptions::skew_symmetric, true, false>();
         else
           return this->ReadCoordinateIntoCOO<
-              true, (int)MTXSymmetryOptions::skew_symmetric, false>();
+              true, (int)MTXSymmetryOptions::skew_symmetric, false, false>();
       else
         throw utils::ReaderException(
             "Can't read matrix market symmetry options besides general, "
@@ -208,24 +220,33 @@ format::COO<IDType, NNZType, ValueType>
       if (options_.symmetry == MTXSymmetryOptions::general)
         if (this->convert_to_zero_index_)
           return this->ReadCoordinateIntoCOO<
-              false, (int)MTXSymmetryOptions::general, true>();
+              false, (int)MTXSymmetryOptions::general, true, false>();
         else
           return this->ReadCoordinateIntoCOO<
-              false, (int)MTXSymmetryOptions::general, false>();
+              false, (int)MTXSymmetryOptions::general, false, false>();
       else if (options_.symmetry == MTXSymmetryOptions::symmetric)
-        if (this->convert_to_zero_index_)
-          return this->ReadCoordinateIntoCOO<
-              false, (int)MTXSymmetryOptions::symmetric, true>();
-        else
-          return this->ReadCoordinateIntoCOO<
-              false, (int)MTXSymmetryOptions::symmetric, false>();
+        if (this->convert_to_zero_index_) {
+          if (this->upper_triangle_)
+            return this->ReadCoordinateIntoCOO<
+                false, (int)MTXSymmetryOptions::symmetric, true, true>();
+          else
+            return this->ReadCoordinateIntoCOO<
+                false, (int)MTXSymmetryOptions::symmetric, true, false>();
+        } else {
+          if (this->upper_triangle_)
+            return this->ReadCoordinateIntoCOO<
+                false, (int)MTXSymmetryOptions::symmetric, false, true>();
+          else
+            return this->ReadCoordinateIntoCOO<
+                false, (int)MTXSymmetryOptions::symmetric, false, false>();
+        }
       else if (options_.symmetry == MTXSymmetryOptions::skew_symmetric)
         if (this->convert_to_zero_index_)
           return this->ReadCoordinateIntoCOO<
-              false, (int)MTXSymmetryOptions::skew_symmetric, true>();
+              false, (int)MTXSymmetryOptions::skew_symmetric, true, false>();
         else
           return this->ReadCoordinateIntoCOO<
-              false, (int)MTXSymmetryOptions::skew_symmetric, false>();
+              false, (int)MTXSymmetryOptions::skew_symmetric, false, false>();
       else
         throw utils::ReaderException(
             "Can't read matrix market symmetry options besides general, "
@@ -238,8 +259,8 @@ format::COO<IDType, NNZType, ValueType>
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType>
-    *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
+format::Array<ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoArray() const {
   if constexpr (std::is_same_v<ValueType, void>)
     throw utils::ReaderException(
         "Cannot read a matrix market file into an Array with void ValueType");
@@ -280,9 +301,9 @@ format::Array<ValueType>
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-template <bool weighted, int symm, bool conv_to_zero>
-format::COO<IDType, NNZType, ValueType>
-    *MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
+template <bool weighted, int symm, bool conv_to_zero, bool upper_triangle>
+format::COO<IDType, NNZType, ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadCoordinateIntoCOO() const {
   // Open the file:
   std::ifstream fin(filename_);
 
@@ -343,6 +364,56 @@ format::COO<IDType, NNZType, ValueType>
             M, N, L, row, col, nullptr, format::kOwned);
         return coo;
       }
+    } else if constexpr ((symm == (int)MTXSymmetryOptions::symmetric ||
+                          symm == (int)MTXSymmetryOptions::skew_symmetric) &&
+                         upper_triangle) {
+      IDType *row = new IDType[L];
+      IDType *col = new IDType[L];
+      NNZType actual_nnzs = 0;
+      IDType m, n;
+      if constexpr (weighted) {
+        if constexpr (!std::is_same_v<void, ValueType>) {
+          vals = new ValueType[L];
+        } else {
+          throw utils::ReaderException(
+              "Weight type for weighted graphs can not be void");
+        }
+      }
+      for (NNZType l = 0; l < L; l++) {
+        fin >> m >> n;
+
+        if constexpr (conv_to_zero) {
+          n--;
+          m--;
+        }
+        row[actual_nnzs] = std::min(m, n);
+        col[actual_nnzs] = std::max(m, n);
+        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
+          fin >> vals[actual_nnzs];
+        }
+        actual_nnzs++;
+      }
+      /*
+      IDType *actual_rows = row;
+      IDType *actual_cols = col;
+      ValueType *actual_vals = vals;
+      if (symm == (int)MTXSymmetryOptions::symmetric && actual_nnzs != L * 2) {
+        actual_rows = new IDType[actual_nnzs];
+        actual_cols = new IDType[actual_nnzs];
+        std::copy(row, row + actual_nnzs, actual_rows);
+        std::copy(col, col + actual_nnzs, actual_cols);
+        delete[] row;
+        delete[] col;
+        if constexpr (weighted && !std::is_same_v<void, ValueType>) {
+          actual_vals = new ValueType[actual_nnzs];
+          std::copy(vals, vals + actual_nnzs, actual_vals);
+          delete[] vals;
+        }
+      }
+      */
+      auto coo = new format::COO<IDType, NNZType, ValueType>(
+          M, N, L, row, col, vals, format::kOwned);
+      return coo;
     } else if constexpr (symm == (int)MTXSymmetryOptions::symmetric ||
                          symm == (int)MTXSymmetryOptions::skew_symmetric) {
       IDType *row = new IDType[L * 2];
@@ -414,8 +485,8 @@ format::COO<IDType, NNZType, ValueType>
   }
 }
 template <typename IDType, typename NNZType, typename ValueType>
-format::Array<ValueType>
-    *MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
+format::Array<ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadArrayIntoArray() const {
   if constexpr (!std::is_same_v<void, ValueType>) {
     std::ifstream fin(filename_);
     // Ignore headers and comments:
@@ -489,8 +560,8 @@ format::Array<ValueType> *MTXReader<IDType, NNZType, ValueType>::ReadArray()
 }
 
 template <typename IDType, typename NNZType, typename ValueType>
-format::CSR<IDType, NNZType, ValueType>
-    *MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
+format::CSR<IDType, NNZType, ValueType> *
+MTXReader<IDType, NNZType, ValueType>::ReadCSR() const {
   auto coo = ReadCOO();
   converter::ConverterOrderTwo<IDType, NNZType, ValueType> converterObj;
   context::CPUContext cpu_context;

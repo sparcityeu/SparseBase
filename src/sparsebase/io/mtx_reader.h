@@ -22,8 +22,11 @@ class MTXReader : public Reader,
    * @param filename path to the file to be read
    * @param convert_to_zero_index if set to true the indices will be converted
    * such that they start from 0 instead of 1
+   * @param upper_triangle is set to true if only read the upper triangle of
+   * the symmetric matrix
    */
-  explicit MTXReader(std::string filename, bool convert_to_zero_index = true);
+  explicit MTXReader(std::string filename, bool convert_to_zero_index = true,
+                     bool upper_triangle = false);
   format::COO<IDType, NNZType, ValueType> *ReadCOO() const override;
   format::CSR<IDType, NNZType, ValueType> *ReadCSR() const override;
   format::Array<ValueType> *ReadArray() const override;
@@ -50,10 +53,11 @@ class MTXReader : public Reader,
   format::Array<ValueType> *ReadArrayIntoArray() const;
   template <bool weighted>
   format::COO<IDType, NNZType, ValueType> *ReadArrayIntoCOO() const;
-  template <bool weighted, int symm, bool conv_to_zero>
+  template <bool weighted, int symm, bool conv_to_zero, bool upper_triangle>
   format::COO<IDType, NNZType, ValueType> *ReadCoordinateIntoCOO() const;
   std::string filename_;
   bool convert_to_zero_index_;
+  bool upper_triangle_;
   MTXOptions options_;
 };
 }  // namespace sparsebase::io
