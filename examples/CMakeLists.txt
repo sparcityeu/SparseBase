@@ -23,7 +23,7 @@ if(NOT ${_HEADER_ONLY} OR NOT ${USE_CUDA})
   add_subdirectory(custom_converter)
   add_subdirectory(custom_experiment)
   add_subdirectory(linear_solver)
-
+  add_subdirectory(tns_reader)
   if(${USE_METIS})
     add_subdirectory(metis_partition)
   endif()

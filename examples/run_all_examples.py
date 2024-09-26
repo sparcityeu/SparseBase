@@ -16,6 +16,7 @@ examples = [
     ["sparse_feature", "ash958.mtx"],
     ["csr_coo", "ash958.mtx"],
     ["sparse_reader", "ash958.mtx"],
+    ["tns_reader", "small.tns"],
 ]
 
 
