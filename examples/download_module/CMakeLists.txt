@@ -1,0 +1,2 @@
+add_executable(download_module ${CMAKE_CURRENT_SOURCE_DIR}/download_module.cc)
+target_link_libraries(download_module sparsebase)
