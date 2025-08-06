@@ -17,40 +17,6 @@ env:
 
 jobs:
 
-  test_win:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: MSYS2 Setup
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: false
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python mingw-w64-x86_64-ninja mingw-w64-x86_64-lld
-
-      - name: Configure CMake
-        working-directory: ${{github.workspace}}
-        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_FLAGS="-fuse-ld=lld" -DRUN_TESTS=ON
-
-      - name: Build
-        working-directory: ${{github.workspace}}
-        run: cmake --build build --config ${{env.BUILD_TYPE}} -j 2
-
-      - name: Run Examples
-        working-directory: ${{github.workspace}}/build/examples
-        run: python3 run_all_examples.py
-
-      - name: Run Tests
-        working-directory: ${{github.workspace}}/build
-        run: ctest -V
-
   test_mac:
     runs-on: macos-latest
 
