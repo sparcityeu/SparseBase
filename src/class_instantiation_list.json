@@ -547,6 +547,13 @@
       "exceptions": null
     },
     {
+      "template": "class MaxDegreeColumn<$id_type, $nnz_type, $value_type>",
+      "filename": "max_degree_column.inc",
+      "ifdef": null,
+      "folder": null,
+      "exceptions": null
+    },
+    {
       "template": "class AvgDegree<$id_type, $nnz_type, $value_type, $float_type>",
       "filename": "avg_degree.inc",
       "ifdef": null,
