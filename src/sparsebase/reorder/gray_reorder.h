@@ -17,9 +17,9 @@ enum BitMapSize{
 };
 //! Params struct for GrayReorder
 struct GrayReorderParams : utils::Parameters {
-  BitMapSize resolution;
-  int nnz_threshold;
-  int sparse_density_group_size;
+  BitMapSize resolution = BitMapSize::BitSize16;
+  int nnz_threshold = 20;
+  int sparse_density_group_size = 1;
   explicit GrayReorderParams() {}
   GrayReorderParams(BitMapSize r, int nnz_thresh, int group_size)
       : resolution(r),
